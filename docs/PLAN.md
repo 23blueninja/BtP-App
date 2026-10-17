@@ -106,7 +106,7 @@ resistances of the same type **add together**.
   Movement is `3 + AGI`, while the rules grow it triangularly (+1, +3, +6…).
   The app follows the rules text.
 
-## Backlog (requested Oct 2026)
+## Backlog (requested Oct 2026) — done
 
 1. **Inventory item notes.** Add an optional `notes` field to inventory items,
    editable inline and shown on the sheet.
@@ -123,3 +123,7 @@ resistances of the same type **add together**.
      spend it from the tracker;
    - shows the Check type and Mod Die (Spell/Maneuver Mod Die), with each
      outcome (Success, Deadly Success, Failure…) as final numbers.
+
+Rules confirmed for the calculator: `N{SL}` is N × the cast level; "your
+level" is the character's level; casting at level N costs N of the class
+resource, except Champion maneuvers (Will = half the level, rounded up).

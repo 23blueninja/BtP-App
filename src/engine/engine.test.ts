@@ -8,6 +8,9 @@ import { classAlignment, classEndurance, classTable, subclassesOf } from './clas
 import { derive } from './derive';
 import { dieLabel, stepDie, modDieFromPoints, formatDie, triangular } from './dice';
 import { levelUp, longRest, shortRest, takeDamage, freshPlay } from './play';
+import { castCost, exaltedState, maxCastLevel, scaleHtml, scaleText } from './scaling';
+import { getCastable } from '../content';
+import { classById } from '../data/classes';
 
 function build(over: Partial<Character> = {}): Character {
   return { ...newCharacter(), name: 'Test', ...over };
@@ -275,5 +278,64 @@ describe('class-defined spells and maneuvers', () => {
     const champ = derive(build({ classId: 'champion', subclass: 'the-throne', level: 2 }));
     expect(champ.spellLists.find((l) => l.def.id === 'exploits')!.granted.map((g) => g.name)).toEqual(['Smite']);
     expect(champ.spellLists.find((l) => l.def.id === 'granted')).toBeUndefined();
+  });
+});
+
+describe('cast-at-level scaling', () => {
+
+  it('resolves level expressions', () => {
+    const ctx = { level: 3, charLevel: 2 };
+    expect(scaleText('7{SL} Thermic damage.', ctx)).toBe('21 Thermic damage.');
+    expect(scaleText('5{SL} plus 4 Thermic damage.', ctx)).toBe('19 Thermic damage.');
+    expect(scaleText('Buffeted {SL} plus 1, Prone.', ctx)).toBe('Buffeted 4, Prone.');
+    expect(scaleText('Hindered {SL} minus 2.', ctx)).toBe('Hindered 1.');
+    expect(scaleText('target half {SL} creatures', ctx)).toBe('target 2 creatures');
+    expect(scaleText('Self, {SL} plus 2-space cone', ctx)).toBe('Self, 5-space cone');
+    expect(scaleText('2{SL}g Charged Citrine', ctx)).toBe('6g Charged Citrine');
+    expect(scaleText('Your level plus 5 Thermic damage.', ctx)).toBe('7 Thermic damage.');
+  });
+
+  it('applies Exalted entries by level', () => {
+    expect(exaltedState('Exalted (3rd)', 1, 2)).toEqual({ kind: 'at', level: 3, active: false });
+    expect(exaltedState('Exalted (3rd)', 1, 3)).toEqual({ kind: 'at', level: 3, active: true });
+    expect(exaltedState('Exalted (+1)', 1, 4)).toEqual({ kind: 'step', every: 1, times: 3 });
+    expect(exaltedState('Exalted (+2)', 1, 4)).toEqual({ kind: 'step', every: 2, times: 1 });
+  });
+
+  it('resolves Fire Mote at level 2', () => {
+    const mote = getCastable('spells/arcana/fire/fire-mote')!;
+    expect(mote).toBeTruthy();
+    const html = scaleHtml(getNode('spells/arcana/fire/fire-mote/attack-check')!.html!, 1, { level: 2, charLevel: 2 });
+    expect(html).toContain('<b class="calc">14</b> Thermic damage');
+  });
+
+  it('computes cast costs', () => {
+    const arc = classById.get('arcanist')!;
+    const champ = classById.get('champion')!;
+    const mote = getCastable('spells/arcana/fire/fire-mote')!;
+    const rage = getCastable('classes/berserker/berserker-maneuvers/rage')!;
+    expect(castCost(arc, mote, 2, true)).toEqual({ resource: 'Prisma', amount: 2 });
+    expect(castCost(champ, rage, 3, true)).toEqual({ resource: 'Will', amount: 2 });
+    expect(castCost(arc, getCastable('spells/arcana/fire/arcane-fire')!, 1, true)).toBeUndefined();
+    expect(maxCastLevel(arc, 1)).toBe(1);
+  });
+});
+
+describe('inventory pyramid', async () => {
+  const { layoutBulk } = await import('./inventory');
+  const item = (id: string, bulk: number, qty = 1) => ({ id, name: id, bulk, qty });
+
+  it('fills own rank, then lower ranks, and unlocks bonus rows with VIG', () => {
+    const l = layoutBulk([item('pack', 2, 3)], 0);
+    expect(l.rows[1].slots.filter((s) => s.item).length).toBe(2);
+    expect(l.rows[0].slots[0].item?.id).toBe('pack'); // third Bulk 2 item takes the Bulk 1 slot
+    expect(l.overflow).toHaveLength(0);
+    expect(l.rows[0].slots[1]).toMatchObject({ bonus: true, locked: true });
+    const strong = layoutBulk([item('pack', 2, 3), item('anvil', 1)], 1);
+    expect(strong.rows[0].slots.map((s) => s.item?.id)).toEqual(['anvil', 'pack']);
+  });
+
+  it('reports items that do not fit', () => {
+    expect(layoutBulk([item('a', 1), item('b', 1)], 0).overflow.map((i) => i.id)).toEqual(['b']);
   });
 });

@@ -1074,3 +1074,80 @@ input.num {
     color: #000;
   }
 }
+
+/* ---------- inventory pyramid & cast panel ---------- */
+.bulk-pyramid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.pyramids {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+  gap: 0.75rem;
+}
+.pyr-title {
+  margin: 0 0 0.3rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+}
+.pyr-row {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0.2rem;
+}
+.pyr-rank {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.pyr-slots {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+}
+.pyr-slot {
+  width: 2.7rem;
+  height: 1.8rem;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--bg-2);
+  font-size: 0.6rem;
+  line-height: 1.1;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  text-align: center;
+  word-break: break-word;
+  padding: 1px;
+}
+.pyr-slot.locked {
+  opacity: 0.35;
+}
+.pyr-slot.filled {
+  background: color-mix(in srgb, var(--accent) 25%, var(--panel));
+  border-color: var(--accent);
+}
+.notes-input {
+  width: 100%;
+  min-width: 8rem;
+}
+.cast-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+b.calc {
+  color: var(--accent-2);
+}
+.exalted.off {
+  opacity: 0.5;
+}
+.exalted.on dt {
+  color: var(--accent-2);
+}

@@ -10,6 +10,7 @@ import { derive, POINT_BUY_POOL, type Derived } from '../engine/derive';
 import { freshPlay } from '../engine/play';
 import { Collapsible, excerpt, FacetText, go, Html, Icon, RuleBlock, RuleLink, Stepper, TokenText } from './common';
 import { ChoicePicker, SpellListEditor } from './pickers';
+import { BulkPyramid } from './Inventory';
 
 export const STEPS = [
   { id: 'basics', label: 'Basics' },
@@ -722,6 +723,7 @@ export function Equipment({ c, d, update }: StepProps) {
 
       <h3>Inventory</h3>
       <InventoryEditor c={c} update={update} />
+      <BulkPyramid c={c} d={d} />
     </div>
   );
 }
@@ -831,6 +833,7 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
               <th>Item</th>
               <th>Bulk</th>
               <th>#</th>
+              <th>Notes</th>
               <th />
             </tr>
           </thead>
@@ -841,6 +844,15 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
                 <td>{it.bulk ?? '—'}</td>
                 <td>
                   <Stepper label="quantity" value={it.qty} min={0} onChange={(v) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, qty: v } : x)))} />
+                </td>
+                <td>
+                  <input
+                    className="notes-input"
+                    value={it.notes ?? ''}
+                    placeholder="Notes"
+                    aria-label={`Notes for ${it.name}`}
+                    onChange={(e) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, notes: e.target.value } : x)))}
+                  />
                 </td>
                 <td>
                   <button type="button" className="icon-btn" onClick={() => setItems((i) => i.filter((x) => x.id !== it.id))} aria-label={`Remove ${it.name}`}>

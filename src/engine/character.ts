@@ -8,6 +8,7 @@ export interface InventoryItem {
   qty: number;
   /** Bulk Rank (1–5); omitted for bulkless items. */
   bulk?: number;
+  notes?: string;
 }
 
 export interface WeaponEntry {
