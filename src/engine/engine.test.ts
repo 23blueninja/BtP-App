@@ -339,3 +339,21 @@ describe('inventory pyramid', async () => {
     expect(layoutBulk([item('a', 1), item('b', 1)], 0).overflow.map((i) => i.id)).toEqual(['b']);
   });
 });
+
+describe('Powerful Build', async () => {
+  const { layoutBulk } = await import('./inventory');
+  it('lets items on your person use a lower rank, except in a backpack', () => {
+    const d = derive(build({ ancestry: 'corpug' }));
+    expect(d.bulkShift).toBe(1);
+    const items = [
+      { id: 'pack', name: 'pack', bulk: 2, qty: 1 },
+      { id: 'stowed', name: 'stowed', bulk: 2, qty: 1, inBackpack: true },
+      { id: 'tiny', name: 'tiny', bulk: 5, qty: 1 },
+    ];
+    const l = layoutBulk(items, 0, d.bulkShift);
+    expect(l.rows[2].slots.some((s) => s.item?.id === 'pack')).toBe(true); // Bulk 2 -> rank 3
+    expect(l.rows[1].slots.some((s) => s.item?.id === 'stowed')).toBe(true); // unchanged
+    expect(l.rows[4].slots.some((s) => s.item?.id === 'tiny')).toBe(true); // capped at 5
+    expect(derive(build({ ancestry: 'human' })).bulkShift).toBe(0);
+  });
+});

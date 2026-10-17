@@ -130,6 +130,8 @@ export interface Derived {
   choices: ResolvedChoice[];
   spellLists: ResolvedList[];
   bulkSlots: { rank: number; slots: number }[];
+  /** Bulk Rank decrease for items on your person (Powerful Build). */
+  bulkShift: number;
   issues: string[];
 }
 
@@ -549,6 +551,7 @@ export function derive(c: Character): Derived {
     choices,
     spellLists,
     bulkSlots,
+    bulkShift: eff('bulkShift').reduce((sum, x) => sum + x.e.amount, 0),
     issues,
   };
 }

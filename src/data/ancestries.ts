@@ -8,7 +8,7 @@ const f = (contentId: string, name: string, effects: FacetDef['effects'] = []): 
 const nightVision = (id: string) => f(id, 'Night Vision', [{ kind: 'sense', name: 'Night Vision' }]);
 const extraEndurance = (id: string) => f(id, 'Extra Endurance', [{ kind: 'endurance', amount: 'twiceLevel' }]);
 const fast = (id: string) => f(id, 'Fast', [{ kind: 'movement', amount: 1 }]);
-const powerfulBuild = (id: string) => f(id, 'Powerful Build');
+const powerfulBuild = (id: string) => f(id, 'Powerful Build', [{ kind: 'bulkShift', amount: 1 }]);
 
 const soli = (light: AncestryDef['facets'][number]['name'], facets: (id: string) => FacetDef[]) => {
   const slug = light.toLowerCase();

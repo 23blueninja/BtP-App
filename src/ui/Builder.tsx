@@ -801,6 +801,7 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
   const [name, setName] = useState('');
   const [bulk, setBulk] = useState('');
   const items = c.equipment.inventory;
+  const shift = derive(c).bulkShift;
   const setItems = (fn: (i: typeof items) => typeof items) => update((x) => ({ ...x, equipment: { ...x.equipment, inventory: fn(x.equipment.inventory) } }));
   return (
     <div>
@@ -834,6 +835,7 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
               <th>Bulk</th>
               <th>#</th>
               <th>Notes</th>
+              {shift > 0 && <th title="Powerful Build only applies to items on your person">In backpack</th>}
               <th />
             </tr>
           </thead>
@@ -854,6 +856,16 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
                     onChange={(e) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, notes: e.target.value } : x)))}
                   />
                 </td>
+                {shift > 0 && (
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={!!it.inBackpack}
+                      aria-label={`${it.name} is in a backpack`}
+                      onChange={(e) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, inBackpack: e.target.checked } : x)))}
+                    />
+                  </td>
+                )}
                 <td>
                   <button type="button" className="icon-btn" onClick={() => setItems((i) => i.filter((x) => x.id !== it.id))} aria-label={`Remove ${it.name}`}>
                     ✕

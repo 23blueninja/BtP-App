@@ -9,6 +9,8 @@ export interface InventoryItem {
   /** Bulk Rank (1–5); omitted for bulkless items. */
   bulk?: number;
   notes?: string;
+  /** Stowed in a backpack rather than carried on your person. */
+  inBackpack?: boolean;
 }
 
 export interface WeaponEntry {
