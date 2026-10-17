@@ -30,8 +30,9 @@ Chrome on Android and choose **⋮ → Add to Home screen / Install app**. It th
 opens full-screen like a normal app and works offline. Characters are stored
 on that device; use Export/Import to move them between devices.
 
-Any static host works. Build command `npm run build`, output folder `dist`
-(e.g. Cloudflare Pages or Netlify connected to this repo, or GitHub Pages).
+The site is published to **https://archhenderson.github.io/BtP-App/** by
+`.github/workflows/deploy.yml` on every push to `main` (tests must pass first).
+One-time setup: repo **Settings → Pages → Source: GitHub Actions**.
 
 ## Development
 
