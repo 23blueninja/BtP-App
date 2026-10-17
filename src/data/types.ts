@@ -40,6 +40,8 @@ export type Effect =
   | { kind: 'tandem'; what: string; die: 'class' | Attr }
   | { kind: 'saveTandem'; attr: Attr | 'choice' }
   | { kind: 'noSlashingVulnerability' }
+  /** Bulk Rank of items carried on your person (not in a backpack) is decreased by `amount` (rank number goes up). */
+  | { kind: 'bulkShift'; amount: number }
   | { kind: 'actions'; categories: string[] }
   | { kind: 'spellList'; list: SpellListDef }
   | { kind: 'grant'; castable: string };

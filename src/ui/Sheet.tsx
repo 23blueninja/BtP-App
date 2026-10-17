@@ -7,7 +7,9 @@ import { derive, type Derived } from '../engine/derive';
 import { clampPlay, facetUseMax, heal, longRest, shortRest, takeDamage } from '../engine/play';
 import { ClassTableView, Equipment, WeaponTable } from './Builder';
 import { Collapsible, FacetText, go, Icon, RuleLink, Stepper, TokenText } from './common';
-import { CastableRow, SpellListEditor } from './pickers';
+import { SpellListEditor } from './pickers';
+import { CastRow } from './Cast';
+import { BulkPyramid } from './Inventory';
 
 type Update = (fn: (c: Character) => Character) => void;
 
@@ -253,7 +255,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
           <Experiences c={c} update={update} />
         </Box>
         <Box title="Inventory">
-          <BulkSummary c={c} d={d} />
+          <BulkPyramid c={c} d={d} />
         </Box>
       </div>
 
@@ -419,39 +421,6 @@ function Conditions({ p, setPlay }: { p: PlayState; setPlay: (fn: (p: PlayState)
   );
 }
 
-function BulkSummary({ c, d }: { c: Character; d: Derived }) {
-  const items = c.equipment.inventory;
-  return (
-    <div>
-      <table className="bulk">
-        <thead>
-          <tr>
-            <th>Bulk</th>
-            <th>Slots</th>
-            <th>Items</th>
-          </tr>
-        </thead>
-        <tbody>
-          {d.bulkSlots.map((b) => {
-            const here = items.filter((i) => i.bulk === b.rank);
-            return (
-              <tr key={b.rank}>
-                <td>{b.rank}</td>
-                <td>{b.slots}</td>
-                <td className="small">{here.map((i) => `${i.name}${i.qty > 1 ? ` ×${i.qty}` : ''}`).join(', ') || '—'}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      <p className="small muted">
-        Bulkless: {items.filter((i) => !i.bulk).map((i) => `${i.name}${i.qty > 1 ? ` ×${i.qty}` : ''}`).join(', ') || '—'} · Edit on the Equipment tab ·{' '}
-        <RuleLink id="equipment/bulk">Bulk rules</RuleLink>
-      </p>
-    </div>
-  );
-}
-
 function Experiences({ c, update }: { c: Character; update: Update }) {
   const [text, setText] = useState('');
   return (
@@ -610,6 +579,8 @@ function SpellsTab({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: 
   const known = d.spellLists.filter((l) => l.def.mode === 'known');
   const prepared = d.spellLists.filter((l) => l.def.mode === 'prepared');
   const [editing, setEditing] = useState<string | null>(null);
+  // Spells from the class itself spend class resources; others (e.g. ancestry gifts) don't.
+  const fromClass = (source: string) => source === d.cls?.name || source === d.subclassName || source === 'Facets';
   if (!known.length && !prepared.length && !d.resources.length) return <p className="muted">No spells or maneuvers.</p>;
   return (
     <div className="spells-tab">
@@ -673,7 +644,7 @@ function SpellsTab({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: 
             ) : ids.length ? (
               ids.map((id) => {
                 const cs = getCastable(id);
-                return cs ? <CastableRow key={id} c={cs} /> : null;
+                return cs ? <CastRow key={id} c={c} d={d} cs={cs} fromClass={fromClass(l.source)} setPlay={setPlay} /> : null;
               })
             ) : (
               <p className="muted">Nothing prepared yet.</p>
@@ -688,7 +659,7 @@ function SpellsTab({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: 
             {l.def.label} <span className="muted">({l.source})</span>
           </h3>
           {[...l.granted, ...l.selected].map((cs) => (
-            <CastableRow key={cs.id} c={cs} />
+            <CastRow key={cs.id} c={c} d={d} cs={cs} fromClass={fromClass(l.source)} setPlay={setPlay} />
           ))}
           {!l.granted.length && !l.selected.length && <p className="muted">None chosen — use Edit → Spells & Maneuvers.</p>}
         </section>

@@ -105,3 +105,25 @@ resistances of the same type **add together**.
 - Template sheet: Mod Die formula maps 5 points to d10 twice (6 → d12 missing);
   Movement is `3 + AGI`, while the rules grow it triangularly (+1, +3, +6…).
   The app follows the rules text.
+
+## Backlog (requested Oct 2026) — done
+
+1. **Inventory item notes.** Add an optional `notes` field to inventory items,
+   editable inline and shown on the sheet.
+2. **Visual inventory pyramid.** Draw Bulk ranks 1–5 as a pyramid of slots like
+   the Excel sheet (rank *n* has *n* slots, plus a bonus row of *n* slots
+   unlocked at *n* VIG). Items fill slots; locked bonus rows are greyed out;
+   over-capacity is flagged.
+3. **Cast-at-level calculator.** A level selector on each spell/maneuver
+   (base level up to the character's max) that resolves the text for that level:
+   - `7{SL}` → 7 × level, `{SL} plus 4`, `half {SL}`, `{SL}-space cone`,
+     `2{SL}g` components, conditions like `Burning {SL}`;
+   - applies Exalted (+1), (+2) and (Nth) entries for the chosen level;
+   - shows the cost (Prisma/Stamina/Will/Favor/Light/Wonder) and lets you
+     spend it from the tracker;
+   - shows the Check type and Mod Die (Spell/Maneuver Mod Die), with each
+     outcome (Success, Deadly Success, Failure…) as final numbers.
+
+Rules confirmed for the calculator: `N{SL}` is N × the cast level; "your
+level" is the character's level; casting at level N costs N of the class
+resource, except Champion maneuvers (Will = half the level, rounded up).

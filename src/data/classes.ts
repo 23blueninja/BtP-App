@@ -320,7 +320,6 @@ export const classes: ClassDef[] = [
         facetExtras: {
           amphibious: { effects: [{ kind: 'movementType', type: 'Swim', amount: 'movement' }] },
           'king-of-beasts': { effects: [{ kind: 'actions', categories: ['Combat'] }] },
-          'titanus-form': { effects: [{ kind: 'grant', castable: `${C}/primordial-souls/the-king/titanus-form/primordial-breath` }] },
         },
         spellLists: [
           {

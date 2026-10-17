@@ -10,6 +10,7 @@ import { derive, POINT_BUY_POOL, type Derived } from '../engine/derive';
 import { freshPlay } from '../engine/play';
 import { Collapsible, excerpt, FacetText, go, Html, Icon, RuleBlock, RuleLink, Stepper, TokenText } from './common';
 import { ChoicePicker, SpellListEditor } from './pickers';
+import { BulkPyramid } from './Inventory';
 
 export const STEPS = [
   { id: 'basics', label: 'Basics' },
@@ -722,6 +723,7 @@ export function Equipment({ c, d, update }: StepProps) {
 
       <h3>Inventory</h3>
       <InventoryEditor c={c} update={update} />
+      <BulkPyramid c={c} d={d} />
     </div>
   );
 }
@@ -799,6 +801,7 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
   const [name, setName] = useState('');
   const [bulk, setBulk] = useState('');
   const items = c.equipment.inventory;
+  const shift = derive(c).bulkShift;
   const setItems = (fn: (i: typeof items) => typeof items) => update((x) => ({ ...x, equipment: { ...x.equipment, inventory: fn(x.equipment.inventory) } }));
   return (
     <div>
@@ -831,6 +834,8 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
               <th>Item</th>
               <th>Bulk</th>
               <th>#</th>
+              <th>Notes</th>
+              {shift > 0 && <th title="Powerful Build only applies to items on your person">In backpack</th>}
               <th />
             </tr>
           </thead>
@@ -842,6 +847,25 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
                 <td>
                   <Stepper label="quantity" value={it.qty} min={0} onChange={(v) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, qty: v } : x)))} />
                 </td>
+                <td>
+                  <input
+                    className="notes-input"
+                    value={it.notes ?? ''}
+                    placeholder="Notes"
+                    aria-label={`Notes for ${it.name}`}
+                    onChange={(e) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, notes: e.target.value } : x)))}
+                  />
+                </td>
+                {shift > 0 && (
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={!!it.inBackpack}
+                      aria-label={`${it.name} is in a backpack`}
+                      onChange={(e) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, inBackpack: e.target.checked } : x)))}
+                    />
+                  </td>
+                )}
                 <td>
                   <button type="button" className="icon-btn" onClick={() => setItems((i) => i.filter((x) => x.id !== it.id))} aria-label={`Remove ${it.name}`}>
                     ✕

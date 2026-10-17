@@ -130,6 +130,8 @@ export interface Derived {
   choices: ResolvedChoice[];
   spellLists: ResolvedList[];
   bulkSlots: { rank: number; slots: number }[];
+  /** Bulk Rank decrease for items on your person (Powerful Build). */
+  bulkShift: number;
   issues: string[];
 }
 
@@ -441,7 +443,9 @@ export function derive(c: Character): Derived {
   const scInfo = cls ? subclassesOf(cls).find((s) => s.id === c.subclass) : undefined;
   scInfo?.extras.spellLists?.forEach((def) => listDefs.push({ def, source: scInfo.name }));
   eff('spellList').forEach((x) => listDefs.push({ def: x.e.list, source: x.source }));
-  const all: Castable[] = [...spells, ...maneuvers];
+  // Spells and maneuvers written inside a class description are exclusive to
+  // that class: they never appear in general pools.
+  const all: Castable[] = [...spells, ...maneuvers].filter((s) => !s.source);
   const spellLists: ResolvedList[] = listDefs
     .filter(({ def }) => (def.level ?? 1) <= level)
     .map(({ def, source }) => {
@@ -462,12 +466,17 @@ export function derive(c: Character): Derived {
       }
       return { def, source, count, pool, granted, selected };
     });
-  const grantedExtra = eff('grant')
-    .map((x) => getCastable(x.e.castable))
-    .filter(Boolean) as Castable[];
+  // ...and are known automatically once the character has the facet that
+  // defines them (unless a list above already counts them, like Rage).
+  const listed = new Set(spellLists.flatMap((l) => l.granted.map((g) => g.id)));
+  const facetIds = facets.filter((f) => f.contentId && !f.item).map((f) => f.contentId!);
+  const fromFacets = [...spells, ...maneuvers].filter((s) => s.source && facetIds.some((id) => s.id.startsWith(`${id}/`)));
+  const grantedExtra = [...fromFacets, ...(eff('grant').map((x) => getCastable(x.e.castable)).filter(Boolean) as Castable[])].filter(
+    (s, i, arr) => !listed.has(s.id) && arr.findIndex((x) => x.id === s.id) === i,
+  );
   if (grantedExtra.length) {
     spellLists.push({
-      def: { id: 'granted', label: 'Granted', mode: 'known', count: { base: grantedExtra.length }, pool: { kind: 'spell' } },
+      def: { id: 'granted', label: 'Class Spells & Maneuvers', mode: 'known', count: { base: grantedExtra.length }, pool: { kind: 'spell' } },
       source: 'Facets',
       count: grantedExtra.length,
       pool: [],
@@ -542,6 +551,7 @@ export function derive(c: Character): Derived {
     choices,
     spellLists,
     bulkSlots,
+    bulkShift: eff('bulkShift').reduce((sum, x) => sum + x.e.amount, 0),
     issues,
   };
 }
