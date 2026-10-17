@@ -2,7 +2,7 @@
 // Endurance, facets by level and the subclass list.
 import { getNode, type RuleNode } from '../content';
 import { classById } from '../data/classes';
-import { LIGHTS, type ClassDef, type FacetDef, type Light, type SubclassExtras } from '../data/types';
+import { LIGHTS, type ClassDef, type Effect, type FacetDef, type Light, type SubclassExtras } from '../data/types';
 
 export interface ClassRow {
   level: number;
@@ -80,12 +80,32 @@ export interface ResolvedFacet extends FacetDef {
 
 const slugOf = (id: string) => id.split('/').pop() ?? id;
 
+/**
+ * Alignment grants written in a facet's text, e.g. "You gain a level of Frost
+ * Alignment" or "a level of Flame, Frost, and Velvet Alignment".
+ */
+export function alignmentFromText(html: string | undefined): Effect[] {
+  const text = (html ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  const out: Effect[] = [];
+  for (const m of text.matchAll(/gains? a level of ([^.]*?)Alignment/gi)) {
+    const phrase = m[1];
+    if (/^an?\s*$/i.test(phrase.trim()) || /your choice/i.test(text.slice(m.index ?? 0, (m.index ?? 0) + m[0].length + 20))) {
+      out.push({ kind: 'alignment', light: 'choice' });
+      continue;
+    }
+    for (const l of LIGHTS) if (new RegExp(`\\b${l}\\b`).test(phrase)) out.push({ kind: 'alignment', light: l });
+  }
+  return out;
+}
+
 function facetsOf(node: RuleNode | undefined, extras: Record<string, Partial<FacetDef>> | undefined, source: string, level: number): ResolvedFacet[] {
   return (node?.children ?? [])
     .filter((c) => c.lvl !== undefined && c.lvl <= level)
     .map((c) => {
       const extra = extras?.[slugOf(c.id)] ?? {};
-      return { name: c.title, contentId: c.id, level: c.lvl!, source, key: c.id, ...extra };
+      const effects = [...(extra.effects ?? [])];
+      if (!effects.some((e) => e.kind === 'alignment')) effects.push(...alignmentFromText(c.html));
+      return { name: c.title, contentId: c.id, level: c.lvl!, source, key: c.id, ...extra, effects };
     });
 }
 

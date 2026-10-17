@@ -87,6 +87,13 @@ Phases 1–5 are implemented for levels 1–2. Rules updates: see README.
 
 ## Rules questions found while building
 
+Answers (Oct 2026): the facet is **Barbarous Light** (rules heading to fix);
+Incarnates use Feral and Instinctual; Thaumaturges always get Infernal and
+should also gain a Light from their Domain (Cosmos Domain doesn't yet — the
+app reads "You gain a level of X Alignment" from facet text, so a rules patch
+is picked up automatically); the app follows the rulebook over the sheet;
+resistances of the same type **add together**.
+
 - Berserker table lists **Barbarous Light**; the facet is **Feral Light**.
 - Gladiator table lists **Gladiator Maneuvers**; the facet is **Martial Maneuvers**.
 - Incarnate Maneuvers says Feral and Instinctual, then “(Instinctual and

@@ -230,3 +230,29 @@ describe('play', () => {
     expect(character.play.endurance).toBe(34);
   });
 });
+
+describe('rules clarifications', () => {
+  it('adds resistances of the same type from different sources', () => {
+    const c = build({
+      ancestry: 'soli',
+      subAncestry: 'flame',
+      classId: 'expert',
+      attributes: { method: 'pointBuy', pool: 12, base: { VIG: 2, AGI: 1, PER: 3, INT: 1, PRS: 0 }, bonus: [] },
+      equipment: { armor: { type: 'Medium', quality: 'Basic' }, weapons: [], inventory: [] },
+    });
+    // Sturdy Scales: ½ Class Bonus (1) + Medium armor: ½ AC value (2)
+    expect(derive(c).resistances).toContainEqual({ type: 'Slashing', value: 3 });
+  });
+
+  it('reads alignment grants from class and subclass facet text', () => {
+    const lights = (classId: string, subclass: string) =>
+      derive(build({ classId, subclass }))
+        .facets.flatMap((f) => (f.effects ?? []).filter((e) => e.kind === 'alignment').map((e) => (e.kind === 'alignment' ? e.light : '')))
+        .sort();
+    expect(lights('arcanist', 'kinesis-triumvirate')).toEqual(['Flame', 'Frost', 'Velvet']);
+    expect(lights('luminary', 'flaming-luminance')).toEqual(['Flame']);
+    expect(lights('incarnate', 'the-king')).toEqual(['Frost']);
+    // Class alignment (Infernal) comes from the class's Alignment section, not a facet.
+    expect(derive(build({ classId: 'thaumaturge', subclass: 'cosmos-domain' })).alignment.map((a) => a.light)).toEqual(['Infernal']);
+  });
+});

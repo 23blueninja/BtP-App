@@ -23,6 +23,16 @@ Characters are saved in the browser (localStorage) and can be exported/imported
 as JSON. Storage sits behind `CharacterStore` (`src/storage/storage.ts`) so
 accounts and cloud sync can be added later.
 
+## Installing on a phone
+
+The app is a Progressive Web App: once the built site is hosted, open its URL in
+Chrome on Android and choose **⋮ → Add to Home screen / Install app**. It then
+opens full-screen like a normal app and works offline. Characters are stored
+on that device; use Export/Import to move them between devices.
+
+Any static host works. Build command `npm run build`, output folder `dist`
+(e.g. Cloudflare Pages or Netlify connected to this repo, or GitHub Pages).
+
 ## Development
 
 ```sh

@@ -69,13 +69,6 @@ export const classes: ClassDef[] = [
       'kinesis-triumvirate': {
         facetExtras: {
           'kinetic-font': { uses: { count: 1, per: 'Long Rest' } },
-          'potential-conversion': {
-            effects: [
-              { kind: 'alignment', light: 'Flame' },
-              { kind: 'alignment', light: 'Frost' },
-              { kind: 'alignment', light: 'Velvet' },
-            ],
-          },
         },
         spellLists: [
           {
@@ -326,12 +319,7 @@ export const classes: ClassDef[] = [
       'the-king': {
         facetExtras: {
           amphibious: { effects: [{ kind: 'movementType', type: 'Swim', amount: 'movement' }] },
-          'king-of-beasts': {
-            effects: [
-              { kind: 'alignment', light: 'Frost' },
-              { kind: 'actions', categories: ['Combat'] },
-            ],
-          },
+          'king-of-beasts': { effects: [{ kind: 'actions', categories: ['Combat'] }] },
           'titanus-form': { effects: [{ kind: 'grant', castable: `${C}/primordial-souls/the-king/titanus-form/primordial-breath` }] },
         },
         spellLists: [
@@ -370,12 +358,7 @@ export const classes: ClassDef[] = [
     subclassExtras: {
       'flaming-luminance': {
         facetExtras: {
-          'enduring-warmth': {
-            effects: [
-              { kind: 'alignment', light: 'Flame' },
-              { kind: 'resistance', type: 'Thermic', amount: 'classBonus' },
-            ],
-          },
+          'enduring-warmth': { effects: [{ kind: 'resistance', type: 'Thermic', amount: 'classBonus' }] },
           eruption: { uses: { count: 1, per: 'Rest' } },
         },
         spellLists: [

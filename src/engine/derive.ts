@@ -356,12 +356,14 @@ export function derive(c: Character): Derived {
   }
 
   // ---- resistances ----
+  // Resistances of the same type from different sources add together.
   const resMap = new Map<string, number>();
-  for (const x of eff('resistance')) resMap.set(x.e.type, Math.max(resMap.get(x.e.type) ?? 0, sc(x.e.amount)));
-  if (armor?.type === 'Medium') resMap.set('Slashing', Math.max(resMap.get('Slashing') ?? 0, half(armorAc)));
+  const addRes = (type: string, v: number) => resMap.set(type, (resMap.get(type) ?? 0) + v);
+  for (const x of eff('resistance')) addRes(x.e.type, sc(x.e.amount));
+  if (armor?.type === 'Medium') addRes('Slashing', half(armorAc));
   if (armor?.type === 'Heavy') {
-    resMap.set('Slashing', Math.max(resMap.get('Slashing') ?? 0, armorAc));
-    resMap.set('Piercing', Math.max(resMap.get('Piercing') ?? 0, half(armorAc)));
+    addRes('Slashing', armorAc);
+    addRes('Piercing', half(armorAc));
   }
   const resistances = [...resMap.entries()].filter(([, v]) => v > 0).map(([type, value]) => ({ type, value }));
   const vuln = !armor && !eff('noSlashingVulnerability').length ? slashingVulnerability(vitalityMax) : '';
