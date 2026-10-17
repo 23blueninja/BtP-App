@@ -256,3 +256,24 @@ describe('rules clarifications', () => {
     expect(derive(build({ classId: 'thaumaturge', subclass: 'cosmos-domain' })).alignment.map((a) => a.light)).toEqual(['Infernal']);
   });
 });
+
+describe('class-defined spells and maneuvers', () => {
+  it('are excluded from general pools', () => {
+    const victor = derive(build({ classId: 'gladiator', subclass: 'victor' }));
+    expect(victor.spellLists.find((l) => l.def.id === 'maneuvers')!.pool.some((m) => m.name === 'Rage')).toBe(false);
+    const arcanist = derive(build({ classId: 'arcanist', subclass: 'kinesis-triumvirate' }));
+    expect(arcanist.spellLists.find((l) => l.def.id === 'cantrips')!.pool.some((s) => s.name === 'Primordial Breath')).toBe(false);
+  });
+
+  it('are granted with the facet that defines them', () => {
+    const granted = (level: number) =>
+      derive(build({ classId: 'incarnate', subclass: 'the-king', level })).spellLists.find((l) => l.def.id === 'granted')?.granted.map((g) => g.name) ?? [];
+    expect(granted(1)).toEqual([]);
+    expect(granted(2)).toEqual(['Primordial Breath']);
+    // Rage and Smite are already counted in their class lists, so not duplicated.
+    expect(derive(build({ classId: 'berserker', subclass: 'roaring-fervor' })).spellLists.find((l) => l.def.id === 'granted')).toBeUndefined();
+    const champ = derive(build({ classId: 'champion', subclass: 'the-throne', level: 2 }));
+    expect(champ.spellLists.find((l) => l.def.id === 'exploits')!.granted.map((g) => g.name)).toEqual(['Smite']);
+    expect(champ.spellLists.find((l) => l.def.id === 'granted')).toBeUndefined();
+  });
+});
