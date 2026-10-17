@@ -17,6 +17,7 @@ export function facetUseMax(f: ResolvedFacet, d: Derived): number {
 export function freshPlay(c: Character, d: Derived = derive(c)): PlayState {
   return {
     ...c.play,
+    initialized: true,
     endurance: d.enduranceMax,
     tempEndurance: 0,
     vitality: d.vitalityMax,

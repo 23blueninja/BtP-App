@@ -81,7 +81,20 @@ Implements the Level Up Checklist: Endurance, class table resources,
 new facets, attribute points, Hobby/Profession rank on odd levels,
 new spells/maneuvers.
 
-## Open items
-- Template sheet layout (Google Sheets export needed — link not reachable
-  from the build environment).
-- Class tables beyond level 2 (alpha rules cover levels 1–2).
+## Status
+
+Phases 1–5 are implemented for levels 1–2. Rules updates: see README.
+
+## Rules questions found while building
+
+- Berserker table lists **Barbarous Light**; the facet is **Feral Light**.
+- Gladiator table lists **Gladiator Maneuvers**; the facet is **Martial Maneuvers**.
+- Incarnate Maneuvers says Feral and Instinctual, then “(Instinctual and
+  Tactical)”. The app uses Feral and Instinctual.
+- Arcanist text says “Primacast” once; the action is Prismacast.
+- Thaumaturge’s Alignment section grants Infernal — intended, or the deity’s Light?
+- Luminary has no class Alignment (Flaming Luminance grants Flame).
+- Some table headers have typos (“Manuevers Known”, “Max Manevuer Level”).
+- Template sheet: Mod Die formula maps 5 points to d10 twice (6 → d12 missing);
+  Movement is `3 + AGI`, while the rules grow it triangularly (+1, +3, +6…).
+  The app follows the rules text.

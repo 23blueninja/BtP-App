@@ -23,6 +23,8 @@ export interface Condition {
 }
 
 export interface PlayState {
+  /** False until the character first rests to full (new characters). */
+  initialized: boolean;
   endurance: number;
   tempEndurance: number;
   vitality: number;
@@ -115,6 +117,7 @@ export const newId = uid;
 
 export function emptyPlay(): PlayState {
   return {
+    initialized: false,
     endurance: 0,
     tempEndurance: 0,
     vitality: 0,
