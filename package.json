@@ -1,0 +1,27 @@
+{
+  "name": "btp-character-builder",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "parse-rules": "node scripts/parse-rules.mjs rules/BtP-Alpha-Rules.md src/content/rules.json"
+  },
+  "dependencies": {
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "marked": "^15.0.12",
+    "typescript": "5.8",
+    "vite": "^6.4.4",
+    "vitest": "^3.2.7"
+  }
+}
