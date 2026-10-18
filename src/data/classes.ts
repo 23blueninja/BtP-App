@@ -138,7 +138,7 @@ export const classes: ClassDef[] = [
     subclassListId: `${C}/champions-causes`,
     facetExtras: {
       'apostles-light': { effects: [{ kind: 'vitality', amount: 'halfClassBonus' }] },
-      undaunted: { uses: { count: 1, per: 'Long Rest' } },
+      undaunted: { uses: { count: 1, per: 'Rest' } },
     },
     choices: [
       {
