@@ -2,9 +2,9 @@
   /* Always dark, like the rulebook; panels are slightly translucent so the
      prism grid shows around and faintly behind them. */
   --bg: #000;
-  --bg-2: rgba(16, 19, 33, 0.92);
-  --panel: rgba(22, 26, 44, 0.88);
-  --panel-2: rgba(36, 42, 70, 0.9);
+  --bg-2: rgba(7, 8, 12, 0.96);
+  --panel: rgba(9, 10, 15, 0.94);
+  --panel-2: rgba(24, 26, 36, 0.95);
   --border: #2e3658;
   --text: #e8eaf6;
   --muted: #9aa1c4;
@@ -1238,7 +1238,7 @@ b.calc {
     #e88a1a 1225px,
     #1fb84a 1400px
   );
-  animation: prism-drift 34s linear infinite;
+  animation: prism-drift 34s linear infinite reverse;
   will-change: transform;
 }
 @keyframes prism-drift {
