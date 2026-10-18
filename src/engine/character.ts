@@ -72,6 +72,14 @@ export interface PlayState {
   effects?: ActiveEffect[];
 }
 
+export interface SessionNote {
+  id: string;
+  title: string;
+  /** ISO date (yyyy-mm-dd) of the session. */
+  date: string;
+  body: string;
+}
+
 export interface Character {
   id: string;
   version: number;
@@ -127,6 +135,8 @@ export interface Character {
     notes: string;
   };
   experiences: string[];
+  /** Notes for each play session, newest added last. */
+  sessions: SessionNote[];
 
   equipment: {
     armor: { type: 'Light' | 'Medium' | 'Heavy'; quality: string } | null;
@@ -185,6 +195,7 @@ export function newCharacter(): Character {
     alignment: { situations: '', problems: '', people: '', picks: {} },
     details: { age: '', devotion: '', appearance: '', backstory: '', notes: '' },
     experiences: [],
+    sessions: [],
     equipment: { armor: null, weapons: [], inventory: [] },
     settings: { restRules: 'heroic' },
     play: emptyPlay(),
@@ -213,6 +224,7 @@ export function normalizeCharacter(raw: unknown): Character {
     spells: { ...c.spells },
     ageUps: c.ageUps ?? [],
     experiences: c.experiences ?? [],
+    sessions: c.sessions ?? (c.details?.notes ? [{ id: uid(), title: 'Earlier notes', date: (c.updatedAt ?? new Date().toISOString()).slice(0, 10), body: c.details.notes }] : []),
     version: CHARACTER_VERSION,
   };
 }

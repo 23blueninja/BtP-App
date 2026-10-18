@@ -406,3 +406,13 @@ describe('combat styles, Peerless Athlete and weapon properties', () => {
     expect([...new Set(missing)]).toEqual([]);
   });
 });
+
+describe('session notes', () => {
+  it('moves old single-page notes into a first session', async () => {
+    const { normalizeCharacter } = await import('./character');
+    const old = { ...newCharacter(), details: { ...newCharacter().details, notes: 'Met the Oblux.' }, sessions: undefined, updatedAt: '2026-10-01T10:00:00Z' };
+    const c = normalizeCharacter(old);
+    expect(c.sessions).toMatchObject([{ title: 'Earlier notes', date: '2026-10-01', body: 'Met the Oblux.' }]);
+    expect(normalizeCharacter({ ...old, sessions: [] }).sessions).toEqual([]);
+  });
+});

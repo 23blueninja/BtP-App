@@ -902,7 +902,8 @@ input.num {
 }
 .attr {
   display: grid;
-  grid-template-columns: 2rem 1fr auto;
+  /* Name above the symbol, then the die, then the details. */
+  grid-template-columns: 4.4rem 3.2rem minmax(0, 1fr);
   align-items: center;
   gap: 0.5rem;
   background: var(--panel-2);
@@ -913,8 +914,21 @@ input.num {
   width: 1.6rem;
   height: 1.6rem;
 }
+.attr-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  text-align: center;
+}
+.attr-badge .attr-name {
+  font-size: 0.78rem;
+}
 .attr-name {
   font-weight: 600;
+}
+.attr-desc {
+  line-height: 1.3;
 }
 .attr-die {
   font-size: 1.3rem;
@@ -1519,4 +1533,119 @@ input.pyr-input:focus {
   outline: none;
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+}
+
+/* ---------- session notes ---------- */
+.session-notes {
+  display: grid;
+  grid-template-columns: minmax(170px, 230px) minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: start;
+}
+.session-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.session-tree summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.2rem 0;
+}
+.session-tree ul {
+  margin: 0.1rem 0 0.3rem 0.6rem;
+  border-left: 1px solid var(--border);
+}
+.tree-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  width: 100%;
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0.3rem 0.5rem;
+  text-align: left;
+}
+.tree-item.active {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.session-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.session-editor .grow {
+  flex: 1;
+  min-width: 8rem;
+}
+@media (max-width: 640px) {
+  .session-notes {
+    grid-template-columns: 1fr;
+  }
+}
+.die-link {
+  font: inherit;
+  text-align: left;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+.die-link {
+  white-space: nowrap;
+}
+/* Weapons on phones: one card per weapon instead of a squeezed table. */
+@media (max-width: 640px) {
+  table.weapons thead {
+    display: none;
+  }
+  table.weapons tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      'name die dv'
+      'dmg dmg dmg'
+      'props props props';
+    column-gap: 0.9rem;
+    row-gap: 0.15rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  table.weapons td {
+    border: none;
+    padding: 0;
+  }
+  table.weapons .w-name {
+    grid-area: name;
+    font-weight: 600;
+  }
+  table.weapons .w-die {
+    grid-area: die;
+  }
+  table.weapons .w-dv {
+    grid-area: dv;
+  }
+  table.weapons .w-die::before,
+  table.weapons .w-dv::before {
+    content: attr(data-label) ' ';
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+  table.weapons .w-dmg {
+    grid-area: dmg;
+    color: var(--muted);
+  }
+  table.weapons .w-props {
+    grid-area: props;
+  }
+  table.weapons .w-remove {
+    position: absolute;
+    right: 0;
+  }
+  table.weapons tr:has(.w-remove) {
+    position: relative;
+    padding-right: 2rem;
+  }
 }

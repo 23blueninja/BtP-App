@@ -8,7 +8,7 @@ import { newId, type Character } from '../engine/character';
 import { classAlignment, classTable, subclassesOf } from '../engine/classInfo';
 import { derive, POINT_BUY_POOL, type Derived } from '../engine/derive';
 import { freshPlay } from '../engine/play';
-import { Collapsible, excerpt, FacetText, go, Html, Icon, RuleBlock, RuleLink, Stepper, TokenText } from './common';
+import { Collapsible, excerpt, FacetText, go, Html, Icon, Modal, RuleBlock, RuleLink, Stepper, TokenText } from './common';
 import { ChoicePicker, SpellListEditor } from './pickers';
 import { BulkPyramid } from './Inventory';
 
@@ -761,7 +761,7 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
               .filter(([a, n]) => a && d.attrs[a as Attr] && d.attrs[a as Attr].points < Number(n));
             return (
               <tr key={we.id}>
-                <td>
+                <td className="w-name">
                   {we.name}
                   {unmet && unmet.length > 0 && (
                     <div className="warn small" title="You have Disadvantage on Weapon Attack Checks without meeting the requirements.">
@@ -769,24 +769,32 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
                     </div>
                   )}
                 </td>
-                <td>{w ? <WeaponDie props={w.properties} d={d} /> : '—'}</td>
-                <td>
+                <td className="w-die" data-label="Mod Die">
+                  {w ? <WeaponDie name={we.name} props={w.properties} d={d} /> : '—'}
+                </td>
+                <td className="w-dv" data-label="DV">
                   {w?.dv} / {w?.deadlyDv}
                 </td>
-                <td>{w?.damage}</td>
-                <td className="small">
+                <td className="w-dmg">{w?.damage}</td>
+                <td className="w-props small">
                   {w?.properties.map((p, i) => {
                     const node = weaponPropertyNode(p);
                     return (
                       <span key={p}>
                         {i > 0 && ', '}
-                        {node ? <RuleLink id={node.id}>{p}</RuleLink> : <TokenText text={p} />}
+                        {node ? (
+                          <RuleLink id={node.id}>
+                            <TokenText text={p} />
+                          </RuleLink>
+                        ) : (
+                          <TokenText text={p} />
+                        )}
                       </span>
                     );
                   })}
                 </td>
                 {onRemove && (
-                  <td>
+                  <td className="w-remove">
                     <button type="button" className="icon-btn" onClick={() => onRemove(we.id)} aria-label={`Remove ${we.name}`}>
                       ✕
                     </button>
@@ -801,36 +809,59 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
   );
 }
 
-/** Mod Die choices for a weapon's Attack Checks, with Combat Style Tandem/Bolstered/notes. */
-function WeaponDie({ props, d }: { props: string[]; d: Derived }): ReactNode {
+/**
+ * Mod Die choices for a weapon's Attack Checks. The cell shows just the dice;
+ * tapping it opens what each die is (and Combat Style Tandem/Bolstered/notes).
+ */
+function WeaponDie({ name, props, d }: { name: string; props: string[]; d: Derived }): ReactNode {
+  const [open, setOpen] = useState(false);
   const has = (p: string) => props.some((x) => x.toLowerCase().startsWith(p.toLowerCase()));
   const ranged = has('Ranged') || has('Drawn');
-  const opts: string[] = [];
-  if (ranged) opts.push(`PER ${d.attrs.PER.label}`);
+  const attrOpt = (a: Attr) => ({ attr: a, dice: d.attrs[a].label, label: `${ATTR_NAMES[a]} Die` });
+  let opts: { attr?: Attr; dice: string; label: string }[] = [];
+  if (ranged) opts.push(attrOpt('PER'));
   else {
-    opts.push(`VIG ${d.attrs.VIG.label}`);
-    if (has('Deft')) opts.push(`AGI ${d.attrs.AGI.label}`);
-    if (has('Precise')) opts.push(`PER ${d.attrs.PER.label}`);
+    opts.push(attrOpt('VIG'));
+    if (has('Deft')) opts.push(attrOpt('AGI'));
+    if (has('Precise')) opts.push(attrOpt('PER'));
   }
+  const classOpt = d.cls?.id === 'gladiator' ? { dice: d.classDie, label: `${d.cls.dieName} Die` } : undefined;
+  if (classOpt) opts.push(classOpt);
   const mods = d.weaponMods.filter((m) => has(m.property) && !(m.melee && ranged));
-  const classDie = d.cls ? `${d.cls.dieName} ${d.classDie}` : '';
-  if (d.cls?.id === 'gladiator') opts.push(classDie);
   // A Combat Style Tandem rolls the Attribute Die with the Martial Die and keeps the
   // higher, so it replaces rolling either of those dice alone.
-  const tandems = mods.filter((m) => m.tandem).map((m) => m.tandem!);
-  const shown = tandems.length
-    ? [...tandems.map((a) => `${a} ${d.attrs[a].label} / ${classDie}`), ...opts.filter((o) => o !== classDie && !tandems.some((a) => o.startsWith(`${a} `)))]
-    : opts;
+  const tandems = mods.filter((m) => m.tandem);
+  if (tandems.length && classOpt) {
+    opts = [
+      ...tandems.map((m) => ({ attr: m.tandem, dice: `${d.attrs[m.tandem!].label} / ${classOpt.dice}`, label: `${ATTR_NAMES[m.tandem!]} Die in Tandem with ${classOpt.label} (${m.source})` })),
+      ...opts.filter((o) => o !== classOpt && !tandems.some((m) => m.tandem === o.attr)),
+    ];
+  }
+  const others = mods.filter((m) => !m.tandem);
   return (
     <>
-      {[...new Set(shown)].join(' or ')}
-      {mods.map((m) => (
-        <div key={m.source + m.property} className="muted small">
-          {m.tandem && `Tandem (${m.source})`}
-          {m.bolster && `Bolstered ${m.bolster} (${m.source})`}
-          {m.note && `${m.source}: ${m.note}`}
-        </div>
-      ))}
+      <button type="button" className="link die-link" onClick={() => setOpen(true)} title="What these dice are">
+        {opts.map((o) => o.dice).join(' or ')}
+        {others.some((m) => m.bolster) && <sup>+</sup>}
+      </button>
+      {open && (
+        <Modal title={`${name}: Mod Die`} onClose={() => setOpen(false)}>
+          <p className="small muted">Roll one of these as the Mod Die for this weapon's Attack Checks.</p>
+          <dl className="defs">
+            {opts.map((o) => (
+              <div key={o.label}>
+                <dt>{o.dice}</dt>
+                <dd>{o.label}</dd>
+              </div>
+            ))}
+          </dl>
+          {others.map((m) => (
+            <p key={m.source} className="small">
+              <strong>{m.source}:</strong> {m.bolster ? `Attack Checks with this weapon are Bolstered ${m.bolster}.` : m.note}
+            </p>
+          ))}
+        </Modal>
+      )}
     </>
   );
 }
