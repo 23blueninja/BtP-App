@@ -1332,9 +1332,29 @@ textarea.full {
 .sheet-header h1,
 .sheet .box-title {
   background-image: var(--heading-gradient);
+  /* The gradient holds 4 copies of the band cycle (GRADIENT_CYCLES); at 4x the
+     element's size each heading shows one cycle. Sliding from 2/3 to 1/3
+     moves exactly one cycle down-right, staying inside the middle copies so
+     the loop is seamless. */
+  background-size: 400% 400%;
+  animation: heading-flow 8s linear infinite;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+@keyframes heading-flow {
+  from {
+    background-position: 66.667% 66.667%;
+  }
+  to {
+    background-position: 33.333% 33.333%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet-header h1,
+  .sheet .box-title {
+    animation: none;
+  }
 }
 .sheet .box-title {
   /* Size the gradient to the text, not the full box width. */
