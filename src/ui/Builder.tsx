@@ -236,7 +236,7 @@ function Attributes({ c, d, update }: StepProps) {
       )}
       {at.method !== 'manual' && (
         <p className={`points-left ${remaining === 0 ? 'ok' : remaining < 0 ? 'over' : ''}`}>
-          {remaining} of {at.pool} points remaining · cap {d.pointBuy.cap} per Attribute at level {d.level}
+          {remaining} of {at.pool} points remaining · cap {d.pointBuy.cap} per Attribute at level {d.level}, including bonus points
         </p>
       )}
       <div className="attr-grid">
@@ -250,7 +250,8 @@ function Attributes({ c, d, update }: StepProps) {
               label={a}
               value={at.base[a]}
               min={at.method === 'manual' ? -6 : -1}
-              max={at.method === 'manual' ? 12 : d.pointBuy.cap}
+              // The cap applies to the final points, so bonus points count toward it.
+              max={at.method === 'manual' ? 12 : at.base[a] + d.pointBuy.cap - d.attrs[a].points}
               onChange={(v) => {
                 if (at.method !== 'manual' && v > at.base[a] && remaining <= 0) return;
                 setBase(a, v);
@@ -283,9 +284,17 @@ function Attributes({ c, d, update }: StepProps) {
               }
             >
               <option value="">Choose…</option>
-              {ATTRS.map((a) => (
-                <option key={a}>{a}</option>
-              ))}
+              {ATTRS.map((a) => {
+                // Points without this bonus slot: an Attribute already at the cap can't take it.
+                const without = d.attrs[a].points - (at.bonus[i] === a ? 1 : 0);
+                const atCap = at.method !== 'manual' && without >= d.pointBuy.cap;
+                return (
+                  <option key={a} value={a} disabled={atCap}>
+                    {a}
+                    {atCap ? ` (at the cap of ${d.pointBuy.cap})` : ''}
+                  </option>
+                );
+              })}
             </select>
           ))}
         </fieldset>
