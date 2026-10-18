@@ -657,7 +657,8 @@ export function Equipment({ c, d, update }: StepProps) {
   const setEq = (fn: (e: Character['equipment']) => Character['equipment']) => update((x) => ({ ...x, equipment: fn(x.equipment) }));
   return (
     <div className="form">
-      <h3>Armor</h3>
+      <section className="box">
+      <h3 className="box-title">Armor</h3>
       <div className="row wrap">
         <label>
           Type
@@ -693,8 +694,10 @@ export function Equipment({ c, d, update }: StepProps) {
       <p className="muted">
         Armor training: {d.armorTraining}. <RuleLink id="equipment/armor">Armor rules</RuleLink>
       </p>
+      </section>
 
-      <h3>Weapons</h3>
+      <section className="box">
+      <h3 className="box-title">Weapons</h3>
       <p className="muted">
         Weapon training: {d.weaponTraining}. <RuleLink id="equipment/weapons/weapon-properties">Weapon properties</RuleLink>
       </p>
@@ -723,10 +726,13 @@ export function Equipment({ c, d, update }: StepProps) {
         </button>
       </div>
       <WeaponTable c={c} d={d} onRemove={(id) => setEq((q) => ({ ...q, weapons: q.weapons.filter((w) => w.id !== id) }))} />
+      </section>
 
-      <h3>Inventory</h3>
+      <section className="box">
+      <h3 className="box-title">Inventory</h3>
       <InventoryEditor c={c} update={update} />
       <BulkPyramid c={c} d={d} />
+      </section>
     </div>
   );
 }

@@ -527,13 +527,15 @@ function Features({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: (
   return (
     <div className="features">
       {d.cls && (
-        <Collapsible title={<strong>{d.cls.name} Class Table</strong>}>
-          <ClassTableView c={c} />
-        </Collapsible>
+        <section className="box">
+          <Collapsible title={<strong>{d.cls.name} Class Table</strong>}>
+            <ClassTableView c={c} />
+          </Collapsible>
+        </section>
       )}
       {groups.map((g) => (
-        <section key={g}>
-          <h3>{g}</h3>
+        <section key={g} className="box">
+          <h3 className="box-title">{g}</h3>
           {d.facets
             .filter((f) => f.source === g)
             .map((f) => {
@@ -567,8 +569,8 @@ function Features({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: (
         .map((ch) => {
           const o = ch.options.find((x) => x.id === ch.selected)!;
           return (
-            <section key={ch.id}>
-              <h3>{ch.label}</h3>
+            <section key={ch.id} className="box">
+              <h3 className="box-title">{ch.label}</h3>
               <Collapsible title={<strong>{o.name}</strong>}>
                 <FacetText contentId={o.contentId} item={o.item} />
               </Collapsible>
@@ -635,9 +637,9 @@ function SpellsTab({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: 
       {prepared.map((l) => {
         const ids = p.prepared[l.def.id] ?? [];
         return (
-          <section key={l.def.id}>
+          <section key={l.def.id} className="box">
             <div className="list-head">
-              <h3>
+              <h3 className="box-title">
                 {l.def.label} <span className="muted">({ids.length} / {l.count})</span>
               </h3>
               <button type="button" onClick={() => setEditing(editing === l.def.id ? null : l.def.id)}>
@@ -659,8 +661,8 @@ function SpellsTab({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: 
       })}
 
       {known.map((l) => (
-        <section key={`${l.source}-${l.def.id}`}>
-          <h3>
+        <section key={`${l.source}-${l.def.id}`} className="box">
+          <h3 className="box-title">
             {l.def.label} <span className="muted">({l.source})</span>
           </h3>
           {[...l.granted, ...l.selected].map((cs) => (
@@ -680,21 +682,18 @@ function Notes({ c, update }: { c: Character; update: Update }) {
   const set = (k: keyof Character['details'], v: string) => update((x) => ({ ...x, details: { ...x.details, [k]: v } }));
   return (
     <div className="form">
-      <label>
-        Session notes
-        <textarea rows={10} value={c.details.notes} onChange={(e) => set('notes', e.target.value)} />
-      </label>
-      <label>
-        Appearance
-        <textarea rows={3} value={c.details.appearance} onChange={(e) => set('appearance', e.target.value)} />
-      </label>
-      <label>
-        Backstory
-        <textarea rows={6} value={c.details.backstory} onChange={(e) => set('backstory', e.target.value)} />
-      </label>
-      <p className="muted">
-        Age: {c.details.age || '—'} · Devotion: {c.details.devotion || 'None'}
-      </p>
+      <Box title="Session notes">
+        <textarea className="full" rows={10} value={c.details.notes} onChange={(e) => set('notes', e.target.value)} aria-label="Session notes" />
+      </Box>
+      <Box title="Appearance">
+        <textarea className="full" rows={3} value={c.details.appearance} onChange={(e) => set('appearance', e.target.value)} aria-label="Appearance" />
+      </Box>
+      <Box title="Backstory">
+        <textarea className="full" rows={6} value={c.details.backstory} onChange={(e) => set('backstory', e.target.value)} aria-label="Backstory" />
+        <p className="muted small">
+          Age: {c.details.age || '—'} · Devotion: {c.details.devotion || 'None'}
+        </p>
+      </Box>
     </div>
   );
 }
