@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { allNodes, armorQualities, getNode, weapons } from '../content';
+import { allNodes, armorQualities, getNode, weaponPropertyNode, weapons } from '../content';
 import { ancestries, ancestryById } from '../data/ancestries';
 import { backgroundById, backgrounds, heritageById, heritageFacets } from '../data/backgrounds';
 import { classes } from '../data/classes';
@@ -731,7 +731,7 @@ export function Equipment({ c, d, update }: StepProps) {
       <section className="box">
       <h3 className="box-title">Inventory</h3>
       <InventoryEditor c={c} update={update} />
-      <BulkPyramid c={c} d={d} />
+      <BulkPyramid c={c} d={d} update={update} />
       </section>
     </div>
   );
@@ -769,13 +769,21 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
                     </div>
                   )}
                 </td>
-                <td>{w ? weaponDie(w.properties, d) : '—'}</td>
+                <td>{w ? <WeaponDie props={w.properties} d={d} /> : '—'}</td>
                 <td>
                   {w?.dv} / {w?.deadlyDv}
                 </td>
                 <td>{w?.damage}</td>
                 <td className="small">
-                  <TokenText text={w?.properties.join(', ') ?? ''} />
+                  {w?.properties.map((p, i) => {
+                    const node = weaponPropertyNode(p);
+                    return (
+                      <span key={p}>
+                        {i > 0 && ', '}
+                        {node ? <RuleLink id={node.id}>{p}</RuleLink> : <TokenText text={p} />}
+                      </span>
+                    );
+                  })}
                 </td>
                 {onRemove && (
                   <td>
@@ -793,17 +801,38 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
   );
 }
 
-function weaponDie(props: string[], d: Derived): ReactNode {
+/** Mod Die choices for a weapon's Attack Checks, with Combat Style Tandem/Bolstered/notes. */
+function WeaponDie({ props, d }: { props: string[]; d: Derived }): ReactNode {
   const has = (p: string) => props.some((x) => x.toLowerCase().startsWith(p.toLowerCase()));
+  const ranged = has('Ranged') || has('Drawn');
   const opts: string[] = [];
-  if (has('Ranged')) opts.push(`PER ${d.attrs.PER.label}`);
+  if (ranged) opts.push(`PER ${d.attrs.PER.label}`);
   else {
     opts.push(`VIG ${d.attrs.VIG.label}`);
     if (has('Deft')) opts.push(`AGI ${d.attrs.AGI.label}`);
     if (has('Precise')) opts.push(`PER ${d.attrs.PER.label}`);
   }
-  if (d.cls?.id === 'gladiator') opts.push(`Martial ${d.classDie}`);
-  return opts.join(' or ');
+  const mods = d.weaponMods.filter((m) => has(m.property) && !(m.melee && ranged));
+  const classDie = d.cls ? `${d.cls.dieName} ${d.classDie}` : '';
+  if (d.cls?.id === 'gladiator') opts.push(classDie);
+  // A Combat Style Tandem rolls the Attribute Die with the Martial Die and keeps the
+  // higher, so it replaces rolling either of those dice alone.
+  const tandems = mods.filter((m) => m.tandem).map((m) => m.tandem!);
+  const shown = tandems.length
+    ? [...tandems.map((a) => `${a} ${d.attrs[a].label} / ${classDie}`), ...opts.filter((o) => o !== classDie && !tandems.some((a) => o.startsWith(`${a} `)))]
+    : opts;
+  return (
+    <>
+      {[...new Set(shown)].join(' or ')}
+      {mods.map((m) => (
+        <div key={m.source + m.property} className="muted small">
+          {m.tandem && `Tandem (${m.source})`}
+          {m.bolster && `Bolstered ${m.bolster} (${m.source})`}
+          {m.note && `${m.source}: ${m.note}`}
+        </div>
+      ))}
+    </>
+  );
 }
 
 export function InventoryEditor({ c, update }: { c: Character; update: Update }) {

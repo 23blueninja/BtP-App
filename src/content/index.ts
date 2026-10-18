@@ -220,12 +220,18 @@ for (const id of ['equipment/weapons/weapons-tables', 'equipment/weapons/weapons
       deadlyDv,
       damage,
       requirements: requirements === '—' ? '' : requirements,
-      properties: !props || props === '—' ? [] : props.split(/,\s*(?![^()]*\))/).map((p) => p.trim()),
+      properties: !props || props === '—' ? [] : props.split(/[,.]\s*(?![^()]*\))/).map((p) => p.trim()).filter(Boolean),
     });
   }
 }
 
 export const weaponProperties: RuleNode[] = getNode('equipment/weapons/weapon-properties')?.children ?? [];
+
+const propKey = (s: string) => s.split('(')[0].trim().toLowerCase();
+/** The rules section for a weapon property as written in the weapons table, e.g. "Drawn (8/30)". */
+export function weaponPropertyNode(prop: string): RuleNode | undefined {
+  return weaponProperties.find((n) => propKey(n.title) === propKey(prop));
+}
 
 export type ArmorType = 'Light' | 'Medium' | 'Heavy';
 export interface ArmorQuality {

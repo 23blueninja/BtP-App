@@ -39,6 +39,10 @@ export type Effect =
   | { kind: 'bolster'; what: string; amount: Scaled }
   | { kind: 'tandem'; what: string; die: 'class' | Attr }
   | { kind: 'saveTandem'; attr: Attr | 'choice' }
+  /** Save Checks of this Attribute are Empowered. */
+  | { kind: 'saveEmpowered'; attr: Attr }
+  /** Attack Checks with weapons that have `property` (melee only when `melee`). */
+  | { kind: 'weapon'; property: string; melee?: boolean; tandem?: Attr; bolster?: number; note?: string }
   | { kind: 'noSlashingVulnerability' }
   /** Bulk Rank of items carried on your person (not in a backpack) is decreased by `amount` (rank number goes up). */
   | { kind: 'bulkShift'; amount: number }
