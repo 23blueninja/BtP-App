@@ -72,13 +72,16 @@ export function Collapsible({ title, children, defaultOpen = false, extra }: { t
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className={`collapsible ${open ? 'open' : ''}`}>
-      <button type="button" className="collapsible-head" onClick={() => setOpen(!open)} aria-expanded={open}>
-        <span className="chevron" aria-hidden>
-          ▸
-        </span>
-        <span className="collapsible-title">{title}</span>
+      {/* Extras (use pips, Use buttons) sit beside the toggle, not inside it. */}
+      <div className="collapsible-row">
+        <button type="button" className="collapsible-head" onClick={() => setOpen(!open)} aria-expanded={open}>
+          <span className="chevron" aria-hidden>
+            ▸
+          </span>
+          <span className="collapsible-title">{title}</span>
+        </button>
         {extra && <span className="collapsible-extra">{extra}</span>}
-      </button>
+      </div>
       {open && <div className="collapsible-body">{children}</div>}
     </div>
   );

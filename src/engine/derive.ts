@@ -332,7 +332,7 @@ export function derive(c: Character): Derived {
     movementBreakdown.push(`→ 0 (${cm.from.join(', ')})`);
   } else if (cm.value) {
     movement += cm.value;
-    movementBreakdown.push(`${cm.value} ${cm.from.join(', ')}`.replace(/^-/, '−'));
+    movementBreakdown.push(`${cm.value > 0 ? '+' : '−'}${Math.abs(cm.value)} ${cm.from.join(', ')}`);
   }
   movement = Math.max(0, movement);
   const movementTypes = eff('movementType').map((x) => ({
@@ -395,6 +395,7 @@ export function derive(c: Character): Derived {
   const resMap = new Map<string, number>();
   const addRes = (type: string, v: number) => resMap.set(type, (resMap.get(type) ?? 0) + v);
   for (const x of eff('resistance')) addRes(x.e.type, sc(x.e.amount));
+  for (const e of c.play.effects ?? []) for (const r of e.resistances ?? []) addRes(r.type, r.amount);
   if (armor?.type === 'Medium') addRes('Slashing', half(armorAc));
   if (armor?.type === 'Heavy') {
     addRes('Slashing', armorAc);

@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { getNode, type Castable, type RuleNode } from '../content';
-import type { Character, PlayState } from '../engine/character';
+import type { Character } from '../engine/character';
 import type { Derived } from '../engine/derive';
 import { calculateCastable } from '../engine/exalted';
 import { castCost, maxCastLevel, scaleText } from '../engine/scaling';
+import { activationsFor, type UseRequest } from '../engine/activations';
+import { parseCost } from '../engine/costs';
+import { UseButton } from './Activate';
 import { Collapsible, TokenText } from './common';
 import { CastableDetails } from './pickers';
 
@@ -16,25 +19,23 @@ function flatHtml(node: RuleNode, depth = 5): string {
 
 /**
  * A spell or maneuver on the sheet: pick the level to cast/execute at, see the
- * text with every scaling value resolved, and spend the class resource.
+ * text with every scaling value resolved, and cast it (spending AP and the
+ * class resource, and applying its effects).
  */
 export function CastRow({
   c,
   d,
   cs,
   fromClass,
-  setPlay,
 }: {
   c: Character;
   d: Derived;
   cs: Castable;
   fromClass: boolean;
-  setPlay: (fn: (p: PlayState) => PlayState) => void;
 }) {
   const base = cs.level;
   const max = maxCastLevel(d.cls, d.level);
   const [level, setLevel] = useState(Math.max(base, 1));
-  const [msg, setMsg] = useState('');
   const [view, setView] = useState<'calc' | 'orig'>('calc');
   const node = getNode(cs.id);
   const scalable = base > 0;
@@ -51,18 +52,26 @@ export function CastRow({
     .map((t) => scaleText(t!, { level: castLevel, charLevel: d.level }))
     .join(' · ');
 
-  const cast = () => {
-    if (!cost || !res) {
-      setMsg(`${cs.kind === 'spell' ? 'Cast' : 'Executed'} ${cs.name}${scalable ? ` at ${ordinal(level)} level` : ''}.`);
-      return;
-    }
-    setPlay((p) => {
-      const next = { ...p, resources: { ...p.resources, [cost.resource]: (p.resources[cost.resource] ?? 0) + cost.amount } };
-      if (d.cls?.id === 'arcanist' && cs.kind === 'spell') next.trackers = { ...p.trackers, Prismaburn: (p.trackers.Prismaburn ?? 0) + level };
-      return next;
-    });
-    const burn = d.cls?.id === 'arcanist' && cs.kind === 'spell' ? `, Prismaburned ${level}` : '';
-    setMsg(`${cs.kind === 'spell' ? 'Cast' : 'Executed'} at ${ordinal(level)} level: ${res.mode === 'limit' ? 'applied' : 'spent'} ${cost.amount} ${cost.resource}${burn}.`);
+  // Casting spends the Cast Time's AP, the class resource and (Arcanists) Prismaburn, then applies any effects.
+  const burns = d.cls?.id === 'arcanist' && cs.kind === 'spell' && !!cost;
+  const req: UseRequest = {
+    key: cs.id,
+    name: cs.name,
+    cost: parseCost(cs.fields['Cast Time'] ?? cs.fields['Execution Time']),
+    def: activationsFor(cs.id)[0],
+    sl: castLevel,
+    extra: {
+      apply: (p) => {
+        let next = p;
+        if (cost && res) next = { ...next, resources: { ...next.resources, [cost.resource]: (next.resources[cost.resource] ?? 0) + cost.amount } };
+        if (burns) next = { ...next, trackers: { ...next.trackers, Prismaburn: (next.trackers.Prismaburn ?? 0) + level } };
+        return next;
+      },
+      log: [
+        `${cs.kind === 'spell' ? 'Cast' : 'Executed'} ${cs.name}${scalable ? ` at ${ordinal(level)} level` : ''}.`,
+        ...(cost && res ? [`${res.mode === 'limit' ? 'Applied' : 'Spent'} ${cost.amount} ${cost.resource}${burns ? `, Prismaburned ${level}` : ''}.`] : []),
+      ],
+    },
   };
 
   return (
@@ -97,11 +106,8 @@ export function CastRow({
             {res && ` · ${available} ${res.mode === 'limit' ? 'left in limit' : 'available'}`}
           </span>
         )}
-        <button type="button" className="primary" onClick={cast} disabled={!canAfford}>
-          {cs.kind === 'spell' ? 'Cast' : 'Execute'}
-        </button>
+        <UseButton req={req} primary label={cs.kind === 'spell' ? 'Cast' : 'Execute'} disabled={!canAfford} />
       </div>
-      {msg && <p className="ok-text small">{msg}</p>}
       <div className="castable-meta">
         <TokenText text={meta} />
       </div>

@@ -15,6 +15,11 @@ the tabletop RPG by 23BLUENINJA. Alpha Rules © 2026 23BLUENINJA — All Rights 
   Dying, Radiance and Rest Charge pips, class resources (Stamina, Will, Wonder,
   Prisma, Light, Favor), trackers (Prismaburn, Indebted), facet uses, conditions,
   Short/Long Rests with a per-character **Heroic / Gritty** toggle.
+- **Turns & actions** — AP tracker with Start/End Turn; conditions feed Check
+  modifiers, AC and Movement; Use/Cast buttons spend AP (with Basic CAP),
+  resources and uses, and apply effects such as healing, Temporary Endurance,
+  temporary AP and Active Effects (Rage, Titanus Form, Embolden…). Mechanics
+  for activations live in `src/engine/activations.ts`.
 - **Level-up flow** following the Level Up Checklist.
 - **Rules reference** — every section, spell, maneuver, action and condition,
   searchable.
@@ -30,7 +35,7 @@ Chrome on Android and choose **⋮ → Add to Home screen / Install app**. It th
 opens full-screen like a normal app and works offline. Characters are stored
 on that device; use Export/Import to move them between devices.
 
-The site is published to **https://archhenderson.github.io/BtP-App/** by
+The site is published to **https://23blueninja.github.io/BtP-App/** by
 `.github/workflows/deploy.yml` on every push to `main` (tests must pass first).
 One-time setup: repo **Settings → Pages → Source: GitHub Actions**.
 

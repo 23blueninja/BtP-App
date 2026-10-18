@@ -25,6 +25,26 @@ export interface Condition {
   level?: number;
 }
 
+/** A temporary effect from an activated facet, spell or maneuver (e.g. Rage). */
+export interface ActiveEffect {
+  id: string;
+  name: string;
+  /** When it ends on its own; 'manual' effects are removed by hand (or a rest). */
+  ends: 'startOfTurn' | 'endOfTurn' | 'rest' | 'longRest' | 'manual';
+  /** Bolstered levels for Checks of some Attributes (Save Checks only when `save`). */
+  checks?: { attrs: Attr[] | 'all'; save?: boolean; bolstered: number }[];
+  ac?: number;
+  movement?: number;
+  resistances?: { type: string; amount: number }[];
+  notes?: string[];
+  /** Temporary AP you regain at the end of each of your turns (Embolden). */
+  tempApEachTurn?: number;
+  /** Temporary Endurance gained at the start of each of your turns (Invigorate). */
+  tempEnduranceEachTurn?: number;
+  /** Class resource regained at the end of each of your turns (Titanus Form). */
+  resourceEachTurn?: { name: string; amount: number };
+}
+
 export interface PlayState {
   /** False until the character first rests to full (new characters). */
   initialized: boolean;
@@ -48,7 +68,8 @@ export interface PlayState {
   ap?: number;
   tempAp?: number;
   /** Whether it is currently your turn. */
-  turn?: { active: boolean; noApRegain?: boolean };
+  turn?: { active: boolean; noApRegain?: boolean; uses?: Record<string, number> };
+  effects?: ActiveEffect[];
 }
 
 export interface Character {
