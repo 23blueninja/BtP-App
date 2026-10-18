@@ -1,6 +1,6 @@
 // Offline support: the app shell is cached on first visit and refreshed in the
 // background. Hashed build assets never change, so they are served cache-first.
-const CACHE = 'btp-v1';
+const CACHE = 'btp-v2';
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './index.html', './manifest.webmanifest', './icon-192.png'])));
