@@ -1304,9 +1304,9 @@ textarea.full {
   width: 100%;
 }
 
-/* White borders on containers (table lines and controls keep --border). */
+/* Grey borders on containers (table lines and controls keep --border). */
 :root {
-  --box-border: #fff;
+  --box-border: #808080;
 }
 .box,
 .builder-content,
