@@ -1154,3 +1154,43 @@ b.calc {
 .attr-final strong {
   white-space: nowrap;
 }
+.view-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0.2rem 0 0.4rem;
+}
+.view-toggle button {
+  border: none;
+  border-radius: 0;
+  background: none;
+  font-size: 0.85em;
+  padding: 0.25em 0.8em;
+  color: var(--muted);
+}
+.view-toggle button.active {
+  background: var(--accent);
+  color: #fff;
+}
+.ex-add {
+  color: var(--accent-2);
+  font-weight: 600;
+}
+.exalted-notes h5 {
+  margin: 0.6rem 0 0.2rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.exalted-notes .merged dd {
+  color: var(--muted);
+  font-style: italic;
+}
+.exalted-notes .merged dt {
+  color: var(--accent-2);
+}
+.exalted-notes.later {
+  opacity: 0.6;
+}

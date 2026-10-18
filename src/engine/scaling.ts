@@ -58,11 +58,16 @@ export function exaltedState(label: string, base: number, level: number): Exalte
   return { kind: 'at', level: at, active: level >= at };
 }
 
-/** Rules HTML resolved for the casting level, with Exalted entries marked active/inactive. */
-export function scaleHtml(html: string, base: number, ctx: ScaleCtx): string {
+/** Rules HTML with level expressions resolved to highlighted numbers. */
+export function resolveHtml(html: string, ctx: ScaleCtx): string {
   let s = resolve(html.replace(SL_SPAN, '{SL}'), ctx);
   s = s.replace(new RegExp(OPEN, 'g'), '<b class="calc">').replace(new RegExp(CLOSE, 'g'), '</b>');
-  s = s.replace(/\{SL\}/g, '<span class="ic ic-SL" role="img" aria-label="SL" title="SL"></span>');
+  return s.replace(/\{SL\}/g, '<span class="ic ic-SL" role="img" aria-label="SL" title="SL"></span>');
+}
+
+/** Rules HTML resolved for the casting level, with Exalted entries marked active/inactive. */
+export function scaleHtml(html: string, base: number, ctx: ScaleCtx): string {
+  const s = resolveHtml(html, ctx);
   return s.replace(/<div><dt>(.*?)<\/dt>/g, (whole, dt: string) => {
     const st = exaltedState(dt.replace(/<[^>]+>/g, ''), base, ctx.level);
     if (!st) return whole;
