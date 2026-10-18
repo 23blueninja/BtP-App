@@ -1656,3 +1656,39 @@ input.pyr-input:focus {
     padding-right: 2rem;
   }
 }
+
+/* ---------- builder: fields that still need a choice ---------- */
+.needs {
+  outline: 2px solid var(--warn);
+  outline-offset: 3px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--warn) 7%, transparent);
+}
+.needs input,
+.needs select {
+  border-color: var(--warn);
+}
+tr.needs {
+  outline: none;
+  background: none;
+}
+tr.needs input {
+  box-shadow: 0 0 0 1px var(--warn);
+}
+.step-todo {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  margin-left: 0.3rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--warn);
+  color: #000;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.issues li a,
+.issues-list li a {
+  color: var(--accent);
+}
