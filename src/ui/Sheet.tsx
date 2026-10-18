@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { basicActions, conditions as conditionDefs, getNode, getCastable, type RuleNode } from '../content';
 import { ancestryById } from '../data/ancestries';
 import { ATTRS, ATTR_NAMES, RANK_DIE } from '../data/types';
-import type { Character, PlayState } from '../engine/character';
+import { newId, type Character, type PlayState, type SessionNote } from '../engine/character';
 import { derive, type Derived } from '../engine/derive';
 import { clampPlay, facetUseMax, heal, longRest, shortRest, takeDamage } from '../engine/play';
 import { AP_MAX, CONDITION_RULES, addCondition, describeCheck, endTurn, startTurn } from '../engine/conditions';
@@ -257,22 +257,31 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
         </Box>
       </div>
 
+      {/* Weapons get a full-width row: the table needs the space most. */}
+      <div className="wide-row">
+        <Box title="Weapons">
+          <WeaponTable c={c} d={d} />
+        </Box>
+      </div>
+
       <div className="col">
         <Box title="Attributes">
           <div className="attrs">
             {ATTRS.map((a) => (
               <div key={a} className="attr">
-                <div className="attr-icon">
-                  <Icon name={a} />
-                </div>
-                <div>
+                <div className="attr-badge">
                   <div className="attr-name">{ATTR_NAMES[a]}</div>
-                  <div className="muted small">
-                    {d.attrs[a].points} points{d.attrs[a].sources.length > 1 && ` (${d.attrs[a].sources.join(' ')})`}
-                    {d.attrs[a].dieNote && ` · ${d.attrs[a].dieNote}`}
+                  <div className="attr-value">
+                    <span className="attr-icon">
+                      <Icon name={a} />
+                    </span>
+                    <span className="attr-die">{d.attrs[a].label}</span>
                   </div>
                 </div>
-                <div className="attr-die">{d.attrs[a].label}</div>
+                <div className="attr-desc muted small">
+                  {d.attrs[a].points} points{d.attrs[a].sources.length > 1 && ` (${d.attrs[a].sources.join(' ')})`}
+                  {d.attrs[a].dieNote && ` · ${d.attrs[a].dieNote}`}
+                </div>
               </div>
             ))}
           </div>
@@ -342,9 +351,6 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
         </Box>
         <Box title="Hobbies">
           <SkillList slots={d.skillSlots.filter((s) => s.kind === 'hobby')} />
-        </Box>
-        <Box title="Weapons">
-          <WeaponTable c={c} d={d} />
         </Box>
         <Box title="Experiences">
           <Experiences c={c} update={update} />
@@ -930,12 +936,86 @@ function SpellsTab({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: 
   );
 }
 
+/** Today as yyyy-mm-dd in the local time zone. */
+const localDate = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+const monthLabel = (date: string) => new Date(`${date}T12:00:00`).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+const dayLabel = (date: string) => new Date(`${date}T12:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+
+/** Session notes as a tree (month → session); pick one to read or edit it. */
+function SessionNotes({ c, update }: { c: Character; update: Update }) {
+  const sessions = c.sessions;
+  const [openId, setOpenId] = useState<string | null>(sessions.at(-1)?.id ?? null);
+  const open = sessions.find((s) => s.id === openId);
+  const setSessions = (fn: (s: SessionNote[]) => SessionNote[]) => update((x) => ({ ...x, sessions: fn(x.sessions) }));
+  const patch = (id: string, p: Partial<SessionNote>) => setSessions((s) => s.map((n) => (n.id === id ? { ...n, ...p } : n)));
+  // Newest first, grouped by month.
+  const sorted = [...sessions].sort((a, b) => b.date.localeCompare(a.date) || sessions.indexOf(b) - sessions.indexOf(a));
+  const months = [...new Set(sorted.map((s) => s.date.slice(0, 7)))];
+  return (
+    <div className="session-notes">
+      <div className="session-tree">
+        <button
+          type="button"
+          className="primary"
+          onClick={() => {
+            const note: SessionNote = { id: newId(), title: `Session ${sessions.length + 1}`, date: localDate(), body: '' };
+            setSessions((s) => [...s, note]);
+            setOpenId(note.id);
+          }}
+        >
+          + New session
+        </button>
+        {months.length === 0 && <p className="muted small">No sessions yet.</p>}
+        {months.map((m) => (
+          <details key={m} open>
+            <summary>{monthLabel(`${m}-01`)}</summary>
+            <ul className="plain">
+              {sorted
+                .filter((s) => s.date.startsWith(m))
+                .map((s) => (
+                  <li key={s.id}>
+                    <button type="button" className={`tree-item ${s.id === openId ? 'active' : ''}`} onClick={() => setOpenId(s.id)}>
+                      <span>{s.title || 'Untitled'}</span>
+                      <span className="muted small">{dayLabel(s.date)}</span>
+                    </button>
+                  </li>
+                ))}
+            </ul>
+          </details>
+        ))}
+      </div>
+      {open ? (
+        <div className="session-editor">
+          <div className="row wrap">
+            <input className="grow" value={open.title} onChange={(e) => patch(open.id, { title: e.target.value })} aria-label="Session title" placeholder="Title" />
+            <input type="date" value={open.date} onChange={(e) => e.target.value && patch(open.id, { date: e.target.value })} aria-label="Session date" />
+            <button
+              type="button"
+              className="danger"
+              onClick={() => {
+                if (!confirm(`Delete "${open.title || 'Untitled'}"? This cannot be undone.`)) return;
+                setSessions((s) => s.filter((n) => n.id !== open.id));
+                setOpenId(null);
+              }}
+            >
+              Delete
+            </button>
+          </div>
+          <textarea className="full" rows={14} value={open.body} onChange={(e) => patch(open.id, { body: e.target.value })} aria-label="Session notes" placeholder="What happened this session…" />
+        </div>
+      ) : (
+        sessions.length > 0 && <p className="muted session-editor">Pick a session to read or edit it.</p>
+      )}
+    </div>
+  );
+}
+
 function Notes({ c, update }: { c: Character; update: Update }) {
   const set = (k: keyof Character['details'], v: string) => update((x) => ({ ...x, details: { ...x.details, [k]: v } }));
   return (
     <div className="form">
       <Box title="Session notes">
-        <textarea className="full" rows={10} value={c.details.notes} onChange={(e) => set('notes', e.target.value)} aria-label="Session notes" />
+        <SessionNotes c={c} update={update} />
       </Box>
       <Box title="Appearance">
         <textarea className="full" rows={3} value={c.details.appearance} onChange={(e) => set('appearance', e.target.value)} aria-label="Appearance" />

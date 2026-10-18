@@ -446,12 +446,12 @@ Spell Attack Checks refer to Attack Checks called for by a spell. Spell Attack C
 When your PC does anything that affects an area (called an **Area of Effect**, or AOE) such as casting a spell that makes a line of flame, they will make a DC Check, which is a special Check made by rolling only your Mod Die, then adding 10 to the result. Each affected creature then makes a Save Check using the Attribute specified in the effect. DC Checks can have Advantage or Disadvantage for the purpose of other effects, such as *Radiance*, but are unaffected by those modifiers.
 
 ### Save Checks
-When your PC is targeted by a harmful effect or faced with a dangerous situation, such as a giant bolder falling from the ceiling, they will make a Save Check. A Save Check always specifies the Attribute it targets, meaning you use that Attribute’s Mod Die as the Mod Die for the Check. When you make your character, the Class you choose will list certain Attribute Save Checks you can roll in Tandem with your Class Die.
+When your PC is targeted by a harmful effect or faced with a dangerous situation, such as a giant boulder falling from the ceiling, they will make a Save Check. A Save Check always specifies the Attribute it targets, meaning you use that Attribute’s Mod Die as the Mod Die for the Check. When you make your character, the Class you choose will list certain Attribute Save Checks you can roll in Tandem with your Class Die.
 
 The DC of a Save Check is determined by the effect that caused it. Beating the DC of a Save Check by 5 or more is called a **Complete Success**, and often results in avoiding any harmful effects entirely, while failing by 5 or more is called a **Deadly Failure**, with deadly effects to match.
 
 ### Skill Checks
-When you PC tries to interact with the world in any way not covered by the other Checks, they will make one of the three types of Skill Checks: **Attribute**, **Basic**, or **Trained**. The DC of a Skill Check is determined by the PM, as are the effects of Success and Failure, including **Complete Success** and **Complete Failure**, if your roll at least 5 above or below.
+When your PC tries to interact with the world in any way not covered by the other Checks, they will make one of the three types of Skill Checks: **Attribute**, **Basic**, or **Trained**. The DC of a Skill Check is determined by the PM, as are the effects of Success and Failure, including **Complete Success** and **Complete Failure**, if your roll at least 5 above or below.
 
 
 ![](https://i.imgur.com/hd3lq4V.png){position:absolute,top:0,left:0,opacity:0.5,width:100%}
@@ -616,7 +616,7 @@ When you roll **Initiative**, you gain $[AP] equal to your $[AP] Maximum, which 
 Outside an **Encounter**, you generally don’t track $[AP].
 
 #### Temporary Action Points
-Some facets can grant temporary $[AP], which is not contrained by your $[AP] maximum and typically disappears at the end of the turn.
+Some facets can grant temporary $[AP], which is not constrained by your $[AP] maximum and typically disappears at the end of the turn.
 
 ### Reactions & Triggers
 When an Action's cost includes the **Reaction** tag (for example “Reaction, 1 $[AP]”), it will also list a **Trigger**. Triggers can be any set of circumstances, and you can only use a Reaction when the Trigger occurs. You can only use one Reaction in response to a given Trigger, even if you have multiple Reactions that share the same Trigger.
@@ -1363,7 +1363,7 @@ Damage is the most common thing to be halved, but in general, the default rule w
 Entities can have **Immunity** to one or more damage types. If something would take damage of a type it has Immunity to, it instead takes no damage. Entities can also have Immunity to Conditions. If you would gain a Condition you are immune to, you instead don't, though you can still be targeted by effects that cause the condition.
 
 #### Resistance
-Most entities have Resistance to one or more damage types. Damage Resistances have a level, and each time something takes damage of a type it has Resistance to, the damage is reduced by that level. For example, if a creature with Thermic Resistance 3 takes 5 Thermic damage, it would be reduced by 3, and the creature would take 2 damage.
+Most entities have Resistance to one or more damage types. Damage Resistances have a level, and each time something takes damage of a type it has Resistance to, the damage is reduced by that level. For example, if a creature with Thermic Resistance 3 takes 5 Thermic damage, it would be reduced by 3, and the creature would take 2 damage. Resistances to the same damage type from different sources add together.
 
 Entities can also have Resistance to Conditions, which work similarly and reduce the level of the received condition by the level of their Resistance to it.
 
@@ -1471,7 +1471,7 @@ If you have any *Endurance* when you make a Survival Save, you do so at Advantag
 **Success** :: You fall Unconscious.
 **Complete Success** :: Your Dying level reduces by 1, and you wake up if you are Unconscious, so long as another effect is not keeping you Unconscious.
 **Critical Success** :: As a Complete Success, and you regain 1 *Endurance* if you have none.
-**Failure** :: You fall Unconscious and your Dying level increase by 1.
+**Failure** :: You fall Unconscious and your Dying level increases by 1.
 **Deadly Failure** :: You fall Unconscious and lose 1 *Vitality*. After gaining the Dying condition from losing your *Vitality*, your Dying level increases by 1.
 **Critical Failure** :: As a Deadly Failure, but you lose 2 Vitality instead of 1.
 }}
@@ -1633,7 +1633,7 @@ You are on fire. You are Numbed X and take 3X Thermic damage when you gain this 
 
 Immunity to Thermic damage prevents this Condition.
 
-#### Defeaned
+#### Deafened
 You can’t hear, and suffer the effects below.
 
 :
@@ -1738,7 +1738,7 @@ You are paralyzed, and suffer the below effects.
 **Vulnerable** :: Your $[AGI] and $[PER] Checks are automatically Complete Failures.
 }}
 
-When you start your turn, it ends immediately, you don’t regain any $[AP], and the level of this Condition reduces by 1.
+When you start your turn, your turn ends immediately, you don’t regain any $[AP], and the level of this Condition reduces by 1.
 
 #### Poisoned X
 You are poisoned. You take X Somatic damage at the start of your turn. You are also Sickened half of X, rounded down.
@@ -1747,7 +1747,7 @@ Every minute, make a $[VIG] Save Check against a DC of 10 plus X. On a Success, 
 
 Immunity to Somatic damage prevents this Condition.
 
-#### Possesed X
+#### Possessed X
 Your mind is taken by chaotic forces, and you suffer the below effects.
 
 :
@@ -2196,7 +2196,7 @@ Short, sturdy bone spikes protrude from every one of a corpug's joints, giving t
 
 \column
 
-***Powerful Build.*** The Bulk Rank of items you carry on your person (not in a backpack) is decreased by 1. Both DV's of your Unarmed Strikes also get a bonus equal to your $[VIG] points.
+***Powerful Build.*** The Bulk Rank of items you carry on your person (not in a backpack) is decreased by 1 (minimum 5). Both DV's of your Unarmed Strikes also get a bonus equal to your $[VIG] points.
 :
 ***Resilient Body.*** You have Somatic Resistance equal to your Class Bonus.
 
@@ -2404,7 +2404,7 @@ As an ursine praedan, your features resemble those of the mighty bear. You gain 
 :
 ***Extra Vitality.*** You gain an additional *Vitality*.
 :
-***Powerful Build.*** The Bulk Rank of items you carry on your person (not in a backpack) is decreased by 1. Both DV’s of your Unarmed Strikes also get a bonus equal to your $[VIG] points, including with your Bear Claws.
+***Powerful Build.*** The Bulk Rank of items you carry on your person (not in a backpack) is decreased by 1 (minimum 5). Both DV’s of your Unarmed Strikes also get a bonus equal to your $[VIG] points, including with your Bear Claws.
 
 ### Soli
 First of the sapients and children of Primadeus, the soli stand as regal arbiters of the World Prism.
@@ -2485,7 +2485,7 @@ As a soma soli, your scales are a range of teal and aquamarine colors. You gain 
 :
 ***Raging Soul.*** You gain a level of Soma Alignment.
 :
-***Powerful Build.*** The Bulk Rank of items you carry on your person (not in a backpack) is decreased by 1. Both DV’s of your Unarmed Strikes also get a bonus equal to your $[VIG] points.
+***Powerful Build.*** The Bulk Rank of items you carry on your person (not in a backpack) is decreased by 1 (minimum 5). Both DV’s of your Unarmed Strikes also get a bonus equal to your $[VIG] points.
 :
 ***Strong.*** Your $[VIG] Attribute Checks are Bolstered 1.
 :
@@ -2630,7 +2630,7 @@ The first time you gain a Strong Alignment, whether at character creation or lat
 :
 ***Fast.*** Your *Movement* increases by 1 space.
 :
-***Powerful Build.*** The Bulk Rank of items you carry on your person (not in a backpack) is decreased by 1. Both DV’s of your Unarmed Strikes also get a bonus equal to your $[VIG] points, including with your Charged Tusks.
+***Powerful Build.*** The Bulk Rank of items you carry on your person (not in a backpack) is decreased by 1 (minimum 5). Both DV’s of your Unarmed Strikes also get a bonus equal to your $[VIG] points, including with your Charged Tusks.
 
 \column
 
@@ -3189,7 +3189,7 @@ You know one 1st-level maneuver of your choice from the types you can learn (Fer
 
 Your ferocity is so intense, it siphons Soma Light into your body. For the duration, you can’t cast spells or Sustain other effects, and you gain the benefits below.
 :
-- ***$[VIG] Checks.*** our $[VIG] Checks are bolstered $[SL].
+- ***$[VIG] Checks.*** Your $[VIG] Checks are Bolstered $[SL].
   
 - ***Movement.*** Your *Movement* increases by $[SL].
   
@@ -3199,7 +3199,7 @@ Your ferocity is so intense, it siphons Soma Light into your body. For the durat
 
 You can’t spend additional *Stamina* to execute this Maneuver at a higher level as normal. Instead, each time you Sustain this maneuver you may spend 1 *Stamina* to increase its level by 1, up to your Max Maneuver Level.
 
-### Feral Light < lvl 1 >
+### Barbarous Light < lvl 1 >
 Your body is an instrument of destruction, granting you the benefits below.
 :
 - ***Unarmed Strikes.*** When you Unarmed Strike, your body has the Pushing property, its DV equals your $[VIG] Points, and its Deadly DV equals twice that amount.
@@ -3364,9 +3364,9 @@ Your mission comes before everything, including yourself. On your turn you can s
 
 :
 
-- ***Press On.*** You regain *Endurance* equal to 10 times your Champion Bonus
+- ***Press On.*** You regain *Endurance* equal to 10 times your Champion Bonus.
 
-- ***Overcome.*** Perform a Glorious Exploit without spending any *Will* ($[AP] is spent as normal). The Exploit is performed at one level above your Max Exploit Level if its a spell, or two above if its a maneuver.
+- ***Overcome.*** Perform a Glorious Exploit without spending any *Will* ($[AP] is spent as normal). The Exploit is performed at one level above your Max Exploit Level if it's a spell, or two above if it's a maneuver.
 
 :
 
@@ -3761,7 +3761,7 @@ Choose your preferred approach to solving dangerous problems from those listed b
 You quickly assess your surroundings for the best positioning. Stepping and Taking Cover cost 1 $[AP] for you.
 
 #### Plot
-You see your oppoents moves before they do. On your turn, you can spend all of your remaining $[AP]. You can then spend 1 $[AP] to take a Reaction at any point before you next turn. When you do, you gain temporary $[AP] equal to the $[AP] spent and can take any number of Actions in a row. Any unspent temporary $[AP] disappears when you finish taking Actions.
+You see your opponents' moves before they do. On your turn, you can spend all of your remaining $[AP]. You can then spend 1 $[AP] to take a Reaction at any point before you next turn. When you do, you gain temporary $[AP] equal to the $[AP] spent and can take any number of Actions in a row. Any unspent temporary $[AP] disappears when you finish taking Actions.
 
 #### Retort
 You respond to new situations at a moments notice. At the end of your turn, you can state a Trigger as if you were Preparing an action. If the Trigger occurs, you can take any Action with a base $[AP] cost of 2 or less as if it were a Reaction in response to the Trigger. 
@@ -3875,7 +3875,7 @@ Masters of weaponry in all forms and trained to fight until they drop, gladiator
 |       | Gladiator |                                                 | Martial |         | Manuevers | Max Manevuer |
 | Level | Bonus     | Facets                                          | Die     | Stamina | Known     | Level        |
 |:-----:|:--:|:-------------------------------------------------------|:-------:|:-------:|:---------:|:------------:|
-|  1st  | +2 | Martial Training, Gladiator Maneuvers, Fighter's Light |  1d6    |    3    |     3     |      1st     |
+|  1st  | +2 | Martial Training, Martial Maneuvers, Fighter's Light |  1d6    |    3    |     3     |      1st     |
 |  2nd  | +2 | Action Flare, Combat Style                             |  1d6    |    4    |     4     |      1st     |
 <!--|  3rd  | +3 | Efficient Strikes                                    |  1d6    |    3    |     3     |      2nd     |
 |  4th  | +3 | Training Facet, Unyielding, Adventurer Facet         |  1d8    |    3    |     4     |      2nd     |
@@ -3971,7 +3971,7 @@ Choose a creature you can sense within your $[PER] Radius that you haven't Sized
 \page
 
 ### Action Flare < lvl 2 >
-On your turn, you can can choose to gain temporary $[AP] equal to your Gladiator Bonus. When you do, you regain expended *Stamina* equal to half your Gladiator Bonus, and the CAP for all of your Actions resets. Any unspent temporary $[AP] disappears at the end of your turn.
+On your turn, you can choose to gain temporary $[AP] equal to your Gladiator Bonus. When you do, you regain expended *Stamina* equal to half your Gladiator Bonus, and the CAP for all of your Actions resets. Any unspent temporary $[AP] disappears at the end of your turn.
 
 Once you use this facet, you must finish a Rest before you can do so again. You gain an additional use of this facet between Rests at 8th level.
 
@@ -4292,13 +4292,13 @@ Once you Channel a leveled spell, you can’t Channel that spell again until you
 ### Incarnate Maneuvers < lvl 1 >
 Your enhanced senses allow you to execute **Feral** and **Instinctual** maneuvers by spending ***Stamina***. You start with a maximum of 3 *Stamina*, and your maximum increases each level, as shown in the Stamina column of the Incarnate Class Table. When you execute a maneuver, you must spend *Stamina* equal to the maneuver’s level. You regain expended *Stamina* when you finish a Rest.
 
-Choose two 1st-level maneuvers of the types you can learn (Instinctual and Tactical) as your initial maneuvers. You learn an additional maneuver each level as shown in the Maneuvers Known column of the Incarnate Class Table. The maximum maneuver level you're allowed to learn is shown in the Max Maneuver Level column on that table as well.
+Choose two 1st-level maneuvers of the types you can learn (Feral and Instinctual) as your initial maneuvers. You learn an additional maneuver each level as shown in the Maneuvers Known column of the Incarnate Class Table. The maximum maneuver level you're allowed to learn is shown in the Max Maneuver Level column on that table as well.
 
 ### Primeval Light < lvl 1 >
 The primeval savagery of your primordial grants you the facets below.
 
 #### Ferocious Strikes
-You can replace your $[VIG] Die with your Primordial Die when you Unarmed Strike (it's still a $[VIG] Check). If you do, the DV equals your half your Incarnate Bonus, and the Deadly DV is your Incarnate Bonus.
+You can replace your $[VIG] Die with your Primordial Die when you Unarmed Strike (it's still a $[VIG] Check). If you do, the DV equals half your Incarnate Bonus, and the Deadly DV is your Incarnate Bonus.
 
 #### Primeval Force
 The first time on each of your turns that you make a Successful Unarmed Strike, you deal additional Sonic damage to the target and gain *Temporary Endurance* equal to your $[PRS] Points.
@@ -5964,7 +5964,7 @@ Listed in the table below are the details of all weapons available to PCs. Each 
 |{{font-size:1.3em,margin-top:0.3em,margin-bottom:0.3em,color:cyan **Bows** }} ||||||
 | Longbow                  |       0       |          1          |       Piercing       |     PER 2     | Ranged (15/60), Drawn(3-5 $[AP]), Two-Handed, Ammo (Arrow) |
 | Recurve Bow              |       1       |          2          |       Piercing       | VIG 2, PER 2  | Ranged (30/120), Drawn(2-4 $[AP]), Heavy, Two-Handed, Ammo (Arrow) |
-| Greatbow                 |       2       |          4          |       Piercing       | VIG 3, PER 2  | Ranged (30/120), Drawn (3-5 $[AP], inclusive of Massive penalty), Massive, Two-Handed. Ammo (Greatarrow) |
+| Greatbow                 |       2       |          4          |       Piercing       | VIG 3, PER 2  | Ranged (30/120), Drawn (3-5 $[AP], inclusive of Massive penalty), Massive, Two-Handed, Ammo (Greatarrow) |
 |{{font-size:1.3em,margin-top:0.3em,margin-bottom:0.3em,color:cyan **Crossbows** }} ||||||
 | Hand Crossbow            |       1       |          3          |       Piercing       |     PER 2     | Ranged (6/25), Light, Ammo (Bolt), Reload (1 $[AP]) |
 | Arbalest                 |       3       |          6          |       Piercing       | VIG 2, PER 2  | Ranged (20/80), Heavy, Two-Handed, Ammo (Bolt), Reload (2 $[AP]) |
@@ -6295,7 +6295,7 @@ You prepare to take a hit. Before resolving the triggering Attack Check, you gai
 :
 {{left
 **Exalted (3rd)** :: The triggering Attack Check is Hindered $[SL] minus 2.
-**Exalted (5th)** :: The Temporary Endurance you gain becomes 6$[SL].
+**Exalted (5th)** :: The Temporary Endurance you gain becomes one roll of your Mod Die plus 6$[SL].
 }}
 
 #### Brute Strength
@@ -7248,7 +7248,7 @@ You siphon Ice Prisma from your surroundings into a ward against cold. Touch a c
 **Components** :: Spoken, Two Hands, 1$[SL]g Powdered Aquamarine
 **Duration** :: Instant
 
-Releasing the Powered Aquamarine in a cloud around yourself, you expand the shattered gems into a suit of ice armor. You take 5$[SL] arctic damage and gain 25$[SL] *Temporary Endurance*.
+Releasing the Powdered Aquamarine in a cloud around yourself, you expand the shattered gems into a suit of ice armor. You take 5$[SL] arctic damage and gain 25$[SL] *Temporary Endurance*.
 
 Exalted (4th) You gain 30$[SL] *Temporary Endurance*, instead of 25$[SL].
 
@@ -7985,7 +7985,7 @@ You rapidly swirl a large amount of Arc Prisma into a violent updraft on the gro
 
 Using your arcane knowledge of Blood Prisma, you manipulate a minor amount of it in one of the ways described below.
 :
-##### Exanguinate
+##### Exsanguinate
 You exert your will upon the Prism to release a ray of raw Blood Prisma, compelling its target to kneel. Make an Attack Check against the $[PRS] of a creature you can sense within range. Add the value of your Mod Die to the Chthonic damage dealt.
 :
 {{left
@@ -8715,7 +8715,7 @@ For 10 minutes, you can speak with and understand the communication of any Ether
 ##### Summon
 You summon a spirit from the Soulscape. Choose an Ethereal up to level 2$[SL]. That Ethereal appears in an unoccupied space within range. It follows the rules described below.
 :
-* ***PM Control.*** The PM controls the Etheral.
+* ***PM Control.*** The PM controls the Ethereal.
   
 * ***$[AP] Maximum.*** Its $[AP] Maximum is 3.
 

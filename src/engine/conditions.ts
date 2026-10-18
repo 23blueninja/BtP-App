@@ -75,7 +75,7 @@ export const CONDITION_RULES: Record<string, ConditionRule> = {
     startDamage: { type: 'Thermic', amount: (x) => 3 * x },
     ap: () => 'Spend 2 AP to reduce Burning by 1; it ends if you are submerged in water.',
   },
-  Defeaned: {
+  Deafened: {
     checks: [
       { attrs: ['PER'], kind: 'weakened' },
       { attrs: ['PER'], kind: 'autofail', detail: 'Complete Failure on Checks entirely based on hearing' },
@@ -138,7 +138,7 @@ export const CONDITION_RULES: Record<string, ConditionRule> = {
     startDamage: { type: 'Somatic', amount: (x) => x },
     notes: (x) => `Every minute, make a VIG Save Check (DC ${10 + x}); on a Success you stop taking its damage.`,
   },
-  Possesed: {
+  Possessed: {
     startDamage: { type: 'Infernal', amount: (x) => 2 * x },
     notes: () => 'You must make an Attack Check on your turn against a random closest creature; you can only cast damaging spells costing 3 AP or less.',
     endNote: (x) => `Possessed: make a PRS Save Check (DC ${10 + x}). Success −2, Complete Success −3, Deadly Failure +1.`,

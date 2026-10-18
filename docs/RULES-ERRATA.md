@@ -1,9 +1,16 @@
 # Rules errata found while building the app
 
-Changes to make in the rulebook, found while building the character app.
-Line numbers refer to `rules/BtP-Alpha-Rules.md` (the Homebrewery source) as
-it stands in this repo. After editing, send the new markdown and the app is
-regenerated with `npm run parse-rules`.
+Corrections found while building the character app. **Items 1–3 and 5–22 and
+the answers to 25–26 are applied** to `rules/BtP-Alpha-Rules.md` in this repo
+(the Homebrewery source), and the app is regenerated from it. Copy that file
+back into Homebrewery to bring the rulebook up to date.
+
+**Still to do in the rulebook:** item 4 (the Cosmos and Forge Domain
+Alignment grants), because only you know which Lights they should be. After
+adding them, send the markdown (or edit `rules/BtP-Alpha-Rules.md`) and run
+`npm run parse-rules`.
+
+Line numbers below are from before the fixes.
 
 ## Rule changes you've decided on
 
@@ -42,12 +49,12 @@ regenerated with `npm run parse-rules`.
 | 21 | Skill Checks (line 454) | When you PC tries | When your PC tries |
 | 22 | Save Checks (line 449) | a giant bolder | a giant boulder |
 
-## Open questions (the app made a call; confirm or change)
+## Questions (answered)
 
-| # | Where | Question | What the app does now |
+| # | Where | Question | Answer |
 |---|---|---|---|
-| 23 | Luminary | The class has no class Alignment; only its subclass grants one (Flaming Luminance → Flame). Intended? | No class Alignment. |
-| 24 | Mod Die steps | Stepping a d2 down one size: does it become "no die", or go straight to −d2? | Goes to "no die" first. |
-| 25 | Paralyzed | "When you start your turn, **it** ends immediately": does "it" mean your turn or the Condition? The level also drops by 1, which suggests your turn. | Your turn ends, and Paralyzed drops by 1. |
-| 26 | Brace, Exalted (5th) | "The Temporary Endurance you gain becomes 6{SL}": does the Mod Die roll still add to it? | Mod Die + 6{SL}. |
-| 27 | Temporary Endurance | "Choose whether you keep your current amount or gain the new amount." | Keeps the higher amount automatically. |
+| 23 | Luminary | The class has no class Alignment; only its subclass grants one (Flaming Luminance → Flame). Intended? | Confirmed: no class Alignment. |
+| 24 | Mod Die steps | Stepping a d2 down one size: does it become "no die", or go straight to −d2? | Confirmed: "no die" first. |
+| 25 | Paralyzed | "When you start your turn, **it** ends immediately": does "it" mean your turn or the Condition? The level also drops by 1, which suggests your turn. | Your turn. Text now reads "your turn ends immediately". |
+| 26 | Brace, Exalted (5th) | "The Temporary Endurance you gain becomes 6{SL}": does the Mod Die roll still add to it? | The Mod Die still adds. Text now reads "one roll of your Mod Die plus 6{SL}". |
+| 27 | Temporary Endurance | "Choose whether you keep your current amount or gain the new amount." | Keeping the higher amount automatically is fine. |

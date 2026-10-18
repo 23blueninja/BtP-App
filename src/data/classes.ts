@@ -110,7 +110,7 @@ export const classes: ClassDef[] = [
     subclassLabel: 'Wild Fervor',
     subclassListId: `${C}/wild-fervors`,
     facetExtras: {
-      'feral-light': { effects: [{ kind: 'tandem', what: 'Initiative Checks', die: 'class' }] },
+      'barbarous-light': { effects: [{ kind: 'tandem', what: 'Initiative Checks', die: 'class' }] },
       'somatic-wellspring': { uses: { count: 1, per: 'Rest' } },
     },
     spellLists: [maneuverList(['Feral', 'Instinctual'], { granted: [`${C}/berserker/berserker-maneuvers/rage`], note: 'Includes Rage.' })],

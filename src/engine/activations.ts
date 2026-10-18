@@ -129,8 +129,8 @@ export const ACTIVATIONS: ActivationDef[] = [
   {
     id: 'spells/arcana/blood/arcane-power',
     label: 'Arcane Power',
-    inputs: { outcome: ['Exanguinate: Deadly Success', 'Another result or option'] },
-    effects: (x) => (x.outcome.startsWith('Exanguinate') ? [{ kind: 'heal', amount: x.classBonus }] : []),
+    inputs: { outcome: ['Exsanguinate: Deadly Success', 'Another result or option'] },
+    effects: (x) => (x.outcome.startsWith('Exsanguinate') ? [{ kind: 'heal', amount: x.classBonus }] : []),
   },
   {
     id: 'spells/evocations/platinum/radiant-renewal',
