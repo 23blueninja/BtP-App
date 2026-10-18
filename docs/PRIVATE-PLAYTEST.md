@@ -18,10 +18,10 @@ private. Instead, create an empty private repo on GitHub (for example
 `BtP-App-Private`), then:
 
 ```sh
-git clone https://github.com/ArchHenderson/BtP-App.git BtP-App-Private
+git clone https://github.com/23BLUENINJA/BtP-App.git BtP-App-Private
 cd BtP-App-Private
 git remote rename origin public
-git remote add origin https://github.com/ArchHenderson/BtP-App-Private.git
+git remote add origin https://github.com/23BLUENINJA/BtP-App-Private.git
 git push -u origin main
 ```
 

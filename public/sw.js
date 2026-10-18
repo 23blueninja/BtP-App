@@ -1,6 +1,6 @@
 // Offline support: the app shell is cached on first visit and refreshed in the
 // background. Hashed build assets never change, so they are served cache-first.
-const CACHE = 'btp-v2';
+const CACHE = 'btp-v3';
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './index.html', './manifest.webmanifest', './icon-192.png'])));
@@ -35,6 +35,8 @@ self.addEventListener('fetch', (e) => {
   e.respondWith(
     fetch(req)
       .then((res) => {
+        // Never let an error page (e.g. a 404 after the site moves) replace the cached app.
+        if (!res.ok) return caches.match(req).then((hit) => hit || res);
         const copy = res.clone();
         caches.open(CACHE).then((c) => c.put(req, copy));
         return res;
