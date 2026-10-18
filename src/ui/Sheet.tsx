@@ -10,8 +10,15 @@ import { Collapsible, FacetText, go, Icon, RuleLink, Stepper, TokenText } from '
 import { SpellListEditor } from './pickers';
 import { CastRow } from './Cast';
 import { BulkPyramid } from './Inventory';
+import { alignmentGradient } from './lightColors';
 
 type Update = (fn: (c: Character) => Character) => void;
+
+/** Heading gradient from the character's alignments (see lightColors.ts). */
+function headingStyle(d: Derived): React.CSSProperties | undefined {
+  const g = alignmentGradient(d.alignmentRanked);
+  return g ? ({ '--heading-gradient': g } as React.CSSProperties) : undefined;
+}
 
 const TABS = ['Sheet', 'Features', 'Spells & Maneuvers', 'Equipment', 'Notes'] as const;
 type Tab = (typeof TABS)[number];
@@ -24,7 +31,7 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
   const anc = ancestryById.get(c.ancestry);
   const sub = anc?.subAncestries?.find((s) => s.id === c.subAncestry);
   return (
-    <div className="sheet" data-light={d.strongestLight?.toLowerCase()}>
+    <div className="sheet" style={headingStyle(d)}>
       <header className="sheet-header">
         <div>
           <h1>{c.name || 'Unnamed character'}</h1>
