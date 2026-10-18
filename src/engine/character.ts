@@ -1,4 +1,4 @@
-import type { Attr, Light } from '../data/types';
+import type { Attr, Light, RestRule } from '../data/types';
 
 export const CHARACTER_VERSION = 1;
 
@@ -72,6 +72,75 @@ export interface PlayState {
   effects?: ActiveEffect[];
 }
 
+/** A value that may differ by Alignment tier: [none, Weak, Firm, Strong]. */
+export type PerTier = number | [number, number, number, number];
+
+/** A Mod Die an effect can roll in Tandem with: the Class Die, one of your Attributes, or the item's own. */
+export type DieChoice = 'class' | Attr | `item:${Attr}`;
+
+/** What a homebrew effect row does. */
+export type HomebrewEffect =
+  | { kind: 'movement'; amount: number }
+  | { kind: 'movementType'; type: 'Swim' | 'Climb'; amount: 'movement' | 'halfMovement' }
+  | { kind: 'attribute'; attr: Attr; amount: number }
+  | { kind: 'ac'; amount: number }
+  | { kind: 'resistance'; type: string; amount: number }
+  /** Bolstered (positive) or Hindered (negative): all of an Attribute's Checks, its Saves, its Attribute Checks, Attack Checks, or custom text. */
+  | { kind: 'check'; scope: 'all' | 'save' | 'attribute' | 'attack' | 'custom'; attr?: Attr; text?: string; amount: number }
+  | { kind: 'initiativeTandem'; die: DieChoice }
+  | { kind: 'saveTandem'; attr: Attr; die: DieChoice }
+  | { kind: 'saveEmpowered'; attr: Attr }
+  | { kind: 'max'; stat: 'endurance' | 'vitality' | 'radiance'; amount: number }
+  | { kind: 'sense'; name: string }
+  /** On this item's weapon (or any weapon, for effects): Tandem die, Bolstered, or a note; optionally only with a property. */
+  | { kind: 'weapon'; property?: string; die?: DieChoice; bolster?: number; note?: string }
+  | { kind: 'restRule'; rule: RestRule }
+  | { kind: 'note'; text: string };
+
+export interface HomebrewRow {
+  id: string;
+  /** Alignment tiers this row applies at (0 = no Alignment needed … 3 = Strong). */
+  minTier?: number;
+  maxTier?: number;
+  /** Extra requirement on top of the item's own (attunement). */
+  when?: 'always' | 'onPerson';
+  /** A reminder created when you spend from this pool, instead of a passive effect. */
+  onSpend?: string;
+  effect: HomebrewEffect;
+}
+
+export interface HomebrewPool {
+  id: string;
+  name: string;
+  max: PerTier;
+  refresh: 'Rest' | 'Long Rest';
+}
+
+/** A homebrew item (or a boon/curse when kind is 'effect') given by the PM. */
+export interface HomebrewEntry {
+  id: string;
+  kind: 'item' | 'effect';
+  name: string;
+  subtitle?: string;
+  description?: string;
+  /** Weapon from the weapons table this item is (adds it to the Weapons box). */
+  baseWeapon?: string;
+  bulk?: number;
+  /** Requires attunement; effects only apply while `attuned`. */
+  attunement?: boolean;
+  attuned?: boolean;
+  inBackpack?: boolean;
+  /** Tier comes from your Alignment level in this Light. */
+  tierLight?: Light;
+  level?: PerTier;
+  /** A sentient item's own Attributes. */
+  stats?: Partial<Record<Attr, PerTier>>;
+  pools?: HomebrewPool[];
+  rows: HomebrewRow[];
+  /** For effects: when it ends on its own. */
+  ends?: 'manual' | 'rest' | 'longRest';
+}
+
 export interface SessionNote {
   id: string;
   title: string;
@@ -137,6 +206,8 @@ export interface Character {
   experiences: string[];
   /** Notes for each play session, newest added last. */
   sessions: SessionNote[];
+  /** Homebrew items and effects (boons, curses) from the PM. */
+  homebrew: HomebrewEntry[];
 
   equipment: {
     armor: { type: 'Light' | 'Medium' | 'Heavy'; quality: string } | null;
@@ -196,6 +267,7 @@ export function newCharacter(): Character {
     details: { age: '', devotion: '', appearance: '', backstory: '', notes: '' },
     experiences: [],
     sessions: [],
+    homebrew: [],
     equipment: { armor: null, weapons: [], inventory: [] },
     settings: { restRules: 'heroic' },
     play: emptyPlay(),
@@ -224,6 +296,7 @@ export function normalizeCharacter(raw: unknown): Character {
     spells: { ...c.spells },
     ageUps: c.ageUps ?? [],
     experiences: c.experiences ?? [],
+    homebrew: c.homebrew ?? [],
     sessions: c.sessions ?? (c.details?.notes ? [{ id: uid(), title: 'Earlier notes', date: (c.updatedAt ?? new Date().toISOString()).slice(0, 10), body: c.details.notes }] : []),
     version: CHARACTER_VERSION,
   };

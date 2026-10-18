@@ -236,7 +236,8 @@ export interface ConditionEffects {
 const leveled = new Set(conditionDefs.filter((d) => d.leveled).map((d) => d.name));
 const label = (c: { name: string; level: number }) => (leveled.has(c.name) ? `${c.name} ${c.level}` : c.name);
 
-export function conditionEffects(p: PlayState): ConditionEffects {
+/** Conditions and Active Effects; `extra` adds Bolstered/Hindered Check levels from items and other effects. */
+export function conditionEffects(p: PlayState, extra: { name: string; attrs: Attr[]; save?: boolean; amount: number }[] = []): ConditionEffects {
   const active = activeConditions(p);
   const rows = new Map<string, CheckSummary>();
   const row = (attr: Attr, save: boolean) => {
@@ -291,6 +292,18 @@ export function conditionEffects(p: PlayState): ConditionEffects {
     if (rule.ap) fx.ap.push(rule.ap(c.level));
     if (rule.notes) fx.notes.push(rule.notes(c.level));
     if (c.name === 'Paralyzed') fx.noApRegain = true;
+  }
+  for (const x of extra) {
+    for (const a of x.attrs) {
+      const r = row(a, !!x.save);
+      if (x.amount >= 0) {
+        r.bolstered += x.amount;
+        r.bolsteredFrom.push(x.name);
+      } else {
+        r.hindered -= x.amount;
+        r.hinderedFrom.push(x.name);
+      }
+    }
   }
   // Active effects from activated facets, spells and maneuvers.
   for (const e of p.effects ?? []) {

@@ -76,6 +76,15 @@ export function heal(p: PlayState, amount: number, d: Derived): PlayState {
 export interface RestResult {
   play: PlayState;
   log: string[];
+  /** Homebrew entries left after effects that end on this rest are removed. */
+  homebrew: Character['homebrew'];
+}
+
+/** Homebrew effects that end on this kind of rest (an "until your next Rest" effect ends on either). */
+function endHomebrew(c: Character, kind: 'rest' | 'longRest', log: string[]): Character['homebrew'] {
+  const ends = (e: Character['homebrew'][number]) => e.kind === 'effect' && (e.ends === 'rest' || (kind === 'longRest' && e.ends === 'longRest'));
+  for (const e of c.homebrew ?? []) if (ends(e)) log.push(`${e.name} ended.`);
+  return (c.homebrew ?? []).filter((e) => !ends(e));
 }
 
 export function shortRest(c: Character, d: Derived, opts: { spendRestCharge: boolean }): RestResult {
@@ -83,7 +92,8 @@ export function shortRest(c: Character, d: Derived, opts: { spendRestCharge: boo
   const log: string[] = [];
   if (p.shortRests >= 2) log.push('Note: only two Short Rests count per Long Rest.');
   p.shortRests += 1;
-  if (c.settings.restRules === 'heroic') {
+  const rules = new Set(d.restRules);
+  if (c.settings.restRules === 'heroic' && !rules.has('noVitalityShortRest')) {
     const gain = Math.min(half(Math.max(0, d.attrs.VIG.points)), d.vitalityMax - p.vitality);
     if (gain > 0) {
       p.vitality += gain;
@@ -91,7 +101,8 @@ export function shortRest(c: Character, d: Derived, opts: { spendRestCharge: boo
       if (p.vitality > 0) p.dying = 0;
     }
   }
-  if (opts.spendRestCharge && p.restChargesSpent < d.restCharges) {
+  if (opts.spendRestCharge && rules.has('noRestCharges')) log.push('You can’t spend Rest Charges.');
+  else if (opts.spendRestCharge && p.restChargesSpent < d.restCharges) {
     p.restChargesSpent += 1;
     const gain = Math.min(half(d.enduranceMax), d.enduranceMax - p.endurance);
     p.endurance += gain;
@@ -120,6 +131,14 @@ export function shortRest(c: Character, d: Derived, opts: { spendRestCharge: boo
     p.facetUses[k] = a.uses.per === 'Rest' ? 0 : Math.max(0, before - (a.uses.shortRestRegain ?? 0));
     if (p.facetUses[k] !== before) log.push(`${a.label}: regained ${before - p.facetUses[k]} use(s).`);
   }
+  for (const card of d.homebrew) {
+    for (const pool of card.pools) {
+      if (pool.refresh === 'Rest' && p.facetUses[pool.key]) {
+        p.facetUses[pool.key] = 0;
+        log.push(`${card.entry.name}: ${pool.name} restored.`);
+      }
+    }
+  }
   // Effects with durations in minutes are over after a Short Rest.
   const lasting = (p.effects ?? []).filter((e) => e.ends === 'longRest');
   if ((p.effects ?? []).length > lasting.length) log.push('Active effects ended.');
@@ -133,23 +152,29 @@ export function shortRest(c: Character, d: Derived, opts: { spendRestCharge: boo
     p.radianceSpent -= g;
     log.push(`Natural Radiance: regained ${g} Radiance.`);
   }
+  const homebrew = endHomebrew(c, 'rest', log);
   if (!log.length) log.push('Rested. Nothing to restore.');
-  return { play: p, log };
+  return { play: p, log, homebrew };
 }
 
 export function longRest(c: Character, d: Derived): RestResult {
   const p = { ...c.play, resources: {} as Record<string, number>, facetUses: {} as Record<string, number> };
   const log: string[] = [];
-  p.endurance = d.enduranceMax;
-  log.push('Endurance fully restored.');
-  if (d.longRestTempEndurance > 0) {
+  const rules = new Set(d.restRules);
+  if (rules.has('noEnduranceLongRest')) log.push('Endurance not restored (homebrew effect).');
+  else {
+    p.endurance = d.enduranceMax;
+    log.push('Endurance fully restored.');
+  }
+  if (d.longRestTempEndurance > 0 && !rules.has('noTempEnduranceLongRest')) {
     p.tempEndurance = Math.max(p.tempEndurance, d.longRestTempEndurance);
     log.push(`Temporary Endurance set to ${p.tempEndurance}.`);
   }
   p.restChargesSpent = 0;
   const vig = Math.max(0, d.attrs.VIG.points);
   const vitGain = c.settings.restRules === 'heroic' ? 1 + half(vig) : Math.max(1, half(vig));
-  const gained = Math.min(vitGain, d.vitalityMax - c.play.vitality);
+  const gained = rules.has('noVitalityLongRest') ? 0 : Math.min(vitGain, d.vitalityMax - c.play.vitality);
+  if (rules.has('noVitalityLongRest')) log.push('Vitality not regained (homebrew effect).');
   p.vitality = c.play.vitality + gained;
   if (gained > 0) {
     log.push(`Regained ${gained} Vitality.`);
@@ -158,7 +183,8 @@ export function longRest(c: Character, d: Derived): RestResult {
   let rad = half(Math.max(0, d.attrs.PRS.points));
   if (c.ancestry === 'human') rad += 1;
   if (d.cls?.id === 'luminary') rad += half(d.classBonus);
-  const radGain = Math.min(rad, c.play.radianceSpent);
+  const radGain = rules.has('noRadianceLongRest') ? 0 : Math.min(rad, c.play.radianceSpent);
+  if (rules.has('noRadianceLongRest') && c.play.radianceSpent) log.push('Radiance not regained (homebrew effect).');
   p.radianceSpent = c.play.radianceSpent - radGain;
   if (radGain) log.push(`Regained ${radGain} Radiance.`);
   p.shortRests = 0;
@@ -170,7 +196,7 @@ export function longRest(c: Character, d: Derived): RestResult {
     .map((x) => (x.name === 'Exhausted' ? { ...x, level: (x.level ?? 1) - 1 } : x))
     .filter((x) => x.name !== 'Exhausted' || (x.level ?? 0) > 0);
   log.push('Class resources and facet uses restored.');
-  return { play: p, log };
+  return { play: p, log, homebrew: endHomebrew(c, 'longRest', log) };
 }
 
 export interface LevelUpSummary {
