@@ -12,6 +12,10 @@ import { SpellListEditor } from './pickers';
 import { CastRow } from './Cast';
 import { BulkPyramid } from './Inventory';
 import { alignmentGradient } from './lightColors';
+import { PlayContext, UseButton } from './Activate';
+import { actionRequest, activationsFor, ACTIVATIONS } from '../engine/activations';
+import { parseCost } from '../engine/costs';
+import type { ActiveEffect } from '../engine/character';
 
 type Update = (fn: (c: Character) => Character) => void;
 
@@ -31,75 +35,78 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
   const setPlay = (fn: (p: PlayState) => PlayState) => update((x) => ({ ...x, play: clampPlay(fn(x.play), derive(x)) }));
   const anc = ancestryById.get(c.ancestry);
   const sub = anc?.subAncestries?.find((s) => s.id === c.subAncestry);
+  const onLog = (lines: string[], undo?: PlayState) => setLog({ lines, undo });
   return (
-    <div className="sheet" style={headingStyle(d)}>
-      <header className="sheet-header">
-        <div>
-          <h1>{c.name || 'Unnamed character'}</h1>
-          <p className="muted">
-            Level {d.level} · {anc ? `${anc.name}${sub ? ` (${sub.name})` : ''}` : 'No ancestry'} · {d.cls ? `${d.cls.name}${d.subclassName ? ` — ${d.subclassName}` : ''}` : 'No class'}
-            {c.player && ` · Player: ${c.player}`}
-          </p>
-        </div>
-        <div className="sheet-actions">
-          <button type="button" onClick={() => go('c', c.id, 'build', 'basics')}>
-            ✎ Edit
-          </button>
-          {d.level < d.maxLevel && d.cls && (
-            <button type="button" className="primary" onClick={() => go('c', c.id, 'levelup')}>
-              ⬆ Level Up
+    <PlayContext.Provider value={{ c, d, update, onLog }}>
+      <div className="sheet" style={headingStyle(d)}>
+        <header className="sheet-header">
+          <div>
+            <h1>{c.name || 'Unnamed character'}</h1>
+            <p className="muted">
+              Level {d.level} · {anc ? `${anc.name}${sub ? ` (${sub.name})` : ''}` : 'No ancestry'} · {d.cls ? `${d.cls.name}${d.subclassName ? ` — ${d.subclassName}` : ''}` : 'No class'}
+              {c.player && ` · Player: ${c.player}`}
+            </p>
+          </div>
+          <div className="sheet-actions">
+            <button type="button" onClick={() => go('c', c.id, 'build', 'basics')}>
+              ✎ Edit
             </button>
-          )}
+            {d.level < d.maxLevel && d.cls && (
+              <button type="button" className="primary" onClick={() => go('c', c.id, 'levelup')}>
+                ⬆ Level Up
+              </button>
+            )}
+          </div>
+        </header>
+        <TurnBar c={c} d={d} update={update} setPlay={setPlay} onLog={onLog} />
+        {d.issues.length > 0 && (
+          <details className="issues banner">
+            <summary>{d.issues.length} unfinished item(s) — open the builder to complete them</summary>
+            <ul>
+              {d.issues.map((i) => (
+                <li key={i}>{i}</li>
+              ))}
+            </ul>
+          </details>
+        )}
+        <div className="tabs" role="tablist">
+          {TABS.map((t) => (
+            <button key={t} type="button" role="tab" aria-selected={tab === t} className={tab === t ? 'active' : ''} onClick={() => setTab(t)}>
+              {t}
+            </button>
+          ))}
         </div>
-      </header>
-      <TurnBar c={c} d={d} update={update} setPlay={setPlay} onLog={(lines, undo) => setLog({ lines, undo })} />
-      {d.issues.length > 0 && (
-        <details className="issues banner">
-          <summary>{d.issues.length} unfinished item(s) — open the builder to complete them</summary>
-          <ul>
-            {d.issues.map((i) => (
-              <li key={i}>{i}</li>
-            ))}
-          </ul>
-        </details>
-      )}
-      <div className="tabs" role="tablist">
-        {TABS.map((t) => (
-          <button key={t} type="button" role="tab" aria-selected={tab === t} className={tab === t ? 'active' : ''} onClick={() => setTab(t)}>
-            {t}
-          </button>
-        ))}
+        {tab === 'Sheet' && <MainSheet c={c} d={d} update={update} setPlay={setPlay} onRest={(lines) => setLog({ lines })} />}
+        {tab === 'Features' && <Features c={c} d={d} setPlay={setPlay} />}
+        {tab === 'Spells & Maneuvers' && <SpellsTab c={c} d={d} setPlay={setPlay} />}
+        {tab === 'Equipment' && <Equipment c={c} d={d} update={update} />}
+        {tab === 'Notes' && <Notes c={c} update={update} />}
+        {log && (
+          <div className="toast" role="status">
+            <ul>
+              {log.lines.map((l, i) => (
+                <li key={i}>{l}</li>
+              ))}
+            </ul>
+            {log.undo && (
+              <button
+                type="button"
+                onClick={() => {
+                  const prev = log.undo!;
+                  update((x) => ({ ...x, play: prev }));
+                  setLog(null);
+                }}
+              >
+                Undo
+              </button>
+            )}
+            <button type="button" className="icon-btn" onClick={() => setLog(null)} aria-label="Dismiss">
+              ✕
+            </button>
+          </div>
+        )}
       </div>
-      {tab === 'Sheet' && <MainSheet c={c} d={d} update={update} setPlay={setPlay} onRest={(lines) => setLog({ lines })} />}
-      {tab === 'Features' && <Features c={c} d={d} setPlay={setPlay} />}
-      {tab === 'Spells & Maneuvers' && <SpellsTab c={c} d={d} setPlay={setPlay} />}
-      {tab === 'Equipment' && <Equipment c={c} d={d} update={update} />}
-      {tab === 'Notes' && <Notes c={c} update={update} />}
-      {log && (
-        <div className="toast" role="status">
-          <ul>
-            {log.lines.map((l, i) => (
-              <li key={i}>{l}</li>
-            ))}
-          </ul>
-          {log.undo && (
-            <button
-              type="button"
-              onClick={() => {
-                const prev = log.undo!;
-                update((x) => ({ ...x, play: prev }));
-                setLog(null);
-              }}
-            >
-              Undo
-            </button>
-          )}
-          <button type="button" className="icon-btn" onClick={() => setLog(null)} aria-label="Dismiss">
-            ✕
-          </button>
-        </div>
-      )}
-    </div>
+    </PlayContext.Provider>
   );
 }
 
@@ -385,6 +392,9 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
         <Box title="Conditions">
           <Conditions p={p} d={d} setPlay={setPlay} />
         </Box>
+        <Box title="Active effects">
+          <ActiveEffects effects={p.effects ?? []} setPlay={setPlay} />
+        </Box>
         <Box title="Check modifiers">
           <CheckModifiers d={d} />
         </Box>
@@ -549,6 +559,7 @@ function CheckModifiers({ d }: { d: Derived }) {
         <div>
           <dt>AC</dt>
           <dd>
+            {fx.acChange.value > 0 ? '+' : ''}
             {fx.acChange.value} ({fx.acChange.from.join(', ')})
           </dd>
         </div>
@@ -557,7 +568,7 @@ function CheckModifiers({ d }: { d: Derived }) {
         <div>
           <dt>Movement</dt>
           <dd>
-            {fx.movementChange.zero ? 'All Movements are 0' : fx.movementChange.value} ({fx.movementChange.from.join(', ')})
+            {fx.movementChange.zero ? 'All Movements are 0' : `${fx.movementChange.value > 0 ? '+' : ''}${fx.movementChange.value}`} ({fx.movementChange.from.join(', ')})
           </dd>
         </div>
       )}
@@ -644,6 +655,7 @@ function ActionsList({ d }: { c: Character; d: Derived }) {
                   <strong>{n.title}</strong> <span className="muted small"><TokenText text={n.fields?.Cost ?? ''} /></span>
                 </span>
               }
+              extra={<ActionUse d={d} id={n.id} name={n.title} cost={n.fields?.Cost} />}
             >
               <FacetText contentId={n.id} />
             </Collapsible>
@@ -659,6 +671,7 @@ function ActionsList({ d }: { c: Character; d: Derived }) {
               <Icon name="AP" /> Cost
             </th>
             <th>Categories</th>
+            <th />
           </tr>
         </thead>
         <tbody>
@@ -671,11 +684,85 @@ function ActionsList({ d }: { c: Character; d: Derived }) {
                 <TokenText text={a.fields.Cost ?? ''} />
               </td>
               <td className="small muted">{a.fields.Categories}</td>
+              <td>
+                <UseButton req={{ key: a.id, name: a.name, cost: parseCost(a.fields.Cost), sl: 0 }} hideCost />
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
+  );
+}
+
+/** Use buttons for a facet Action: its activations, or a plain Use that spends its costs. */
+function ActionUse({ d, id, name, cost }: { d: Derived; id: string; name: string; cost?: string }) {
+  const defs = activationsFor(id);
+  if (!defs.length) return <UseButton req={actionRequest(d, id, name, cost)} />;
+  return (
+    <span className="use-group">
+      {defs.map((def) => (
+        <UseButton key={def.label} req={{ ...actionRequest(d, id, name, cost, def), key: `${id}:${def.label}` }} />
+      ))}
+    </span>
+  );
+}
+
+const facetActivationDefs = (facetId?: string) => (facetId ? ACTIVATIONS.filter((a) => a.id === facetId || a.id.startsWith(`${facetId}/`)) : []);
+
+/** Activations defined on a facet or the Actions inside it. */
+function FacetActivations({ d, facetId }: { d: Derived; facetId?: string }) {
+  const defs = facetActivationDefs(facetId);
+  if (!defs.length) return null;
+  return (
+    <span className="use-group">
+      {defs.map((def) => {
+        const node = getNode(def.id);
+        return <UseButton key={def.id + def.label} req={{ ...actionRequest(d, def.id, def.label, node?.fields?.Cost, def), key: `${def.id}:${def.label}` }} />;
+      })}
+    </span>
+  );
+}
+
+const ENDS: Record<ActiveEffect['ends'], string> = {
+  startOfTurn: 'until the start of your next turn',
+  endOfTurn: 'until the end of your turn',
+  rest: 'until you Rest',
+  longRest: 'until your next Long Rest',
+  manual: 'until removed',
+};
+
+function ActiveEffects({ effects, setPlay }: { effects: ActiveEffect[]; setPlay: (fn: (p: PlayState) => PlayState) => void }) {
+  if (!effects.length) return <p className="muted">None. Effects from Rage, spells and other activations appear here.</p>;
+  return (
+    <ul className="plain effects">
+      {effects.map((e) => (
+        <li key={e.id}>
+          <div className="row between">
+            <strong>{e.name}</strong>
+            <button type="button" className="icon-btn" onClick={() => setPlay((x) => ({ ...x, effects: (x.effects ?? []).filter((y) => y.id !== e.id) }))} aria-label={`End ${e.name}`}>
+              ✕
+            </button>
+          </div>
+          <div className="muted small">
+            {[
+              ...(e.checks ?? []).map((m) => `${m.attrs === 'all' ? 'All' : m.attrs.join(' & ')} ${m.save ? 'Save ' : ''}Checks Bolstered ${m.bolstered}`),
+              e.ac ? `AC +${e.ac}` : '',
+              e.movement ? `Movement +${e.movement}` : '',
+              ...(e.resistances?.length ? [`${e.resistances.map((r) => r.type).join(', ')} Resistance ${e.resistances[0].amount}`] : []),
+              ENDS[e.ends],
+            ]
+              .filter(Boolean)
+              .join(' · ')}
+          </div>
+          {e.notes?.map((n) => (
+            <div key={n} className="small">
+              {n}
+            </div>
+          ))}
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -707,12 +794,17 @@ function Features({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: (
                     </span>
                   }
                   extra={
-                    max > 0 ? (
-                      <span className="uses" onClick={(e) => e.stopPropagation()}>
-                        <Pips total={max} used={used} label={`${f.name} use`} onChange={(u) => setPlay((x) => ({ ...x, facetUses: { ...x.facetUses, [f.key]: u } }))} />
-                        <span className="muted small"> / {f.uses!.per}</span>
-                      </span>
-                    ) : undefined
+                    (max > 0 || facetActivationDefs(f.contentId).length > 0) && (
+                    <span className="facet-extra" onClick={(e) => e.stopPropagation()}>
+                      {max > 0 && (
+                        <span className="uses">
+                          <Pips total={max} used={used} label={`${f.name} use`} onChange={(u) => setPlay((x) => ({ ...x, facetUses: { ...x.facetUses, [f.key]: u } }))} />
+                          <span className="muted small"> / {f.uses!.per}</span>
+                        </span>
+                      )}
+                      <FacetActivations d={d} facetId={f.contentId} />
+                    </span>
+                    )
                   }
                 >
                   <FacetText contentId={f.contentId} item={f.item} />
@@ -808,7 +900,7 @@ function SpellsTab({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: 
             ) : ids.length ? (
               ids.map((id) => {
                 const cs = getCastable(id);
-                return cs ? <CastRow key={id} c={c} d={d} cs={cs} fromClass={fromClass(l.source)} setPlay={setPlay} /> : null;
+                return cs ? <CastRow key={id} c={c} d={d} cs={cs} fromClass={fromClass(l.source)} /> : null;
               })
             ) : (
               <p className="muted">Nothing prepared yet.</p>
@@ -823,7 +915,7 @@ function SpellsTab({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: 
             {l.def.label} <span className="muted">({l.source})</span>
           </h3>
           {[...l.granted, ...l.selected].map((cs) => (
-            <CastRow key={cs.id} c={c} d={d} cs={cs} fromClass={fromClass(l.source)} setPlay={setPlay} />
+            <CastRow key={cs.id} c={c} d={d} cs={cs} fromClass={fromClass(l.source)} />
           ))}
           {!l.granted.length && !l.selected.length && <p className="muted">None chosen — use Edit → Spells & Maneuvers.</p>}
         </section>

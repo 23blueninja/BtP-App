@@ -648,11 +648,21 @@ th {
 .collapsible {
   border-bottom: 1px solid var(--border);
 }
+.collapsible-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.collapsible-extra {
+  flex-shrink: 0;
+  max-width: 60%;
+}
 .collapsible-head {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   background: none;
   border: none;
   border-radius: 0;
@@ -1427,4 +1437,61 @@ li.implied {
     padding-left: 0.4rem;
     padding-right: 0.4rem;
   }
+}
+
+/* ---------- using actions, facets, spells ---------- */
+.use {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.use-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.use-btn {
+  white-space: nowrap;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.9em;
+}
+.use-cost {
+  opacity: 0.75;
+  font-size: 0.9em;
+}
+.facet-extra {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+.use-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.use-form label:not(.inline) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.use-form .outcomes {
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.use-preview ul {
+  margin: 0.25rem 0 0;
+  padding-left: 1.1rem;
+}
+.effects li + li {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+.actions-table td:last-child {
+  text-align: right;
 }

@@ -4,6 +4,7 @@ import { half } from './dice';
 import { derive, type Derived } from './derive';
 import { classEndurance, type ResolvedFacet } from './classInfo';
 import { resolveScaled } from './derive';
+import { ACTIVATIONS, activationUseKey } from './activations';
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
@@ -112,6 +113,17 @@ export function shortRest(c: Character, d: Derived, opts: { spendRestCharge: boo
       log.push(`${f.name} refreshed.`);
     }
   }
+  for (const a of ACTIVATIONS) {
+    const k = activationUseKey(a);
+    if (!a.uses || !p.facetUses[k]) continue;
+    const before = p.facetUses[k];
+    p.facetUses[k] = a.uses.per === 'Rest' ? 0 : Math.max(0, before - (a.uses.shortRestRegain ?? 0));
+    if (p.facetUses[k] !== before) log.push(`${a.label}: regained ${before - p.facetUses[k]} use(s).`);
+  }
+  // Effects with durations in minutes are over after a Short Rest.
+  const lasting = (p.effects ?? []).filter((e) => e.ends === 'longRest');
+  if ((p.effects ?? []).length > lasting.length) log.push('Active effects ended.');
+  p.effects = lasting;
   if (c.ancestry === 'human' && p.radianceSpent > 0) {
     p.radianceSpent -= 1;
     log.push('Radiant: regained 1 Radiance.');
@@ -150,6 +162,7 @@ export function longRest(c: Character, d: Derived): RestResult {
   p.radianceSpent = c.play.radianceSpent - radGain;
   if (radGain) log.push(`Regained ${radGain} Radiance.`);
   p.shortRests = 0;
+  p.effects = [];
   const trackers = { ...c.play.trackers };
   p.trackers = trackers;
   // Exhausted reduces by 1 on a Long Rest.

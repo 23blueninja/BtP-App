@@ -15,6 +15,11 @@ the tabletop RPG by 23BLUENINJA. Alpha Rules © 2026 23BLUENINJA — All Rights 
   Dying, Radiance and Rest Charge pips, class resources (Stamina, Will, Wonder,
   Prisma, Light, Favor), trackers (Prismaburn, Indebted), facet uses, conditions,
   Short/Long Rests with a per-character **Heroic / Gritty** toggle.
+- **Turns & actions** — AP tracker with Start/End Turn; conditions feed Check
+  modifiers, AC and Movement; Use/Cast buttons spend AP (with Basic CAP),
+  resources and uses, and apply effects such as healing, Temporary Endurance,
+  temporary AP and Active Effects (Rage, Titanus Form, Embolden…). Mechanics
+  for activations live in `src/engine/activations.ts`.
 - **Level-up flow** following the Level Up Checklist.
 - **Rules reference** — every section, spell, maneuver, action and condition,
   searchable.

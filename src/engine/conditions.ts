@@ -209,9 +209,11 @@ export interface CheckSummary {
   label: string;
   attr: Attr;
   save: boolean;
-  /** Net Hindered level and where it comes from. */
+  /** Hindered and Bolstered levels and where they come from (they cancel out). */
   hindered: number;
   hinderedFrom: string[];
+  bolstered: number;
+  bolsteredFrom: string[];
   weakened: string[];
   disadvantage: string[];
   autofail: string[];
@@ -241,7 +243,7 @@ export function conditionEffects(p: PlayState): ConditionEffects {
     const key = `${attr}${save ? ' Save' : ''}`;
     let r = rows.get(key);
     if (!r) {
-      r = { label: `${attr} ${save ? 'Save ' : ''}Checks`, attr, save, hindered: 0, hinderedFrom: [], weakened: [], disadvantage: [], autofail: [] };
+      r = { label: `${attr} ${save ? 'Save ' : ''}Checks`, attr, save, hindered: 0, hinderedFrom: [], bolstered: 0, bolsteredFrom: [], weakened: [], disadvantage: [], autofail: [] };
       rows.set(key, r);
     }
     return r;
@@ -290,6 +292,24 @@ export function conditionEffects(p: PlayState): ConditionEffects {
     if (rule.notes) fx.notes.push(rule.notes(c.level));
     if (c.name === 'Paralyzed') fx.noApRegain = true;
   }
+  // Active effects from activated facets, spells and maneuvers.
+  for (const e of p.effects ?? []) {
+    for (const m of e.checks ?? []) {
+      for (const a of m.attrs === 'all' ? ATTRS : m.attrs) {
+        const r = row(a, !!m.save);
+        r.bolstered += m.bolstered;
+        r.bolsteredFrom.push(e.name);
+      }
+    }
+    if (e.ac) {
+      fx.acChange.value += e.ac;
+      fx.acChange.from.push(e.name);
+    }
+    if (e.movement) {
+      fx.movementChange.value += e.movement;
+      fx.movementChange.from.push(e.name);
+    }
+  }
   fx.checks = [...rows.values()].sort((a, b) => ATTRS.indexOf(a.attr) - ATTRS.indexOf(b.attr) || Number(a.save) - Number(b.save));
   return fx;
 }
@@ -297,7 +317,11 @@ export function conditionEffects(p: PlayState): ConditionEffects {
 /** Short text for a Check row: "Hindered 2 (Dulled 1, Exhausted 1), Weakened (Bruised)". */
 export function describeCheck(r: CheckSummary): string[] {
   const out: string[] = [];
-  if (r.hindered) out.push(`Hindered ${r.hindered} (${r.hinderedFrom.join(', ')})`);
+  const net = r.bolstered - r.hindered;
+  if (r.bolstered && r.hindered) {
+    out.push(`Bolstered ${r.bolstered} (${r.bolsteredFrom.join(', ')}) and Hindered ${r.hindered} (${r.hinderedFrom.join(', ')}): ${net === 0 ? 'no change' : net > 0 ? `Bolstered ${net}` : `Hindered ${-net}`}`);
+  } else if (r.bolstered) out.push(`Bolstered ${r.bolstered} (${r.bolsteredFrom.join(', ')})`);
+  else if (r.hindered) out.push(`Hindered ${r.hindered} (${r.hinderedFrom.join(', ')})`);
   if (r.weakened.length) out.push(`Weakened (${r.weakened.join(', ')})`);
   if (r.disadvantage.length) out.push(`Disadvantage (${r.disadvantage.join(', ')})`);
   out.push(...r.autofail);
@@ -367,8 +391,21 @@ export function startTurn(p: PlayState, level: number, resistances: { type: stri
     if (note) log.push(note(c.level));
   }
   if (damage.length && active.some((c) => c.name === 'Unconscious')) log.push('Taking damage ends Unconscious unless an effect keeps you Unconscious.');
+  // Active effects: some end now, some grant Temporary Endurance each turn.
+  let tempEndurance = p.tempEndurance;
+  const effects = (p.effects ?? []).filter((e) => {
+    if (e.ends !== 'startOfTurn') return true;
+    log.push(`${e.name} ended.`);
+    return false;
+  });
+  for (const e of effects) {
+    if (e.tempEnduranceEachTurn && e.tempEnduranceEachTurn > tempEndurance) {
+      tempEndurance = e.tempEnduranceEachTurn;
+      log.push(`${e.name}: Temporary Endurance set to ${tempEndurance}.`);
+    }
+  }
   if (!log.length) log.push('Your turn begins.');
-  return { play: { ...p, conditions, turn: { active: true, noApRegain } }, log, damage };
+  return { play: { ...p, conditions, effects, tempEndurance, turn: { active: true, noApRegain } }, log, damage };
 }
 
 /** End of your turn: regain AP, temporary AP disappears, and Conditions that tick down do. */
@@ -392,5 +429,25 @@ export function endTurn(p: PlayState): TurnResult {
   const ap = blocked ? (p.ap ?? 0) : AP_MAX;
   log.push(blocked ? 'You don’t regain AP (Paralyzed).' : `Regained AP (${AP_MAX}).`);
   if (p.tempAp) log.push('Temporary AP lost.');
-  return { play: { ...p, conditions, ap, tempAp: 0, turn: { active: false } }, log, damage: [] };
+  // Active effects: some end now; others restore temporary AP or a resource.
+  const resources = { ...p.resources };
+  let tempAp = 0;
+  const effects = (p.effects ?? []).filter((e) => {
+    if (e.ends !== 'endOfTurn') return true;
+    log.push(`${e.name} ended.`);
+    return false;
+  });
+  for (const e of effects) {
+    if (e.tempApEachTurn) {
+      tempAp += e.tempApEachTurn;
+      log.push(`${e.name}: regained ${e.tempApEachTurn} temporary AP.`);
+    }
+    if (e.resourceEachTurn) {
+      const { name, amount } = e.resourceEachTurn;
+      const spent = resources[name] ?? 0;
+      resources[name] = Math.max(0, spent - amount);
+      if (spent) log.push(`${e.name}: regained ${spent - resources[name]} ${name}.`);
+    }
+  }
+  return { play: { ...p, conditions, effects, resources, ap, tempAp, turn: { active: false } }, log, damage: [] };
 }
