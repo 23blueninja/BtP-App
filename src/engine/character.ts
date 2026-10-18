@@ -44,6 +44,11 @@ export interface PlayState {
   shortRests: number;
   /** Prepared spell selections, by list id. */
   prepared: Record<string, string[]>;
+  /** Action Points, tracked during an Encounter (undefined outside one). */
+  ap?: number;
+  tempAp?: number;
+  /** Whether it is currently your turn. */
+  turn?: { active: boolean; noApRegain?: boolean };
 }
 
 export interface Character {

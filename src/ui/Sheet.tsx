@@ -5,6 +5,7 @@ import { ATTRS, ATTR_NAMES, RANK_DIE } from '../data/types';
 import type { Character, PlayState } from '../engine/character';
 import { derive, type Derived } from '../engine/derive';
 import { clampPlay, facetUseMax, heal, longRest, shortRest, takeDamage } from '../engine/play';
+import { AP_MAX, CONDITION_RULES, addCondition, describeCheck, endTurn, startTurn } from '../engine/conditions';
 import { ClassTableView, Equipment, WeaponTable } from './Builder';
 import { Collapsible, FacetText, go, Icon, RuleLink, Stepper, TokenText } from './common';
 import { SpellListEditor } from './pickers';
@@ -25,7 +26,7 @@ type Tab = (typeof TABS)[number];
 
 export function Sheet({ c, update }: { c: Character; update: Update }) {
   const [tab, setTab] = useState<Tab>('Sheet');
-  const [log, setLog] = useState<string[] | null>(null);
+  const [log, setLog] = useState<{ lines: string[]; undo?: PlayState } | null>(null);
   const d = derive(c);
   const setPlay = (fn: (p: PlayState) => PlayState) => update((x) => ({ ...x, play: clampPlay(fn(x.play), derive(x)) }));
   const anc = ancestryById.get(c.ancestry);
@@ -51,6 +52,7 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
           )}
         </div>
       </header>
+      <TurnBar c={c} d={d} update={update} setPlay={setPlay} onLog={(lines, undo) => setLog({ lines, undo })} />
       {d.issues.length > 0 && (
         <details className="issues banner">
           <summary>{d.issues.length} unfinished item(s) — open the builder to complete them</summary>
@@ -68,7 +70,7 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
           </button>
         ))}
       </div>
-      {tab === 'Sheet' && <MainSheet c={c} d={d} update={update} setPlay={setPlay} onRest={setLog} />}
+      {tab === 'Sheet' && <MainSheet c={c} d={d} update={update} setPlay={setPlay} onRest={(lines) => setLog({ lines })} />}
       {tab === 'Features' && <Features c={c} d={d} setPlay={setPlay} />}
       {tab === 'Spells & Maneuvers' && <SpellsTab c={c} d={d} setPlay={setPlay} />}
       {tab === 'Equipment' && <Equipment c={c} d={d} update={update} />}
@@ -76,16 +78,90 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
       {log && (
         <div className="toast" role="status">
           <ul>
-            {log.map((l, i) => (
+            {log.lines.map((l, i) => (
               <li key={i}>{l}</li>
             ))}
           </ul>
+          {log.undo && (
+            <button
+              type="button"
+              onClick={() => {
+                const prev = log.undo!;
+                update((x) => ({ ...x, play: prev }));
+                setLog(null);
+              }}
+            >
+              Undo
+            </button>
+          )}
           <button type="button" className="icon-btn" onClick={() => setLog(null)} aria-label="Dismiss">
             ✕
           </button>
         </div>
       )}
     </div>
+  );
+}
+
+/** AP tracker and Start/End Turn, kept at the top of the sheet. */
+function TurnBar({ c, d, update, setPlay, onLog }: { c: Character; d: Derived; update: Update; setPlay: (fn: (p: PlayState) => PlayState) => void; onLog: (lines: string[], undo?: PlayState) => void }) {
+  const p = c.play;
+  const ap = p.ap ?? AP_MAX;
+  const myTurn = !!p.turn?.active;
+  const blocked = d.conditionFx.active.find((x) => x.name === 'Paralyzed' || x.name === 'Unconscious' || x.name === 'Stunned');
+  return (
+    <section className={`turn-bar box ${myTurn ? 'my-turn' : ''}`} aria-label="Turn">
+      <div className="turn-ap">
+        <span className="turn-label">
+          <Icon name="AP" /> AP
+        </span>
+        <Pips total={AP_MAX} used={AP_MAX - Math.min(ap, AP_MAX)} onChange={(u) => setPlay((x) => ({ ...x, ap: AP_MAX - u }))} label="AP" />
+        <span className="turn-count">
+          {ap}/{AP_MAX}
+        </span>
+        <span className="turn-temp">
+          <span className="muted small">Temp</span>
+          <Stepper label="Temporary AP" value={p.tempAp ?? 0} min={0} onChange={(v) => setPlay((x) => ({ ...x, tempAp: v }))} />
+        </span>
+      </div>
+      <div className="turn-buttons">
+        <button
+          type="button"
+          className={myTurn ? '' : 'primary'}
+          disabled={myTurn}
+          onClick={() =>
+            update((x) => {
+              const dx = derive(x);
+              const r = startTurn(x.play, dx.level, dx.resistances);
+              let play = r.play;
+              for (const dmg of r.damage) play = takeDamage(play, dmg.amount, dx);
+              onLog(r.log, x.play);
+              return { ...x, play: clampPlay(play, dx) };
+            })
+          }
+        >
+          ▶ Start Turn
+        </button>
+        <button
+          type="button"
+          className={myTurn ? 'primary' : ''}
+          disabled={!myTurn}
+          onClick={() =>
+            update((x) => {
+              const r = endTurn(x.play);
+              onLog(r.log, x.play);
+              return { ...x, play: clampPlay(r.play, derive(x)) };
+            })
+          }
+        >
+          ■ End Turn
+        </button>
+        <button type="button" title="Rolling Initiative refills your AP" onClick={() => setPlay((x) => ({ ...x, ap: AP_MAX, tempAp: 0, turn: { active: false } }))}>
+          Initiative {d.initiative}
+        </button>
+      </div>
+      {blocked && <p className="turn-warn small">{blocked.name}: {CONDITION_RULES[blocked.name].ap?.(blocked.level)}</p>}
+    </section>
   );
 }
 
@@ -307,7 +383,10 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
           {d.slashingVulnerability && <p className="small">Slashing Vulnerability {d.slashingVulnerability} (unarmored)</p>}
         </Box>
         <Box title="Conditions">
-          <Conditions p={p} setPlay={setPlay} />
+          <Conditions p={p} d={d} setPlay={setPlay} />
+        </Box>
+        <Box title="Check modifiers">
+          <CheckModifiers d={d} />
         </Box>
         <Box title="Training">
           <p className="small">
@@ -325,15 +404,6 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             </p>
           ))}
         </Box>
-        {(d.bolsters.length > 0 || d.tandems.length > 0) && (
-          <Box title="Check modifiers">
-            <ul className="plain small">
-              {[...d.bolsters, ...d.tandems].map((b) => (
-                <li key={b}>{b}</li>
-              ))}
-            </ul>
-          </Box>
-        )}
       </div>
 
       <div className="wide-row">
@@ -389,11 +459,13 @@ function SkillList({ slots }: { slots: Derived['skillSlots'] }) {
   );
 }
 
-function Conditions({ p, setPlay }: { p: PlayState; setPlay: (fn: (p: PlayState) => PlayState) => void }) {
+function Conditions({ p, d, setPlay }: { p: PlayState; d: Derived; setPlay: (fn: (p: PlayState) => PlayState) => void }) {
   const [pick, setPick] = useState('');
+  // Conditions given by other Conditions (Burning → Numbed) and Dying from the Vitality box.
+  const implied = d.conditionFx.active.filter((x) => !x.own);
   return (
     <div>
-      {p.conditions.length === 0 && <p className="muted">None</p>}
+      {p.conditions.length === 0 && implied.length === 0 && <p className="muted">None</p>}
       <ul className="plain">
         {p.conditions.map((cd, i) => {
           const def = conditionDefs.find((x) => x.name === cd.name);
@@ -409,20 +481,34 @@ function Conditions({ p, setPlay }: { p: PlayState; setPlay: (fn: (p: PlayState)
             </li>
           );
         })}
+        {implied.map((cd) => {
+          const def = conditionDefs.find((x) => x.name === cd.name);
+          return (
+            <li key={cd.name} className="row between implied">
+              <span>
+                {def ? <RuleLink id={def.id}>{cd.name}</RuleLink> : cd.name}
+                {def?.leveled && ` ${cd.level}`}
+              </span>
+              <span className="muted small">{cd.name === 'Dying' && !cd.from.length ? 'from Vitality' : `from ${cd.from.join(', ')}`}</span>
+            </li>
+          );
+        })}
       </ul>
       <div className="row">
         <select value={pick} onChange={(e) => setPick(e.target.value)} aria-label="Condition">
           <option value="">Add condition…</option>
-          {conditionDefs.map((x) => (
-            <option key={x.id}>{x.name}</option>
-          ))}
+          {conditionDefs
+            .filter((x) => x.name !== 'Dying')
+            .map((x) => (
+              <option key={x.id}>{x.name}</option>
+            ))}
         </select>
         <button
           type="button"
           disabled={!pick}
           onClick={() => {
             const def = conditionDefs.find((x) => x.name === pick);
-            setPlay((x) => ({ ...x, conditions: [...x.conditions.filter((y) => y.name !== pick), { name: pick, level: def?.leveled ? 1 : undefined }] }));
+            setPlay((x) => addCondition(x, pick, def?.leveled ? 1 : undefined));
             setPick('');
           }}
         >
@@ -430,6 +516,70 @@ function Conditions({ p, setPlay }: { p: PlayState; setPlay: (fn: (p: PlayState)
         </button>
       </div>
     </div>
+  );
+}
+
+/** Check penalties from Conditions, plus Bolstered/Tandem effects from facets. */
+function CheckModifiers({ d }: { d: Derived }) {
+  const fx = d.conditionFx;
+  const empty = !fx.checks.length && !fx.against.length && !fx.otherChecks.length && !fx.ap.length && !fx.notes.length && !d.bolsters.length && !d.tandems.length;
+  if (empty) return <p className="muted">None</p>;
+  return (
+    <dl className="defs mods small">
+      {fx.checks.map((r) => (
+        <div key={r.label}>
+          <dt>
+            <Icon name={r.attr} /> {r.label}
+          </dt>
+          <dd>{describeCheck(r).join('; ')}</dd>
+        </div>
+      ))}
+      {fx.otherChecks.map((t) => (
+        <div key={t}>
+          <dd>{t}</dd>
+        </div>
+      ))}
+      {fx.against.length > 0 && (
+        <div>
+          <dt>Attacks against you</dt>
+          <dd>{fx.against.join('; ')}</dd>
+        </div>
+      )}
+      {fx.acChange.value !== 0 && (
+        <div>
+          <dt>AC</dt>
+          <dd>
+            {fx.acChange.value} ({fx.acChange.from.join(', ')})
+          </dd>
+        </div>
+      )}
+      {(fx.movementChange.zero || fx.movementChange.value !== 0) && (
+        <div>
+          <dt>Movement</dt>
+          <dd>
+            {fx.movementChange.zero ? 'All Movements are 0' : fx.movementChange.value} ({fx.movementChange.from.join(', ')})
+          </dd>
+        </div>
+      )}
+      {fx.ap.map((t) => (
+        <div key={t}>
+          <dt>
+            <Icon name="AP" /> AP
+          </dt>
+          <dd>{t}</dd>
+        </div>
+      ))}
+      {fx.notes.map((t) => (
+        <div key={t}>
+          <dd>{t}</dd>
+        </div>
+      ))}
+      {[...d.bolsters, ...d.tandems].map((b) => (
+        <div key={b}>
+          <dd>{b}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
