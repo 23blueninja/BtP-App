@@ -156,8 +156,10 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
           <div className="sub">{c.equipment.armor ? `${c.equipment.armor.quality} ${c.equipment.armor.type}` : 'Unarmored'}</div>
         </Box>
         <Box title="Movement" className="stat">
-          <div className="big">{d.movement}</div>
-          <div className="sub">spaces</div>
+          <div className="big" title={d.movementBreakdown.join('\n')}>
+            {d.movement}
+          </div>
+          <div className="sub">{d.movementBreakdown.join(' ')}</div>
         </Box>
         <Box title="Initiative" className="stat">
           <div className="big">{d.initiative}</div>
@@ -175,7 +177,10 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
                 </div>
                 <div>
                   <div className="attr-name">{ATTR_NAMES[a]}</div>
-                  <div className="muted small">{d.attrs[a].points} points</div>
+                  <div className="muted small">
+                    {d.attrs[a].points} points{d.attrs[a].sources.length > 1 && ` (${d.attrs[a].sources.join(' ')})`}
+                    {d.attrs[a].dieNote && ` · ${d.attrs[a].dieNote}`}
+                  </div>
                 </div>
                 <div className="attr-die">{d.attrs[a].label}</div>
               </div>

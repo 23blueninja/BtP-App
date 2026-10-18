@@ -357,3 +357,19 @@ describe('Powerful Build', async () => {
     expect(derive(build({ ancestry: 'human' })).bulkShift).toBe(0);
   });
 });
+
+describe('attribute and movement breakdowns', () => {
+  it('shows where final points and Movement come from', () => {
+    const d = derive(
+      build({
+        ancestry: 'human',
+        background: { preset: '', heritage: 'speedster' },
+        attributes: { method: 'pointBuy', pool: 12, base: { VIG: 3, AGI: 2, PER: 2, INT: 1, PRS: -1 }, bonus: ['AGI'] },
+      }),
+    );
+    expect(d.attrs.AGI.points).toBe(3);
+    expect(d.attrs.AGI.sources).toEqual(['2 assigned', '+1 Bonus Attribute Point']);
+    expect(d.movement).toBe(3 + 6 + 3);
+    expect(d.movementBreakdown).toEqual(['3 base', '+6 from 3 AGI', '+3 Speedster']);
+  });
+});

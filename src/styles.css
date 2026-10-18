@@ -697,16 +697,18 @@ th {
 dl.defs {
   margin: 0.4em 0;
 }
+/* "Label text…" inline, wrapped lines indented under the label (like the PDF). */
 dl.defs > div {
-  display: flex;
-  gap: 0.5em;
-  padding: 0.1em 0;
+  padding: 0.1em 0 0.1em 1.25em;
+  text-indent: -1.25em;
 }
 dl.defs dt {
+  display: inline;
   font-weight: 700;
-  white-space: nowrap;
+  margin-right: 0.4em;
 }
 dl.defs dd {
+  display: inline;
   margin: 0;
 }
 .rule-block .rule-title {
@@ -1150,4 +1152,47 @@ b.calc {
 }
 .exalted.on dt {
   color: var(--accent-2);
+}
+.attr-final strong {
+  white-space: nowrap;
+}
+.view-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0.2rem 0 0.4rem;
+}
+.view-toggle button {
+  border: none;
+  border-radius: 0;
+  background: none;
+  font-size: 0.85em;
+  padding: 0.25em 0.8em;
+  color: var(--muted);
+}
+.view-toggle button.active {
+  background: var(--accent);
+  color: #fff;
+}
+.ex-add {
+  color: var(--accent-2);
+  font-weight: 600;
+}
+.exalted-notes h5 {
+  margin: 0.6rem 0 0.2rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.exalted-notes .merged dd {
+  color: var(--muted);
+  font-style: italic;
+}
+.exalted-notes .merged dt {
+  color: var(--accent-2);
+}
+.exalted-notes.later {
+  opacity: 0.6;
 }

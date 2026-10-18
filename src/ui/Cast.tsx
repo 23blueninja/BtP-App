@@ -2,20 +2,16 @@ import { useState } from 'react';
 import { getNode, type Castable, type RuleNode } from '../content';
 import type { Character, PlayState } from '../engine/character';
 import type { Derived } from '../engine/derive';
-import { castCost, maxCastLevel, scaleHtml, scaleText } from '../engine/scaling';
+import { calculateCastable } from '../engine/exalted';
+import { castCost, maxCastLevel, scaleText } from '../engine/scaling';
 import { Collapsible, TokenText } from './common';
+import { CastableDetails } from './pickers';
 
 const ordinal = (n: number) => `${n}${n === 1 ? 'st' : n === 2 ? 'nd' : n === 3 ? 'rd' : 'th'}`;
 
-function ScaledNode({ node, base, level, charLevel, depth }: { node: RuleNode; base: number; level: number; charLevel: number; depth: number }) {
-  const H = `h${Math.min(6, depth)}` as 'h4';
-  return (
-    <section className="rule-block">
-      <H className="rule-title" dangerouslySetInnerHTML={{ __html: node.titleHtml }} />
-      {node.html && <div className="rules" dangerouslySetInnerHTML={{ __html: scaleHtml(node.html, base, { level, charLevel }) }} />}
-      {node.children?.map((ch) => <ScaledNode key={ch.id} node={ch} base={base} level={level} charLevel={charLevel} depth={depth + 1} />)}
-    </section>
-  );
+/** A rules section and its subsections as one HTML string (subsection titles as headings). */
+function flatHtml(node: RuleNode, depth = 5): string {
+  return [node.html ?? '', ...(node.children ?? []).map((c) => `<h${Math.min(6, depth)} class="rule-title">${c.titleHtml}</h${Math.min(6, depth)}>${flatHtml(c, depth + 1)}`)].join('');
 }
 
 /**
@@ -39,6 +35,7 @@ export function CastRow({
   const max = maxCastLevel(d.cls, d.level);
   const [level, setLevel] = useState(Math.max(base, 1));
   const [msg, setMsg] = useState('');
+  const [view, setView] = useState<'calc' | 'orig'>('calc');
   const node = getNode(cs.id);
   const scalable = base > 0;
   const castLevel = scalable ? level : 0;
@@ -108,12 +105,56 @@ export function CastRow({
       <div className="castable-meta">
         <TokenText text={meta} />
       </div>
-      {node && (
-        <div className="castable-details">
-          {node.html && <div className="rules" dangerouslySetInnerHTML={{ __html: scaleHtml(node.html, base, { level: castLevel, charLevel: d.level }) }} />}
-          {node.children?.map((ch) => <ScaledNode key={ch.id} node={ch} base={base} level={castLevel} charLevel={d.level} depth={5} />)}
+      <div className="view-toggle" role="tablist" aria-label="Text view">
+        <button type="button" role="tab" aria-selected={view === 'calc'} className={view === 'calc' ? 'active' : ''} onClick={() => setView('calc')}>
+          Calculated{scalable ? ` (${ordinal(level)} level)` : ''}
+        </button>
+        <button type="button" role="tab" aria-selected={view === 'orig'} className={view === 'orig' ? 'active' : ''} onClick={() => setView('orig')}>
+          Original text
+        </button>
+      </div>
+      {node && view === 'orig' && <CastableDetails c={cs} />}
+      {node && view === 'calc' && <Calculated node={node} base={base} level={castLevel} charLevel={d.level} />}
+    </Collapsible>
+  );
+}
+
+function Calculated({ node, base, level, charLevel }: { node: RuleNode; base: number; level: number; charLevel: number }) {
+  const { html, notes } = calculateCastable(flatHtml(node), base, { level, charLevel });
+  const now = notes.filter((n) => n.active);
+  const later = notes.filter((n) => !n.active);
+  return (
+    <div className="castable-details calculated">
+      <div className="rules" dangerouslySetInnerHTML={{ __html: html }} />
+      {now.length > 0 && (
+        <div className="exalted-notes">
+          <h5>At this level</h5>
+          <dl className="defs">
+            {now.map((n) => (
+              <div key={n.label} className={n.merged ? 'merged' : ''}>
+                <dt>
+                  {n.label}
+                  {n.times ? ` ×${n.times}` : ''}
+                </dt>
+                <dd dangerouslySetInnerHTML={{ __html: n.html }} />
+              </div>
+            ))}
+          </dl>
         </div>
       )}
-    </Collapsible>
+      {later.length > 0 && (
+        <div className="exalted-notes later">
+          <h5>At higher levels</h5>
+          <dl className="defs">
+            {later.map((n) => (
+              <div key={n.label}>
+                <dt>{n.label}</dt>
+                <dd dangerouslySetInnerHTML={{ __html: n.html }} />
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
+    </div>
   );
 }

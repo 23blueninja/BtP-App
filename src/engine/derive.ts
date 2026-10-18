@@ -96,9 +96,11 @@ export interface Derived {
   classBonus: number;
   classDie: string;
   classDieName: string;
-  attrs: Record<Attr, { points: number; die: ModDie; label: string }>;
+  /** Final points and Mod Die per attribute, with where the points come from. */
+  attrs: Record<Attr, { points: number; die: ModDie; label: string; sources: string[]; dieNote?: string }>;
   pointBuy: { spent: number; pool: number; cap: number };
   movement: number;
+  movementBreakdown: string[];
   movementTypes: { type: string; value: number }[];
   radius: number;
   initiative: string;
@@ -262,16 +264,21 @@ export function derive(c: Character): Derived {
 
   // ---- attributes ----
   const bonusPoints = eff('attributePoint').reduce((s, x) => s + x.e.count, 0);
+  const bonusSource = eff('attributePoint')[0]?.source ?? 'bonus';
   const points = {} as Record<Attr, number>;
+  const sources = {} as Record<Attr, string[]>;
   for (const a of ATTRS) {
     const bonus = c.attributes.bonus.slice(0, bonusPoints).filter((b) => b === a).length;
     const age = c.ageUps.filter((x) => x === a).length;
     points[a] = c.attributes.base[a] + bonus - age;
+    sources[a] = [`${c.attributes.base[a]} assigned`];
+    if (bonus) sources[a].push(`+${bonus} ${bonusSource}`);
+    if (age) sources[a].push(`−${age} age-up`);
   }
   const attrs = Object.fromEntries(
     ATTRS.map((a) => {
       const die = modDieFromPoints(points[a]);
-      return [a, { points: points[a], die, label: formatDie(die) }];
+      return [a, { points: points[a], die, label: formatDie(die), sources: sources[a] }];
     }),
   ) as Derived['attrs'];
   const spent = ATTRS.reduce((s, a) => s + (c.attributes.base[a] + 1), 0);
@@ -295,15 +302,20 @@ export function derive(c: Character): Derived {
   const armorNotes: string[] = [];
 
   // ---- movement & senses ----
+  const movementBreakdown = [`3 base`];
+  if (points.AGI) movementBreakdown.push(`${triangular(points.AGI) > 0 ? '+' : ''}${triangular(points.AGI)} from ${points.AGI} AGI`);
+  for (const x of eff('movement')) movementBreakdown.push(`+${sc(x.e.amount)} ${x.source}`);
   let movement = 3 + triangular(points.AGI) + eff('movement').reduce((s, x) => s + sc(x.e.amount), 0);
   if (armor?.type === 'Heavy') {
     const d = stepDie(attrs.AGI.die, -1);
-    attrs.AGI = { ...attrs.AGI, die: d, label: formatDie(d) };
+    attrs.AGI = { ...attrs.AGI, die: d, label: formatDie(d), dieNote: `${attrs.AGI.label} → ${formatDie(d)} (Heavy armor)` };
     movement -= 1;
+    movementBreakdown.push('−1 Heavy armor');
     armorNotes.push('Heavy armor: Movement −1, AGI Mod Die one step smaller, Standing costs 2 AP.');
   }
   if (hasProp('Massive')) {
     movement -= 2;
+    movementBreakdown.push('−2 Massive weapon');
     armorNotes.push('Massive weapon: Movement −2.');
   }
   movement = Math.max(0, movement);
@@ -520,6 +532,7 @@ export function derive(c: Character): Derived {
     attrs,
     pointBuy,
     movement,
+    movementBreakdown,
     movementTypes,
     radius,
     initiative: attrs.PER.label,
