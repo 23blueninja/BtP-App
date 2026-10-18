@@ -1151,3 +1151,6 @@ b.calc {
 .exalted.on dt {
   color: var(--accent-2);
 }
+.attr-final strong {
+  white-space: nowrap;
+}

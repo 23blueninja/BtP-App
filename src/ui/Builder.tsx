@@ -245,6 +245,7 @@ function Attributes({ c, d, update }: StepProps) {
             <div className="attr-head">
               <Icon name={a} /> <strong>{ATTR_NAMES[a]}</strong>
             </div>
+            <span className="small muted">Assigned points</span>
             <Stepper
               label={a}
               value={at.base[a]}
@@ -256,7 +257,9 @@ function Attributes({ c, d, update }: StepProps) {
               }}
             />
             <div className="attr-final">
-              Final: <strong>{d.attrs[a].points}</strong> · Mod Die <strong>{d.attrs[a].label}</strong>
+              Final: <strong>{d.attrs[a].points}</strong> points · Mod Die <strong>{d.attrs[a].label}</strong>
+              {d.attrs[a].sources.length > 1 && <div className="small muted">{d.attrs[a].sources.join(' ')}</div>}
+              {d.attrs[a].dieNote && <div className="small muted">{d.attrs[a].dieNote}</div>}
             </div>
             <Collapsible title={<span className="muted">What {a} does</span>}>
               <FacetText contentId={`beyond-the-prism/attributes/${ATTR_NAMES[a].toLowerCase()}-${a.toLowerCase()}`} />
