@@ -1,0 +1,396 @@
+// Mechanical effects of Conditions, and what happens to them at the start and
+// end of your turn. The rules text lives in the content; this file encodes it.
+import { conditions as conditionDefs } from '../content';
+import { ATTRS, type Attr } from '../data/types';
+import type { Condition, PlayState } from './character';
+
+/** Your Action Point Maximum (5 for player characters). */
+export const AP_MAX = 5;
+
+type CheckKind = 'hindered' | 'weakened' | 'disadvantage' | 'autofail';
+
+interface CheckMod {
+  /** Which Checks: one Attribute, several, or every Check. */
+  attrs: Attr[] | 'all';
+  /** Only Save Checks of those Attributes. */
+  save?: boolean;
+  kind: CheckKind;
+  amount?: (x: number) => number;
+  /** For automatic failures: what kind of failure, and when. */
+  detail?: string;
+}
+
+interface TurnDamage {
+  type: string;
+  amount: (x: number, level: number, p: PlayState) => number;
+  /** Resistance cannot reduce the damage below this. */
+  min?: number;
+}
+
+interface ConditionRule {
+  /** Other Conditions this one gives you, at a level. */
+  implies?: [string, (x: number) => number][];
+  checks?: CheckMod[];
+  /** Effects on Attack Checks made against you. */
+  against?: (x: number) => string;
+  /** Other Checks (Attack, DC, Manipulate…). */
+  otherChecks?: (x: number) => string;
+  ac?: (x: number) => number;
+  movement?: (x: number) => number | 'zero';
+  /** Notes on Action Points and Actions. */
+  ap?: (x: number) => string;
+  notes?: (x: number) => string;
+  startDamage?: TurnDamage;
+  /** Text reminders at the start / end of your turn. */
+  startNote?: (x: number) => string;
+  endNote?: (x: number) => string;
+  /** Level change at the end of your turn (negative reduces). */
+  endChange?: number;
+  /** Taking damage of these types reduces the level by 1. */
+  reducedBy?: string[];
+}
+
+const all = 'all' as const;
+
+export const CONDITION_RULES: Record<string, ConditionRule> = {
+  Bleeding: {
+    startDamage: { type: 'Somatic', amount: (x, level) => level * x },
+    ap: () => 'Spend 5 AP (with a bandage) to reduce Bleeding by 1.',
+  },
+  Blinded: {
+    checks: [
+      { attrs: ['PER'], kind: 'disadvantage' },
+      { attrs: ['PER'], kind: 'autofail', detail: 'Complete Failure on Checks entirely based on sight' },
+    ],
+    against: () => 'Advantage',
+    notes: () => 'All spaces are Treacherous Terrain for you; immune to effects that require sight.',
+  },
+  Bruised: {
+    checks: [{ attrs: ['VIG', 'AGI'], kind: 'weakened' }],
+    notes: () => 'Bruised lasts until you finish a Rest.',
+  },
+  Buffeted: { ac: (x) => -x },
+  Burning: {
+    implies: [['Numbed', (x) => x]],
+    startDamage: { type: 'Thermic', amount: (x) => 3 * x },
+    ap: () => 'Spend 2 AP to reduce Burning by 1; it ends if you are submerged in water.',
+  },
+  Defeaned: {
+    checks: [
+      { attrs: ['PER'], kind: 'weakened' },
+      { attrs: ['PER'], kind: 'autofail', detail: 'Complete Failure on Checks entirely based on hearing' },
+    ],
+  },
+  Dissolving: {
+    startDamage: { type: 'Caustic', amount: (x) => 2 * x },
+    endChange: -1,
+    ap: () => 'Spend 1 AP to wipe it off and reduce Dissolving by 1.',
+  },
+  Dulled: { checks: [{ attrs: ['PRS'], kind: 'hindered', amount: (x) => x }] },
+  Dying: {
+    // Only while your Endurance is above 0; Somatic Resistance can't reduce it below 1.
+    startDamage: { type: 'Somatic', amount: (x, _l, p) => (p.endurance > 0 ? 2 * x : 0), min: 1 },
+  },
+  Exhausted: {
+    checks: [{ attrs: all, kind: 'hindered', amount: (x) => x }],
+    against: (x) => `Bolstered ${x}`,
+    movement: (x) => -x,
+  },
+  Freezing: {
+    implies: [
+      ['Sluggish', (x) => x],
+      ['Slowed', (x) => 2 * x],
+    ],
+    endChange: -1,
+    reducedBy: ['Thermic'],
+  },
+  Immobilized: {
+    checks: [{ attrs: ['AGI'], save: true, kind: 'weakened' }],
+    movement: () => 'zero',
+  },
+  Morphing: {
+    implies: [
+      ['Dulled', () => 1],
+      ['Muddled', () => 1],
+    ],
+    startDamage: { type: 'Cosmic', amount: (x) => 3 * x },
+    endNote: (x) => `Morphing: make an INT Save Check (DC ${10 + x}). Success −2, Complete Success −3, Deadly Failure +1.`,
+    reducedBy: ['Sonic'],
+  },
+  Muddled: { checks: [{ attrs: ['INT'], kind: 'hindered', amount: (x) => x }] },
+  Numbed: { checks: [{ attrs: ['PER'], kind: 'hindered', amount: (x) => x }] },
+  Pacified: { otherChecks: (x) => `Attack and DC Checks: Hindered ${x}` },
+  Panicked: {
+    implies: [
+      ['Muddled', (x) => x],
+      ['Numbed', (x) => x],
+    ],
+    notes: () => 'You cannot move toward the source of your panic.',
+    startNote: (x) => `Panicked: make a PRS Save (DC ${10 + x}). Success −2, Complete Success −3; on a Failure you must Stride away (twice and +1 on a Deadly Failure).`,
+  },
+  Paralyzed: {
+    implies: [['Restrained', () => 1]],
+    checks: [{ attrs: ['AGI', 'PER'], kind: 'autofail', detail: 'automatic Complete Failures' }],
+    ap: () => 'You lose all your AP and can’t regain AP.',
+  },
+  Poisoned: {
+    implies: [['Sickened', (x) => Math.floor(x / 2)]],
+    startDamage: { type: 'Somatic', amount: (x) => x },
+    notes: (x) => `Every minute, make a VIG Save Check (DC ${10 + x}); on a Success you stop taking its damage.`,
+  },
+  Possesed: {
+    startDamage: { type: 'Infernal', amount: (x) => 2 * x },
+    notes: () => 'You must make an Attack Check on your turn against a random closest creature; you can only cast damaging spells costing 3 AP or less.',
+    endNote: (x) => `Possessed: make a PRS Save Check (DC ${10 + x}). Success −2, Complete Success −3, Deadly Failure +1.`,
+    reducedBy: ['Sonic'],
+  },
+  Prone: { against: () => 'Advantage within 5 spaces, Disadvantage beyond' },
+  Restrained: {
+    implies: [['Seized', () => 1]],
+    checks: [
+      { attrs: ['AGI'], kind: 'disadvantage' },
+      { attrs: ['AGI'], save: true, kind: 'autofail', detail: 'automatic Deadly Failures' },
+    ],
+    against: () => 'Advantage',
+    ap: () => 'You can’t take Move or Manipulate Actions except Escape.',
+  },
+  Seized: {
+    implies: [['Immobilized', () => 1]],
+    against: () => 'Bolstered 1',
+    otherChecks: () => 'Checks for Manipulate Actions: Hindered 1',
+  },
+  Sickened: { checks: [{ attrs: ['VIG'], kind: 'hindered', amount: (x) => x }] },
+  Slowed: { movement: (x) => -x },
+  Sluggish: { checks: [{ attrs: ['AGI'], kind: 'hindered', amount: (x) => x }] },
+  Stunned: {
+    ap: (x) => `You can’t take Actions on your turn, but can spend AP to reduce Stunned by 1 per AP. Reactions cost ${x} more AP.`,
+    startNote: (x) => `Stunned: if you have an active Sustained effect, make an INT Save Check (DC ${10 + x}); on a Failure you can’t Sustain this turn.`,
+  },
+  Unconscious: {
+    checks: [
+      { attrs: ['AGI', 'PER'], kind: 'autofail', detail: 'automatic Complete or Deadly Failures' },
+      { attrs: ['VIG', 'INT', 'PRS'], kind: 'weakened' },
+    ],
+    against: () => 'Bolstered 10',
+    ap: () => 'You can’t spend AP.',
+    notes: () => 'Ends if you take damage, unless an effect keeps you Unconscious.',
+  },
+};
+
+export interface ActiveCondition {
+  name: string;
+  level: number;
+  /** Conditions that gave you this one, when it isn't (only) your own. */
+  from: string[];
+  /** True when it's in your condition list (not only implied). */
+  own: boolean;
+}
+
+/** Your conditions plus the ones they give you, each at its highest level. */
+export function activeConditions(p: PlayState): ActiveCondition[] {
+  const out = new Map<string, ActiveCondition>();
+  const add = (name: string, level: number, from?: string) => {
+    if (level <= 0) return;
+    const cur = out.get(name);
+    if (cur && cur.level >= level && (!from || cur.from.includes(from))) return;
+    const next: ActiveCondition = cur ? { ...cur, level: Math.max(cur.level, level) } : { name, level, from: [], own: !from };
+    if (from && !next.from.includes(from)) next.from = [...next.from, from];
+    if (!from) next.own = true;
+    out.set(name, next);
+    for (const [n, f] of CONDITION_RULES[name]?.implies ?? []) add(n, f(level), name);
+  };
+  for (const c of p.conditions) add(c.name, c.level ?? 1);
+  if (p.dying > 0) add('Dying', p.dying);
+  return [...out.values()];
+}
+
+export interface CheckSummary {
+  /** e.g. "PRS Checks" or "AGI Save Checks". */
+  label: string;
+  attr: Attr;
+  save: boolean;
+  /** Net Hindered level and where it comes from. */
+  hindered: number;
+  hinderedFrom: string[];
+  weakened: string[];
+  disadvantage: string[];
+  autofail: string[];
+}
+
+export interface ConditionEffects {
+  active: ActiveCondition[];
+  /** Per-Attribute Check penalties (Save-only penalties separate). */
+  checks: CheckSummary[];
+  against: string[];
+  otherChecks: string[];
+  acChange: { value: number; from: string[] };
+  movementChange: { value: number; zero: boolean; from: string[] };
+  ap: string[];
+  notes: string[];
+  /** AP can't be regained (Paralyzed). */
+  noApRegain: boolean;
+}
+
+const leveled = new Set(conditionDefs.filter((d) => d.leveled).map((d) => d.name));
+const label = (c: { name: string; level: number }) => (leveled.has(c.name) ? `${c.name} ${c.level}` : c.name);
+
+export function conditionEffects(p: PlayState): ConditionEffects {
+  const active = activeConditions(p);
+  const rows = new Map<string, CheckSummary>();
+  const row = (attr: Attr, save: boolean) => {
+    const key = `${attr}${save ? ' Save' : ''}`;
+    let r = rows.get(key);
+    if (!r) {
+      r = { label: `${attr} ${save ? 'Save ' : ''}Checks`, attr, save, hindered: 0, hinderedFrom: [], weakened: [], disadvantage: [], autofail: [] };
+      rows.set(key, r);
+    }
+    return r;
+  };
+  const fx: ConditionEffects = {
+    active,
+    checks: [],
+    against: [],
+    otherChecks: [],
+    acChange: { value: 0, from: [] },
+    movementChange: { value: 0, zero: false, from: [] },
+    ap: [],
+    notes: [],
+    noApRegain: false,
+  };
+  for (const c of active) {
+    const rule = CONDITION_RULES[c.name];
+    if (!rule) continue;
+    const name = label(c);
+    for (const m of rule.checks ?? []) {
+      for (const a of m.attrs === 'all' ? ATTRS : m.attrs) {
+        const r = row(a, !!m.save);
+        if (m.kind === 'hindered') {
+          const v = m.amount ? m.amount(c.level) : 1;
+          if (v <= 0) continue;
+          r.hindered += v;
+          r.hinderedFrom.push(name);
+        } else if (m.kind === 'weakened') r.weakened.push(name);
+        else if (m.kind === 'disadvantage') r.disadvantage.push(name);
+        else r.autofail.push(`${m.detail} (${name})`);
+      }
+    }
+    if (rule.against) fx.against.push(`${rule.against(c.level)} (${name})`);
+    if (rule.otherChecks) fx.otherChecks.push(`${rule.otherChecks(c.level)} (${name})`);
+    if (rule.ac) {
+      fx.acChange.value += rule.ac(c.level);
+      fx.acChange.from.push(name);
+    }
+    if (rule.movement) {
+      const m = rule.movement(c.level);
+      if (m === 'zero') fx.movementChange.zero = true;
+      else fx.movementChange.value += m;
+      fx.movementChange.from.push(name);
+    }
+    if (rule.ap) fx.ap.push(rule.ap(c.level));
+    if (rule.notes) fx.notes.push(rule.notes(c.level));
+    if (c.name === 'Paralyzed') fx.noApRegain = true;
+  }
+  fx.checks = [...rows.values()].sort((a, b) => ATTRS.indexOf(a.attr) - ATTRS.indexOf(b.attr) || Number(a.save) - Number(b.save));
+  return fx;
+}
+
+/** Short text for a Check row: "Hindered 2 (Dulled 1, Exhausted 1), Weakened (Bruised)". */
+export function describeCheck(r: CheckSummary): string[] {
+  const out: string[] = [];
+  if (r.hindered) out.push(`Hindered ${r.hindered} (${r.hinderedFrom.join(', ')})`);
+  if (r.weakened.length) out.push(`Weakened (${r.weakened.join(', ')})`);
+  if (r.disadvantage.length) out.push(`Disadvantage (${r.disadvantage.join(', ')})`);
+  out.push(...r.autofail);
+  return out;
+}
+
+/** Adds a condition, keeping the higher level if you already have it. */
+export function addCondition(p: PlayState, name: string, level?: number): PlayState {
+  const cur = p.conditions.find((c) => c.name === name);
+  const lvl = level === undefined ? undefined : Math.max(level, cur?.level ?? 0);
+  const conditions = [...p.conditions.filter((c) => c.name !== name), { name, level: lvl }];
+  // Paralyzed: you lose all your AP.
+  return name === 'Paralyzed' ? { ...p, conditions, ap: 0, tempAp: 0 } : { ...p, conditions };
+}
+
+const changeLevel = (conds: Condition[], name: string, by: number) =>
+  conds.map((c) => (c.name === name ? { ...c, level: (c.level ?? 1) + by } : c)).filter((c) => c.name !== name || (c.level ?? 1) > 0);
+
+export interface TurnResult {
+  play: PlayState;
+  log: string[];
+  /** Damage to take, by type, after Resistance. */
+  damage: { type: string; amount: number; source: string }[];
+}
+
+/**
+ * Start of your turn: damage from Conditions (after Resistance), Buffeted ends,
+ * Paralyzed ends your turn, and reminders for start-of-turn Saves.
+ */
+export function startTurn(p: PlayState, level: number, resistances: { type: string; value: number }[]): TurnResult {
+  let conditions = [...p.conditions];
+  const log: string[] = [];
+  const damage: TurnResult['damage'] = [];
+  const active = activeConditions(p);
+  let noApRegain = false;
+
+  for (const c of active) {
+    const rule = CONDITION_RULES[c.name];
+    if (!rule?.startDamage) continue;
+    const raw = rule.startDamage.amount(c.level, level, p);
+    if (raw <= 0) continue;
+    const res = resistances.find((r) => r.type === rule.startDamage!.type)?.value ?? 0;
+    const amount = Math.max(rule.startDamage.min ?? 0, raw - res);
+    damage.push({ type: rule.startDamage.type, amount, source: label(c) });
+    log.push(`${label(c)}: take ${amount} ${rule.startDamage.type} damage${res ? ` (${raw} − Resistance ${res})` : ''}.`);
+  }
+  // Damage of certain types reduces some Conditions.
+  for (const dmg of damage) {
+    for (const c of conditions) {
+      if (CONDITION_RULES[c.name]?.reducedBy?.includes(dmg.type)) {
+        conditions = changeLevel(conditions, c.name, -1);
+        log.push(`${c.name} reduced by 1 (${dmg.type} damage).`);
+      }
+    }
+  }
+  if (conditions.some((c) => c.name === 'Buffeted')) {
+    conditions = conditions.filter((c) => c.name !== 'Buffeted');
+    log.push('Buffeted ended.');
+  }
+  if (conditions.some((c) => c.name === 'Paralyzed')) {
+    conditions = changeLevel(conditions, 'Paralyzed', -1);
+    noApRegain = true;
+    log.push('Paralyzed: your turn ends immediately, you don’t regain AP, and Paralyzed reduces by 1.');
+  }
+  for (const c of active) {
+    const note = CONDITION_RULES[c.name]?.startNote;
+    if (note) log.push(note(c.level));
+  }
+  if (damage.length && active.some((c) => c.name === 'Unconscious')) log.push('Taking damage ends Unconscious unless an effect keeps you Unconscious.');
+  if (!log.length) log.push('Your turn begins.');
+  return { play: { ...p, conditions, turn: { active: true, noApRegain } }, log, damage };
+}
+
+/** End of your turn: regain AP, temporary AP disappears, and Conditions that tick down do. */
+export function endTurn(p: PlayState): TurnResult {
+  let conditions = [...p.conditions];
+  const log: string[] = [];
+  const active = activeConditions(p);
+  for (const c of active) {
+    const note = CONDITION_RULES[c.name]?.endNote;
+    if (note) log.push(note(c.level));
+  }
+  for (const c of p.conditions) {
+    const by = CONDITION_RULES[c.name]?.endChange;
+    if (by) {
+      conditions = changeLevel(conditions, c.name, by);
+      const left = conditions.find((x) => x.name === c.name);
+      log.push(left ? `${c.name} reduced to ${left.level}.` : `${c.name} ended.`);
+    }
+  }
+  const blocked = p.turn?.noApRegain || active.some((c) => c.name === 'Paralyzed');
+  const ap = blocked ? (p.ap ?? 0) : AP_MAX;
+  log.push(blocked ? 'You don’t regain AP (Paralyzed).' : `Regained AP (${AP_MAX}).`);
+  if (p.tempAp) log.push('Temporary AP lost.');
+  return { play: { ...p, conditions, ap, tempAp: 0, turn: { active: false } }, log, damage: [] };
+}

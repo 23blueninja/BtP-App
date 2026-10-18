@@ -28,6 +28,7 @@ import {
   type SpellListDef,
 } from '../data/types';
 import type { Character } from './character';
+import { conditionEffects, describeCheck, type ConditionEffects } from './conditions';
 import {
   classAlignment,
   classEndurance,
@@ -138,6 +139,8 @@ export interface Derived {
   bulkSlots: { rank: number; slots: number }[];
   /** Bulk Rank decrease for items on your person (Powerful Build). */
   bulkShift: number;
+  /** What your current Conditions do. */
+  conditionFx: ConditionEffects;
   issues: string[];
 }
 
@@ -322,6 +325,15 @@ export function derive(c: Character): Derived {
     movementBreakdown.push('−2 Massive weapon');
     armorNotes.push('Massive weapon: Movement −2.');
   }
+  const conditionFx = conditionEffects(c.play);
+  const cm = conditionFx.movementChange;
+  if (cm.zero) {
+    movement = 0;
+    movementBreakdown.push(`→ 0 (${cm.from.join(', ')})`);
+  } else if (cm.value) {
+    movement += cm.value;
+    movementBreakdown.push(`${cm.value} ${cm.from.join(', ')}`.replace(/^-/, '−'));
+  }
   movement = Math.max(0, movement);
   const movementTypes = eff('movementType').map((x) => ({
     type: x.e.type,
@@ -371,6 +383,11 @@ export function derive(c: Character): Derived {
       ac += b;
       breakdown.push(`${w.name} (Blocking): +${b}`);
     }
+  }
+
+  if (conditionFx.acChange.value) {
+    ac += conditionFx.acChange.value;
+    breakdown.push(`${conditionFx.acChange.from.join(', ')}: ${conditionFx.acChange.value}`);
   }
 
   // ---- resistances ----
@@ -424,6 +441,7 @@ export function derive(c: Character): Derived {
       .filter((x) => x.e.what.startsWith(`${a} Save`))
       .map((x) => `Bolstered ${sc(x.e.amount)}`);
     if (a === 'AGI' && armor?.type === 'Medium') notes.push('Hindered 1 (armor)');
+    for (const r of conditionFx.checks) if (r.attr === a) notes.push(...describeCheck(r));
     return { attr: a, die, classDie: t ? classDieLabel : undefined, empowered, label, notes };
   });
   const initiativeNotes = [
@@ -575,6 +593,7 @@ export function derive(c: Character): Derived {
     choices,
     spellLists,
     bulkSlots,
+    conditionFx,
     bulkShift: eff('bulkShift').reduce((sum, x) => sum + x.e.amount, 0),
     issues,
   };
