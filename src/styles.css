@@ -697,16 +697,18 @@ th {
 dl.defs {
   margin: 0.4em 0;
 }
+/* "Label text…" inline, wrapped lines indented under the label (like the PDF). */
 dl.defs > div {
-  display: flex;
-  gap: 0.5em;
-  padding: 0.1em 0;
+  padding: 0.1em 0 0.1em 1.25em;
+  text-indent: -1.25em;
 }
 dl.defs dt {
+  display: inline;
   font-weight: 700;
-  white-space: nowrap;
+  margin-right: 0.4em;
 }
 dl.defs dd {
+  display: inline;
   margin: 0;
 }
 .rule-block .rule-title {
