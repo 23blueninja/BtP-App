@@ -13,6 +13,7 @@ import { CastRow } from './Cast';
 import { BulkPyramid } from './Inventory';
 import { alignmentGradient } from './lightColors';
 import { PlayContext, UseButton } from './Activate';
+import { HomebrewBox } from './Homebrew';
 import { actionRequest, activationsFor, ACTIVATIONS } from '../engine/activations';
 import { parseCost } from '../engine/costs';
 import type { ActiveEffect } from '../engine/character';
@@ -267,6 +268,11 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
           <WeaponTable c={c} d={d} />
         </Box>
       </div>
+      <div className="wide-row">
+        <Box title="Items & effects">
+          <HomebrewBox d={d} update={update} />
+        </Box>
+      </div>
 
       <div className="col">
         <Box title="Attributes">
@@ -317,10 +323,10 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             <input type="checkbox" checked={useCharge} onChange={(e) => setUseCharge(e.target.checked)} /> Spend a Rest Charge on Short Rest
           </label>
           <div className="row">
-            <button type="button" onClick={() => update((x) => { const r = shortRest(x, derive(x), { spendRestCharge: useCharge }); onRest(r.log); return { ...x, play: r.play }; })}>
+            <button type="button" onClick={() => update((x) => { const r = shortRest(x, derive(x), { spendRestCharge: useCharge }); onRest(r.log); return { ...x, play: r.play, homebrew: r.homebrew }; })}>
               Short Rest
             </button>
-            <button type="button" onClick={() => update((x) => { const r = longRest(x, derive(x)); onRest(r.log); return { ...x, play: r.play }; })}>
+            <button type="button" onClick={() => update((x) => { const r = longRest(x, derive(x)); onRest(r.log); return { ...x, play: r.play, homebrew: r.homebrew }; })}>
               Long Rest
             </button>
           </div>

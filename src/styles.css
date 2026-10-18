@@ -1355,6 +1355,11 @@ textarea.full {
 .issues.banner,
 .modal {
   border-color: var(--box-border);
+  /* Solid, so the page doesn't show through forms and rules text. */
+  background: #0b0c12;
+}
+.modal-backdrop {
+  backdrop-filter: blur(3px);
 }
 
 /* Sheet headings are filled with a gradient of the character's Lights, each
@@ -1691,4 +1696,147 @@ tr.needs input {
 .issues li a,
 .issues-list li a {
   color: var(--accent);
+}
+
+/* ---------- homebrew items & effects ---------- */
+.homebrew {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.homebrew-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  gap: 0.75rem;
+}
+.hb-card {
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  padding: 0.6rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.hb-card.inactive {
+  opacity: 0.75;
+}
+.hb-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.hb-meta {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.hb-tiers {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.hb-tiers .tier {
+  padding: 0.05rem 0.45rem;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.hb-tiers .tier.past {
+  color: var(--text);
+}
+.hb-tiers .tier.on {
+  color: #000;
+  background: var(--accent-2);
+  border-color: var(--accent-2);
+  font-weight: 700;
+}
+.hb-stats {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+.hb-pool {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.hb-effects {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+.hb-effects li {
+  margin: 0.15rem 0;
+}
+.hb-effects li.off {
+  color: var(--muted);
+  opacity: 0.7;
+}
+.tier-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 0 0.35rem;
+  margin-right: 0.35rem;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.hb-effects li.on .tier-tag {
+  border-color: var(--accent-2);
+  color: var(--accent-2);
+}
+.hb-actions {
+  gap: 0.9rem;
+}
+.danger-text {
+  color: var(--danger, #ff6b6b) !important;
+}
+.pre {
+  white-space: pre-wrap;
+}
+.hb-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.hb-editor h4 {
+  margin: 0.6rem 0 0;
+}
+.hb-editor label:not(.inline) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.hb-editor .tier-values {
+  display: inline-flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.hb-editor .tier-values label {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.25rem;
+}
+.hb-editor .num {
+  width: 4.2rem;
+}
+.hb-row-edit {
+  border: 1px solid var(--border);
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.hb-row-edit textarea {
+  width: 100%;
+}
+.hb-editor .grow {
+  flex: 1;
+  min-width: 10rem;
+}
+.hb-save {
+  position: sticky;
+  bottom: 0;
+  background: #0b0c12;
+  padding: 0.5rem 0;
 }

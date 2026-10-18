@@ -766,7 +766,12 @@ export function Equipment({ c, d, update }: StepProps) {
 }
 
 export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRemove?: (id: string) => void }) {
-  if (!c.equipment.weapons.length) return <p className="muted">No weapons.</p>;
+  // Your weapons, plus homebrew items that are weapons (named, with the base weapon's stats).
+  const rows = [
+    ...c.equipment.weapons.map((w) => ({ id: w.id, name: w.name, base: w.name, homebrew: false })),
+    ...d.homebrew.filter((h) => h.entry.kind === 'item' && h.entry.baseWeapon).map((h) => ({ id: h.entry.id, name: h.entry.name, base: h.entry.baseWeapon!, homebrew: true })),
+  ];
+  if (!rows.length) return <p className="muted">No weapons.</p>;
   return (
     <div className="table-wrap">
       <table className="weapons">
@@ -781,8 +786,8 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
           </tr>
         </thead>
         <tbody>
-          {c.equipment.weapons.map((we) => {
-            const w = weapons.find((x) => x.name === we.name);
+          {rows.map((we) => {
+            const w = weapons.find((x) => x.name === we.base);
             const unmet = w?.requirements
               .split(',')
               .map((r) => r.trim().split(' '))
@@ -791,6 +796,7 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
               <tr key={we.id}>
                 <td className="w-name">
                   {we.name}
+                  {we.homebrew && <div className="muted small">{we.base}</div>}
                   {unmet && unmet.length > 0 && (
                     <div className="warn small" title="You have Disadvantage on Weapon Attack Checks without meeting the requirements.">
                       Needs {w!.requirements}
@@ -821,7 +827,7 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
                     );
                   })}
                 </td>
-                {onRemove && (
+                {onRemove && !we.homebrew && (
                   <td className="w-remove">
                     <button type="button" className="icon-btn" onClick={() => onRemove(we.id)} aria-label={`Remove ${we.name}`}>
                       ✕
@@ -855,7 +861,8 @@ function WeaponDie({ name, props, d }: { name: string; props: string[]; d: Deriv
   }
   const classOpt = d.cls?.id === 'gladiator' ? { dice: d.classDie, label: `${d.cls.dieName} Die` } : undefined;
   if (classOpt) opts.push(classOpt);
-  const mods = d.weaponMods.filter((m) => has(m.property) && !(m.melee && ranged));
+  // Combat Styles apply by property; a homebrew weapon's own effects only to that weapon.
+  const mods = d.weaponMods.filter((m) => (!m.weapon || m.weapon === name) && (!m.property || has(m.property)) && !(m.melee && ranged));
   // A Combat Style Tandem rolls the Attribute Die with the Martial Die and keeps the
   // higher, so it replaces rolling either of those dice alone.
   const tandems = mods.filter((m) => m.tandem);
@@ -865,7 +872,17 @@ function WeaponDie({ name, props, d }: { name: string; props: string[]; d: Deriv
       ...opts.filter((o) => o !== classOpt && !tandems.some((m) => m.tandem === o.attr)),
     ];
   }
-  const others = mods.filter((m) => !m.tandem);
+  // Tandem with another die (a sentient item's): the property's Attribute (Precise → PER,
+  // Deft → AGI), or every Attribute option when no property is given.
+  const propAttr = (p?: string): Attr | undefined => (!p ? undefined : /precise|ranged|drawn/i.test(p) ? 'PER' : /deft/i.test(p) ? 'AGI' : 'VIG');
+  for (const m of mods.filter((m) => m.tandemDie)) {
+    opts = opts.map((o) =>
+      o.attr && (!m.property || propAttr(m.property) === o.attr) && !o.dice.includes('/')
+        ? { ...o, dice: `${o.dice} / ${m.tandemDie!.die}`, label: `${o.label} in Tandem with ${m.tandemDie!.name} Die${m.property ? ` (${m.property})` : ''}` }
+        : o,
+    );
+  }
+  const others = mods.filter((m) => !m.tandem && (m.bolster || m.note));
   return (
     <>
       <button type="button" className="link die-link" onClick={() => setOpen(true)} title="What these dice are">
@@ -883,9 +900,11 @@ function WeaponDie({ name, props, d }: { name: string; props: string[]; d: Deriv
               </div>
             ))}
           </dl>
-          {others.map((m) => (
-            <p key={m.source} className="small">
-              <strong>{m.source}:</strong> {m.bolster ? `Attack Checks with this weapon are Bolstered ${m.bolster}.` : m.note}
+          {others.map((m, i) => (
+            <p key={m.source + i} className="small">
+              <strong>{m.source}:</strong> {m.property && m.weapon ? `With the ${m.property} property: ` : ''}
+              {m.bolster ? `Attack Checks with this weapon are ${m.bolster > 0 ? 'Bolstered' : 'Hindered'} ${Math.abs(m.bolster)}. ` : ''}
+              {m.note}
             </p>
           ))}
         </Modal>

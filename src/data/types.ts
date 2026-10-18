@@ -17,6 +17,15 @@ export type Rank = (typeof RANKS)[number];
 export const RANK_DIE: Record<Rank, string> = { Novice: 'd4', Amateur: 'd6', Proficient: 'd8', Adept: 'd10', Master: 'd12' };
 
 /** A value that scales with the character, e.g. "equal to your Class Bonus". */
+/** A named Mod Die from outside your Attributes, e.g. a sentient item's PER Die. */
+export interface DieRef {
+  name: string;
+  die: string;
+}
+
+/** Rest benefits a homebrew effect can take away. */
+export type RestRule = 'noRadianceLongRest' | 'noVitalityLongRest' | 'noEnduranceLongRest' | 'noTempEnduranceLongRest' | 'noRestCharges' | 'noVitalityShortRest';
+
 export type Scaled = number | 'classBonus' | 'halfClassBonus' | 'level' | 'twiceLevel' | { attr: Attr; half?: boolean };
 
 /**
@@ -37,12 +46,33 @@ export type Effect =
   | { kind: 'attributePoint'; count: number }
   | { kind: 'sense'; name: string }
   | { kind: 'bolster'; what: string; amount: Scaled }
-  | { kind: 'tandem'; what: string; die: 'class' | Attr }
-  | { kind: 'saveTandem'; attr: Attr | 'choice' }
+  | { kind: 'tandem'; what: string; die: 'class' | Attr | DieRef }
+  /** Save Checks of this Attribute in Tandem with the Class Die, or with `die` when given. */
+  | { kind: 'saveTandem'; attr: Attr | 'choice'; die?: DieRef }
   /** Save Checks of this Attribute are Empowered. */
   | { kind: 'saveEmpowered'; attr: Attr }
   /** Attack Checks with weapons that have `property` (melee only when `melee`). */
-  | { kind: 'weapon'; property: string; melee?: boolean; tandem?: Attr; bolster?: number; note?: string }
+  | {
+      kind: 'weapon';
+      /** Only weapons with this property ('' or omitted: any). */
+      property?: string;
+      melee?: boolean;
+      /** Only this weapon (a homebrew weapon's name). */
+      weapon?: string;
+      /** Attribute Die rolled in Tandem with the Class Die (Combat Styles). */
+      tandem?: Attr;
+      /** Another die the Attack Check is rolled in Tandem with. */
+      tandemDie?: DieRef;
+      bolster?: number;
+      note?: string;
+    }
+  /** Fixed Attribute Points (not counted against the Attribute cap). */
+  | { kind: 'attribute'; attr: Attr; amount: number }
+  | { kind: 'ac'; amount: number }
+  /** Bolstered (positive) or Hindered (negative) levels for an Attribute's Checks, or only its Save Checks. */
+  | { kind: 'checks'; attrs: Attr[]; save?: boolean; amount: number }
+  | { kind: 'restRule'; rule: RestRule }
+  | { kind: 'note'; text: string }
   | { kind: 'noSlashingVulnerability' }
   /** Bulk Rank of items carried on your person (not in a backpack) is decreased by `amount` (rank number goes up). */
   | { kind: 'bulkShift'; amount: number }

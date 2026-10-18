@@ -20,6 +20,10 @@ the tabletop RPG by 23BLUENINJA. Alpha Rules © 2026 23BLUENINJA — All Rights 
   resources and uses, and apply effects such as healing, Temporary Endurance,
   temporary AP and Active Effects (Rage, Titanus Form, Embolden…). Mechanics
   for activations live in `src/engine/activations.ts`.
+- **Homebrew items & effects** — PM-made items (weapons, sentient items with
+  their own stats and pools, tiers that scale with an Alignment) and boons/curses
+  built from effect rows that feed the sheet automatically, with notes for the
+  rest. Export/import as files. Engine in `src/engine/homebrew.ts`.
 - **Level-up flow** following the Level Up Checklist.
 - **Rules reference** — every section, spell, maneuver, action and condition,
   searchable.

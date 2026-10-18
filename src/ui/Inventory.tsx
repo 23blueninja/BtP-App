@@ -38,7 +38,12 @@ export function BulkPyramid({ c, d, update }: { c: Character; d: Derived; update
       equipment: { ...x.equipment, inventory: [...x.equipment.inventory, { id: newId(), name, qty: 1, bulk: rank - d.bulkShift >= 1 ? rank - d.bulkShift : rank }] },
     }));
   const vig = Math.max(0, d.attrs.VIG.points);
-  const { rows, overflow } = layoutBulk(c.equipment.inventory, vig, d.bulkShift);
+  // Homebrew items with a Bulk take slots too.
+  const items = [
+    ...c.equipment.inventory,
+    ...d.homebrew.filter((h) => h.entry.kind === 'item' && h.entry.bulk).map((h) => ({ id: h.entry.id, name: h.entry.name, qty: 1, bulk: h.entry.bulk, inBackpack: h.entry.inBackpack })),
+  ];
+  const { rows, overflow } = layoutBulk(items, vig, d.bulkShift);
   const bulkless = c.equipment.inventory.filter((i) => !i.bulk);
   const pyramid = (bonus: boolean) => (
     <div className="pyramid">

@@ -29,6 +29,8 @@ import {
 } from '../data/types';
 import type { Character } from './character';
 import { conditionEffects, describeCheck, type ConditionEffects } from './conditions';
+import { resolveHomebrew, type ResolvedHomebrew } from './homebrew';
+import type { DieRef, RestRule } from '../data/types';
 import {
   classAlignment,
   classEndurance,
@@ -147,7 +149,13 @@ export interface Derived {
   /** Bulk Rank decrease for items on your person (Powerful Build). */
   bulkShift: number;
   /** Weapon Attack Check modifiers (Combat Styles). */
-  weaponMods: { property: string; melee?: boolean; tandem?: Attr; bolster?: number; note?: string; source: string }[];
+  weaponMods: (Extract<Effect, { kind: 'weapon' }> & { source: string })[];
+  /** Homebrew items and effects, resolved at their current tier. */
+  homebrew: ResolvedHomebrew[];
+  /** Rest benefits taken away by homebrew effects. */
+  restRules: RestRule[];
+  /** Notes from homebrew effects that apply now. */
+  homebrewNotes: { text: string; source: string }[];
   /** What your current Conditions do. */
   conditionFx: ConditionEffects;
   issues: string[];
@@ -287,11 +295,40 @@ export function derive(c: Character): Derived {
   const eff = <K extends Effect['kind']>(kind: K) =>
     effects.filter((x) => x.e.kind === kind) as { e: Extract<Effect, { kind: K }>; source: string }[];
 
+  // ---- alignment ----
+  const align = new Map<Light, string[]>();
+  const alignmentChoices: Derived['alignmentChoices'] = [];
+  const addAlign = (light: Light | 'choice' | null | undefined, source: string, pickKey: string) => {
+    const l = light === 'choice' ? c.alignment.picks[pickKey] : light;
+    if (light === 'choice') alignmentChoices.push({ pickKey, source });
+    if (light === 'choice' && !l) need(`Choose a Light for ${source}.`, pickKey === 'class' ? 'class' : 'details', `light:${pickKey}`);
+    if (l) align.set(l, [...(align.get(l) ?? []), source]);
+  };
+  eff('alignment').forEach((x, i) => addAlign(x.e.light, x.source, `effect:${x.source}:${i}`));
+  if (cls) addAlign(classAlignment(cls), cls.name, 'class');
+  const { situations, problems, people } = c.alignment;
+  if (situations && problems && people) {
+    const res = personalAlignment(situations, problems, people);
+    if (res === 'Any Light') addAlign('choice', 'Personal Alignment', 'personal');
+    else if (res) addAlign(res as Light, 'Personal Alignment', 'personal');
+  }
+  const alignment = LIGHTS.filter((l) => align.has(l)).map((l) => ({ light: l, level: Math.min(3, align.get(l)!.length), sources: align.get(l)! }));
+  // Strongest Light; ties go to the Personal Alignment, then the class's Light, then rulebook order.
+  const rank = (a: (typeof alignment)[number]) =>
+    a.level * 100 + (a.sources.includes('Personal Alignment') ? 10 : 0) + (cls && a.sources.includes(cls.name) ? 5 : 0);
+  const alignmentRanked = [...alignment].sort((a, b) => rank(b) - rank(a));
+  const strongestLight = alignmentRanked[0]?.light;
+
+  // ---- homebrew items & effects (tiers come from your Alignment) ----
+  const hb = resolveHomebrew(c, (l) => alignment.find((a) => a.light === l)?.level ?? 0);
+  effects.push(...hb.effects);
+
   // ---- attributes ----
   const bonusPoints = eff('attributePoint').reduce((s, x) => s + x.e.count, 0);
   const bonusSource = eff('attributePoint')[0]?.source ?? 'bonus';
   const points = {} as Record<Attr, number>;
   const sources = {} as Record<Attr, string[]>;
+  const itemPoints = Object.fromEntries(ATTRS.map((a) => [a, 0])) as Record<Attr, number>;
   for (const a of ATTRS) {
     const bonus = c.attributes.bonus.slice(0, bonusPoints).filter((b) => b === a).length;
     const age = c.ageUps.filter((x) => x === a).length;
@@ -299,6 +336,12 @@ export function derive(c: Character): Derived {
     sources[a] = [`${c.attributes.base[a]} assigned`];
     if (bonus) sources[a].push(`+${bonus} ${bonusSource}`);
     if (age) sources[a].push(`−${age} age-up`);
+    // Fixed points from items and effects; these don't count against the cap.
+    for (const x of eff('attribute').filter((x) => x.e.attr === a)) {
+      itemPoints[a] += x.e.amount;
+      sources[a].push(`${x.e.amount >= 0 ? '+' : '−'}${Math.abs(x.e.amount)} ${x.source}`);
+    }
+    points[a] += itemPoints[a];
   }
   const attrs = Object.fromEntries(
     ATTRS.map((a) => {
@@ -312,7 +355,7 @@ export function derive(c: Character): Derived {
   if (c.attributes.method !== 'manual') {
     if (spent !== c.attributes.pool) need(`Attribute Points: ${spent} of ${c.attributes.pool} spent.`, 'attributes', 'attr-points');
   }
-  for (const a of ATTRS) if (points[a] > cap) need(`${a} is above the level ${level} Attribute cap of ${cap}.`, 'attributes', `attr:${a}`);
+  for (const a of ATTRS) if (points[a] - itemPoints[a] > cap) need(`${a} is above the level ${level} Attribute cap of ${cap}.`, 'attributes', `attr:${a}`);
   if (c.attributes.bonus.length < bonusPoints) need(`Assign ${bonusPoints - c.attributes.bonus.length} bonus Attribute Point(s).`, 'attributes', 'attr-bonus');
 
   const ctx: Ctx = { level, classBonus, points };
@@ -343,7 +386,10 @@ export function derive(c: Character): Derived {
     movementBreakdown.push('−2 Massive weapon');
     armorNotes.push('Massive weapon: Movement −2.');
   }
-  const conditionFx = conditionEffects(c.play);
+  const conditionFx = conditionEffects(
+    c.play,
+    eff('checks').map((x) => ({ name: x.source, attrs: x.e.attrs, save: x.e.save, amount: x.e.amount })),
+  );
   const cm = conditionFx.movementChange;
   if (cm.zero) {
     movement = 0;
@@ -403,6 +449,10 @@ export function derive(c: Character): Derived {
     }
   }
 
+  for (const x of eff('ac')) {
+    ac += x.e.amount;
+    breakdown.push(`${x.source}: ${x.e.amount >= 0 ? '+' : ''}${x.e.amount}`);
+  }
   if (conditionFx.acChange.value) {
     ac += conditionFx.acChange.value;
     breakdown.push(`${conditionFx.acChange.from.join(', ')}: ${conditionFx.acChange.value}`);
@@ -422,55 +472,42 @@ export function derive(c: Character): Derived {
   const resistances = [...resMap.entries()].filter(([, v]) => v > 0).map(([type, value]) => ({ type, value }));
   const vuln = !armor && !eff('noSlashingVulnerability').length ? slashingVulnerability(vitalityMax) : '';
 
-  // ---- alignment ----
-  const align = new Map<Light, string[]>();
-  const alignmentChoices: Derived['alignmentChoices'] = [];
-  const addAlign = (light: Light | 'choice' | null | undefined, source: string, pickKey: string) => {
-    const l = light === 'choice' ? c.alignment.picks[pickKey] : light;
-    if (light === 'choice') alignmentChoices.push({ pickKey, source });
-    if (light === 'choice' && !l) need(`Choose a Light for ${source}.`, pickKey === 'class' ? 'class' : 'details', `light:${pickKey}`);
-    if (l) align.set(l, [...(align.get(l) ?? []), source]);
-  };
-  eff('alignment').forEach((x, i) => addAlign(x.e.light, x.source, `effect:${x.source}:${i}`));
-  if (cls) addAlign(classAlignment(cls), cls.name, 'class');
-  const { situations, problems, people } = c.alignment;
-  if (situations && problems && people) {
-    const res = personalAlignment(situations, problems, people);
-    if (res === 'Any Light') addAlign('choice', 'Personal Alignment', 'personal');
-    else if (res) addAlign(res as Light, 'Personal Alignment', 'personal');
-  }
-  const alignment = LIGHTS.filter((l) => align.has(l)).map((l) => ({ light: l, level: Math.min(3, align.get(l)!.length), sources: align.get(l)! }));
-  // Strongest Light; ties go to the Personal Alignment, then the class's Light, then rulebook order.
-  const rank = (a: (typeof alignment)[number]) =>
-    a.level * 100 + (a.sources.includes('Personal Alignment') ? 10 : 0) + (cls && a.sources.includes(cls.name) ? 5 : 0);
-  const alignmentRanked = [...alignment].sort((a, b) => rank(b) - rank(a));
-  const strongestLight = alignmentRanked[0]?.light;
-
   // ---- checks ----
   const classDieLabel = classDie || undefined;
   const tandemSave = new Set<Attr>((cls?.saveTandem ?? []).filter((a): a is Attr => a !== 'choice'));
   if (cls?.saveTandem.includes('choice') && c.choices['save-attr']) tandemSave.add(c.choices['save-attr'] as Attr);
-  eff('saveTandem').forEach((x) => x.e.attr !== 'choice' && tandemSave.add(x.e.attr));
-  const bolsters = eff('bolster').map((x) => `${x.e.what}: Bolstered ${sc(x.e.amount)} (${x.source})`);
-  const tandems = eff('tandem').map((x) => `${x.e.what}: Tandem with ${x.e.die === 'class' ? `${cls?.dieName ?? 'Class'} Die` : `${x.e.die} Die`} (${x.source})`);
+  eff('saveTandem').forEach((x) => x.e.attr !== 'choice' && !x.e.die && tandemSave.add(x.e.attr));
+  const bolstered = (n: number) => (n >= 0 ? `Bolstered ${n}` : `Hindered ${-n}`);
+  const bolsters = eff('bolster').map((x) => `${x.e.what}: ${bolstered(sc(x.e.amount))} (${x.source})`);
+  const dieName = (die: 'class' | Attr | DieRef) => (die === 'class' ? `${cls?.dieName ?? 'Class'} Die` : typeof die === 'string' ? `${die} Die` : `${die.name} Die (${die.die})`);
+  const tandems = eff('tandem').map((x) => `${x.e.what}: Tandem with ${dieName(x.e.die)} (${x.source})`);
   const saves: SaveLine[] = ATTRS.map((a) => {
     const t = tandemSave.has(a) && !!classDieLabel;
     const fromFacet = eff('saveEmpowered').filter((x) => x.e.attr === a);
     const empowered = (t && !!cls?.saveEmpowered && cls.saveTandem.includes(a)) || fromFacet.length > 0;
     const die = attrs[a].label;
     // Empowered: Tandem dice are added together; a single die adds a d4.
-    const label = t ? `${die} ${empowered ? '+' : '/'} ${classDieLabel}` : empowered ? `${die} + d4` : die;
+    // Tandem with another die (e.g. a sentient item's) when not already Tandem with the Class Die.
+    const other = eff('saveTandem').find((x) => x.e.attr === a && x.e.die);
+    // Only one die can be rolled in Tandem: use the bigger of the Class Die and the other die.
+    const size = (die?: string) => Number(die?.match(/d(\d+)/)?.[1] ?? 0);
+    const useOther = !!other && (!t || size(other.e.die!.die) > size(classDieLabel));
+    const second = useOther ? other!.e.die!.die : t ? classDieLabel : undefined;
+    const label = second ? `${die} ${empowered ? '+' : '/'} ${second}` : empowered ? `${die} + d4` : die;
     const notes = eff('bolster')
       .filter((x) => x.e.what.startsWith(`${a} Save`))
-      .map((x) => `Bolstered ${sc(x.e.amount)}`);
+      .map((x) => bolstered(sc(x.e.amount)));
+    if (useOther) notes.push(`Tandem with ${other!.e.die!.name} Die (${other!.source})`);
     for (const x of fromFacet) notes.push(`Empowered (${x.source})`);
     if (a === 'AGI' && armor?.type === 'Medium') notes.push('Hindered 1 (armor)');
     for (const r of conditionFx.checks) if (r.attr === a) notes.push(...describeCheck(r));
-    return { attr: a, die, classDie: t ? classDieLabel : undefined, empowered, label, notes };
+    return { attr: a, die, classDie: second, empowered, label, notes };
   });
   const initiativeNotes = [
-    ...eff('tandem').filter((x) => x.e.what.startsWith('Initiative')).map(() => `Tandem with ${cls?.dieName} Die`),
-    ...eff('bolster').filter((x) => x.e.what.startsWith('Initiative')).map((x) => `Bolstered ${sc(x.e.amount)}`),
+    ...eff('tandem')
+      .filter((x) => x.e.what.startsWith('Initiative'))
+      .map((x) => `Tandem with ${dieName(x.e.die)}${x.source === cls?.name ? '' : ` (${x.source})`}`),
+    ...eff('bolster').filter((x) => x.e.what.startsWith('Initiative')).map((x) => bolstered(sc(x.e.amount))),
   ];
   const actionCategories = ['Basic', ...(cls?.actions ?? []), ...eff('actions').flatMap((x) => x.e.categories)];
 
@@ -623,6 +660,9 @@ export function derive(c: Character): Derived {
     spellLists,
     bulkSlots,
     conditionFx,
+    homebrew: hb.cards,
+    restRules: [...new Set(eff('restRule').map((x) => x.e.rule))],
+    homebrewNotes: eff('note').map((x) => ({ text: x.e.text, source: x.source })),
     weaponMods: eff('weapon').map((x) => ({ ...x.e, source: x.source.replace(/^.*: /, '') })),
     bulkShift: eff('bulkShift').reduce((sum, x) => sum + x.e.amount, 0),
     issues,
