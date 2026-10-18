@@ -191,6 +191,9 @@ export function newCharacter(): Character {
   };
 }
 
+/** Conditions whose rulebook spelling was corrected. */
+const RENAMED_CONDITIONS: Record<string, string> = { Defeaned: 'Deafened', Possesed: 'Possessed' };
+
 /** Fills in fields missing from older saves or hand-edited imports. */
 export function normalizeCharacter(raw: unknown): Character {
   const base = newCharacter();
@@ -204,7 +207,7 @@ export function normalizeCharacter(raw: unknown): Character {
     details: { ...base.details, ...c.details },
     equipment: { ...base.equipment, ...c.equipment },
     settings: { ...base.settings, ...c.settings },
-    play: { ...emptyPlay(), ...c.play },
+    play: { ...emptyPlay(), ...c.play, conditions: (c.play?.conditions ?? []).map((x) => ({ ...x, name: RENAMED_CONDITIONS[x.name] ?? x.name })) },
     skills: { ...c.skills },
     choices: { ...c.choices },
     spells: { ...c.spells },
