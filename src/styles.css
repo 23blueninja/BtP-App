@@ -1324,22 +1324,22 @@ textarea.full {
   border-color: var(--box-border);
 }
 
-/* Sheet headings take the colour of the character's strongest Light
-   (lighter tints of the alignment colours so small titles stay readable). */
+/* Sheet headings are filled with a gradient of the character's Lights, each
+   band sized by its Alignment level (set inline from lightColors.ts). */
 .sheet {
-  --heading: var(--text);
+  --heading-gradient: linear-gradient(90deg, var(--text), var(--text));
 }
-.sheet[data-light='flame'] { --heading: #ff9a52; }
-.sheet[data-light='frost'] { --heading: #9fe0ff; }
-.sheet[data-light='pneuma'] { --heading: #ff7ad9; }
-.sheet[data-light='soma'] { --heading: #5ce6c6; }
-.sheet[data-light='mordant'] { --heading: #f0dc5a; }
-.sheet[data-light='velvet'] { --heading: #b48cff; }
-.sheet[data-light='infernal'] { --heading: #ff5a6e; }
-.sheet[data-light='lunar'] { --heading: #8fa6ff; }
-.sheet[data-light='temporal'] { --heading: #6fd97a; }
-.sheet[data-light='platinum'] { --heading: #e3e6ef; }
 .sheet-header h1,
 .sheet .box-title {
-  color: var(--heading);
+  background-image: var(--heading-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.sheet .box-title {
+  /* Size the gradient to the text, not the full box width. */
+  display: inline-block;
+}
+.sheet-header h1 {
+  display: inline-block;
 }
