@@ -416,3 +416,16 @@ describe('session notes', () => {
     expect(normalizeCharacter({ ...old, sessions: [] }).sessions).toEqual([]);
   });
 });
+
+describe('unfinished items', () => {
+  it('point at the builder step and fields to highlight', () => {
+    const d = derive(build({ name: '', classId: 'gladiator', level: 2 }));
+    const by = (f: string) => d.todo.find((t) => t.fields.includes(f));
+    expect(by('name')?.step).toBe('basics');
+    expect(by('ancestry')?.step).toBe('ancestry');
+    expect(by('subclass')?.step).toBe('class');
+    expect(by('choice:combat-style')?.step).toBe('class');
+    expect(by('alignment:people')?.step).toBe('details');
+    expect(d.todo.map((t) => t.text)).toEqual(d.issues);
+  });
+});

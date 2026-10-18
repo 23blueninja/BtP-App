@@ -26,6 +26,9 @@ export const STEPS = [
 
 type Update = (fn: (c: Character) => Character) => void;
 
+/** "needs" when an unfinished item points at this field, so it stands out. */
+const needs = (d: Derived, field: string, base = '') => `${base}${d.todo.some((t) => t.fields.includes(field)) ? `${base ? ' ' : ''}needs` : ''}` || undefined;
+
 interface StepProps {
   c: Character;
   d: Derived;
@@ -40,11 +43,19 @@ export function Builder({ c, update, step }: { c: Character; update: Update; ste
   return (
     <div className="builder">
       <nav className="steps" aria-label="Character creation steps">
-        {STEPS.map((s, i) => (
-          <button key={s.id} type="button" className={`step ${i === idx ? 'active' : ''}`} onClick={() => go('c', c.id, 'build', s.id)}>
-            <span className="step-num">{i + 1}</span> {s.label}
-          </button>
-        ))}
+        {STEPS.map((s, i) => {
+          const left = d.todo.filter((t) => t.step === s.id).length;
+          return (
+            <button key={s.id} type="button" className={`step ${i === idx ? 'active' : ''}`} onClick={() => go('c', c.id, 'build', s.id)}>
+              <span className="step-num">{i + 1}</span> {s.label}
+              {left > 0 && (
+                <span className="step-todo" title={`${left} thing(s) left to do`}>
+                  {left}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </nav>
       <div className="builder-main">
         <div className="builder-content">
@@ -126,8 +137,12 @@ function Summary({ c, d }: { c: Character; d: Derived }) {
         <details className="issues">
           <summary>{d.issues.length} thing(s) left to do</summary>
           <ul>
-            {d.issues.map((i) => (
-              <li key={i}>{i}</li>
+            {d.todo.map((t) => (
+              <li key={t.text}>
+                <a href={`#/c/${encodeURIComponent(c.id)}/build/${t.step}`}>
+                  {t.text}
+                </a>
+              </li>
             ))}
           </ul>
         </details>
@@ -156,7 +171,7 @@ function Basics({ c, d, update }: StepProps) {
   return (
     <div className="form">
       <Guide id="player-characters/character-creation/envisioning-your-character" title="Start here" />
-      <label>
+      <label className={needs(d, 'name')}>
         Character name
         <input value={c.name} onChange={(e) => update((x) => ({ ...x, name: e.target.value }))} placeholder="Name your character" />
       </label>
@@ -235,13 +250,13 @@ function Attributes({ c, d, update }: StepProps) {
         </div>
       )}
       {at.method !== 'manual' && (
-        <p className={`points-left ${remaining === 0 ? 'ok' : remaining < 0 ? 'over' : ''}`}>
+        <p className={needs(d, 'attr-points', `points-left ${remaining === 0 ? 'ok' : remaining < 0 ? 'over' : ''}`)}>
           {remaining} of {at.pool} points remaining · cap {d.pointBuy.cap} per Attribute at level {d.level}, including bonus points
         </p>
       )}
       <div className="attr-grid">
         {ATTRS.map((a) => (
-          <div key={a} className="attr-card">
+          <div key={a} className={needs(d, `attr:${a}`, 'attr-card')}>
             <div className="attr-head">
               <Icon name={a} /> <strong>{ATTR_NAMES[a]}</strong>
             </div>
@@ -269,7 +284,7 @@ function Attributes({ c, d, update }: StepProps) {
         ))}
       </div>
       {bonusCount > 0 && (
-        <fieldset>
+        <fieldset className={needs(d, 'attr-bonus')}>
           <legend>Bonus Attribute Point{bonusCount > 1 ? 's' : ''} (from your Ancestry)</legend>
           {Array.from({ length: bonusCount }, (_, i) => (
             <select
@@ -304,12 +319,12 @@ function Attributes({ c, d, update }: StepProps) {
   );
 }
 
-function Ancestry({ c, update }: StepProps) {
+function Ancestry({ c, d, update }: StepProps) {
   const anc = ancestryById.get(c.ancestry);
   return (
     <div className="form">
       <Guide id="player-characters/character-creation/choosing-an-ancestry" />
-      <div className="card-grid">
+      <div className={needs(d, 'ancestry', 'card-grid')}>
         {ancestries.map((a) => (
           <button
             key={a.id}
@@ -325,7 +340,7 @@ function Ancestry({ c, update }: StepProps) {
       {anc && (
         <div className="detail">
           {anc.subAncestries && (
-            <label>
+            <label className={needs(d, 'subancestry')}>
               Sub-ancestry
               <select value={c.subAncestry} onChange={(e) => update((x) => ({ ...x, subAncestry: e.target.value }))}>
                 <option value="">Choose…</option>
@@ -376,7 +391,7 @@ function Background({ c, d, update }: StepProps) {
         </select>
       </label>
       {preset && <FacetText contentId={preset.contentId} />}
-      <label>
+      <label className={needs(d, 'heritage')}>
         Heritage Facet
         <select value={c.background.heritage} onChange={(e) => update((x) => ({ ...x, background: { ...x.background, heritage: e.target.value } }))}>
           <option value="">Choose…</option>
@@ -389,15 +404,15 @@ function Background({ c, d, update }: StepProps) {
       </label>
       {her && <FacetText contentId={her.contentId} />}
       <h3>Professions</h3>
-      <SkillTable slots={profs} setSkill={setSkill} />
+      <SkillTable d={d} slots={profs} setSkill={setSkill} />
       <h3>Hobbies</h3>
-      <SkillTable slots={hobbies} setSkill={setSkill} />
+      <SkillTable d={d} slots={hobbies} setSkill={setSkill} />
       <Guide id="beyond-the-prism/hobbies-professions/guidelines-for-hobbies-professions" title="Guidelines" />
     </div>
   );
 }
 
-function SkillTable({ slots, setSkill }: { slots: Derived['skillSlots']; setSkill: (id: string, name: string) => void }) {
+function SkillTable({ d, slots, setSkill }: { d: Derived; slots: Derived['skillSlots']; setSkill: (id: string, name: string) => void }) {
   return (
     <table className="skill-table">
       <thead>
@@ -410,7 +425,7 @@ function SkillTable({ slots, setSkill }: { slots: Derived['skillSlots']; setSkil
       </thead>
       <tbody>
         {slots.map((s) => (
-          <tr key={s.id}>
+          <tr key={s.id} className={needs(d, `skill:${s.id}`)}>
             <td>
               <input
                 value={s.name}
@@ -434,9 +449,9 @@ function SkillTable({ slots, setSkill }: { slots: Derived['skillSlots']; setSkil
   );
 }
 
-function LightPick({ c, update, pickKey, label }: { c: Character; update: Update; pickKey: string; label: string }) {
+function LightPick({ c, d, update, pickKey, label }: { c: Character; d: Derived; update: Update; pickKey: string; label: string }) {
   return (
-    <label>
+    <label className={needs(d, `light:${pickKey}`)}>
       {label}
       <select
         value={c.alignment.picks[pickKey] ?? ''}
@@ -458,7 +473,7 @@ function ClassStep({ c, d, update }: StepProps) {
   return (
     <div className="form">
       <Guide id="player-characters/character-creation/choosing-a-class" />
-      <div className="card-grid">
+      <div className={needs(d, 'class', 'card-grid')}>
         {classes.map((k) => (
           <button
             key={k.id}
@@ -474,7 +489,7 @@ function ClassStep({ c, d, update }: StepProps) {
       {cls && (
         <div className="detail">
           <ClassTableView c={c} />
-          <label>
+          <label className={needs(d, 'subclass')}>
             {cls.subclassLabel}
             <select value={c.subclass} onChange={(e) => update((x) => ({ ...x, subclass: e.target.value }))}>
               <option value="">Choose…</option>
@@ -490,9 +505,11 @@ function ClassStep({ c, d, update }: StepProps) {
               <FacetText contentId={sub.contentId} />
             </Collapsible>
           )}
-          {classAlignment(cls) === 'choice' && <LightPick c={c} update={update} pickKey="class" label={`${cls.name} Alignment`} />}
+          {classAlignment(cls) === 'choice' && <LightPick c={c} d={d} update={update} pickKey="class" label={`${cls.name} Alignment`} />}
           {d.choices.map((ch) => (
-            <ChoicePicker key={ch.id} choice={ch} onPick={(id) => update((x) => ({ ...x, choices: { ...x.choices, [ch.id]: id } }))} />
+            <div key={ch.id} className={needs(d, `choice:${ch.id}`)}>
+              <ChoicePicker choice={ch} onPick={(id) => update((x) => ({ ...x, choices: { ...x.choices, [ch.id]: id } }))} />
+            </div>
           ))}
           <h3>Class features</h3>
           {(getNode(cls.contentId)?.children ?? [])
@@ -557,12 +574,9 @@ function Spells({ c, d, update }: StepProps) {
         </p>
       )}
       {known.map((l) => (
-        <SpellListEditor
-          key={`${l.source}-${l.def.id}`}
-          list={l}
-          selectedIds={c.spells[l.def.id] ?? []}
-          onChange={(ids) => update((x) => ({ ...x, spells: { ...x.spells, [l.def.id]: ids } }))}
-        />
+        <div key={`${l.source}-${l.def.id}`} className={needs(d, `spells:${l.def.id}`)}>
+          <SpellListEditor list={l} selectedIds={c.spells[l.def.id] ?? []} onChange={(ids) => update((x) => ({ ...x, spells: { ...x.spells, [l.def.id]: ids } }))} />
+        </div>
       ))}
       {d.spellLists.some((l) => l.def.mode === 'prepared') && (
         <p className="note">Prepared spells are chosen each Long Rest on the character sheet’s Spells & Maneuvers tab.</p>
@@ -574,7 +588,9 @@ function Spells({ c, d, update }: StepProps) {
 function Details({ c, d, update }: StepProps) {
   const al = c.alignment;
   const setAl = (k: 'situations' | 'problems' | 'people', v: string) => update((x) => ({ ...x, alignment: { ...x.alignment, [k]: v } }));
-  const needsAny = d.issues.some((i) => i.includes('Personal Alignment') && i.startsWith('Choose a Light'));
+  const needsAny = d.alignmentChoices.some((a) => a.pickKey === 'personal');
+  // Facets that grant "an Alignment of your choice".
+  const effectPicks = d.alignmentChoices.filter((a) => a.pickKey.startsWith('effect:'));
   const gods = getNode('player-characters/character-creation/devotion')?.children ?? [];
   const setDetail = (k: keyof Character['details'], v: string) => update((x) => ({ ...x, details: { ...x.details, [k]: v } }));
   return (
@@ -590,7 +606,7 @@ function Details({ c, d, update }: StepProps) {
             ['people', 'People with…', ['Apathy', 'Empathy']],
           ] as const
         ).map(([k, label, opts]) => (
-          <fieldset key={k}>
+          <fieldset key={k} className={needs(d, `alignment:${k}`)}>
             <legend>{label}</legend>
             {opts.map((o) => (
               <label key={o} className="inline">
@@ -600,7 +616,10 @@ function Details({ c, d, update }: StepProps) {
           </fieldset>
         ))}
       </div>
-      {(needsAny || c.alignment.picks.personal) && <LightPick c={c} update={update} pickKey="personal" label="Your answers grant any Light:" />}
+      {(needsAny || c.alignment.picks.personal) && <LightPick c={c} d={d} update={update} pickKey="personal" label="Your answers grant any Light:" />}
+      {effectPicks.map((a) => (
+        <LightPick key={a.pickKey} c={c} d={d} update={update} pickKey={a.pickKey} label={`${a.source} grants an Alignment of your choice:`} />
+      ))}
       <div className="alignment-list">
         {d.alignment.map((a) => (
           <span key={a.light} className={`chip light-${a.light.toLowerCase()}`} title={a.sources.join(', ')}>
@@ -965,8 +984,12 @@ function Review({ c, d, update }: StepProps) {
         <>
           <p>A few things are still open. You can finish them later — the sheet works either way.</p>
           <ul className="issues-list">
-            {d.issues.map((i) => (
-              <li key={i}>{i}</li>
+            {d.todo.map((t) => (
+              <li key={t.text}>
+                <a href={`#/c/${encodeURIComponent(c.id)}/build/${t.step}`}>
+                  {t.text}
+                </a>
+              </li>
             ))}
           </ul>
         </>

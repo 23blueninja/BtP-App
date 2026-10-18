@@ -89,6 +89,13 @@ export interface SaveLine {
   notes: string[];
 }
 
+/** An unfinished item: its text, the builder step it's on, and the fields to highlight there. */
+export interface Todo {
+  text: string;
+  step: string;
+  fields: string[];
+}
+
 export interface Derived {
   level: number;
   maxLevel: number;
@@ -144,6 +151,10 @@ export interface Derived {
   /** What your current Conditions do. */
   conditionFx: ConditionEffects;
   issues: string[];
+  /** The same unfinished items, with the builder step and fields to highlight. */
+  todo: Todo[];
+  /** "An Alignment of your choice" grants, with the key their Light is stored under. */
+  alignmentChoices: { pickKey: string; source: string }[];
 }
 
 interface Ctx {
@@ -252,6 +263,11 @@ function countOf(e: CountExpr, ctx: Ctx, cls: ClassDef | undefined): number {
 
 export function derive(c: Character): Derived {
   const issues: string[] = [];
+  const todo: Todo[] = [];
+  const need = (text: string, step: string, ...fields: string[]) => {
+    issues.push(text);
+    todo.push({ text, step, fields });
+  };
   const cls = getClass(c.classId);
   const maxLevel = cls ? Math.min(MAX_LEVEL, maxClassLevel(cls)) : MAX_LEVEL;
   const level = Math.max(1, Math.min(c.level, maxLevel));
@@ -294,10 +310,10 @@ export function derive(c: Character): Derived {
   const cap = attributeCap(level);
   const pointBuy = { spent, pool: c.attributes.pool, cap };
   if (c.attributes.method !== 'manual') {
-    if (spent !== c.attributes.pool) issues.push(`Attribute Points: ${spent} of ${c.attributes.pool} spent.`);
+    if (spent !== c.attributes.pool) need(`Attribute Points: ${spent} of ${c.attributes.pool} spent.`, 'attributes', 'attr-points');
   }
-  for (const a of ATTRS) if (points[a] > cap) issues.push(`${a} is above the level ${level} Attribute cap of ${cap}.`);
-  if (c.attributes.bonus.length < bonusPoints) issues.push(`Assign ${bonusPoints - c.attributes.bonus.length} bonus Attribute Point(s).`);
+  for (const a of ATTRS) if (points[a] > cap) need(`${a} is above the level ${level} Attribute cap of ${cap}.`, 'attributes', `attr:${a}`);
+  if (c.attributes.bonus.length < bonusPoints) need(`Assign ${bonusPoints - c.attributes.bonus.length} bonus Attribute Point(s).`, 'attributes', 'attr-bonus');
 
   const ctx: Ctx = { level, classBonus, points };
   const sc = (v: Scaled) => resolveScaled(v, ctx);
@@ -408,9 +424,11 @@ export function derive(c: Character): Derived {
 
   // ---- alignment ----
   const align = new Map<Light, string[]>();
+  const alignmentChoices: Derived['alignmentChoices'] = [];
   const addAlign = (light: Light | 'choice' | null | undefined, source: string, pickKey: string) => {
     const l = light === 'choice' ? c.alignment.picks[pickKey] : light;
-    if (light === 'choice' && !l) issues.push(`Choose a Light for ${source}.`);
+    if (light === 'choice') alignmentChoices.push({ pickKey, source });
+    if (light === 'choice' && !l) need(`Choose a Light for ${source}.`, pickKey === 'class' ? 'class' : 'details', `light:${pickKey}`);
     if (l) align.set(l, [...(align.get(l) ?? []), source]);
   };
   eff('alignment').forEach((x, i) => addAlign(x.e.light, x.source, `effect:${x.source}:${i}`));
@@ -478,8 +496,8 @@ export function derive(c: Character): Derived {
   eff('profession').forEach((x, k) => {
     for (let i = 1; i <= x.e.count; i++) slot(`fx-${slugify(x.source)}-${k}-prof-${i}`, 'profession', x.e.rank, x.source, { suggested: x.e.name });
   });
-  const unnamed = skillSlots.filter((s) => !s.name.trim()).length;
-  if (unnamed) issues.push(`${unnamed} Hobby/Profession slot(s) need a name.`);
+  const unnamed = skillSlots.filter((s) => !s.name.trim());
+  if (unnamed.length) need(`${unnamed.length} Hobby/Profession slot(s) need a name.`, 'background', ...unnamed.map((s) => `skill:${s.id}`));
 
   // ---- spells & maneuvers ----
   const maxLevelOf = (col: string) => (cls ? numeric(columnValue(cls, level, col)) : 1);
@@ -505,9 +523,9 @@ export function derive(c: Character): Derived {
       const count = countOf(def.count, ctx, cls);
       if (def.mode === 'known') {
         const want = count - granted.length;
-        if (selected.length !== want) issues.push(`${def.label}: ${selected.length} of ${want} chosen.`);
+        if (selected.length !== want) need(`${def.label}: ${selected.length} of ${want} chosen.`, 'spells', `spells:${def.id}`);
         const bad = selected.filter((s) => !pool.some((p) => p.id === s.id));
-        if (bad.length) issues.push(`${def.label}: ${bad.map((b) => b.name).join(', ')} not allowed for this list.`);
+        if (bad.length) need(`${def.label}: ${bad.map((b) => b.name).join(', ')} not allowed for this list.`, 'spells', `spells:${def.id}`);
       }
       return { def, source, count, pool, granted, selected };
     });
@@ -531,15 +549,20 @@ export function derive(c: Character): Derived {
   }
 
   // ---- checks on required choices ----
-  if (!c.name.trim()) issues.push('Give your character a name.');
+  if (!c.name.trim()) need('Give your character a name.', 'basics', 'name');
   const anc = ancestryById.get(c.ancestry);
-  if (!anc) issues.push('Choose an Ancestry.');
-  else if (anc.subAncestries && !anc.subAncestries.some((s) => s.id === c.subAncestry)) issues.push(`Choose a ${anc.name} sub-ancestry.`);
-  if (!c.background.heritage) issues.push('Choose a Heritage Facet.');
-  if (!cls) issues.push('Choose a Class.');
-  else if (!scInfo) issues.push(`Choose your ${cls.subclassLabel}.`);
-  choices.filter((ch) => !ch.selected).forEach((ch) => issues.push(`Choose your ${ch.label}.`));
-  if (!(situations && problems && people)) issues.push('Answer the Personal Alignment questions.');
+  if (!anc) need('Choose an Ancestry.', 'ancestry', 'ancestry');
+  else if (anc.subAncestries && !anc.subAncestries.some((s) => s.id === c.subAncestry)) need(`Choose a ${anc.name} sub-ancestry.`, 'ancestry', 'subancestry');
+  if (!c.background.heritage) need('Choose a Heritage Facet.', 'background', 'heritage');
+  if (!cls) need('Choose a Class.', 'class', 'class');
+  else if (!scInfo) need(`Choose your ${cls.subclassLabel}.`, 'class', 'subclass');
+  choices.filter((ch) => !ch.selected).forEach((ch) => need(`Choose your ${ch.label}.`, 'class', `choice:${ch.id}`));
+  if (!(situations && problems && people))
+    need(
+      'Answer the Personal Alignment questions.',
+      'details',
+      ...(['situations', 'problems', 'people'] as const).filter((k) => !c.alignment[k]).map((k) => `alignment:${k}`),
+    );
 
   const spellAttr = cls?.spellAttr === 'choice' ? (c.choices['spell-attr'] as Attr | undefined) : cls?.spellAttr;
   const resources = (cls?.resources ?? [])
@@ -603,6 +626,8 @@ export function derive(c: Character): Derived {
     weaponMods: eff('weapon').map((x) => ({ ...x.e, source: x.source.replace(/^.*: /, '') })),
     bulkShift: eff('bulkShift').reduce((sum, x) => sum + x.e.amount, 0),
     issues,
+    todo,
+    alignmentChoices,
   };
 }
 

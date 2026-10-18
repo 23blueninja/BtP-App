@@ -63,8 +63,12 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
           <details className="issues banner">
             <summary>{d.issues.length} unfinished item(s) — open the builder to complete them</summary>
             <ul>
-              {d.issues.map((i) => (
-                <li key={i}>{i}</li>
+              {d.todo.map((t) => (
+                <li key={t.text}>
+                  <a href={`#/c/${encodeURIComponent(c.id)}/build/${t.step}`}>
+                    {t.text}
+                  </a>
+                </li>
               ))}
             </ul>
           </details>
