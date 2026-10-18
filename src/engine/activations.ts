@@ -255,6 +255,16 @@ export const ACTIVATIONS: ActivationDef[] = [
     ],
   },
   {
+    id: 'classes/gladiator/combat-styles/defensive-fighting',
+    label: 'Defensive Fighting',
+    effects: (x) => [
+      {
+        kind: 'effect',
+        effect: { name: 'Defensive Fighting', ends: 'startOfTurn', ac: half(x.classBonus), notes: ['Your Attack Checks this turn are Hindered 1.'] },
+      },
+    ],
+  },
+  {
     id: 'classes/incarnate/titanus-form/titan-morph',
     label: 'Titan Morph',
     ap: { min: 1, max: 'maxLevel' },

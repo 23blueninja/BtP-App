@@ -1,6 +1,6 @@
 // Class mechanics. Class tables, facet lists, Alignment and Endurance are read
 // from the rules; this file only adds what the engine needs to automate.
-import type { ChoiceDef, ClassDef, SpellListDef } from './types';
+import type { ChoiceDef, ClassDef, Effect, SpellListDef } from './types';
 
 const C = 'classes';
 
@@ -23,6 +23,16 @@ const attrChoice = (id: string, label: string, level: number, base: string): Cho
     { id: 'PER', name: 'Perception', contentId: `${base}/perception` },
   ],
 });
+
+/** Gladiator Combat Styles: how each changes Attack Checks with certain weapons. */
+const combatStyleEffects: Record<string, Effect[]> = {
+  Archery: [{ kind: 'weapon', property: 'Drawn', tandem: 'PER' }],
+  Dueling: [{ kind: 'weapon', property: 'Versatile', note: 'Two hands: Deadly DV +1. One hand: Seize or Shove as part of a Strike for 1 more AP.' }],
+  Fencer: [{ kind: 'weapon', property: 'Deft', tandem: 'AGI' }],
+  'Greatweapon Fighting': [{ kind: 'weapon', property: 'Massive', bolster: 1 }],
+  'Heavy Weapon Fighting': [{ kind: 'weapon', property: 'Heavy', melee: true, tandem: 'VIG' }],
+  Juggernaut: [{ kind: 'weapon', property: 'Heavy', note: 'You can ignore the Two-Handed property.' }],
+};
 
 export const classes: ClassDef[] = [
   {
@@ -128,7 +138,7 @@ export const classes: ClassDef[] = [
     subclassListId: `${C}/champions-causes`,
     facetExtras: {
       'apostles-light': { effects: [{ kind: 'vitality', amount: 'halfClassBonus' }] },
-      undaunted: { uses: { count: 1, per: 'Long Rest' } },
+      undaunted: { uses: { count: 1, per: 'Rest' } },
     },
     choices: [
       {
@@ -221,6 +231,7 @@ export const classes: ClassDef[] = [
           id: n.toLowerCase().replace(/ /g, '-'),
           name: n,
           contentId: `${C}/gladiator/combat-styles/${n.toLowerCase().replace(/ /g, '-')}`,
+          effects: combatStyleEffects[n],
         })),
       },
     ],
@@ -231,7 +242,9 @@ export const classes: ClassDef[] = [
           'peerless-athlete': {
             effects: [
               { kind: 'tandem', what: 'Initiative Checks', die: 'class' },
+              { kind: 'tandem', what: 'VIG Attribute Checks', die: 'class' },
               { kind: 'bolster', what: 'Basic VIG Skill Checks', amount: 1 },
+              { kind: 'saveEmpowered', attr: 'VIG' },
             ],
           },
         },

@@ -1,10 +1,42 @@
-import type { Character } from '../engine/character';
+import { useState } from 'react';
+import { newId, type Character } from '../engine/character';
 import type { Derived } from '../engine/derive';
 import { effectiveBulk, layoutBulk } from '../engine/inventory';
 import { RuleLink } from './common';
 
-/** Bulk slots drawn as a pyramid, like the inventory on the original character sheet. */
-export function BulkPyramid({ c, d }: { c: Character; d: Derived }) {
+/** An empty slot you can type an item name into; Enter (or leaving the field) adds it. */
+function EmptySlot({ rank, onAdd }: { rank: number; onAdd: (name: string) => void }) {
+  const [text, setText] = useState('');
+  const commit = () => {
+    if (text.trim()) onAdd(text.trim());
+    setText('');
+  };
+  return (
+    <input
+      className="pyr-slot pyr-input"
+      value={text}
+      onChange={(e) => setText(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => e.key === 'Enter' && (e.currentTarget.blur(), e.preventDefault())}
+      placeholder=" "
+      aria-label={`Add a Bulk ${rank} item`}
+      title={`Type to add a Bulk ${rank} item`}
+    />
+  );
+}
+
+/**
+ * Bulk slots drawn as a pyramid, like the inventory on the original character sheet.
+ * With `update`, typing into an empty slot adds an item that fills that slot.
+ */
+export function BulkPyramid({ c, d, update }: { c: Character; d: Derived; update?: (fn: (c: Character) => Character) => void }) {
+  // Items on your person count as `bulkShift` ranks lower (Powerful Build), so an item
+  // typed into a rank r slot gets Bulk r − shift where possible, to land where it was typed.
+  const add = (name: string, rank: number) =>
+    update?.((x) => ({
+      ...x,
+      equipment: { ...x.equipment, inventory: [...x.equipment.inventory, { id: newId(), name, qty: 1, bulk: rank - d.bulkShift >= 1 ? rank - d.bulkShift : rank }] },
+    }));
   const vig = Math.max(0, d.attrs.VIG.points);
   const { rows, overflow } = layoutBulk(c.equipment.inventory, vig, d.bulkShift);
   const bulkless = c.equipment.inventory.filter((i) => !i.bulk);
@@ -17,7 +49,10 @@ export function BulkPyramid({ c, d }: { c: Character; d: Derived }) {
           <div className="pyr-slots">
             {r.slots
               .filter((s) => s.bonus === bonus)
-              .map((s, i) => (
+              .map((s, i) =>
+                !s.item && !s.locked && update ? (
+                  <EmptySlot key={i} rank={r.rank} onAdd={(name) => add(name, r.rank)} />
+                ) : (
                 <span
                   key={i}
                   className={`pyr-slot ${s.locked ? 'locked' : ''} ${s.item ? 'filled' : ''}`}
@@ -31,7 +66,8 @@ export function BulkPyramid({ c, d }: { c: Character; d: Derived }) {
                 >
                   {s.item ? s.item.name : s.locked ? '🔒' : ''}
                 </span>
-              ))}
+                ),
+              )}
           </div>
         </div>
       ))}

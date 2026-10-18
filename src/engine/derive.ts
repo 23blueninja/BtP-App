@@ -139,6 +139,8 @@ export interface Derived {
   bulkSlots: { rank: number; slots: number }[];
   /** Bulk Rank decrease for items on your person (Powerful Build). */
   bulkShift: number;
+  /** Weapon Attack Check modifiers (Combat Styles). */
+  weaponMods: { property: string; melee?: boolean; tandem?: Attr; bolster?: number; note?: string; source: string }[];
   /** What your current Conditions do. */
   conditionFx: ConditionEffects;
   issues: string[];
@@ -435,12 +437,15 @@ export function derive(c: Character): Derived {
   const tandems = eff('tandem').map((x) => `${x.e.what}: Tandem with ${x.e.die === 'class' ? `${cls?.dieName ?? 'Class'} Die` : `${x.e.die} Die`} (${x.source})`);
   const saves: SaveLine[] = ATTRS.map((a) => {
     const t = tandemSave.has(a) && !!classDieLabel;
-    const empowered = t && !!cls?.saveEmpowered && cls.saveTandem.includes(a);
+    const fromFacet = eff('saveEmpowered').filter((x) => x.e.attr === a);
+    const empowered = (t && !!cls?.saveEmpowered && cls.saveTandem.includes(a)) || fromFacet.length > 0;
     const die = attrs[a].label;
-    const label = t ? `${die} ${empowered ? '+' : '/'} ${classDieLabel}` : die;
+    // Empowered: Tandem dice are added together; a single die adds a d4.
+    const label = t ? `${die} ${empowered ? '+' : '/'} ${classDieLabel}` : empowered ? `${die} + d4` : die;
     const notes = eff('bolster')
       .filter((x) => x.e.what.startsWith(`${a} Save`))
       .map((x) => `Bolstered ${sc(x.e.amount)}`);
+    for (const x of fromFacet) notes.push(`Empowered (${x.source})`);
     if (a === 'AGI' && armor?.type === 'Medium') notes.push('Hindered 1 (armor)');
     for (const r of conditionFx.checks) if (r.attr === a) notes.push(...describeCheck(r));
     return { attr: a, die, classDie: t ? classDieLabel : undefined, empowered, label, notes };
@@ -595,6 +600,7 @@ export function derive(c: Character): Derived {
     spellLists,
     bulkSlots,
     conditionFx,
+    weaponMods: eff('weapon').map((x) => ({ ...x.e, source: x.source.replace(/^.*: /, '') })),
     bulkShift: eff('bulkShift').reduce((sum, x) => sum + x.e.amount, 0),
     issues,
   };

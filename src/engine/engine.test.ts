@@ -387,3 +387,22 @@ describe('strongest alignment', () => {
     expect(derive(build({})).strongestLight).toBeUndefined();
   });
 });
+
+describe('combat styles, Peerless Athlete and weapon properties', () => {
+  it('Combat Styles become weapon modifiers', () => {
+    const d = derive(build({ classId: 'gladiator', level: 2, choices: { 'combat-style': 'heavy-weapon-fighting' } }));
+    expect(d.weaponMods).toEqual([{ kind: 'weapon', property: 'Heavy', melee: true, tandem: 'VIG', source: 'Heavy Weapon Fighting' }]);
+  });
+  it('Peerless Athlete makes VIG Save Checks Empowered', () => {
+    const d = derive(build({ classId: 'gladiator', subclass: 'victor', level: 1 }));
+    const vig = d.saves.find((s) => s.attr === 'VIG')!;
+    expect(vig.empowered).toBe(true);
+    expect(vig.notes).toContain('Empowered (Peerless Athlete)');
+    expect(vig.label).toMatch(/\+/);
+  });
+  it('every weapon property links to its rules section', async () => {
+    const { weaponPropertyNode } = await import('../content');
+    const missing = weapons.flatMap((w) => w.properties).filter((p) => !weaponPropertyNode(p));
+    expect([...new Set(missing)]).toEqual([]);
+  });
+});
