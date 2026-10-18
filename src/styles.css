@@ -1303,3 +1303,23 @@ b.calc {
 textarea.full {
   width: 100%;
 }
+
+/* White borders on containers (table lines and controls keep --border). */
+:root {
+  --box-border: #fff;
+}
+.box,
+.builder-content,
+.ref-body,
+.ref-nav,
+.levelup,
+.summary,
+.detail,
+.char-card,
+.attr-card,
+.spell-list-editor,
+.pick-card,
+.issues.banner,
+.modal {
+  border-color: var(--box-border);
+}
