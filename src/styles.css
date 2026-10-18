@@ -902,8 +902,8 @@ input.num {
 }
 .attr {
   display: grid;
-  /* Name above the symbol, then the die, then the details. */
-  grid-template-columns: 4.4rem 3.2rem minmax(0, 1fr);
+  /* Name above the symbol and die, then the details. */
+  grid-template-columns: 6.6rem minmax(0, 1fr);
   align-items: center;
   gap: 0.5rem;
   background: var(--panel-2);
@@ -920,6 +920,14 @@ input.num {
   align-items: center;
   gap: 0.1rem;
   text-align: center;
+}
+.attr-value {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.attr-value .attr-icon {
+  display: flex;
 }
 .attr-badge .attr-name {
   font-size: 0.78rem;

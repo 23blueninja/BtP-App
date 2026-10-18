@@ -271,11 +271,13 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               <div key={a} className="attr">
                 <div className="attr-badge">
                   <div className="attr-name">{ATTR_NAMES[a]}</div>
-                  <div className="attr-icon">
-                    <Icon name={a} />
+                  <div className="attr-value">
+                    <span className="attr-icon">
+                      <Icon name={a} />
+                    </span>
+                    <span className="attr-die">{d.attrs[a].label}</span>
                   </div>
                 </div>
-                <div className="attr-die">{d.attrs[a].label}</div>
                 <div className="attr-desc muted small">
                   {d.attrs[a].points} points{d.attrs[a].sources.length > 1 && ` (${d.attrs[a].sources.join(' ')})`}
                   {d.attrs[a].dieNote && ` · ${d.attrs[a].dieNote}`}
