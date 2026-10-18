@@ -9,6 +9,7 @@ import { Home } from './ui/Home';
 import { LevelUp } from './ui/LevelUp';
 import { Reference } from './ui/Reference';
 import { Sheet } from './ui/Sheet';
+import logo from './assets/icons/8VNXled.png';
 
 function useCharacter(id: string | undefined) {
   const [c, setC] = useState<Character | undefined>(() => (id ? store.get(id) : undefined));
@@ -50,9 +51,10 @@ export function App() {
 
   return (
     <div className="app">
+      <div className="prism-bg" aria-hidden />
       <header className="topbar">
         <button type="button" className="brand" onClick={() => go()}>
-          <span className="ic ic-SL" aria-hidden /> BtP Characters
+          <img src={logo} alt="" className="brand-logo" /> BtP Characters
         </button>
         <nav>
           <button type="button" className="link" onClick={() => go()}>
