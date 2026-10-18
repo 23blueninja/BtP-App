@@ -4,7 +4,7 @@ import { classById } from '../data/classes';
 import { newCharacter, newId } from '../engine/character';
 import { exportCharacter, importCharacter, store } from '../storage/storage';
 import { go } from './common';
-import logo from '../assets/logo.png';
+import logo from '../assets/icons/8VNXled.png';
 
 export function Home() {
   const [, setTick] = useState(0);

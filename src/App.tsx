@@ -9,7 +9,7 @@ import { Home } from './ui/Home';
 import { LevelUp } from './ui/LevelUp';
 import { Reference } from './ui/Reference';
 import { Sheet } from './ui/Sheet';
-import logo from './assets/logo.png';
+import logo from './assets/icons/8VNXled.png';
 
 function useCharacter(id: string | undefined) {
   const [c, setC] = useState<Character | undefined>(() => (id ? store.get(id) : undefined));
