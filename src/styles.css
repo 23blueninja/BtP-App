@@ -1120,19 +1120,22 @@ input.num {
   gap: 0.2rem;
 }
 .pyr-slot {
-  width: 2.7rem;
-  height: 1.8rem;
+  /* Five slots fill the widest (rank 5) row; narrower rows stay centred. */
+  flex: 0 0 calc((100% - 0.8rem) / 5);
+  min-width: 0;
+  min-height: 1.8rem;
   border: 1px solid var(--border);
   border-radius: 5px;
   background: var(--bg-2);
-  font-size: 0.6rem;
-  line-height: 1.1;
+  font-size: 0.7rem;
+  line-height: 1.15;
   display: grid;
   place-items: center;
   overflow: hidden;
   text-align: center;
-  word-break: break-word;
-  padding: 1px;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  padding: 2px 3px;
 }
 .pyr-slot.locked {
   opacity: 0.35;
