@@ -1115,13 +1115,11 @@ input.num {
 }
 .pyr-slots {
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
   gap: 0.2rem;
 }
 .pyr-slot {
-  /* Five slots fill the widest (rank 5) row; narrower rows stay centred. */
-  flex: 0 0 calc((100% - 0.8rem) / 5);
+  /* Each row's slots share the full width (rank 1: one slot, rank 2: halves…). */
+  flex: 1 1 0;
   min-width: 0;
   min-height: 1.8rem;
   border: 1px solid var(--border);
