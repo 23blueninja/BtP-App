@@ -373,3 +373,17 @@ describe('attribute and movement breakdowns', () => {
     expect(d.movementBreakdown).toEqual(['3 base', '+6 from 3 AGI', '+3 Speedster']);
   });
 });
+
+describe('strongest alignment', () => {
+  it('picks the highest level, breaking ties by personal alignment then class', () => {
+    // Cogitani (Pneuma) Arcanist (Lunar), Kinesis (Flame/Frost/Velvet), personal Action/Reason/Empathy = Velvet -> Velvet is Firm.
+    const firm = derive(build({ ancestry: 'cogitani', classId: 'arcanist', subclass: 'kinesis-triumvirate', alignment: { situations: 'Action', problems: 'Reason', people: 'Empathy', picks: {} } }));
+    expect(firm.strongestLight).toBe('Velvet');
+    // All Weak: personal alignment wins the tie (Action/Instinct/Apathy = Mordant).
+    const tie = derive(build({ ancestry: 'human', classId: 'berserker', alignment: { situations: 'Action', problems: 'Instinct', people: 'Apathy', picks: {} } }));
+    expect(tie.strongestLight).toBe('Mordant');
+    // No personal answers: the class's Light wins (Berserker = Soma over Human Flame).
+    expect(derive(build({ ancestry: 'human', classId: 'berserker' })).strongestLight).toBe('Soma');
+    expect(derive(build({})).strongestLight).toBeUndefined();
+  });
+});
