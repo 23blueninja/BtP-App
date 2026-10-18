@@ -115,6 +115,8 @@ export interface Derived {
   resistances: { type: string; value: number }[];
   slashingVulnerability: string;
   alignment: { light: Light; level: number; sources: string[] }[];
+  /** The character's strongest Light (drives the sheet's heading colour). */
+  strongestLight?: Light;
   senses: string[];
   bolsters: string[];
   tandems: string[];
@@ -398,6 +400,10 @@ export function derive(c: Character): Derived {
     else if (res) addAlign(res as Light, 'Personal Alignment', 'personal');
   }
   const alignment = LIGHTS.filter((l) => align.has(l)).map((l) => ({ light: l, level: Math.min(3, align.get(l)!.length), sources: align.get(l)! }));
+  // Strongest Light; ties go to the Personal Alignment, then the class's Light, then rulebook order.
+  const rank = (a: (typeof alignment)[number]) =>
+    a.level * 100 + (a.sources.includes('Personal Alignment') ? 10 : 0) + (cls && a.sources.includes(cls.name) ? 5 : 0);
+  const strongestLight = [...alignment].sort((a, b) => rank(b) - rank(a))[0]?.light;
 
   // ---- checks ----
   const classDieLabel = classDie || undefined;
@@ -547,6 +553,7 @@ export function derive(c: Character): Derived {
     resistances,
     slashingVulnerability: vuln,
     alignment,
+    strongestLight,
     senses,
     bolsters,
     tandems,

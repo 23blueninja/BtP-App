@@ -24,7 +24,7 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
   const anc = ancestryById.get(c.ancestry);
   const sub = anc?.subAncestries?.find((s) => s.id === c.subAncestry);
   return (
-    <div className="sheet">
+    <div className="sheet" data-light={d.strongestLight?.toLowerCase()}>
       <header className="sheet-header">
         <div>
           <h1>{c.name || 'Unnamed character'}</h1>
