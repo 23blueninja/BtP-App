@@ -2,9 +2,9 @@
   /* Always dark, like the rulebook; panels are slightly translucent so the
      prism grid shows around and faintly behind them. */
   --bg: #000;
-  --bg-2: rgba(7, 8, 12, 0.96);
-  --panel: rgba(9, 10, 15, 0.94);
-  --panel-2: rgba(24, 26, 36, 0.95);
+  --bg-2: rgba(7, 8, 12, 0.84);
+  --panel: rgba(9, 10, 15, 0.76);
+  --panel-2: rgba(24, 26, 36, 0.8);
   --border: #2e3658;
   --text: #e8eaf6;
   --muted: #9aa1c4;
