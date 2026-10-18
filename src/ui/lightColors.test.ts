@@ -10,11 +10,11 @@ describe('alignment heading gradient', () => {
     ])!;
     // Velvet takes 0–50%, Flame 50–75%, Lunar 75–100%; solid in the middle half of each band.
     expect(g).toBe(
-      `linear-gradient(to top right, ${LIGHT_TEXT.Velvet} 12.5%, ${LIGHT_TEXT.Velvet} 37.5%, ${LIGHT_TEXT.Flame} 56.3%, ${LIGHT_TEXT.Flame} 68.8%, ${LIGHT_TEXT.Lunar} 81.3%, ${LIGHT_TEXT.Lunar} 93.8%)`,
+      `linear-gradient(to bottom left, ${LIGHT_TEXT.Velvet} 12.5%, ${LIGHT_TEXT.Velvet} 37.5%, ${LIGHT_TEXT.Flame} 56.3%, ${LIGHT_TEXT.Flame} 68.8%, ${LIGHT_TEXT.Lunar} 81.3%, ${LIGHT_TEXT.Lunar} 93.8%)`,
     );
   });
   it('is a solid colour for one Light and absent for none', () => {
-    expect(alignmentGradient([{ light: 'Soma', level: 3 }])).toBe(`linear-gradient(to top right, ${LIGHT_TEXT.Soma}, ${LIGHT_TEXT.Soma})`);
+    expect(alignmentGradient([{ light: 'Soma', level: 3 }])).toBe(`linear-gradient(to bottom left, ${LIGHT_TEXT.Soma}, ${LIGHT_TEXT.Soma})`);
     expect(alignmentGradient([])).toBeUndefined();
   });
 });
