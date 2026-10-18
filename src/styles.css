@@ -917,9 +917,8 @@ input.num {
 .attr-badge {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.1rem;
-  text-align: center;
 }
 .attr-value {
   display: flex;
