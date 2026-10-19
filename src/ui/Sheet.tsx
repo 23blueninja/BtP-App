@@ -907,6 +907,7 @@ function ActionTable({ title, actions }: { title: string; actions: typeof basicA
   return (
     <>
       <h4>{title}</h4>
+      <div className="table-wrap">
       <table className="actions-table">
         <thead>
           <tr>
@@ -935,6 +936,7 @@ function ActionTable({ title, actions }: { title: string; actions: typeof basicA
           ))}
         </tbody>
       </table>
+      </div>
     </>
   );
 }

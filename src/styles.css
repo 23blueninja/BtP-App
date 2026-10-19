@@ -917,6 +917,12 @@ dl.defs dd {
 .top-row {
   display: contents;
 }
+/* Grid items may shrink below their content's width (narrow phones). */
+.sheet-layout > *,
+.sheet-grid > *,
+.top-row > * {
+  min-width: 0;
+}
 .side-col {
   grid-column: 4;
   grid-row: 1 / span 3;
@@ -1356,8 +1362,20 @@ input.num {
   .side-col {
     grid-template-columns: minmax(0, 1fr);
   }
+  /* Brand, three links and the gear must fit a 360–412px screen. */
+  .topbar {
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+  }
   .topbar nav {
-    gap: 0.7rem;
+    gap: 0.6rem;
+    align-items: center;
+    font-size: 0.95rem;
+  }
+  .brand {
+    min-width: 0;
+    overflow: hidden;
+    font-size: 0.95rem;
   }
   .hero h1 {
     font-size: 1.9rem;

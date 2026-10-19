@@ -57,10 +57,13 @@ async function open(chars: Character[], viewport = { width: 1400, height: 1000 }
 
 const tab = (page: Page, name: string) => page.getByRole('tab', { name, exact: true }).click();
 
+
 /** Every sheet tab plus the main interactive pieces of the Sheet tab. */
 async function exerciseSheet(page: Page, id: string) {
   await page.goto(`${base}#/c/${id}`);
-  await page.getByRole('tab', { name: 'Sheet', exact: true }).waitFor();
+  // Characters are read from storage at start-up, so reload after a hash-only navigation.
+  await page.reload();
+  await page.getByRole('tab', { name: 'Sheet', exact: true }).waitFor({ timeout: 10_000 });
   // Stat breakdown modals (attributes, Initiative, AC, Movement).
   for (const name of ['Initiative', 'AC', 'Movement', 'Vigor']) {
     const btn = page.locator('.stat-btn').filter({ hasText: name }).first();
@@ -90,6 +93,7 @@ async function exerciseSheet(page: Page, id: string) {
 /** Every builder step via the step navigation. */
 async function exerciseBuilder(page: Page, id: string) {
   await page.goto(`${base}#/c/${id}/build/basics`);
+  await page.reload();
   const steps = page.locator('nav.steps button');
   await steps.first().waitFor();
   const n = await steps.count();
@@ -139,9 +143,10 @@ describe.each(cases)('$cls / $sub · $ancestry · L$level', ({ cls, sub, ancestr
 });
 
 describe('phone layout', () => {
-  it.each(classes.slice(0, 3).map((c) => c.id))('%s sheet on a 412px screen', async (cls) => {
+  const phones = classes.flatMap((c) => [412, 360].map((width) => ({ cls: c.id, width })));
+  it.each(phones)('$cls sheet on a $width px screen', async ({ cls, width }) => {
     const sub = subclassesOf(classes.find((c) => c.id === cls)!)[0]?.id ?? '';
-    const { page, errors } = await open([character(cls, sub, 5, ancestries[0].id, 'phone')], { width: 412, height: 900 });
+    const { page, errors } = await open([character(cls, sub, 5, ancestries[0].id, 'phone')], { width, height: 900 });
     await exerciseSheet(page, 'phone');
     // Nothing wider than the screen.
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
