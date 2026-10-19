@@ -59,6 +59,7 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
             )}
           </div>
         </header>
+        <StatStrip d={d} />
         <TurnBar c={c} d={d} update={update} setPlay={setPlay} onLog={onLog} />
         {d.issues.length > 0 && (
           <details className="issues banner">
@@ -112,6 +113,32 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
         )}
       </div>
     </PlayContext.Provider>
+  );
+}
+
+/** Class Bonus, Class Die and the five Attributes, across the top of every tab. */
+function StatStrip({ d }: { d: Derived }) {
+  return (
+    <div className="stat-strip">
+      <Box title={d.cls ? `${d.cls.name} Bonus` : 'Class Bonus'} className="stat">
+        <div className="big">+{d.classBonus}</div>
+      </Box>
+      <Box title={d.classDieName} className="stat">
+        <div className="big">{d.classDie || '—'}</div>
+      </Box>
+      {ATTRS.map((a) => (
+        <Box key={a} title={ATTR_NAMES[a]} className="stat attr-stat">
+          <div className="attr-symbol">
+            <Icon name={a} />
+          </div>
+          <div className="big">{d.attrs[a].label}</div>
+          <div className="sub">
+            {d.attrs[a].points} points{d.attrs[a].sources.length > 1 && ` (${d.attrs[a].sources.join(' ')})`}
+            {d.attrs[a].dieNote && ` · ${d.attrs[a].dieNote}`}
+          </div>
+        </Box>
+      ))}
+    </div>
   );
 }
 
@@ -204,14 +231,8 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
     // On wide screens Actions sit in their own column on the right; otherwise below the sheet.
     <div className="sheet-layout">
       <div className="sheet-grid">
-        {/* Top row: Bonus / Die / Saves / Endurance / AC / Movement / Initiative */}
+        {/* Top row: Saves / Endurance / AC / Movement / Initiative */}
         <div className="top-row">
-          <Box title={d.cls ? `${d.cls.name} Bonus` : 'Bonus'} className="stat">
-            <div className="big">+{d.classBonus}</div>
-            <div className="sub">
-              {d.classDieName}: <strong>{d.classDie || '—'}</strong>
-            </div>
-          </Box>
           <Box title="Save Checks" className="saves">
             <table>
               <tbody>
@@ -277,28 +298,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
         </div>
 
         <div className="col">
-          <Box title="Attributes">
-            <div className="attrs">
-              {ATTRS.map((a) => (
-                <div key={a} className="attr">
-                  <div className="attr-badge">
-                    <div className="attr-name">{ATTR_NAMES[a]}</div>
-                    <div className="attr-value">
-                      <span className="attr-icon">
-                        <Icon name={a} />
-                      </span>
-                      <span className="attr-die">{d.attrs[a].label}</span>
-                    </div>
-                  </div>
-                  <div className="attr-desc muted small">
-                    {d.attrs[a].points} points{d.attrs[a].sources.length > 1 && ` (${d.attrs[a].sources.join(' ')})`}
-                    {d.attrs[a].dieNote && ` · ${d.attrs[a].dieNote}`}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Box>
-          <Box title="Vitality & Radiance">
+            <Box title="Vitality & Radiance">
             <div className="row between">
               <span>Vitality</span>
               <Stepper label="Vitality" value={p.vitality} min={0} max={d.vitalityMax} onChange={(v) => setPlay((x) => ({ ...x, vitality: v, dying: v > x.vitality ? 0 : x.dying }))} />
