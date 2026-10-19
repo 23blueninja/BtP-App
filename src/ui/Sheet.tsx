@@ -10,7 +10,6 @@ import { ClassTableView, Equipment, WeaponTable } from './Builder';
 import { Collapsible, FacetText, go, Icon, Modal, RuleLink, Stepper, TokenText } from './common';
 import { SpellListEditor } from './pickers';
 import { CastRow } from './Cast';
-import { BulkPyramid } from './Inventory';
 import { alignmentGradient, LIGHT_TEXT } from './lightColors';
 import { PlayContext, UseButton } from './Activate';
 import { HomebrewBox } from './Homebrew';
@@ -588,9 +587,6 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             </Box>
             <Box title="Items & effects">
               <HomebrewBox d={d} update={update} />
-            </Box>
-            <Box title="Inventory">
-              <BulkPyramid c={c} d={d} update={update} />
             </Box>
           </div>
         </div>
