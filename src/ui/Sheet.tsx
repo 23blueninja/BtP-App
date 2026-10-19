@@ -128,10 +128,10 @@ function StatStrip({ d }: { d: Derived }) {
       </Box>
       {ATTRS.map((a) => (
         <Box key={a} title={ATTR_NAMES[a]} className="stat attr-stat">
-          <div className="attr-value big">
+          <div className="attr-symbol">
             <Icon name={a} />
-            <span>{d.attrs[a].label}</span>
           </div>
+          <div className="big">{d.attrs[a].label}</div>
           <div className="sub">
             {d.attrs[a].points} points{d.attrs[a].sources.length > 1 && ` (${d.attrs[a].sources.join(' ')})`}
             {d.attrs[a].dieNote && ` · ${d.attrs[a].dieNote}`}
