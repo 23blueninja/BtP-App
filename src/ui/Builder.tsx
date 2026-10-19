@@ -692,76 +692,79 @@ export function Equipment({ c, d, update }: StepProps) {
       <InventoryEditor c={c} update={update} />
       </section>
 
-      <section className="box">
-      <h3 className="box-title">Armor</h3>
-      <div className="row wrap">
-        <label>
-          Type
-          <select
-            value={armor?.type ?? ''}
-            onChange={(e) => setEq((q) => ({ ...q, armor: e.target.value ? { type: e.target.value as 'Light', quality: q.armor?.quality ?? 'Basic' } : null }))}
-          >
-            <option value="">No armor</option>
-            <option>Light</option>
-            <option>Medium</option>
-            <option>Heavy</option>
+
+      {/* Weapons (two thirds) beside Armor. */}
+      <div className="equip-row">
+        <section className="box equip-weapons">
+        <h3 className="box-title">Weapons</h3>
+        <p className="muted">
+          Weapon training: {d.weaponTraining}. <RuleLink id="equipment/weapons/weapon-properties">Weapon properties</RuleLink>
+        </p>
+        <div className="row">
+          <select value={weapon} onChange={(e) => setWeapon(e.target.value)} aria-label="Weapon">
+            <option value="">Add a weapon…</option>
+            {groups.map((g) => (
+              <optgroup key={g} label={g}>
+                {weapons
+                  .filter((w) => w.group === g)
+                  .map((w) => (
+                    <option key={w.name}>{w.name}</option>
+                  ))}
+              </optgroup>
+            ))}
           </select>
-        </label>
-        {armor && (
+          <button
+            type="button"
+            disabled={!weapon}
+            onClick={() => {
+              setEq((q) => ({ ...q, weapons: [...q.weapons, { id: newId(), name: weapon }] }));
+              setWeapon('');
+            }}
+          >
+            Add
+          </button>
+        </div>
+        <WeaponTable c={c} d={d} onRemove={(id) => setEq((q) => ({ ...q, weapons: q.weapons.filter((w) => w.id !== id) }))} />
+        </section>
+        <section className="box">
+        <h3 className="box-title">Armor</h3>
+        <div className="row wrap">
           <label>
-            Quality
-            <select value={armor.quality} onChange={(e) => setEq((q) => ({ ...q, armor: { ...armor, quality: e.target.value } }))}>
-              {armorQualities.map((a) => (
-                <option key={a.quality}>{a.quality}</option>
-              ))}
+            Type
+            <select
+              value={armor?.type ?? ''}
+              onChange={(e) => setEq((q) => ({ ...q, armor: e.target.value ? { type: e.target.value as 'Light', quality: q.armor?.quality ?? 'Basic' } : null }))}
+            >
+              <option value="">No armor</option>
+              <option>Light</option>
+              <option>Medium</option>
+              <option>Heavy</option>
             </select>
           </label>
-        )}
-      </div>
-      <p>
-        AC <strong>{d.ac.value}</strong> <span className="muted">({d.ac.breakdown.join('; ')})</span>
-      </p>
-      {d.armorNotes.map((n) => (
-        <p key={n} className="note">
-          {n}
-        </p>
-      ))}
-      <p className="muted">
-        Armor training: {d.armorTraining}. <RuleLink id="equipment/armor">Armor rules</RuleLink>
-      </p>
-      </section>
-
-      <section className="box">
-      <h3 className="box-title">Weapons</h3>
-      <p className="muted">
-        Weapon training: {d.weaponTraining}. <RuleLink id="equipment/weapons/weapon-properties">Weapon properties</RuleLink>
-      </p>
-      <div className="row">
-        <select value={weapon} onChange={(e) => setWeapon(e.target.value)} aria-label="Weapon">
-          <option value="">Add a weapon…</option>
-          {groups.map((g) => (
-            <optgroup key={g} label={g}>
-              {weapons
-                .filter((w) => w.group === g)
-                .map((w) => (
-                  <option key={w.name}>{w.name}</option>
+          {armor && (
+            <label>
+              Quality
+              <select value={armor.quality} onChange={(e) => setEq((q) => ({ ...q, armor: { ...armor, quality: e.target.value } }))}>
+                {armorQualities.map((a) => (
+                  <option key={a.quality}>{a.quality}</option>
                 ))}
-            </optgroup>
-          ))}
-        </select>
-        <button
-          type="button"
-          disabled={!weapon}
-          onClick={() => {
-            setEq((q) => ({ ...q, weapons: [...q.weapons, { id: newId(), name: weapon }] }));
-            setWeapon('');
-          }}
-        >
-          Add
-        </button>
+              </select>
+            </label>
+          )}
+        </div>
+        <p>
+          AC <strong>{d.ac.value}</strong> <span className="muted">({d.ac.breakdown.join('; ')})</span>
+        </p>
+        {d.armorNotes.map((n) => (
+          <p key={n} className="note">
+            {n}
+          </p>
+        ))}
+        <p className="muted">
+          Armor training: {d.armorTraining}. <RuleLink id="equipment/armor">Armor rules</RuleLink>
+        </p>
+        </section>
       </div>
-      <WeaponTable c={c} d={d} onRemove={(id) => setEq((q) => ({ ...q, weapons: q.weapons.filter((w) => w.id !== id) }))} />
-      </section>
 
     </div>
   );
