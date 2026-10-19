@@ -141,6 +141,17 @@ export interface HomebrewEntry {
   ends?: 'manual' | 'rest' | 'longRest';
 }
 
+/** A player reward from the PM: usually a single-use boon, like Advantage on one kind of Check. */
+export interface Experience {
+  id: string;
+  name: string;
+  /** How many times it can be used (usually 1). */
+  uses: number;
+  used: number;
+  /** What it does, e.g. "Advantage on an Attack Check against a Large creature." */
+  effect: string;
+}
+
 export interface SessionNote {
   id: string;
   title: string;
@@ -203,7 +214,7 @@ export interface Character {
     backstory: string;
     notes: string;
   };
-  experiences: string[];
+  experiences: Experience[];
   /** Notes for each play session, newest added last. */
   sessions: SessionNote[];
   /** Homebrew items and effects (boons, curses) from the PM. */
@@ -295,7 +306,8 @@ export function normalizeCharacter(raw: unknown): Character {
     choices: { ...c.choices },
     spells: { ...c.spells },
     ageUps: c.ageUps ?? [],
-    experiences: c.experiences ?? [],
+    // Experiences used to be plain names.
+    experiences: ((c.experiences ?? []) as (Experience | string)[]).map((e) => (typeof e === 'string' ? { id: uid(), name: e, uses: 1, used: 0, effect: '' } : e)),
     homebrew: c.homebrew ?? [],
     sessions: c.sessions ?? (c.details?.notes ? [{ id: uid(), title: 'Earlier notes', date: (c.updatedAt ?? new Date().toISOString()).slice(0, 10), body: c.details.notes }] : []),
     version: CHARACTER_VERSION,

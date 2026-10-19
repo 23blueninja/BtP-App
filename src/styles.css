@@ -1772,6 +1772,34 @@ tr.needs input {
   grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: 0.75rem;
 }
+/* In a sheet column the cards stack. */
+.col .homebrew-cards {
+  grid-template-columns: minmax(0, 1fr);
+}
+.experiences {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.experiences li + li {
+  margin-top: 0.45rem;
+}
+.experiences li.spent strong {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+.exp-add {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.exp-add input {
+  flex: 1;
+  min-width: 0;
+}
+.exp-add > button {
+  align-self: flex-start;
+}
 .hb-card {
   border: 1px solid var(--border);
   background: var(--panel-2);
