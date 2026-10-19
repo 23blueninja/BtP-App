@@ -90,8 +90,10 @@ describe('Moonblade', () => {
     expect(weak.saves.find((s) => s.attr === 'PER')?.label).toMatch(/\/ d6$/);
     const d = derive(build({ ...platinumFirm, homebrew: [moonblade] }));
     expect(d.initiativeNotes.join()).toContain('Moonblade PER Die (d8)');
+    expect(d.initiative).toBe(`${d.attrs.PER.label} / d8`);
     const packed = derive(build({ ...platinumFirm, homebrew: [{ ...moonblade, inBackpack: true }] }));
     expect(packed.initiativeNotes.join()).not.toContain('Moonblade');
+    expect(packed.initiative).toBe(packed.attrs.PER.label);
     const unattuned = derive(build({ ...platinumFirm, homebrew: [{ ...moonblade, attuned: false }] }));
     expect(unattuned.weaponMods.some((m) => m.weapon === 'Moonblade')).toBe(false);
   });

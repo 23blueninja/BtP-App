@@ -400,6 +400,11 @@ describe('combat styles, Peerless Athlete and weapon properties', () => {
     expect(vig.notes).toContain('Empowered (Peerless Athlete)');
     expect(vig.label).toMatch(/\+/);
   });
+  it('Peerless Athlete shows the Martial Die beside the Initiative die', () => {
+    const d = derive(build({ classId: 'gladiator', subclass: 'victor', level: 1 }));
+    expect(d.initiative).toBe(`${d.attrs.PER.label} / ${d.classDie}`);
+    expect(derive(build({ classId: 'gladiator', level: 1 })).initiative).toBe(d.attrs.PER.label);
+  });
   it('every weapon property links to its rules section', async () => {
     const { weaponPropertyNode } = await import('../content');
     const missing = weapons.flatMap((w) => w.properties).filter((p) => !weaponPropertyNode(p));

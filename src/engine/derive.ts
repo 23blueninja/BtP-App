@@ -503,6 +503,15 @@ export function derive(c: Character): Derived {
     for (const r of conditionFx.checks) if (r.attr === a) notes.push(...describeCheck(r));
     return { attr: a, die, classDie: second, empowered, label, notes };
   });
+  // Initiative in Tandem with another die shows it beside the PER Die, like Save Checks
+  // (only one die can be rolled in Tandem, so the biggest).
+  const dieSize = (die?: string) => Number(die?.match(/d(\d+)/)?.[1] ?? 0);
+  const tandemDieLabel = (die: 'class' | Attr | DieRef) => (die === 'class' ? classDieLabel : typeof die === 'string' ? attrs[die].label : die.die);
+  const initiativeTandem = eff('tandem')
+    .filter((x) => x.e.what.startsWith('Initiative'))
+    .map((x) => tandemDieLabel(x.e.die))
+    .filter((x): x is string => !!x)
+    .sort((a, b) => dieSize(b) - dieSize(a))[0];
   const initiativeNotes = [
     ...eff('tandem')
       .filter((x) => x.e.what.startsWith('Initiative'))
@@ -628,7 +637,7 @@ export function derive(c: Character): Derived {
     movementBreakdown,
     movementTypes,
     radius,
-    initiative: attrs.PER.label,
+    initiative: initiativeTandem ? `${attrs.PER.label} / ${initiativeTandem}` : attrs.PER.label,
     initiativeNotes,
     vitalityMax,
     radianceMax,

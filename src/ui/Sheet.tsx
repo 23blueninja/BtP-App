@@ -307,24 +307,30 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
     // On wide screens Actions sit in their own column on the right; otherwise below the sheet.
     <div className="sheet-layout">
       <div className="sheet-grid">
-        {/* Top row: Saves / Endurance / AC / Movement / Initiative */}
+        {/* Top row: Level / Initiative / AC / Movement square, Endurance, I respond to new…, Saves */}
         <div className="top-row">
-          <Box title="Save Checks" className="saves">
-            <table>
-              <tbody>
-                {d.saves.map((s) => (
-                  <tr key={s.attr}>
-                    <td>
-                      <span className="save-die">
-                        <Icon name={s.attr} /> {s.label}
-                      </span>
-                      {s.notes.length > 0 && <div className="muted small">{s.notes.join(', ')}</div>}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Box>
+          {/* Level, Initiative, AC and Movement in a 2×2 square left of Endurance. */}
+          <div className="stat-square">
+            <Box title="Level" className="stat">
+              <div className="big">{c.level}</div>
+            </Box>
+            <Box title="Initiative" className="stat">
+              <div className="big">{d.initiative}</div>
+              <div className="sub">{d.initiativeNotes.join(', ')}</div>
+            </Box>
+            <Box title="AC" className="stat">
+              <div className="big" title={d.ac.breakdown.join('\n')}>
+                {d.ac.value}
+              </div>
+              <div className="sub">{c.equipment.armor ? `${c.equipment.armor.quality} ${c.equipment.armor.type}` : 'Unarmored'}</div>
+            </Box>
+            <Box title="Movement" className="stat">
+              <div className="big" title={d.movementBreakdown.join('\n')}>
+                {d.movement}
+              </div>
+              <div className="sub">{d.movementBreakdown.join(' ')}</div>
+            </Box>
+          </div>
           <section className="box endurance">
             {/* Temp sits beside the label, like Temp AP in the turn box. */}
             <div className="box-head">
@@ -348,28 +354,28 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               </button>
             </div>
           </section>
-          <Box title="AC" className="stat">
-            <div className="big" title={d.ac.breakdown.join('\n')}>
-              {d.ac.value}
-            </div>
-            <div className="sub">{c.equipment.armor ? `${c.equipment.armor.quality} ${c.equipment.armor.type}` : 'Unarmored'}</div>
-          </Box>
-          <Box title="Movement" className="stat">
-            <div className="big" title={d.movementBreakdown.join('\n')}>
-              {d.movement}
-            </div>
-            <div className="sub">{d.movementBreakdown.join(' ')}</div>
-          </Box>
-          <Box title="Initiative" className="stat">
-            <div className="big">{d.initiative}</div>
-            <div className="sub">{d.initiativeNotes.join(', ')}</div>
-          </Box>
           <Box title="I respond to new…" className="respond">
             <ul className="plain">
               <li>Situations with <strong>{al.situations || '—'}</strong></li>
               <li>Problems with <strong>{al.problems || '—'}</strong></li>
               <li>People with <strong>{al.people || '—'}</strong></li>
             </ul>
+          </Box>
+          <Box title="Save Checks" className="saves">
+            <table>
+              <tbody>
+                {d.saves.map((s) => (
+                  <tr key={s.attr}>
+                    <td>
+                      <span className="save-die">
+                        <Icon name={s.attr} /> {s.label}
+                      </span>
+                      {s.notes.length > 0 && <div className="muted small">{s.notes.join(', ')}</div>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </Box>
         </div>
 
