@@ -387,21 +387,21 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
                 <Stepper label="Temporary Endurance" value={p.tempEndurance} min={0} onChange={(v) => setPlay((x) => ({ ...x, tempEndurance: v }))} />
               </span>
             </div>
-            {/* Endurance on the left; Heal, the amount and Damage stacked on the right. */}
+            {/* Current Endurance beside Heal and the amount; the maximum beside Damage. */}
             <div className="end-grid">
-              <div className="end-main">
-                <span className="big">{p.endurance}</span>
-                <span className="muted"> / {d.enduranceMax}</span>
-              </div>
-              <div className="end-controls">
-                <button type="button" disabled={!n} onClick={() => (setPlay((x) => heal(x, n, d)), setAmount(''))}>
-                  Heal
-                </button>
-                <input className="end-amount" type="number" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" aria-label="Amount" />
-                <button type="button" className="danger" disabled={!n} onClick={() => (setPlay((x) => takeDamage(x, n, d)), setAmount(''))}>
-                  Damage
-                </button>
-              </div>
+              <span className="end-current" aria-label={`Endurance ${p.endurance} of ${d.enduranceMax}`}>
+                {p.endurance}
+              </span>
+              <span className="end-max muted" aria-hidden>
+                / {d.enduranceMax}
+              </span>
+              <button type="button" className="end-heal" disabled={!n} onClick={() => (setPlay((x) => heal(x, n, d)), setAmount(''))}>
+                Heal
+              </button>
+              <input className="end-amount" type="number" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" aria-label="Amount" />
+              <button type="button" className="danger end-damage" disabled={!n} onClick={() => (setPlay((x) => takeDamage(x, n, d)), setAmount(''))}>
+                Damage
+              </button>
             </div>
             <div className="end-vitality">
               <div className="row between">

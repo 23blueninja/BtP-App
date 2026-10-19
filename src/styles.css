@@ -989,9 +989,6 @@ dl.defs dd {
   border: none;
   padding: 0.1em 0.3em;
 }
-.end-main {
-  text-align: center;
-}
 /* A box title with controls on the same line (Endurance's Temp). */
 .box-head {
   display: flex;
@@ -1020,20 +1017,44 @@ dl.defs dd {
 .end-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 0.6rem;
-  align-items: center;
+  grid-template-rows: repeat(3, auto);
+  column-gap: 0.6rem;
+  row-gap: 0.35rem;
 }
-.end-grid .end-main .big {
-  font-size: 2.4rem;
-}
-.end-controls {
+/* Current Endurance fills the two rows beside Heal and the amount… */
+.end-current {
+  grid-column: 1;
+  grid-row: 1 / 3;
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.6rem;
+  font-weight: 700;
+  line-height: 1;
 }
-.end-controls .end-amount {
+/* …and the maximum the row beside Damage. */
+.end-max {
+  grid-column: 1;
+  grid-row: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+.end-heal {
+  grid-column: 2;
+  grid-row: 1;
+}
+.end-grid .end-amount {
+  grid-column: 2;
+  grid-row: 2;
   width: 100%;
   text-align: center;
+}
+.end-damage {
+  grid-column: 2;
+  grid-row: 3;
 }
 .end-vitality {
   margin-top: 0.5rem;
