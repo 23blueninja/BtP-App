@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { basicActions, conditions as conditionDefs, getNode, getCastable, type RuleNode } from '../content';
 import { ancestryById } from '../data/ancestries';
 import { ATTRS, ATTR_NAMES, RANK_DIE } from '../data/types';
-import { newId, type Character, type PlayState, type SessionNote } from '../engine/character';
+import { newId, type Character, type Experience, type PlayState, type SessionNote } from '../engine/character';
 import { derive, type Derived } from '../engine/derive';
 import { clampPlay, facetUseMax, heal, longRest, shortRest, takeDamage } from '../engine/play';
 import { AP_MAX, CONDITION_RULES, addCondition, describeCheck, endTurn, startTurn } from '../engine/conditions';
@@ -367,11 +367,6 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             <WeaponTable c={c} d={d} />
           </Box>
         </div>
-        <div className="wide-row">
-          <Box title="Items & effects">
-            <HomebrewBox d={d} update={update} />
-          </Box>
-        </div>
 
         <div className="col">
             <Box title="Vitality & Radiance">
@@ -430,6 +425,10 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
                 <li key={s}>{s}</li>
               ))}
             </ul>
+          </Box>
+          {/* In a column so its cards stack and the other panels sit right under Weapons. */}
+          <Box title="Items & effects">
+            <HomebrewBox d={d} update={update} />
           </Box>
         </div>
 
@@ -689,30 +688,48 @@ function CheckModifiers({ d }: { d: Derived }) {
 }
 
 function Experiences({ c, update }: { c: Character; update: Update }) {
-  const [text, setText] = useState('');
+  const [name, setName] = useState('');
+  const [uses, setUses] = useState(1);
+  const [effect, setEffect] = useState('');
+  const setExp = (id: string, fn: (e: Experience) => Experience) => update((x) => ({ ...x, experiences: x.experiences.map((e) => (e.id === id ? fn(e) : e)) }));
   return (
-    <div>
-      <ul className="plain">
-        {c.experiences.map((e, i) => (
-          <li key={i} className="row between">
-            {e}
-            <button type="button" className="icon-btn" onClick={() => update((x) => ({ ...x, experiences: x.experiences.filter((_, j) => j !== i) }))} aria-label="Remove">
-              ✕
-            </button>
-          </li>
-        ))}
-      </ul>
-      <div className="row">
-        <input value={text} onChange={(e) => setText(e.target.value)} placeholder="e.g. Monster Slayer" aria-label="Experience" />
+    <div className="experiences">
+      {c.experiences.length > 0 && (
+        <ul className="plain">
+          {c.experiences.map((e) => (
+            <li key={e.id} className={e.used >= e.uses ? 'spent' : ''}>
+              <div className="row between">
+                <strong>{e.name}</strong>
+                <span className="row small-gap">
+                  <Pips total={e.uses} used={e.used} onChange={(u) => setExp(e.id, (x) => ({ ...x, used: u }))} label={`${e.name} use`} />
+                  <button type="button" className="icon-btn" onClick={() => update((x) => ({ ...x, experiences: x.experiences.filter((y) => y.id !== e.id) }))} aria-label={`Remove ${e.name}`}>
+                    ✕
+                  </button>
+                </span>
+              </div>
+              {e.effect && <div className="small muted">{e.effect}</div>}
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="exp-add">
+        <div className="row small-gap">
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Monster Slayer" aria-label="Experience name" />
+          <span className="small muted">Uses</span>
+          <Stepper label="Uses" value={uses} min={1} onChange={setUses} />
+        </div>
+        <textarea rows={2} value={effect} onChange={(e) => setEffect(e.target.value)} placeholder="Effect, e.g. Advantage on an Attack Check against a Large creature." aria-label="Experience effect" />
         <button
           type="button"
-          disabled={!text.trim()}
+          disabled={!name.trim()}
           onClick={() => {
-            update((x) => ({ ...x, experiences: [...x.experiences, text.trim()] }));
-            setText('');
+            update((x) => ({ ...x, experiences: [...x.experiences, { id: newId(), name: name.trim(), uses, used: 0, effect: effect.trim() }] }));
+            setName('');
+            setUses(1);
+            setEffect('');
           }}
         >
-          Add
+          Add experience
         </button>
       </div>
     </div>
@@ -736,6 +753,8 @@ function facetActions(d: Derived): RuleNode[] {
 function ActionsList({ d }: { c: Character; d: Derived }) {
   const special = facetActions(d);
   const available = basicActions.filter((a) => d.actionCategories.includes(a.category));
+  // Category actions (Combat, Arcane, Supernatural) come before the Basic ones.
+  const categories = [...new Set(available.map((a) => a.category))].filter((cat) => cat !== 'Basic');
   return (
     <div>
       {special.length > 0 && (
@@ -756,7 +775,19 @@ function ActionsList({ d }: { c: Character; d: Derived }) {
           ))}
         </>
       )}
-      <h4>Available actions</h4>
+      {categories.map((cat) => (
+        <ActionTable key={cat} title={`${cat} actions`} actions={available.filter((a) => a.category === cat)} />
+      ))}
+      <ActionTable title="Basic actions" actions={available.filter((a) => a.category === 'Basic')} />
+    </div>
+  );
+}
+
+function ActionTable({ title, actions }: { title: string; actions: typeof basicActions }) {
+  if (!actions.length) return null;
+  return (
+    <>
+      <h4>{title}</h4>
       <table className="actions-table">
         <thead>
           <tr>
@@ -769,7 +800,7 @@ function ActionsList({ d }: { c: Character; d: Derived }) {
           </tr>
         </thead>
         <tbody>
-          {available.map((a) => (
+          {actions.map((a) => (
             <tr key={a.id}>
               <td>
                 <RuleLink id={a.id}>{a.name}</RuleLink>
@@ -785,7 +816,7 @@ function ActionsList({ d }: { c: Character; d: Derived }) {
           ))}
         </tbody>
       </table>
-    </div>
+    </>
   );
 }
 
