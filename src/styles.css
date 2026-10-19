@@ -897,7 +897,7 @@ dl.defs dd {
 .top-row {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: minmax(200px, 1.6fr) minmax(220px, 1.4fr) minmax(90px, 0.35fr) minmax(100px, 0.45fr) minmax(100px, 0.55fr);
+  grid-template-columns: minmax(140px, 0.95fr) minmax(250px, 1.2fr) minmax(80px, 0.35fr) minmax(95px, 0.45fr) minmax(100px, 0.55fr) minmax(180px, 1fr);
   gap: 0.75rem;
 }
 .wide-row {
@@ -950,6 +950,46 @@ dl.defs dd {
 }
 .end-main {
   text-align: center;
+}
+/* A box title with controls on the same line (Endurance's Temp). */
+.box-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+.box-head .box-title {
+  margin: 0;
+}
+.box-head-extra {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+/* A slightly smaller stepper so it fits beside the title. */
+.box-head-extra .stepper {
+  font-size: 0.85em;
+  gap: 0.25rem;
+}
+.box-head-extra .stepper-value {
+  min-width: 1.4em;
+}
+.endurance .end-amount {
+  width: 100%;
+  margin: 0.35rem 0;
+}
+.end-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+.saves .save-die {
+  white-space: nowrap;
+}
+.saves .save-die .ic {
+  margin-right: 0.3em;
 }
 input.num {
   width: 4.5em;
@@ -1119,7 +1159,8 @@ input.num {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .top-row .saves,
-  .top-row .endurance {
+  .top-row .endurance,
+  .top-row .respond {
     grid-column: span 3;
   }
   .sheet-grid {
@@ -1151,6 +1192,10 @@ input.num {
   .top-row .endurance {
     grid-column: span 2;
     order: 1;
+  }
+  .top-row .respond {
+    grid-column: span 2;
+    order: 2;
   }
   .topbar nav {
     gap: 0.7rem;
@@ -1943,10 +1988,6 @@ tr.needs input {
     grid-template-columns: minmax(0, 1fr) minmax(440px, 30%);
     align-items: start;
   }
-}
-.saves td:nth-child(2),
-.saves th {
-  white-space: nowrap;
 }
 
 /* Class Bonus, Class Die and Attributes across the top of the sheet. */
