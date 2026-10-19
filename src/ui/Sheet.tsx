@@ -7,7 +7,7 @@ import { derive, type Derived } from '../engine/derive';
 import { clampPlay, facetUseMax, heal, longRest, shortRest, takeDamage } from '../engine/play';
 import { AP_MAX, CONDITION_RULES, addCondition, describeCheck, endTurn, startTurn } from '../engine/conditions';
 import { ClassTableView, Equipment, WeaponTable } from './Builder';
-import { Collapsible, FacetText, go, Icon, RuleLink, Stepper, TokenText } from './common';
+import { Collapsible, FacetText, go, Icon, Modal, RuleLink, Stepper, TokenText } from './common';
 import { SpellListEditor } from './pickers';
 import { CastRow } from './Cast';
 import { BulkPyramid } from './Inventory';
@@ -297,6 +297,36 @@ function Box({ title, children, className = '' }: { title: React.ReactNode; chil
   );
 }
 
+/** A stat panel that opens its breakdown (where the number comes from) in a modal. */
+function StatBox({ title, value, children }: { title: string; value: React.ReactNode; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button type="button" className="box stat stat-btn" onClick={() => setOpen(true)} aria-haspopup="dialog" aria-label={`${title} ${value}: details`}>
+        <span className="box-title">{title}</span>
+        <span className="big">{value}</span>
+        <span className="stat-more">Details</span>
+      </button>
+      {open && (
+        <Modal title={`${title} ${value}`} onClose={() => setOpen(false)}>
+          {children}
+        </Modal>
+      )}
+    </>
+  );
+}
+
+function Details({ lines }: { lines: string[] }) {
+  if (!lines.length) return null;
+  return (
+    <ul className="plain stat-details">
+      {lines.map((l) => (
+        <li key={l}>{l}</li>
+      ))}
+    </ul>
+  );
+}
+
 function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
   const p = c.play;
   const [amount, setAmount] = useState('');
@@ -314,22 +344,21 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             <Box title="Level" className="stat">
               <div className="big">{c.level}</div>
             </Box>
-            <Box title="Initiative" className="stat">
-              <div className="big">{d.initiative}</div>
-              <div className="sub">{d.initiativeNotes.join(', ')}</div>
-            </Box>
-            <Box title="AC" className="stat">
-              <div className="big" title={d.ac.breakdown.join('\n')}>
-                {d.ac.value}
-              </div>
-              <div className="sub">{c.equipment.armor ? `${c.equipment.armor.quality} ${c.equipment.armor.type}` : 'Unarmored'}</div>
-            </Box>
-            <Box title="Movement" className="stat">
-              <div className="big" title={d.movementBreakdown.join('\n')}>
-                {d.movement}
-              </div>
-              <div className="sub">{d.movementBreakdown.join(' ')}</div>
-            </Box>
+            <StatBox title="Initiative" value={d.initiative}>
+              <p>
+                Roll your <Icon name="PER" /> PER Die ({d.attrs.PER.label})
+                {d.initiative !== d.attrs.PER.label ? ' in Tandem' : ''}.
+              </p>
+              <Details lines={d.initiativeNotes} />
+            </StatBox>
+            <StatBox title="AC" value={d.ac.value}>
+              <p>{c.equipment.armor ? `${c.equipment.armor.quality} ${c.equipment.armor.type} armor` : 'Unarmored'}</p>
+              <Details lines={d.ac.breakdown} />
+            </StatBox>
+            <StatBox title="Movement" value={d.movement}>
+              <Details lines={d.movementBreakdown} />
+              <Details lines={d.movementTypes.map((m) => `${m.type} Movement ${m.value}`)} />
+            </StatBox>
           </div>
           <section className="box endurance">
             {/* Temp sits beside the label, like Temp AP in the turn box. */}

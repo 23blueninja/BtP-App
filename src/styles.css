@@ -913,6 +913,32 @@ dl.defs dd {
 .stat-square .box {
   container-type: inline-size;
 }
+/* AC, Movement and Initiative open their breakdown in a modal. */
+.stat-btn {
+  font: inherit;
+  color: inherit;
+  width: 100%;
+  corner-shape: round;
+  border-radius: var(--radius);
+  padding: 0.6rem 0.75rem;
+}
+.stat-btn .box-title {
+  display: block;
+  font-weight: 700;
+}
+.stat-more {
+  margin-top: auto;
+  font-size: 0.72rem;
+  color: var(--muted);
+  opacity: 0.7;
+}
+.stat-btn:hover .stat-more {
+  color: var(--accent);
+  opacity: 1;
+}
+.stat-details li + li {
+  margin-top: 0.25rem;
+}
 /* Values stay on one line, shrinking in a narrow box (e.g. "d12+2 / d10"). */
 .stat-square .big {
   white-space: nowrap;
@@ -1731,11 +1757,13 @@ input.pyr-input:focus {
   }
   table.weapons tr {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    /* The name gets its own line: a long Mod Die ("d12 or d4 / d8") left it no room. */
+    grid-template-columns: auto minmax(0, 1fr);
     grid-template-areas:
-      'name die dv'
-      'dmg dmg dmg'
-      'props props props';
+      'name name'
+      'die dv'
+      'dmg dmg'
+      'props props';
     column-gap: 0.9rem;
     row-gap: 0.15rem;
     padding: 0.5rem 0;
