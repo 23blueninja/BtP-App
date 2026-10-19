@@ -36,21 +36,30 @@ function download(name: string, data: unknown) {
   URL.revokeObjectURL(url);
 }
 
-/** Homebrew items and effects on the sheet, with buttons to add, import and edit them. */
-export function HomebrewBox({ d, update }: { d: Derived; update: Update }) {
+/** Homebrew items and effects (or, on the Facets tab, facets) with buttons to add, import and edit them. */
+export function HomebrewBox({ d, update, facets = false }: { d: Derived; update: Update; facets?: boolean }) {
   const [editing, setEditing] = useState<HomebrewEntry | null>(null);
   const [error, setError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
+  const cards = d.homebrew.filter((h) => (h.entry.kind === 'facet') === facets);
   const save = (e: HomebrewEntry) => update((x) => ({ ...x, homebrew: x.homebrew.some((h) => h.id === e.id) ? x.homebrew.map((h) => (h.id === e.id ? e : h)) : [...x.homebrew, e] }));
   return (
     <div className="homebrew">
       <div className="row wrap">
-        <button type="button" onClick={() => setEditing(newHomebrew('item', newId()))}>
-          + Item
-        </button>
-        <button type="button" onClick={() => setEditing(newHomebrew('effect', newId()))}>
-          + Effect (boon / curse)
-        </button>
+        {facets ? (
+          <button type="button" onClick={() => setEditing(newHomebrew('facet', newId()))}>
+            + Facet
+          </button>
+        ) : (
+          <>
+            <button type="button" onClick={() => setEditing(newHomebrew('item', newId()))}>
+              + Item
+            </button>
+            <button type="button" onClick={() => setEditing(newHomebrew('effect', newId()))}>
+              + Effect (boon / curse)
+            </button>
+          </>
+        )}
         <button type="button" onClick={() => fileRef.current?.click()}>
           Import…
         </button>
@@ -76,9 +85,15 @@ export function HomebrewBox({ d, update }: { d: Derived; update: Update }) {
         />
       </div>
       {error && <p className="warn small">{error}</p>}
-      {d.homebrew.length === 0 && <p className="muted small">Items and effects from your PM, like a supernatural weapon or a curse. Their effects apply to your sheet automatically.</p>}
+      {cards.length === 0 && (
+        <p className="muted small">
+          {facets
+            ? 'Facets your PM grants outside your class and ancestry, like a boon that raises an Alignment. Their effects apply to your sheet automatically.'
+            : 'Items and effects from your PM, like a supernatural weapon or a curse. Their effects apply to your sheet automatically.'}
+        </p>
+      )}
       <div className="homebrew-cards">
-        {d.homebrew.map((card) => (
+        {cards.map((card) => (
           <HomebrewCard key={card.entry.id} card={card} update={update} onEdit={() => setEditing(structuredClone(card.entry))} />
         ))}
       </div>
@@ -111,6 +126,7 @@ function HomebrewCard({ card, update, onEdit }: { card: ResolvedHomebrew; update
         <div className="hb-meta small">
           {card.level !== undefined && card.level > 0 && <span className="chip">Level {card.level}</span>}
           {entry.kind === 'effect' && <span className="chip">{entry.ends === 'rest' ? 'Until your next Rest' : entry.ends === 'longRest' ? 'Until your next Long Rest' : 'Effect'}</span>}
+          {entry.kind === 'facet' && <span className="chip">Facet</span>}
         </div>
       </div>
       {entry.tierLight && (
@@ -230,6 +246,7 @@ const DEFAULTS: Record<HomebrewEffect['kind'], HomebrewEffect> = {
   ac: { kind: 'ac', amount: 1 },
   resistance: { kind: 'resistance', type: 'Thermic', amount: 2 },
   immunity: { kind: 'immunity', damage: 'Thermic' },
+  alignment: { kind: 'alignment', light: 'Flame' },
   vulnerability: { kind: 'vulnerability', type: 'Slashing', dice: '1d4' },
   check: { kind: 'check', scope: 'all', attr: 'VIG', amount: 1 },
   initiativeTandem: { kind: 'initiativeTandem', die: 'class' },
@@ -250,6 +267,7 @@ const KIND_LABELS: Record<HomebrewEffect['kind'], string> = {
   ac: 'AC',
   resistance: 'Resistance',
   immunity: 'Immunity (damage type or Condition)',
+  alignment: 'Alignment level (+1)',
   vulnerability: 'Vulnerability',
   check: 'Bolstered / Hindered Checks',
   initiativeTandem: 'Initiative in Tandem',
@@ -319,7 +337,10 @@ function HomebrewEditor({ entry, onClose, onSave }: { entry: HomebrewEntry; onCl
             <input type="radio" checked={isItem} onChange={() => set({ kind: 'item' })} /> Item
           </label>
           <label className="inline">
-            <input type="radio" checked={!isItem} onChange={() => set({ kind: 'effect', ends: e.ends ?? 'manual' })} /> Effect (boon / curse)
+            <input type="radio" checked={e.kind === 'effect'} onChange={() => set({ kind: 'effect', ends: e.ends ?? 'manual' })} /> Effect (boon / curse)
+          </label>
+          <label className="inline">
+            <input type="radio" checked={e.kind === 'facet'} onChange={() => set({ kind: 'facet', ends: undefined })} /> Facet (permanent)
           </label>
         </div>
         <label>
@@ -328,7 +349,7 @@ function HomebrewEditor({ entry, onClose, onSave }: { entry: HomebrewEntry; onCl
         </label>
         <label>
           Subtitle
-          <input value={e.subtitle ?? ''} onChange={(x) => set({ subtitle: x.target.value })} placeholder={isItem ? 'e.g. Supernatural Platinum Katana' : 'e.g. Curse'} />
+          <input value={e.subtitle ?? ''} onChange={(x) => set({ subtitle: x.target.value })} placeholder={isItem ? 'e.g. Supernatural Platinum Katana' : e.kind === 'facet' ? 'e.g. Boon of the Moon' : 'e.g. Curse'} />
         </label>
         <label>
           Description
@@ -360,7 +381,7 @@ function HomebrewEditor({ entry, onClose, onSave }: { entry: HomebrewEntry; onCl
               <input type="checkbox" checked={!!e.attunement} onChange={(x) => set({ attunement: x.target.checked })} /> Requires attunement
             </label>
           </div>
-        ) : (
+        ) : e.kind === 'effect' ? (
           <label>
             Ends
             <select value={e.ends ?? 'manual'} onChange={(x) => set({ ends: x.target.value as HomebrewEntry['ends'] })}>
@@ -369,7 +390,7 @@ function HomebrewEditor({ entry, onClose, onSave }: { entry: HomebrewEntry; onCl
               <option value="longRest">At your next Long Rest</option>
             </select>
           </label>
-        )}
+        ) : null}
 
         <h4>Alignment tiers</h4>
         <div className="row wrap">
@@ -569,6 +590,17 @@ function EffectFields({ effect: f, dieOptions, onChange }: { effect: HomebrewEff
               <DamageList />
             </>
           )}
+        </div>
+      );
+    case 'alignment':
+      return (
+        <div className="row wrap">
+          <select value={f.light} onChange={(e) => onChange({ kind: 'alignment', light: e.target.value as Light })} aria-label="Light">
+            {LIGHTS.map((l) => (
+              <option key={l}>{l}</option>
+            ))}
+          </select>
+          <span className="muted small">Always applies while active (tiers don't gate it).</span>
         </div>
       );
     case 'vulnerability':

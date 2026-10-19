@@ -52,8 +52,12 @@ export function CastRow({
     .map((t) => scaleText(t!, { level: castLevel, charLevel: d.level }))
     .join(' · ');
 
-  // Casting spends the Cast Time's AP, the class resource and (Arcanists) Prismaburn, then applies any effects.
-  const burns = d.cls?.id === 'arcanist' && cs.kind === 'spell' && !!cost;
+  // Casting spends the Cast Time's AP and the class resource, then applies any effects. Arcanists
+  // become Prismaburned {SL} and Thaumaturges Indebted 2{SL}; like Condition levels, the higher
+  // level is kept, never added.
+  const burns = d.cls?.id === 'arcanist' && cs.kind === 'spell' && castLevel > 0;
+  const debt = d.cls?.id === 'thaumaturge' && cs.kind === 'spell' && castLevel > 0;
+  const raise = (t: Record<string, number>, name: string, to: number) => ({ ...t, [name]: Math.max(t[name] ?? 0, to) });
   const req: UseRequest = {
     key: cs.id,
     name: cs.name,
@@ -64,12 +68,15 @@ export function CastRow({
       apply: (p) => {
         let next = p;
         if (cost && res) next = { ...next, resources: { ...next.resources, [cost.resource]: (next.resources[cost.resource] ?? 0) + cost.amount } };
-        if (burns) next = { ...next, trackers: { ...next.trackers, Prismaburn: (next.trackers.Prismaburn ?? 0) + level } };
+        if (burns) next = { ...next, trackers: raise(next.trackers, 'Prismaburn', castLevel) };
+        if (debt) next = { ...next, trackers: raise(next.trackers, 'Indebted', 2 * castLevel) };
         return next;
       },
       log: [
         `${cs.kind === 'spell' ? 'Cast' : 'Executed'} ${cs.name}${scalable ? ` at ${ordinal(level)} level` : ''}.`,
-        ...(cost && res ? [`${res.mode === 'limit' ? 'Applied' : 'Spent'} ${cost.amount} ${cost.resource}${burns ? `, Prismaburned ${level}` : ''}.`] : []),
+        ...(cost && res ? [`${res.mode === 'limit' ? 'Applied' : 'Spent'} ${cost.amount} ${cost.resource}.`] : []),
+        ...(burns ? [`Prismaburned ${Math.max(c.play.trackers.Prismaburn ?? 0, castLevel)}.`] : []),
+        ...(debt ? [`Indebted ${Math.max(c.play.trackers.Indebted ?? 0, 2 * castLevel)}.`] : []),
       ],
     },
   };

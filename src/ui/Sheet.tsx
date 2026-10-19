@@ -85,7 +85,7 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
           ))}
         </div>
         {tab === 'Sheet' && <MainSheet c={c} d={d} update={update} setPlay={setPlay} onRest={(lines) => setLog({ lines })} />}
-        {tab === 'Facets' && <Facets c={c} d={d} setPlay={setPlay} />}
+        {tab === 'Facets' && <Facets c={c} d={d} setPlay={setPlay} update={update} />}
         {tab === 'Spells & Maneuvers' && <SpellsTab c={c} d={d} setPlay={setPlay} />}
         {tab === 'Equipment' && <Equipment c={c} d={d} update={update} />}
         {tab === 'Notes' && <Notes c={c} update={update} />}
@@ -485,7 +485,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               <ul className="plain">
                 {d.resistances.map((r) => (
                   <li key={r.type}>
-                    {r.type} {r.value}
+                    <strong>{r.type}</strong> {r.value}
                   </li>
                 ))}
               </ul>
@@ -496,12 +496,12 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               <ul className="plain">
                 {d.damageImmunities.map((x) => (
                   <li key={x.type} title={x.sources.join(', ')}>
-                    {x.type} damage
+                    <strong>{x.type}</strong> damage
                   </li>
                 ))}
                 {d.conditionImmunities.map((x) => (
                   <li key={x.name} title={x.sources.join(', ')}>
-                    {x.name} <span className="muted small">Condition</span>
+                    <strong>{x.name}</strong> <span className="muted small">Condition</span>
                   </li>
                 ))}
               </ul>
@@ -512,7 +512,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               <ul className="plain">
                 {d.vulnerabilities.map((v) => (
                   <li key={v.type + v.source}>
-                    {v.type} {v.dice} <span className="muted small">({v.source})</span>
+                    <strong>{v.type}</strong> {v.dice} <span className="muted small">({v.source})</span>
                   </li>
                 ))}
               </ul>
@@ -1010,7 +1010,7 @@ function ActiveEffects({ effects, setPlay }: { effects: ActiveEffect[]; setPlay:
   );
 }
 
-function Facets({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: (p: PlayState) => PlayState) => void }) {
+function Facets({ c, d, setPlay, update }: { c: Character; d: Derived; setPlay: (fn: (p: PlayState) => PlayState) => void; update: Update }) {
   const groups = [...new Set(d.facets.map((f) => f.source))];
   return (
     <div className="features">
@@ -1073,6 +1073,11 @@ function Facets({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: (p:
             </section>
           );
         })}
+      {/* Facets your PM grants beyond your class and ancestry (e.g. one that raises an Alignment). */}
+      <section className="box">
+        <h3 className="box-title">Homebrew facets</h3>
+        <HomebrewBox d={d} update={update} facets />
+      </section>
     </div>
   );
 }

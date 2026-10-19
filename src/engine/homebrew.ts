@@ -71,6 +71,9 @@ function toEffects(spec: HomebrewEffect, r: Pick<ResolvedHomebrew, 'entry' | 'st
     case 'restRule':
     case 'note':
       return [spec as Effect];
+    case 'alignment':
+      // Counted with your other Alignments before tiers are worked out (see derive).
+      return [];
     case 'max':
       return [{ kind: spec.stat, amount: spec.amount }];
     case 'check':
@@ -119,7 +122,7 @@ export function resolveHomebrew(c: Character, alignmentLevel: (light: Light) => 
       if (v !== undefined) stats[a] = { points: v, die: formatDie(modDieFromPoints(v)) };
     }
     const pools = (entry.pools ?? []).map((p) => ({ id: p.id, name: p.name, key: poolKey(entry.id, p.id), max: atTier(p.max, tier) ?? 0, spent: c.play.facetUses[poolKey(entry.id, p.id)] ?? 0, refresh: p.refresh }));
-    const active = entry.kind === 'effect' || !entry.attunement || !!entry.attuned;
+    const active = entry.kind !== 'item' || !entry.attunement || !!entry.attuned;
     const applied = active ? entry.rows.filter((row) => rowApplies(row, entry, tier)) : [];
     const card: ResolvedHomebrew = { entry, tier, level: atTier(entry.level, tier), stats, pools, active, applied, inactive: entry.rows.filter((row) => !applied.includes(row)) };
     cards.push(card);
@@ -179,6 +182,8 @@ export function describeEffect(e: HomebrewEffect, r: Pick<ResolvedHomebrew, 'ent
       return e.condition ? `Immune to the ${e.condition} Condition.` : `Immune to ${e.damage} damage.`;
     case 'vulnerability':
       return `${e.type} Vulnerability ${e.dice}.`;
+    case 'alignment':
+      return `+1 ${e.light} Alignment level.`;
     case 'check': {
       const what = e.scope === 'all' ? `${e.attr} Checks` : e.scope === 'save' ? `${e.attr} Save Checks` : e.scope === 'attribute' ? `${e.attr} Attribute Checks` : e.scope === 'attack' ? 'Attack Checks' : e.text || 'Checks';
       return `${what} are ${e.amount >= 0 ? 'Bolstered' : 'Hindered'} ${Math.abs(e.amount)}.`;
@@ -209,4 +214,24 @@ export function describeEffect(e: HomebrewEffect, r: Pick<ResolvedHomebrew, 'ent
 }
 
 /** Builds Predator's Chains / Moonblade style entries in tests and as examples. */
-export const newHomebrew = (kind: HomebrewEntry['kind'], id: string): HomebrewEntry => ({ id, kind, name: kind === 'item' ? 'New item' : 'New effect', rows: [], ...(kind === 'effect' ? { ends: 'manual' as const } : {}) });
+export const newHomebrew = (kind: HomebrewEntry['kind'], id: string): HomebrewEntry => ({
+  id,
+  kind,
+  name: kind === 'item' ? 'New item' : kind === 'facet' ? 'New facet' : 'New effect',
+  rows: [],
+  ...(kind === 'effect' ? { ends: 'manual' as const } : {}),
+});
+
+/** Alignment levels granted by homebrew rows: they always apply while the entry is active (no tiers, no pools). */
+export function homebrewAlignments(c: Character): { light: Light; source: string }[] {
+  const out: { light: Light; source: string }[] = [];
+  for (const entry of c.homebrew ?? []) {
+    const active = entry.kind !== 'item' || !entry.attunement || !!entry.attuned;
+    if (!active) continue;
+    for (const row of entry.rows) {
+      if (row.effect.kind !== 'alignment' || row.onSpend || (row.when === 'onPerson' && entry.inBackpack)) continue;
+      out.push({ light: row.effect.light, source: entry.name });
+    }
+  }
+  return out;
+}

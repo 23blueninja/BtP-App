@@ -36,6 +36,8 @@ export type Op = (
   | { kind: 'radiance'; amount: number }
   | { kind: 'resource'; name: string; amount: number }
   | { kind: 'tracker'; name: string; amount: number }
+  /** Condition-like trackers (Indebted, Prismaburned): take the higher level, never add. */
+  | { kind: 'trackerAtLeast'; name: string; amount: number }
   | { kind: 'removeConditions'; names: string[] }
   | { kind: 'reduceCondition'; name: string; by: number }
   | { kind: 'effect'; effect: Omit<ActiveEffect, 'id'> }
@@ -65,6 +67,31 @@ const T = { target: true } as const;
 const sacrifice = (n: number): Op => ({ kind: 'vitality', amount: -n });
 
 export const ACTIVATIONS: ActivationDef[] = [
+  // ---- class casting Actions (when used from the Actions panel rather than a spell's Cast button) ----
+  // Cost: {SL} of the class resource and the spell's Cast Time in AP, both entered here.
+  {
+    id: 'classes/thaumaturge/thaumaturgy/casting-spells/evoke',
+    label: 'Evoke',
+    ap: { min: 0, max: 5 },
+    inputs: { amount: 'Spell level (SL)' },
+    // You become Indebted 2{SL}.
+    effects: (x) => [{ kind: 'resource', name: 'Favor', amount: -x.amount }, { kind: 'trackerAtLeast', name: 'Indebted', amount: 2 * x.amount }],
+  },
+  {
+    id: 'classes/arcanist/prismacasting/casting-spells/prismacast',
+    label: 'Prismacast',
+    ap: { min: 0, max: 5 },
+    inputs: { amount: 'Spell level (SL)' },
+    // You become Prismaburned {SL}.
+    effects: (x) => [{ kind: 'resource', name: 'Prisma', amount: -x.amount }, { kind: 'trackerAtLeast', name: 'Prismaburn', amount: x.amount }],
+  },
+  {
+    id: 'classes/troubadour/wondercraft/casting-spells/evoke-wonder',
+    label: 'Evoke Wonder',
+    ap: { min: 0, max: 5 },
+    inputs: { amount: 'Spell level (SL)' },
+    effects: (x) => [{ kind: 'resource', name: 'Wonder', amount: -x.amount }],
+  },
   // ---- maneuvers ----
   {
     id: 'maneuvers/feral/brace',
@@ -585,6 +612,15 @@ function applyOp(p: PlayState, op: Op, d: Derived, log: string[]): PlayState {
       const next = Math.max(0, spent - op.amount);
       if (next !== spent) log.push(res.mode === 'limit' ? `${op.name} applied to your limit reduced by ${spent - next}.` : `Regained ${spent - next} ${op.name}.`);
       return { ...p, resources: { ...p.resources, [op.name]: next } };
+    }
+    case 'trackerAtLeast': {
+      const cur = p.trackers[op.name] ?? 0;
+      if (op.amount <= cur) {
+        if (op.amount > 0) log.push(`${op.name} stays at ${cur} (higher than ${op.amount}).`);
+        return p;
+      }
+      log.push(`${op.name} ${op.amount}.`);
+      return { ...p, trackers: { ...p.trackers, [op.name]: op.amount } };
     }
     case 'tracker': {
       const cur = p.trackers[op.name] ?? 0;
