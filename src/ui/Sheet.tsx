@@ -579,10 +579,11 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             </Box>
           </div>
           <div className="col">
-            <Box title="Check modifiers">
+            {/* What's changing your rolls right now, then the temporary effects behind some of it. */}
+            <Box title="Active effects" className="active-effects">
+              <h4>Check Modifiers</h4>
               <CheckModifiers d={d} />
-            </Box>
-            <Box title="Active effects">
+              <h4>Temporary Effects</h4>
               <ActiveEffects effects={p.effects ?? []} setPlay={setPlay} />
             </Box>
             <Box title="Items & effects">

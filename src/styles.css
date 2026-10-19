@@ -947,6 +947,15 @@ dl.defs dd {
 .top-stack .respond {
   flex: 1;
 }
+/* Active effects: Check Modifiers, then Temporary Effects under a divider. */
+.active-effects h4 {
+  margin: 0.2rem 0 0.4rem;
+}
+.active-effects h4 ~ h4 {
+  margin-top: 0.75rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--border);
+}
 .box.radiance {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
