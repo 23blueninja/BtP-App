@@ -1,5 +1,5 @@
 import { useContext, useRef, useState } from 'react';
-import { weaponProperties, weapons } from '../content';
+import { conditions as conditionDefs, weaponProperties, weapons } from '../content';
 import { ATTRS, ATTR_NAMES, LIGHTS, type Attr, type Light, type RestRule } from '../data/types';
 import { newId, type Character, type DieChoice, type HomebrewEffect, type HomebrewEntry, type HomebrewRow, type PerTier } from '../engine/character';
 import { derive, type Derived } from '../engine/derive';
@@ -10,6 +10,13 @@ import { Collapsible, Modal } from './common';
 type Update = (fn: (c: Character) => Character) => void;
 
 const DAMAGE_TYPES = ['Arctic', 'Caustic', 'Chthonic', 'Cosmic', 'Crushing', 'Divine', 'Galvanic', 'Infernal', 'Piercing', 'Psychic', 'Slashing', 'Somatic', 'Sonic', 'Thermic'];
+const DamageList = () => (
+  <datalist id="hb-damage">
+    {DAMAGE_TYPES.map((t) => (
+      <option key={t} value={t} />
+    ))}
+  </datalist>
+);
 
 const tierRange = (row: HomebrewRow) => {
   const min = row.minTier ?? 0;
@@ -222,6 +229,8 @@ const DEFAULTS: Record<HomebrewEffect['kind'], HomebrewEffect> = {
   attribute: { kind: 'attribute', attr: 'VIG', amount: 1 },
   ac: { kind: 'ac', amount: 1 },
   resistance: { kind: 'resistance', type: 'Thermic', amount: 2 },
+  immunity: { kind: 'immunity', damage: 'Thermic' },
+  vulnerability: { kind: 'vulnerability', type: 'Slashing', dice: '1d4' },
   check: { kind: 'check', scope: 'all', attr: 'VIG', amount: 1 },
   initiativeTandem: { kind: 'initiativeTandem', die: 'class' },
   saveTandem: { kind: 'saveTandem', attr: 'VIG', die: 'class' },
@@ -240,6 +249,8 @@ const KIND_LABELS: Record<HomebrewEffect['kind'], string> = {
   attribute: 'Attribute Points',
   ac: 'AC',
   resistance: 'Resistance',
+  immunity: 'Immunity (damage type or Condition)',
+  vulnerability: 'Vulnerability',
   check: 'Bolstered / Hindered Checks',
   initiativeTandem: 'Initiative in Tandem',
   saveTandem: 'Save Checks in Tandem',
@@ -531,12 +542,41 @@ function EffectFields({ effect: f, dieOptions, onChange }: { effect: HomebrewEff
       return (
         <div className="row wrap">
           <input list="hb-damage" value={f.type} onChange={(e) => onChange({ ...f, type: e.target.value })} aria-label="Damage type" />
-          <datalist id="hb-damage">
-            {DAMAGE_TYPES.map((t) => (
-              <option key={t} value={t} />
-            ))}
-          </datalist>
+          <DamageList />
           <Num value={f.amount} label="Resistance" onChange={(amount) => onChange({ ...f, amount })} />
+        </div>
+      );
+    case 'immunity':
+      return (
+        <div className="row wrap">
+          <select
+            value={f.condition !== undefined ? 'condition' : 'damage'}
+            onChange={(e) => onChange(e.target.value === 'condition' ? { kind: 'immunity', condition: 'Bleeding' } : { kind: 'immunity', damage: 'Thermic' })}
+            aria-label="Immune to"
+          >
+            <option value="damage">Damage type</option>
+            <option value="condition">Condition</option>
+          </select>
+          {f.condition !== undefined ? (
+            <select value={f.condition} onChange={(e) => onChange({ kind: 'immunity', condition: e.target.value })} aria-label="Condition">
+              {conditionDefs.map((c) => (
+                <option key={c.id}>{c.name}</option>
+              ))}
+            </select>
+          ) : (
+            <>
+              <input list="hb-damage" value={f.damage ?? ''} onChange={(e) => onChange({ kind: 'immunity', damage: e.target.value })} aria-label="Damage type" />
+              <DamageList />
+            </>
+          )}
+        </div>
+      );
+    case 'vulnerability':
+      return (
+        <div className="row wrap">
+          <input list="hb-damage" value={f.type} onChange={(e) => onChange({ ...f, type: e.target.value })} aria-label="Damage type" />
+          <DamageList />
+          <input value={f.dice} onChange={(e) => onChange({ ...f, dice: e.target.value })} placeholder="1d4" aria-label="Vulnerability dice" style={{ width: '5em' }} />
         </div>
       );
     case 'check':

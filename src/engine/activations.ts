@@ -551,9 +551,17 @@ function applyOp(p: PlayState, op: Op, d: Derived, log: string[]): PlayState {
       log.push(`Gained ${op.amount} temporary AP.`);
       return { ...p, tempAp: (p.tempAp ?? 0) + op.amount };
     case 'damage': {
+      if (d.damageImmunities.some((x) => x.type === op.type)) {
+        log.push(`No ${op.type} damage (Immune).`);
+        return p;
+      }
       const res = d.resistances.find((r) => r.type === op.type)?.value ?? 0;
       const amount = Math.max(0, op.amount - res);
-      log.push(`Took ${amount} ${op.type} damage${res ? ` (${op.amount} − Resistance ${res})` : ''}.`);
+      const vuln = d.vulnerabilities.find((v) => v.type === op.type);
+      log.push(
+        `Took ${amount} ${op.type} damage${res ? ` (${op.amount} − Resistance ${res})` : ''}.` +
+          (vuln ? ` Roll your ${op.type} Vulnerability ${vuln.dice} and take that too.` : ''),
+      );
       return takeDamage(p, amount, d);
     }
     case 'vitality': {

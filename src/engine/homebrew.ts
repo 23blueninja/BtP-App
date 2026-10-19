@@ -64,6 +64,8 @@ function toEffects(spec: HomebrewEffect, r: Pick<ResolvedHomebrew, 'entry' | 'st
     case 'attribute':
     case 'ac':
     case 'resistance':
+    case 'immunity':
+    case 'vulnerability':
     case 'saveEmpowered':
     case 'sense':
     case 'restRule':
@@ -173,6 +175,10 @@ export function describeEffect(e: HomebrewEffect, r: Pick<ResolvedHomebrew, 'ent
       return `AC ${signed(e.amount)}.`;
     case 'resistance':
       return `${e.type} Resistance ${e.amount}.`;
+    case 'immunity':
+      return e.condition ? `Immune to the ${e.condition} Condition.` : `Immune to ${e.damage} damage.`;
+    case 'vulnerability':
+      return `${e.type} Vulnerability ${e.dice}.`;
     case 'check': {
       const what = e.scope === 'all' ? `${e.attr} Checks` : e.scope === 'save' ? `${e.attr} Save Checks` : e.scope === 'attribute' ? `${e.attr} Attribute Checks` : e.scope === 'attack' ? 'Attack Checks' : e.text || 'Checks';
       return `${what} are ${e.amount >= 0 ? 'Bolstered' : 'Hindered'} ${Math.abs(e.amount)}.`;

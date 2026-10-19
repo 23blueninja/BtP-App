@@ -1032,7 +1032,8 @@ dl.defs dd {
   color: var(--muted);
 }
 .box h4 {
-  font-size: 0.78rem;
+  /* Just above body text (16px), under the uppercase panel titles. */
+  font-size: 1.05rem;
 }
 .box.stat {
   text-align: center;

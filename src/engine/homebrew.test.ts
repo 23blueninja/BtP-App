@@ -3,6 +3,7 @@ import { newCharacter, type Character, type HomebrewEntry } from './character';
 import { derive } from './derive';
 import { resolveHomebrew, spendPool } from './homebrew';
 import { freshPlay, longRest } from './play';
+import { startTurn } from './conditions';
 
 const chains: HomebrewEntry = {
   id: 'chains',
@@ -138,5 +139,39 @@ describe('homebrew effects', () => {
     const d = derive(build({ homebrew: [hex] }));
     expect(d.ac.value).toBe(base.ac.value - 1);
     expect(d.conditionFx.checks.find((r) => r.attr === 'PRS')).toMatchObject({ hindered: 2, hinderedFrom: ['Hex'] });
+  });
+});
+
+describe('immunities and vulnerabilities', () => {
+  const ward = (rows: HomebrewEntry['rows']): HomebrewEntry => ({ id: 'w', kind: 'item', name: 'Ward', rows });
+  it('Immunity to a damage type prevents its Condition, which then has no effect', () => {
+    const c = build({ homebrew: [ward([{ id: '1', effect: { kind: 'immunity', damage: 'Thermic' } }])], play: { conditions: [{ name: 'Burning', level: 2 }] } as never });
+    const d = derive(c);
+    expect(d.damageImmunities).toEqual([{ type: 'Thermic', sources: ['Ward'] }]);
+    expect(d.conditionImmunities).toEqual([{ name: 'Burning', sources: ['Thermic Immunity'] }]);
+    // Burning (and the Numbed it brings) don't apply.
+    expect(d.conditionFx.active.map((x) => x.name)).toEqual([]);
+  });
+  it('start-of-turn Condition damage skips immune types and flags Vulnerability dice', () => {
+    const p = { ...freshPlay(newCharacter()), conditions: [{ name: 'Burning', level: 2 }, { name: 'Bleeding', level: 1 }] };
+    const r = startTurn(p, 1, [], { immune: ['Thermic'], vulnerable: [{ type: 'Somatic', dice: '1d4' }] });
+    expect(r.damage.map((x) => x.type)).toEqual(['Somatic']);
+    expect(r.log.join(' ')).toContain('no Thermic damage (Immune)');
+    expect(r.log.join(' ')).toContain('Somatic Vulnerability 1d4');
+  });
+  it('Condition Immunity, and Vulnerability effects; Immunity cancels a Vulnerability', () => {
+    const d = derive(
+      build({
+        homebrew: [
+          ward([
+            { id: '1', effect: { kind: 'immunity', condition: 'Panicked' } },
+            { id: '2', effect: { kind: 'vulnerability', type: 'Arctic', dice: '1d6' } },
+            { id: '3', effect: { kind: 'immunity', damage: 'Slashing' } },
+          ]),
+        ],
+      }),
+    );
+    expect(d.conditionImmunities.map((x) => x.name)).toEqual(['Panicked', 'Bleeding']);
+    expect(d.vulnerabilities).toEqual([{ type: 'Arctic', dice: '1d6', source: 'Ward' }]);
   });
 });

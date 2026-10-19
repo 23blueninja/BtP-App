@@ -28,7 +28,7 @@ import {
   type SpellListDef,
 } from '../data/types';
 import type { Character } from './character';
-import { conditionEffects, describeCheck, type ConditionEffects } from './conditions';
+import { CONDITION_DAMAGE_TYPE, conditionEffects, describeCheck, type ConditionEffects } from './conditions';
 import { resolveHomebrew, type ResolvedHomebrew } from './homebrew';
 import type { DieRef, RestRule } from '../data/types';
 import {
@@ -123,6 +123,12 @@ export interface Derived {
   ac: { value: number; breakdown: string[] };
   jump: { long: number; high: number };
   resistances: { type: string; value: number }[];
+  /** Damage types you take no damage from. */
+  damageImmunities: { type: string; sources: string[] }[];
+  /** Conditions you can't gain (directly, or through Immunity to the damage type behind them). */
+  conditionImmunities: { name: string; sources: string[] }[];
+  /** Vulnerability dice added to damage of a type (incl. unarmored Slashing). */
+  vulnerabilities: { type: string; dice: string; source: string }[];
   slashingVulnerability: string;
   alignment: { light: Light; level: number; sources: string[] }[];
   /** Alignments strongest first (same tie-breaks as strongestLight). */
@@ -386,9 +392,23 @@ export function derive(c: Character): Derived {
     movementBreakdown.push('−2 Massive weapon');
     armorNotes.push('Massive weapon: Movement −2.');
   }
+  // ---- immunities ----
+  const listAdd = <K extends string>(m: Map<K, string[]>, k: K, src: string) => m.set(k, [...(m.get(k) ?? []), src]);
+  const dmgImm = new Map<string, string[]>();
+  const condImm = new Map<string, string[]>();
+  for (const x of eff('immunity')) {
+    if (x.e.damage) listAdd(dmgImm, x.e.damage, x.source);
+    if (x.e.condition) listAdd(condImm, x.e.condition, x.source);
+  }
+  for (const [cond, type] of Object.entries(CONDITION_DAMAGE_TYPE)) if (dmgImm.has(type)) listAdd(condImm, cond, `${type} Immunity`);
+  const damageImmunities = [...dmgImm.entries()].map(([type, sources]) => ({ type, sources }));
+  const conditionImmunities = [...condImm.entries()].map(([name, sources]) => ({ name, sources }));
+
+  // Conditions you're immune to have no effect.
   const conditionFx = conditionEffects(
     c.play,
     eff('checks').map((x) => ({ name: x.source, attrs: x.e.attrs, save: x.e.save, amount: x.e.amount })),
+    [...condImm.keys()],
   );
   const cm = conditionFx.movementChange;
   if (cm.zero) {
@@ -471,6 +491,10 @@ export function derive(c: Character): Derived {
   }
   const resistances = [...resMap.entries()].filter(([, v]) => v > 0).map(([type, value]) => ({ type, value }));
   const vuln = !armor && !eff('noSlashingVulnerability').length ? slashingVulnerability(vitalityMax) : '';
+  const vulnerabilities = [
+    ...(vuln ? [{ type: 'Slashing', dice: vuln, source: 'unarmored' }] : []),
+    ...eff('vulnerability').map((x) => ({ type: x.e.type, dice: x.e.dice, source: x.source })),
+  ].filter((v) => !dmgImm.has(v.type));
 
   // ---- checks ----
   const classDieLabel = classDie || undefined;
@@ -647,6 +671,9 @@ export function derive(c: Character): Derived {
     ac: { value: ac, breakdown },
     jump,
     resistances,
+    damageImmunities,
+    conditionImmunities,
+    vulnerabilities,
     slashingVulnerability: vuln,
     alignment,
     alignmentRanked,
