@@ -40,6 +40,10 @@ export type Effect =
   | { kind: 'radiance'; amount: Scaled }
   | { kind: 'endurance'; amount: Scaled }
   | { kind: 'resistance'; type: string; amount: Scaled }
+  /** Immune to a damage type (no damage of it) or to a Condition (can't gain it). */
+  | { kind: 'immunity'; damage?: string; condition?: string }
+  /** Vulnerability to a damage type: these dice are added to damage of it. */
+  | { kind: 'vulnerability'; type: string; dice: string }
   | { kind: 'acUnarmored'; amount: Scaled }
   | { kind: 'hobbies'; count: number; rank: Rank }
   | { kind: 'profession'; count: number; rank: Rank; name?: string }

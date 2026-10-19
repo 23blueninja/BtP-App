@@ -187,10 +187,11 @@ export interface ActiveCondition {
 }
 
 /** Your conditions plus the ones they give you, each at its highest level. */
-export function activeConditions(p: PlayState): ActiveCondition[] {
+/** Your Conditions and the ones they bring with them, minus any you're immune to. */
+export function activeConditions(p: PlayState, immune: string[] = []): ActiveCondition[] {
   const out = new Map<string, ActiveCondition>();
   const add = (name: string, level: number, from?: string) => {
-    if (level <= 0) return;
+    if (level <= 0 || immune.includes(name)) return;
     const cur = out.get(name);
     if (cur && cur.level >= level && (!from || cur.from.includes(from))) return;
     const next: ActiveCondition = cur ? { ...cur, level: Math.max(cur.level, level) } : { name, level, from: [], own: !from };
@@ -237,8 +238,8 @@ const leveled = new Set(conditionDefs.filter((d) => d.leveled).map((d) => d.name
 const label = (c: { name: string; level: number }) => (leveled.has(c.name) ? `${c.name} ${c.level}` : c.name);
 
 /** Conditions and Active Effects; `extra` adds Bolstered/Hindered Check levels from items and other effects. */
-export function conditionEffects(p: PlayState, extra: { name: string; attrs: Attr[]; save?: boolean; amount: number }[] = []): ConditionEffects {
-  const active = activeConditions(p);
+export function conditionEffects(p: PlayState, extra: { name: string; attrs: Attr[]; save?: boolean; amount: number }[] = [], immune: string[] = []): ConditionEffects {
+  const active = activeConditions(p, immune);
   const rows = new Map<string, CheckSummary>();
   const row = (attr: Attr, save: boolean) => {
     const key = `${attr}${save ? ' Save' : ''}`;
@@ -353,6 +354,25 @@ export function addCondition(p: PlayState, name: string, level?: number): PlaySt
 const changeLevel = (conds: Condition[], name: string, by: number) =>
   conds.map((c) => (c.name === name ? { ...c, level: (c.level ?? 1) + by } : c)).filter((c) => c.name !== name || (c.level ?? 1) > 0);
 
+/** Conditions that Immunity to a damage type prevents (per each Condition's rules). */
+export const CONDITION_DAMAGE_TYPE: Record<string, string> = {
+  Bleeding: 'Slashing',
+  Bruised: 'Crushing',
+  Burning: 'Thermic',
+  Dissolving: 'Caustic',
+  Freezing: 'Arctic',
+  Poisoned: 'Somatic',
+};
+
+/** Damage Immunities and Vulnerabilities, for damage the app applies itself. */
+export interface Defenses {
+  /** Damage types. */
+  immune: string[];
+  vulnerable: { type: string; dice: string }[];
+  /** Conditions you're immune to (they have no effect). */
+  immuneConditions?: string[];
+}
+
 export interface TurnResult {
   play: PlayState;
   log: string[];
@@ -364,11 +384,11 @@ export interface TurnResult {
  * Start of your turn: damage from Conditions (after Resistance), Buffeted ends,
  * Paralyzed ends your turn, and reminders for start-of-turn Saves.
  */
-export function startTurn(p: PlayState, level: number, resistances: { type: string; value: number }[]): TurnResult {
+export function startTurn(p: PlayState, level: number, resistances: { type: string; value: number }[], defenses: Defenses = { immune: [], vulnerable: [] }): TurnResult {
   let conditions = [...p.conditions];
   const log: string[] = [];
   const damage: TurnResult['damage'] = [];
-  const active = activeConditions(p);
+  const active = activeConditions(p, defenses.immuneConditions);
   let noApRegain = false;
 
   for (const c of active) {
@@ -376,10 +396,19 @@ export function startTurn(p: PlayState, level: number, resistances: { type: stri
     if (!rule?.startDamage) continue;
     const raw = rule.startDamage.amount(c.level, level, p);
     if (raw <= 0) continue;
-    const res = resistances.find((r) => r.type === rule.startDamage!.type)?.value ?? 0;
+    const type = rule.startDamage.type;
+    if (defenses.immune.includes(type)) {
+      log.push(`${label(c)}: no ${type} damage (Immune).`);
+      continue;
+    }
+    const res = resistances.find((r) => r.type === type)?.value ?? 0;
     const amount = Math.max(rule.startDamage.min ?? 0, raw - res);
-    damage.push({ type: rule.startDamage.type, amount, source: label(c) });
-    log.push(`${label(c)}: take ${amount} ${rule.startDamage.type} damage${res ? ` (${raw} − Resistance ${res})` : ''}.`);
+    damage.push({ type, amount, source: label(c) });
+    const vuln = defenses.vulnerable.find((v) => v.type === type);
+    log.push(
+      `${label(c)}: take ${amount} ${type} damage${res ? ` (${raw} − Resistance ${res})` : ''}.` +
+        (vuln ? ` Roll your ${type} Vulnerability ${vuln.dice} and take that too.` : ''),
+    );
   }
   // Damage of certain types reduces some Conditions.
   for (const dmg of damage) {

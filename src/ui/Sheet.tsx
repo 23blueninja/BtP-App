@@ -214,7 +214,11 @@ function TurnBar({
   const start = () =>
     update((x) => {
       const dx = derive(x);
-      const r = startTurn(x.play, dx.level, dx.resistances);
+      const r = startTurn(x.play, dx.level, dx.resistances, {
+        immune: dx.damageImmunities.map((i) => i.type),
+        vulnerable: dx.vulnerabilities,
+        immuneConditions: dx.conditionImmunities.map((i) => i.name),
+      });
       let play = r.play;
       for (const dmg of r.damage) play = takeDamage(play, dmg.amount, dx);
       onLog(r.log, x.play);
@@ -475,8 +479,9 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
           <Box title="Conditions">
             <Conditions p={p} d={d} setPlay={setPlay} />
           </Box>
-          <Box title="Resistances & Vulnerabilities">
-            {d.resistances.length ? (
+          {/* Each shown only when the character has something in it. */}
+          {d.resistances.length > 0 && (
+            <Box title="Resistances">
               <ul className="plain">
                 {d.resistances.map((r) => (
                   <li key={r.type}>
@@ -484,11 +489,35 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p className="muted">None</p>
-            )}
-            {d.slashingVulnerability && <p className="small">Slashing Vulnerability {d.slashingVulnerability} (unarmored)</p>}
-          </Box>
+            </Box>
+          )}
+          {(d.damageImmunities.length > 0 || d.conditionImmunities.length > 0) && (
+            <Box title="Immunities">
+              <ul className="plain">
+                {d.damageImmunities.map((x) => (
+                  <li key={x.type} title={x.sources.join(', ')}>
+                    {x.type} damage
+                  </li>
+                ))}
+                {d.conditionImmunities.map((x) => (
+                  <li key={x.name} title={x.sources.join(', ')}>
+                    {x.name} <span className="muted small">Condition</span>
+                  </li>
+                ))}
+              </ul>
+            </Box>
+          )}
+          {d.vulnerabilities.length > 0 && (
+            <Box title="Vulnerabilities">
+              <ul className="plain">
+                {d.vulnerabilities.map((v) => (
+                  <li key={v.type + v.source}>
+                    {v.type} Vulnerability {v.dice} <span className="muted small">({v.source})</span>
+                  </li>
+                ))}
+              </ul>
+            </Box>
+          )}
           <Box title="Alignments">
             {d.alignment.length ? (
               <ul className="plain">
@@ -648,6 +677,7 @@ function Conditions({ p, d, setPlay }: { p: PlayState; d: Derived; setPlay: (fn:
   const [pick, setPick] = useState('');
   // Conditions given by other Conditions (Burning → Numbed) and Dying from the Vitality box.
   const implied = d.conditionFx.active.filter((x) => !x.own);
+  const immune = new Set(d.conditionImmunities.map((x) => x.name));
   return (
     <div>
       {p.conditions.length === 0 && implied.length === 0 && <p className="muted">None</p>}
@@ -656,7 +686,10 @@ function Conditions({ p, d, setPlay }: { p: PlayState; d: Derived; setPlay: (fn:
           const def = conditionDefs.find((x) => x.name === cd.name);
           return (
             <li key={i} className="row between">
-              {def ? <RuleLink id={def.id}>{cd.name}</RuleLink> : cd.name}
+              <span>
+                {def ? <RuleLink id={def.id}>{cd.name}</RuleLink> : cd.name}
+                {immune.has(cd.name) && <span className="muted small"> · Immune, no effect</span>}
+              </span>
               {def?.leveled && (
                 <Stepper label={`${cd.name} level`} value={cd.level ?? 1} min={1} onChange={(v) => setPlay((x) => ({ ...x, conditions: x.conditions.map((y, j) => (j === i ? { ...y, level: v } : y)) }))} />
               )}
@@ -685,12 +718,16 @@ function Conditions({ p, d, setPlay }: { p: PlayState; d: Derived; setPlay: (fn:
           {conditionDefs
             .filter((x) => x.name !== 'Dying')
             .map((x) => (
-              <option key={x.id}>{x.name}</option>
+              // You can't gain a Condition you're immune to.
+              <option key={x.id} value={x.name} disabled={immune.has(x.name)}>
+                {x.name}
+                {immune.has(x.name) ? ' (Immune)' : ''}
+              </option>
             ))}
         </select>
         <button
           type="button"
-          disabled={!pick}
+          disabled={!pick || immune.has(pick)}
           onClick={() => {
             const def = conditionDefs.find((x) => x.name === pick);
             setPlay((x) => addCondition(x, pick, def?.leveled ? 1 : undefined));

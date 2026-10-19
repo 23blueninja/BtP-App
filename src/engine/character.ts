@@ -85,6 +85,8 @@ export type HomebrewEffect =
   | { kind: 'attribute'; attr: Attr; amount: number }
   | { kind: 'ac'; amount: number }
   | { kind: 'resistance'; type: string; amount: number }
+  | { kind: 'immunity'; damage?: string; condition?: string }
+  | { kind: 'vulnerability'; type: string; dice: string }
   /** Bolstered (positive) or Hindered (negative): all of an Attribute's Checks, its Saves, its Attribute Checks, Attack Checks, or custom text. */
   | { kind: 'check'; scope: 'all' | 'save' | 'attribute' | 'attack' | 'custom'; attr?: Attr; text?: string; amount: number }
   | { kind: 'initiativeTandem'; die: DieChoice }
