@@ -138,6 +138,8 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
     <div className={`stat-strip ${stuck ? 'stuck' : ''}`}>
       {/* Class Bonus and Class Die: one box sliced along its diagonal. */}
       <section className="split-box">
+        <div className="split-glass a" aria-hidden />
+        <div className="split-glass b" aria-hidden />
         <svg className="split-shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
           <polygon points="0,0 93,0 0,91" />
           <polygon points="100,9 100,100 7,100" />

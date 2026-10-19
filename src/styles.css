@@ -1,6 +1,6 @@
 :root {
   /* Slightly rounded corners for buttons, inputs, chips and toggles. */
-  --control-radius: 8px;
+  --control-radius: 12px;
   /* Always dark, like the rulebook; panels are slightly translucent so the
      prism grid shows around and faintly behind them. */
   --bg: #000;
@@ -1362,7 +1362,9 @@ textarea.full {
 .issues.banner,
 .modal {
   border-color: var(--box-border);
-  /* Solid, so the page doesn't show through forms and rules text. */
+}
+/* Solid, so the page doesn't show through forms and rules text. */
+.modal {
   background: #0b0c12;
 }
 .modal-backdrop {
@@ -2092,4 +2094,67 @@ tr.needs input {
   display: flex;
   align-items: center;
   gap: 0.35rem;
+}
+
+/* ---------- glass panels (Options → Glass panels) ----------
+   A translucent tint, a blur + saturation boost of whatever is behind, and a
+   faint highlight edge, like frosted glass. */
+.app.glass {
+  --glass-fill: linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.025) 45%, rgba(255, 255, 255, 0.05));
+  --glass-tint: rgba(14, 16, 26, 0.42);
+  --glass-blur: blur(14px) saturate(165%);
+}
+.app.glass .box,
+.app.glass .builder-content,
+.app.glass .ref-body,
+.app.glass .ref-nav,
+.app.glass .levelup,
+.app.glass .summary,
+.app.glass .detail,
+.app.glass .char-card,
+.app.glass .attr-card,
+.app.glass .spell-list-editor,
+.app.glass .pick-card,
+.app.glass .hb-card,
+.app.glass .topbar,
+.app.glass .toast {
+  background: var(--glass-fill), var(--glass-tint);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 10px 30px rgba(0, 0, 0, 0.35);
+}
+/* Panels inside panels: a lighter touch so they don't stack into milk. */
+.app.glass .box .box,
+.app.glass .box .hb-card {
+  background: rgba(255, 255, 255, 0.035);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.app.glass .split-glass {
+  position: absolute;
+  inset: 0;
+  background: var(--glass-fill), var(--glass-tint);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+.app.glass .split-glass.a {
+  clip-path: polygon(0 0, 93% 0, 0 91%);
+}
+.app.glass .split-glass.b {
+  clip-path: polygon(100% 9%, 100% 100%, 7% 100%);
+}
+.app.glass .split-shape polygon {
+  fill: transparent;
+  stroke: rgba(255, 255, 255, 0.22);
+}
+.split-glass {
+  display: none;
+}
+.app.glass .split-glass {
+  display: block;
 }
