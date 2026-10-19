@@ -1853,18 +1853,12 @@ tr.needs input {
 }
 @media (min-width: 1400px) {
   .sheet-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(340px, 24%);
+    /* Actions take the height they need; the other panels share their width with it. */
+    grid-template-columns: minmax(0, 1fr) minmax(440px, 30%);
     align-items: start;
   }
-  .sheet-actions-col {
-    position: sticky;
-    /* Below the sticky turn bar. */
-    top: 5rem;
-    max-height: calc(100vh - 6rem);
-    overflow-y: auto;
-  }
-  .sheet-actions-col .actions-table th:nth-child(3),
-  .sheet-actions-col .actions-table td:nth-child(3) {
-    display: none;
-  }
+}
+.saves td:nth-child(2),
+.saves th {
+  white-space: nowrap;
 }
