@@ -485,7 +485,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               <ul className="plain">
                 {d.resistances.map((r) => (
                   <li key={r.type}>
-                    {r.type} Resistance {r.value}
+                    {r.type} {r.value}
                   </li>
                 ))}
               </ul>
@@ -512,7 +512,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               <ul className="plain">
                 {d.vulnerabilities.map((v) => (
                   <li key={v.type + v.source}>
-                    {v.type} Vulnerability {v.dice} <span className="muted small">({v.source})</span>
+                    {v.type} {v.dice} <span className="muted small">({v.source})</span>
                   </li>
                 ))}
               </ul>

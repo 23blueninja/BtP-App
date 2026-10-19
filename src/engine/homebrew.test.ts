@@ -164,14 +164,14 @@ describe('immunities and vulnerabilities', () => {
       build({
         homebrew: [
           ward([
-            { id: '1', effect: { kind: 'immunity', condition: 'Frightened' } },
+            { id: '1', effect: { kind: 'immunity', condition: 'Panicked' } },
             { id: '2', effect: { kind: 'vulnerability', type: 'Arctic', dice: '1d6' } },
             { id: '3', effect: { kind: 'immunity', damage: 'Slashing' } },
           ]),
         ],
       }),
     );
-    expect(d.conditionImmunities.map((x) => x.name)).toEqual(['Frightened', 'Bleeding']);
+    expect(d.conditionImmunities.map((x) => x.name)).toEqual(['Panicked', 'Bleeding']);
     expect(d.vulnerabilities).toEqual([{ type: 'Arctic', dice: '1d6', source: 'Ward' }]);
   });
 });
