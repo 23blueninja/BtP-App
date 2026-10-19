@@ -1017,9 +1017,23 @@ dl.defs dd {
 .box-head-extra .stepper-value {
   min-width: 1.4em;
 }
-.endurance .end-amount {
+.end-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: center;
+}
+.end-grid .end-main .big {
+  font-size: 2.4rem;
+}
+.end-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.end-controls .end-amount {
   width: 100%;
-  margin: 0.35rem 0;
+  text-align: center;
 }
 .end-vitality {
   margin-top: 0.5rem;
@@ -1028,11 +1042,6 @@ dl.defs dd {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-}
-.end-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.4rem;
 }
 .saves .save-die {
   white-space: nowrap;

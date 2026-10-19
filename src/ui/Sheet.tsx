@@ -387,18 +387,21 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
                 <Stepper label="Temporary Endurance" value={p.tempEndurance} min={0} onChange={(v) => setPlay((x) => ({ ...x, tempEndurance: v }))} />
               </span>
             </div>
-            <div className="end-main">
-              <span className="big">{p.endurance}</span>
-              <span className="muted"> / {d.enduranceMax}</span>
-            </div>
-            <input className="end-amount" type="number" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" aria-label="Amount" />
-            <div className="end-buttons">
-              <button type="button" className="danger" disabled={!n} onClick={() => (setPlay((x) => takeDamage(x, n, d)), setAmount(''))}>
-                Damage
-              </button>
-              <button type="button" disabled={!n} onClick={() => (setPlay((x) => heal(x, n, d)), setAmount(''))}>
-                Heal
-              </button>
+            {/* Endurance on the left; Heal, the amount and Damage stacked on the right. */}
+            <div className="end-grid">
+              <div className="end-main">
+                <span className="big">{p.endurance}</span>
+                <span className="muted"> / {d.enduranceMax}</span>
+              </div>
+              <div className="end-controls">
+                <button type="button" disabled={!n} onClick={() => (setPlay((x) => heal(x, n, d)), setAmount(''))}>
+                  Heal
+                </button>
+                <input className="end-amount" type="number" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" aria-label="Amount" />
+                <button type="button" className="danger" disabled={!n} onClick={() => (setPlay((x) => takeDamage(x, n, d)), setAmount(''))}>
+                  Damage
+                </button>
+              </div>
             </div>
             <div className="end-vitality">
               <div className="row between">
