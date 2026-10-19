@@ -283,12 +283,55 @@ main {
   text-align: center;
   padding: 2rem 1rem;
 }
+@font-face {
+  font-family: 'Prisma';
+  src: url('./assets/fonts/prisma.ttf') format('truetype');
+  font-display: swap;
+}
+/* The background's rainbow, in the Prisma display font. Each 600px square tile
+   holds two full cycles on the diagonal, so it repeats seamlessly; sliding one
+   tile width every 17s cycles the colours twice as fast as the background (34s). */
 .hero h1 {
+  font-family: 'Prisma', 'Open Sans', system-ui, sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   font-size: 2.4rem;
-  background: var(--prism);
+  background: linear-gradient(
+      135deg,
+      #1fb84a 0%,
+      #15b3b3 6.25%,
+      #1f5bff 12.5%,
+      #1a1aa8 18.75%,
+      #8a1fd6 25%,
+      #d61fa3 31.25%,
+      #e0262e 37.5%,
+      #e88a1a 43.75%,
+      #1fb84a 50%,
+      #15b3b3 56.25%,
+      #1f5bff 62.5%,
+      #1a1aa8 68.75%,
+      #8a1fd6 75%,
+      #d61fa3 81.25%,
+      #e0262e 87.5%,
+      #e88a1a 93.75%,
+      #1fb84a 100%
+    )
+    0 0 / 600px 600px repeat;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  animation: title-flow 17s linear infinite;
+}
+@keyframes title-flow {
+  to {
+    background-position-x: 600px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero h1 {
+    animation: none;
+  }
 }
 .char-grid,
 .card-grid {
@@ -2081,6 +2124,7 @@ tr.needs input {
 .app.still-bg .prism-bg::after {
   animation: none;
 }
+.app.still-gradients .hero h1,
 .app.still-gradients .sheet-header h1,
 .app.still-gradients .sheet .box-title,
 .app.still-gradients .attr-symbol .ic {
