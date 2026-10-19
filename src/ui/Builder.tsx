@@ -920,6 +920,7 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
   const [bulk, setBulk] = useState('');
   const items = c.equipment.inventory;
   const shift = derive(c).bulkShift;
+  const containers = items.filter((i) => i.container);
   const setItems = (fn: (i: typeof items) => typeof items) => update((x) => ({ ...x, equipment: { ...x.equipment, inventory: fn(x.equipment.inventory) } }));
   return (
     <div>
@@ -953,6 +954,8 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
               <th>Bulk</th>
               <th>#</th>
               <th>Notes</th>
+              <th title="A backpack or similar with its own inventory pyramid">Backpack</th>
+              {containers.length > 0 && <th>Stored in</th>}
               {shift > 0 && <th title="Powerful Build only applies to items on your person">In backpack</th>}
               <th />
             </tr>
@@ -974,11 +977,39 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
                     onChange={(e) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, notes: e.target.value } : x)))}
                   />
                 </td>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={!!it.container}
+                    aria-label={`${it.name} has its own inventory pyramid`}
+                    title="Gives this item its own inventory pyramid"
+                    onChange={(e) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, container: e.target.checked || undefined, storedIn: undefined } : x)))}
+                  />
+                </td>
+                {containers.length > 0 && (
+                  <td>
+                    {!it.container && (
+                      <select
+                        value={it.storedIn && containers.some((x) => x.id === it.storedIn) ? it.storedIn : ''}
+                        aria-label={`Where ${it.name} is stored`}
+                        onChange={(e) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, storedIn: e.target.value || undefined } : x)))}
+                      >
+                        <option value="">On you</option>
+                        {containers.map((x) => (
+                          <option key={x.id} value={x.id}>
+                            {x.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </td>
+                )}
                 {shift > 0 && (
                   <td>
                     <input
                       type="checkbox"
-                      checked={!!it.inBackpack}
+                      checked={!!it.inBackpack || (!!it.storedIn && containers.some((x) => x.id === it.storedIn))}
+                      disabled={!!it.storedIn && containers.some((x) => x.id === it.storedIn)}
                       aria-label={`${it.name} is in a backpack`}
                       onChange={(e) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, inBackpack: e.target.checked } : x)))}
                     />

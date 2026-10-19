@@ -27,7 +27,35 @@ export interface BulkLayout {
 /** Bulk Rank an item counts as, after any shift for items carried on your person. */
 export function effectiveBulk(item: InventoryItem, shift: number): number | undefined {
   if (!item.bulk) return undefined;
-  return Math.min(5, item.bulk + (item.inBackpack ? 0 : shift));
+  return Math.min(5, item.bulk + (item.inBackpack || item.storedIn ? 0 : shift));
+}
+
+export interface InventoryGroups {
+  /** Items in your own (and VIG bonus) pyramid. */
+  person: InventoryItem[];
+  /** Each container with the items stored in it. */
+  containers: { item: InventoryItem; contents: InventoryItem[] }[];
+}
+
+/**
+ * Splits items between your person and containers (backpacks with their own
+ * pyramid). A container itself is carried on your person and can't go inside
+ * another; items stored in a container that's gone fall back to your person.
+ */
+export function groupInventory(items: InventoryItem[]): InventoryGroups {
+  const containers = items.filter((i) => i.container);
+  const ids = new Set(containers.map((i) => i.id));
+  const inContainer = (i: InventoryItem) => !i.container && !!i.storedIn && ids.has(i.storedIn);
+  return {
+    person: items.filter((i) => !inContainer(i)),
+    containers: containers.map((item) => ({ item, contents: items.filter((i) => inContainer(i) && i.storedIn === item.id) })),
+  };
+}
+
+/** A container's pyramid: rank r has r slots, with no VIG bonus slots. */
+export function layoutContainer(items: InventoryItem[]): BulkLayout {
+  const l = layoutBulk(items, 0, 0);
+  return { rows: l.rows.map((r) => ({ ...r, slots: r.slots.filter((s) => !s.bonus) })), overflow: l.overflow };
 }
 
 export function layoutBulk(items: InventoryItem[], vig: number, shift = 0): BulkLayout {

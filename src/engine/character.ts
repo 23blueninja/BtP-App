@@ -11,6 +11,10 @@ export interface InventoryItem {
   notes?: string;
   /** Stowed in a backpack rather than carried on your person. */
   inBackpack?: boolean;
+  /** A backpack or similar: it has its own inventory pyramid (not in the rules yet). */
+  container?: boolean;
+  /** Id of the container item this is stored in (its pyramid, not yours). */
+  storedIn?: string;
 }
 
 export interface WeaponEntry {
