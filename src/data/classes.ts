@@ -110,7 +110,7 @@ export const classes: ClassDef[] = [
     subclassLabel: 'Wild Fervor',
     subclassListId: `${C}/wild-fervors`,
     facetExtras: {
-      'barbarous-light': { effects: [{ kind: 'tandem', what: 'Initiative Checks', die: 'class' }] },
+      'barbarous-light': { effects: [{ kind: 'tandem', what: 'Initiative Checks', die: 'class' }, { kind: 'jump', mode: 'powerful' }] },
       'somatic-wellspring': { uses: { count: 1, per: 'Rest' } },
     },
     spellLists: [maneuverList(['Feral', 'Instinctual'], { granted: [`${C}/berserker/berserker-maneuvers/rage`], note: 'Includes Rage.' })],
@@ -137,7 +137,12 @@ export const classes: ClassDef[] = [
     subclassLabel: 'Champion’s Cause',
     subclassListId: `${C}/champions-causes`,
     facetExtras: {
-      'apostles-light': { effects: [{ kind: 'vitality', amount: 'halfClassBonus' }] },
+      'apostles-light': {
+        effects: [
+          { kind: 'vitality', amount: 'halfClassBonus' },
+          { kind: 'tandem', what: 'Survival Saves', die: 'class' },
+        ],
+      },
       undaunted: { uses: { count: 1, per: 'Rest' } },
     },
     choices: [
@@ -199,6 +204,7 @@ export const classes: ClassDef[] = [
       investigator: {
         facetExtras: {
           'professional-investigator': { effects: [{ kind: 'profession', count: 1, rank: 'Proficient', name: 'Investigator' }] },
+          'eagle-eyed': { effects: [{ kind: 'tandem', what: 'PER Attribute Checks', die: 'class' }] },
         },
       },
     },
@@ -220,7 +226,8 @@ export const classes: ClassDef[] = [
     subclassLabel: 'Martial Training',
     subclassListId: `${C}/martial-trainings`,
     facetExtras: {
-      'action-flare': { uses: { count: 1, per: 'Rest' } },
+      // An additional use between Rests at 8th level.
+      'action-flare': { uses: { count: { base: 1, at: { 8: 1 } }, per: 'Rest' } },
     },
     choices: [
       {
@@ -331,7 +338,8 @@ export const classes: ClassDef[] = [
     subclassExtras: {
       'the-king': {
         facetExtras: {
-          amphibious: { effects: [{ kind: 'movementType', type: 'Swim', amount: 'movement' }] },
+          // "If you already have Swim Movement, it increases by 2 spaces."
+          amphibious: { effects: [{ kind: 'movementType', type: 'Swim', amount: 'movement', ifAlready: 2 }] },
           'king-of-beasts': { effects: [{ kind: 'actions', categories: ['Combat'] }] },
         },
         spellLists: [

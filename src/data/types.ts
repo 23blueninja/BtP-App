@@ -35,11 +35,14 @@ export type Scaled = number | 'classBonus' | 'halfClassBonus' | 'level' | 'twice
 export type Effect =
   | { kind: 'alignment'; light: Light | 'choice' }
   | { kind: 'movement'; amount: Scaled }
-  | { kind: 'movementType'; type: 'Swim' | 'Climb'; amount: 'movement' | 'halfMovement' }
+  /** Swim/Climb Movement; with `ifAlready`, an existing one of that type increases by that many spaces instead. */
+  | { kind: 'movementType'; type: 'Swim' | 'Climb'; amount: 'movement' | 'halfMovement'; ifAlready?: number }
   | { kind: 'vitality'; amount: Scaled }
   | { kind: 'radiance'; amount: Scaled }
   | { kind: 'endurance'; amount: Scaled }
   | { kind: 'resistance'; type: string; amount: Scaled }
+  /** Jump rules: Powerful Jump (High 1 + VIG, Long the larger of 2 + VIG and 2×VIG) or doubled distances (Gravity Warp). */
+  | { kind: 'jump'; mode: 'powerful' | 'double' }
   /** Immune to a damage type (no damage of it) or to a Condition (can't gain it). */
   | { kind: 'immunity'; damage?: string; condition?: string }
   /** Vulnerability to a damage type: these dice are added to damage of it. */
@@ -94,7 +97,8 @@ export interface FacetDef {
   level?: number;
   effects?: Effect[];
   /** Usage limit shown on the sheet, e.g. "1 / Long Rest". */
-  uses?: { count: number | 'halfClassBonus' | 'classBonus'; per: 'Rest' | 'Short Rest' | 'Long Rest' };
+  /** Uses between rests; `{ base, at }` adds uses from a character level (e.g. Action Flare's 2nd use at 8th). */
+  uses?: { count: number | 'halfClassBonus' | 'classBonus' | { base: number; at: Record<number, number> }; per: 'Rest' | 'Short Rest' | 'Long Rest' };
 }
 
 export interface ChoiceOption {

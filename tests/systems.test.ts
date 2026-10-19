@@ -234,13 +234,13 @@ describe('parseCost', () => {
   // Rules: "**Cost** :: 1 *Blood*, 1 $[AP], Basic CAP" (Iron Glide) and
   // "2 $[AP], 3 *Blood* unless …" — Blood is a cost the rules use, but it is
   // missing from costs.ts RESOURCES.
-  it.fails('BUG: Blood costs from the rules are not parsed as a resource', () => {
+  it('Blood costs from the rules are parsed as a resource', () => {
     expect(parseCost('1 Blood, 1 {AP}, Basic CAP').resources).toEqual([{ name: 'Blood', amount: 1 }]);
   });
 
   // Rules: "**Cast Time** :: Varies, minimum 1 minute" is a ritual-length cast,
   // but parseCost turns any "Varies" into a 1–5 AP choice.
-  it.fails('BUG: "Varies, minimum 1 minute" is read as a 1–5 AP cost', () => {
+  it('"Varies, minimum 1 minute" is not an AP cost', () => {
     expect(parseCost('Varies, minimum 1 minute').ap).toBe(0);
   });
 });
@@ -286,7 +286,7 @@ describe('scaleText / resolveHtml', () => {
 
   // Rules: "**Failure** :: Panicked half $[SL], rounded down." — halving rounds
   // up "unless the effect says so specifically", and this one does.
-  it.fails('BUG: "half {SL}, rounded down" still rounds up', () => {
+  it('"half {SL}, rounded down" rounds down', () => {
     expect(at('Panicked half {SL}, rounded down.', 3)).toBe('Panicked 1, rounded down.');
   });
 
@@ -361,7 +361,8 @@ describe('maxCastLevel / castCost', () => {
     for (let L = 1; L <= 5; L++) {
       const s = castCost(cls, spell(1), L, true);
       const m = castCost(cls, man(1), L, true);
-      if (id === 'incarnate') expect(s).toBeUndefined();
+      // Incarnate (Channel): free at base level, 1 Stamina per Exalted level above it.
+      if (id === 'incarnate') expect(s).toEqual(L > 1 ? { resource, amount: L - 1 } : undefined);
       else expect(s).toEqual({ resource, amount: L });
       expect(m).toEqual({ resource, amount: id === 'champion' ? Math.ceil(L / 2) : L });
     }
@@ -379,7 +380,7 @@ describe('maxCastLevel / castCost', () => {
   });
   // Rules (Incarnate, Channel): "you can Exalt them by spending 1 Stamina per
   // Exalted level" — castCost returns no cost for any Incarnate spell.
-  it.fails('BUG: Incarnate Channeled spells cost no Stamina when Exalted', () => {
+  it('Incarnate Channeled spells cost 1 Stamina per Exalted level', () => {
     expect(castCost(getClass('incarnate')!, spell(1), 3, true)).toEqual({ resource: 'Stamina', amount: 2 });
   });
 });
@@ -994,7 +995,8 @@ describe('inventory', () => {
     });
     it('does not shift items in a backpack or stored in a container', () => {
       expect(effectiveBulk(item(2, { inBackpack: true }), 1)).toBe(2);
-      expect(effectiveBulk(item(2, { storedIn: 'bag' }), 1)).toBe(2);
+      // Container contents are laid out in the container's own pyramid with no shift.
+      expect(layoutContainer([item(2, { storedIn: 'bag' })]).rows[1].slots.some((x) => x.item)).toBe(true);
     });
     it('a shifted Bulk 1 item uses a Bulk 2 slot, leaving the Bulk 1 slot free', () => {
       const l = layoutBulk([item(1), item(1, { inBackpack: true })], 0, 1);
@@ -1006,7 +1008,7 @@ describe('inventory', () => {
     });
     // groupInventory puts items whose container is gone back on your person,
     // but effectiveBulk still treats them as stored (no Powerful Build).
-    it.fails('BUG: items whose container was removed fall back to your person but miss Powerful Build', () => {
+    it('items whose container was removed fall back to your person with Powerful Build', () => {
       const orphan = item(2, { storedIn: 'deleted-bag' });
       const { person } = groupInventory([orphan]);
       expect(person).toEqual([orphan]);
@@ -1248,7 +1250,7 @@ describe('storage', () => {
 
   // storage.ts readAll: JSON.parse('null') returns null, which is cached as
   // "not loaded" and then passed to Object.values → TypeError.
-  it.fails('BUG: storage holding JSON null crashes list()', async () => {
+  it('storage holding JSON null lists nothing', async () => {
     ls.data.set(KEY, 'null');
     const { LocalStore } = await load();
     expect(new LocalStore().list()).toEqual([]);
@@ -1256,7 +1258,7 @@ describe('storage', () => {
 
   // list() reads raw (un-normalised) saves; one without updatedAt (old or
   // hand-edited) makes localeCompare throw and the whole Home list fails.
-  it.fails('BUG: a saved character missing updatedAt crashes list()', async () => {
+  it('a saved character missing updatedAt still lists', async () => {
     const a = char('Ann', '2026-01-01T00:00:00.000Z');
     const b = { ...char('Bob', ''), updatedAt: undefined };
     const d = { ...char('Dee', ''), updatedAt: undefined };

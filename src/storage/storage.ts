@@ -23,7 +23,8 @@ const KEY = 'btp.characters.v1';
 function readAll(): Record<string, Character> {
   try {
     const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as Record<string, Character>) : {};
+    const all = raw ? JSON.parse(raw) : {};
+    return all && typeof all === 'object' ? (all as Record<string, Character>) : {};
   } catch {
     return {};
   }
@@ -50,7 +51,7 @@ export class LocalStore implements CharacterStore {
   list(): CharacterSummary[] {
     return Object.values(this.all())
       .map((c) => ({ id: c.id, name: c.name, level: c.level, ancestry: c.ancestry, classId: c.classId, updatedAt: c.updatedAt }))
-      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+      .sort((a, b) => (b.updatedAt ?? '').localeCompare(a.updatedAt ?? ''));
   }
 
   get(id: string): Character | undefined {

@@ -9,7 +9,7 @@ import { Collapsible, Modal } from './common';
 
 type Update = (fn: (c: Character) => Character) => void;
 
-const DAMAGE_TYPES = ['Arctic', 'Caustic', 'Chthonic', 'Cosmic', 'Crushing', 'Divine', 'Galvanic', 'Infernal', 'Piercing', 'Psychic', 'Slashing', 'Somatic', 'Sonic', 'Thermic'];
+const DAMAGE_TYPES = ['Arctic', 'Caustic', 'Chthonic', 'Cosmic', 'Crushing', 'Divine', 'Galvanic', 'Piercing', 'Profane', 'Psychic', 'Slashing', 'Somatic', 'Sonic', 'Thermic'];
 const DamageList = () => (
   <datalist id="hb-damage">
     {DAMAGE_TYPES.map((t) => (

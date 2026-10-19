@@ -25,6 +25,8 @@ interface TurnDamage {
   amount: (x: number, level: number, p: PlayState) => number;
   /** Resistance cannot reduce the damage below this. */
   min?: number;
+  /** Also dealt when you gain the Condition (Burning, Dissolving). */
+  onGain?: boolean;
 }
 
 interface ConditionRule {
@@ -72,7 +74,7 @@ export const CONDITION_RULES: Record<string, ConditionRule> = {
   Buffeted: { ac: (x) => -x },
   Burning: {
     implies: [['Numbed', (x) => x]],
-    startDamage: { type: 'Thermic', amount: (x) => 3 * x },
+    startDamage: { type: 'Thermic', amount: (x) => 3 * x, onGain: true },
     ap: () => 'Spend 2 AP to reduce Burning by 1; it ends if you are submerged in water.',
   },
   Deafened: {
@@ -82,7 +84,7 @@ export const CONDITION_RULES: Record<string, ConditionRule> = {
     ],
   },
   Dissolving: {
-    startDamage: { type: 'Caustic', amount: (x) => 2 * x },
+    startDamage: { type: 'Caustic', amount: (x) => 2 * x, onGain: true },
     endChange: -1,
     ap: () => 'Spend 1 AP to wipe it off and reduce Dissolving by 1.',
   },
@@ -139,7 +141,7 @@ export const CONDITION_RULES: Record<string, ConditionRule> = {
     notes: (x) => `Every minute, make a VIG Save Check (DC ${10 + x}); on a Success you stop taking its damage.`,
   },
   Possessed: {
-    startDamage: { type: 'Infernal', amount: (x) => 2 * x },
+    startDamage: { type: 'Chthonic', amount: (x) => 2 * x },
     notes: () => 'You must make an Attack Check on your turn against a random closest creature; you can only cast damaging spells costing 3 AP or less.',
     endNote: (x) => `Possessed: make a PRS Save Check (DC ${10 + x}). Success −2, Complete Success −3, Deadly Failure +1.`,
     reducedBy: ['Sonic'],
@@ -193,7 +195,7 @@ export function activeConditions(p: PlayState, immune: string[] = []): ActiveCon
   const add = (name: string, level: number, from?: string) => {
     if (level <= 0 || immune.includes(name)) return;
     const cur = out.get(name);
-    if (cur && cur.level >= level && (!from || cur.from.includes(from))) return;
+    if (cur && cur.level >= level && (from ? cur.from.includes(from) : cur.own)) return;
     const next: ActiveCondition = cur ? { ...cur, level: Math.max(cur.level, level) } : { name, level, from: [], own: !from };
     if (from && !next.from.includes(from)) next.from = [...next.from, from];
     if (!from) next.own = true;
@@ -342,13 +344,47 @@ export function describeCheck(r: CheckSummary): string[] {
   return out;
 }
 
-/** Adds a condition, keeping the higher level if you already have it. */
-export function addCondition(p: PlayState, name: string, level?: number): PlayState {
+/** What gaining a Condition needs to know about you to apply its damage. */
+export interface GainContext {
+  resistances?: { type: string; value: number }[];
+  /** Damage types you're immune to. */
+  immune?: string[];
+  /** For damage taken at 0 Endurance (costs 1 Vitality; Dying becomes the Vitality missing). */
+  vitalityMax?: number;
+  /** Conditions you're immune to: gaining one does nothing. */
+  immuneConditions?: string[];
+}
+
+/**
+ * Adds a condition, keeping the higher level if you already have it. Burning and
+ * Dissolving also deal their damage when gained (after Resistance and Immunity).
+ */
+export function addCondition(p: PlayState, name: string, level?: number, ctx: GainContext = {}): PlayState {
+  if (ctx.immuneConditions?.includes(name)) return p;
   const cur = p.conditions.find((c) => c.name === name);
   const lvl = level === undefined ? undefined : Math.max(level, cur?.level ?? 0);
   const conditions = [...p.conditions.filter((c) => c.name !== name), { name, level: lvl }];
   // Paralyzed: you lose all your AP.
-  return name === 'Paralyzed' ? { ...p, conditions, ap: 0, tempAp: 0 } : { ...p, conditions };
+  let next: PlayState = name === 'Paralyzed' ? { ...p, conditions, ap: 0, tempAp: 0 } : { ...p, conditions };
+  const dmg = CONDITION_RULES[name]?.startDamage;
+  if (dmg?.onGain && !ctx.immune?.includes(dmg.type)) {
+    const raw = dmg.amount(level ?? 1, 0, p);
+    const res = ctx.resistances?.find((r) => r.type === dmg.type)?.value ?? 0;
+    next = applyDamage(next, Math.max(dmg.min ?? 0, raw - res), ctx.vitalityMax);
+  }
+  return next;
+}
+
+/** Temporary Endurance first, then Endurance; damage at 0 Endurance costs 1 Vitality (as takeDamage). */
+function applyDamage(p: PlayState, amount: number, vitalityMax?: number): PlayState {
+  if (amount <= 0) return p;
+  const fromTemp = Math.min(p.tempEndurance, amount);
+  const rest = amount - fromTemp;
+  const next = { ...p, tempEndurance: p.tempEndurance - fromTemp };
+  if (rest <= 0) return next;
+  if (p.endurance > 0) return { ...next, endurance: Math.max(0, p.endurance - rest) };
+  const vitality = Math.max(0, p.vitality - 1);
+  return { ...next, vitality, dying: vitalityMax === undefined ? p.dying : Math.max(p.dying, vitalityMax - vitality) };
 }
 
 const changeLevel = (conds: Condition[], name: string, by: number) =>
@@ -430,7 +466,7 @@ export function startTurn(p: PlayState, level: number, resistances: { type: stri
     conditions = conditions.filter((c) => c.name !== 'Buffeted');
     log.push('Buffeted ended.');
   }
-  if (conditions.some((c) => c.name === 'Paralyzed')) {
+  if (conditions.some((c) => c.name === 'Paralyzed') && !defenses.immuneConditions?.includes('Paralyzed')) {
     conditions = changeLevel(conditions, 'Paralyzed', -1);
     noApRegain = true;
     log.push('Paralyzed: your turn ends immediately, you don’t regain AP, and Paralyzed reduces by 1.');
@@ -458,10 +494,10 @@ export function startTurn(p: PlayState, level: number, resistances: { type: stri
 }
 
 /** End of your turn: regain AP, temporary AP disappears, and Conditions that tick down do. */
-export function endTurn(p: PlayState): TurnResult {
+export function endTurn(p: PlayState, immuneConditions: string[] = []): TurnResult {
   let conditions = [...p.conditions];
   const log: string[] = [];
-  const active = activeConditions(p);
+  const active = activeConditions(p, immuneConditions);
   for (const c of active) {
     const note = CONDITION_RULES[c.name]?.endNote;
     if (note) log.push(note(c.level));

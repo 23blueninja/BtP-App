@@ -11,7 +11,9 @@ const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v
 export function facetUseMax(f: ResolvedFacet, d: Derived): number {
   if (!f.uses) return 0;
   const n = f.uses.count;
-  return typeof n === 'number' ? n : resolveScaled(n, { level: d.level, classBonus: d.classBonus, points: { VIG: 0, AGI: 0, PER: 0, INT: 0, PRS: 0 } });
+  if (typeof n === 'number') return n;
+  if (typeof n === 'object') return n.base + Object.entries(n.at).reduce((sum, [lvl, extra]) => sum + (d.level >= Number(lvl) ? extra : 0), 0);
+  return resolveScaled(n, { level: d.level, classBonus: d.classBonus, points: { VIG: 0, AGI: 0, PER: 0, INT: 0, PRS: 0 } });
 }
 
 /** A fully rested play state for a freshly built (or reset) character. */
@@ -66,7 +68,9 @@ export function takeDamage(p: PlayState, amount: number, d: Derived): PlayState 
       endurance = Math.max(0, endurance - rest);
     }
   }
-  return { ...p, tempEndurance, endurance, vitality, dying };
+  // Unconscious ends when you take damage.
+  const conditions = p.conditions.some((c) => c.name === 'Unconscious') ? p.conditions.filter((c) => c.name !== 'Unconscious') : p.conditions;
+  return { ...p, tempEndurance, endurance, vitality, dying, conditions };
 }
 
 export function heal(p: PlayState, amount: number, d: Derived): PlayState {
@@ -88,10 +92,16 @@ function endHomebrew(c: Character, kind: 'rest' | 'longRest', log: string[]): Ch
 }
 
 export function shortRest(c: Character, d: Derived, opts: { spendRestCharge: boolean }): RestResult {
-  const p = { ...c.play, resources: { ...c.play.resources }, facetUses: { ...c.play.facetUses } };
+  // Bruised lasts until you finish a Rest.
+  const p = { ...c.play, resources: { ...c.play.resources }, facetUses: { ...c.play.facetUses }, conditions: c.play.conditions.filter((x) => x.name !== 'Bruised') };
   const log: string[] = [];
-  if (p.shortRests >= 2) log.push('Note: only two Short Rests count per Long Rest.');
+  if (c.play.conditions.length !== p.conditions.length) log.push('Bruised ended.');
+  // You can only benefit from two Short Rests per Long Rest.
   p.shortRests += 1;
+  if (p.shortRests > 2) {
+    log.unshift('Nothing restored: only two Short Rests count per Long Rest.');
+    return { play: p, log, homebrew: c.homebrew ?? [] };
+  }
   const rules = new Set(d.restRules);
   if (c.settings.restRules === 'heroic' && !rules.has('noVitalityShortRest')) {
     const gain = Math.min(half(Math.max(0, d.attrs.VIG.points)), d.vitalityMax - p.vitality);
@@ -194,7 +204,9 @@ export function longRest(c: Character, d: Derived): RestResult {
   // Exhausted reduces by 1 on a Long Rest.
   p.conditions = c.play.conditions
     .map((x) => (x.name === 'Exhausted' ? { ...x, level: (x.level ?? 1) - 1 } : x))
-    .filter((x) => x.name !== 'Exhausted' || (x.level ?? 0) > 0);
+    .filter((x) => x.name !== 'Exhausted' || (x.level ?? 0) > 0)
+    // Bruised lasts until you finish a Rest.
+    .filter((x) => x.name !== 'Bruised');
   log.push('Class resources and facet uses restored.');
   return { play: p, log, homebrew: endHomebrew(c, 'longRest', log) };
 }

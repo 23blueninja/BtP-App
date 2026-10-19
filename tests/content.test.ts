@@ -321,7 +321,7 @@ describe('rules parser (scripts/parse-rules.mjs)', () => {
     expect(getNode('classes/arcanist/arcane-discovery')).toBeUndefined();
   });
 
-  it.fails('BUG: no field line is malformed in the markdown (Whirling Frost reads "**Cast Time** 3 :: $[AP]")', () => {
+  it('no field line is malformed in the markdown (a `**Key** text :: value` line loses its value)', () => {
     // A `**Key** text :: value` line is not a field, so its value is lost.
     const bad = MD_LINES.filter((l) => /^\s*\*\*[^*]+\*\*\s+[^:\s][^:]*::/.test(l)).map((l) => l.trim());
     expect(bad).toEqual([]);
@@ -1080,14 +1080,11 @@ describe('conditions vs the markdown', () => {
     });
   });
 
-  it('start-of-turn damage types are rules damage types (except Possessed: the rules say "Infernal damage")', () => {
+  it('start-of-turn damage types are rules damage types', () => {
     const types = Object.entries(CONDITION_RULES)
       .filter(([, r]) => r.startDamage)
       .map(([n, r]) => [n, r.startDamage!.type] as const);
-    // "Infernal" is not one of the fourteen damage types; the app copies the rules text.
-    expect(types.filter(([n, t]) => !MD_DAMAGE_TYPES.includes(t) && n !== 'Possessed')).toEqual([]);
-    expect(CONDITION_RULES.Possessed.startDamage?.type).toBe('Infernal');
-    expect(mdText(MD_CONDITIONS.find((c) => c.name === 'Possessed')!.node)).toContain('2X Infernal damage');
+    expect(types.filter(([, t]) => !MD_DAMAGE_TYPES.includes(t))).toEqual([]);
   });
 
   it('the rules list fourteen damage types', () => {
@@ -1243,9 +1240,7 @@ const castKey = (c: { kind: string; type: string; name: string }) => `${c.kind}|
 const ALL_CASTABLES: Castable[] = [...spells, ...maneuvers];
 const castableByKey = new Map(ALL_CASTABLES.map((c) => [castKey(c), c]));
 /** Rules typos the app inherits; each has an it.fails below. */
-const KNOWN_BUGS: Record<string, string> = {
-  'spell|Frost|Whirling Frost': 'BUG: Whirling Frost has no Cast Time (rules line "**Cast Time** 3 :: $[AP]" is not a field), so it costs 0 AP',
-};
+const KNOWN_BUGS: Record<string, string> = {};
 
 describe('spells and maneuvers vs the markdown', () => {
   it('content has exactly the spells and maneuvers written in the rules', () => {
@@ -1361,7 +1356,7 @@ describe('spells and maneuvers vs the markdown', () => {
     });
   }
 
-  it.fails('BUG: "half {SL}, rounded down" is resolved rounded up (scaling.ts ignores "rounded down")', () => {
+  it('"half {SL}, rounded down" is resolved rounded down', () => {
     // Rules (Intimidate's Frighten / Frightening Strike options, shown with the maneuver):
     // "Panicked half {SL}, rounded down." At SL 5 that is Panicked 2, not 3.
     const subs = allNodes().filter((n) => Object.values(n.fields ?? {}).some((v) => /half \{SL\}, rounded down/.test(v)));
@@ -1373,7 +1368,7 @@ describe('spells and maneuvers vs the markdown', () => {
     }
   });
 
-  it('the Whirling Frost typo is the only castable without its Cast/Execution Time', () => {
+  it('every castable has its Cast/Execution Time', () => {
     const missing = ALL_CASTABLES.filter((c) => !c.fields[c.kind === 'spell' ? 'Cast Time' : 'Execution Time']).map(castKey);
     expect(missing).toEqual(Object.keys(KNOWN_BUGS));
   });

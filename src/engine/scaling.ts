@@ -25,7 +25,8 @@ const CLOSE = '\u0002';
 function resolve(text: string, ctx: ScaleCtx): string {
   const v = (n: number) => `${OPEN}${n}${CLOSE}`;
   let s = text;
-  s = s.replace(/\bhalf\s*\{SL\}/gi, () => v(half(ctx.level)));
+  // Halving rounds up unless the text says otherwise ("half {SL}, rounded down").
+  s = s.replace(/\bhalf\s*\{SL\}(,?\s*rounded down)?/gi, (_, down: string | undefined) => v(down ? Math.floor(ctx.level / 2) : half(ctx.level)) + (down ?? ''));
   s = s.replace(/(\d+)\s*\{SL\}/g, (_, n) => v(Number(n) * ctx.level));
   s = s.replace(/\{SL\}/g, () => v(ctx.level));
   s = s.replace(/\b[Yy]our level\b(?!\s+of)/g, () => v(ctx.charLevel));
@@ -96,8 +97,8 @@ export function castCost(cls: ClassDef | undefined, c: Castable, level: number, 
   if (!cls || !fromClass || c.level === 0) return undefined;
   const resource = cls.resources[0]?.name;
   if (!resource) return undefined;
-  // Incarnates Channel their soul spells; only maneuvers cost Stamina.
-  if (cls.id === 'incarnate' && c.kind === 'spell') return undefined;
+  // Incarnates Channel their soul spells for free, but Exalting them costs 1 Stamina per level above base.
+  if (cls.id === 'incarnate' && c.kind === 'spell') return level > c.level ? { resource, amount: level - c.level } : undefined;
   if (cls.id === 'champion' && c.kind === 'maneuver') return { resource, amount: half(level) };
   return { resource, amount: level };
 }

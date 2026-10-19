@@ -272,7 +272,7 @@ export const ancestries: AncestryDef[] = [
     facets: [
       f(`${A}/ulu/facets`, 'Mystic Soul', [{ kind: 'alignment', light: 'Lunar' }]),
       f(`${A}/ulu/facets`, 'Everwatching'),
-      f(`${A}/ulu/facets`, 'Gravity Warp'),
+      f(`${A}/ulu/facets`, 'Gravity Warp', [{ kind: 'jump', mode: 'double' }]),
       f(`${A}/ulu/facets`, 'Lunar Gift', [
         {
           kind: 'spellList',

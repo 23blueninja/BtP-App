@@ -173,7 +173,7 @@ const EXPECTED: Record<string, (x: number) => Expected> = {
     noApRegain: true,
   }),
   Poisoned: (x) => ({ implied: Math.floor(x / 2) > 0 ? { Sickened: Math.floor(x / 2) } : {}, hindered: Math.floor(x / 2) > 0 ? { VIG: Math.floor(x / 2) } : {}, start: [{ type: 'Somatic', amount: x }] }),
-  Possessed: (x) => ({ start: [{ type: 'Infernal', amount: 2 * x }] }),
+  Possessed: (x) => ({ start: [{ type: 'Chthonic', amount: 2 * x }] }),
   Prone: () => ({ against: 1 }),
   Restrained: () => ({ implied: { Seized: 1, Immobilized: 1 }, disadvantage: ['AGI'], autofailSave: ['AGI'], weakenedSave: ['AGI'], movement: 'zero', against: 2, otherChecks: 1 }),
   Seized: () => ({ implied: { Immobilized: 1 }, weakenedSave: ['AGI'], movement: 'zero', against: 1, otherChecks: 1 }),
@@ -306,7 +306,7 @@ describe('Condition levels never add: the higher level is kept', () => {
 
   // activeConditions' contract: `own` is "true when it's in your condition list (not only implied)";
   // the sheet lists `!own` Conditions again as "implied", so this one appears twice.
-  it.fails('BUG: an own Condition listed after a higher implied copy is marked as not own (conditions.ts:196)', () => {
+  it('an own Condition listed after a higher implied copy is still marked as own', () => {
     const p = playWith([{ name: 'Burning', level: 3 }, { name: 'Numbed', level: 1 }]);
     expect(activeConditions(p).find((a) => a.name === 'Numbed')!.own).toBe(true);
   });
@@ -458,7 +458,7 @@ describe('Turn flow', () => {
   });
 
   // Rules (Damage → Immunity): "If you would gain a Condition you are immune to, you instead don't".
-  it.fails('BUG: startTurn ignores Immunity to Paralyzed — still ends your turn without AP (conditions.ts:433)', () => {
+  it('Immunity to Paralyzed: your turn doesn’t end and AP isn’t blocked', () => {
     const p = playWith([{ name: 'Paralyzed', level: 2 }], { ap: 0 });
     const s = startTurn(p, CHAR_LEVEL, [], { immune: [], vulnerable: [], immuneConditions: ['Paralyzed'] });
     expect(s.play.turn?.noApRegain).toBe(false);
@@ -599,13 +599,13 @@ describe('Damage and healing (Endurance and Vitality)', () => {
   });
 
   // Rules (Unconscious): "This Condition ends if you take damage, unless a specific effect is keeping you Unconscious."
-  it.fails('BUG: taking damage does not end Unconscious (play.ts:54 takeDamage)', () => {
+  it('taking damage ends Unconscious', () => {
     const p = takeDamage(base({ endurance: 10, conditions: [{ name: 'Unconscious' }] }), 3, d);
     expect(p.conditions.find((c) => c.name === 'Unconscious')).toBeUndefined();
   });
 
   // Rules (Burning X / Dissolving X): "take 3X Thermic damage when you gain this Condition and at the start of your turn".
-  it.fails('BUG: gaining Burning deals no damage — only the start-of-turn damage exists (conditions.ts:346 addCondition)', () => {
+  it('gaining Burning deals its 3X Thermic damage straight away', () => {
     const p = addCondition(base({ endurance: 20 }), 'Burning', 2);
     expect(p.endurance).toBe(14);
   });
@@ -767,7 +767,7 @@ describe('Short Rest', () => {
   });
 
   // Rules (Short Rests): "A PC can only benefit from two Short Rests per Long Rest".
-  it.fails('BUG: a third Short Rest before a Long Rest still restores Vitality, Endurance and resources (play.ts:93)', () => {
+  it('a third Short Rest before a Long Rest restores nothing', () => {
     const { c, d } = setup('berserker', { shortRests: 2, vitality: 1, endurance: 0, resources: { Stamina: 3 } }, { VIG: 3 });
     const r = shortRest(c, d, { spendRestCharge: true });
     expect(r.play.vitality).toBe(1);
@@ -776,12 +776,12 @@ describe('Short Rest', () => {
   });
 
   // Rules (Bruised): "Your VIG and AGI Checks are Weakened until you finish a Rest."
-  it.fails('BUG: Bruised doesn’t end when you finish a Short Rest (play.ts shortRest)', () => {
+  it('Bruised ends when you finish a Short Rest', () => {
     const { c, d } = setup('berserker', { conditions: [{ name: 'Bruised' }] });
     expect(shortRest(c, d, { spendRestCharge: false }).play.conditions).toEqual([]);
   });
 
-  it.fails('BUG: Bruised doesn’t end when you finish a Long Rest (play.ts longRest)', () => {
+  it('Bruised ends when you finish a Long Rest', () => {
     const { c, d } = setup('berserker', { conditions: [{ name: 'Bruised' }] });
     expect(longRest(c, d).play.conditions).toEqual([]);
   });
@@ -1142,7 +1142,7 @@ describe('maneuvers', () => {
   });
 
   // Rules (Feint, Exalted 4th): "Your Attack Checks have Advantage on any Success."
-  it.fails('BUG: Feint at SL 4 doesn’t give Advantage on a (non-Deadly) Success (activations.ts:110)', () => {
+  it('Feint at SL 4 gives Advantage on any Success', () => {
     expect(use('Feint', { sl: 4, inputs: { outcome: 'Success' } }).play.effects![0].notes!.join(' ')).toMatch(/Advantage/);
   });
 
@@ -1295,7 +1295,7 @@ describe('spells', () => {
   });
 
   // Rules (Invigorate, Exalted (+2)): "The creature's VIG Checks are Bolstered an additional level" every 2 levels above 1st.
-  it.fails('BUG: Invigorate ignores Exalted (+2) — still Bolstered 1 at SL 3 (activations.ts:237)', () => {
+  it('Invigorate Exalted (+2): Bolstered 2 at SL 3', () => {
     const r = use('Invigorate', { sl: 3, inputs: { self: true } });
     expect(r.play.effects![0].checks![0].bolstered).toBe(2);
   });
@@ -1378,7 +1378,7 @@ describe('facets', () => {
 
   // Rules (Primeval Force): "gain Temporary Endurance equal to your PRS Points" — with negative PRS you gain none;
   // the app treats the negative amount as a sacrifice and takes Temporary Endurance away.
-  it.fails('BUG: Primeval Force with negative PRS points removes Temporary Endurance (activations.ts:317)', () => {
+  it('Primeval Force with negative PRS points gives no Temporary Endurance and removes none', () => {
     const r = use('Primeval Force', { attrs: { PRS: -1 }, play: { tempEndurance: 5 } });
     expect(r.play.tempEndurance).toBe(5);
   });
@@ -1513,7 +1513,7 @@ describe('facet uses: facetUseMax and spending them', () => {
 
   // Rules (Action Flare): "You gain an additional use of this facet between Rests at 8th level."
   // (Latent while the app caps levels at 2.)
-  it.fails('BUG: Action Flare doesn’t gain its second use at 8th level (data/classes.ts:223)', () => {
+  it('Action Flare gains its second use at 8th level', () => {
     const dd = setup('gladiator').d;
     const f = dd.facets.find((x) => x.key === 'classes/gladiator/action-flare')!;
     expect(facetUseMax(f, { ...dd, level: 8 })).toBe(2);

@@ -420,10 +420,15 @@ export function derive(c: Character): Derived {
     movementBreakdown.push(`${cm.value > 0 ? '+' : '−'}${Math.abs(cm.value)} ${cm.from.join(', ')}`);
   }
   movement = Math.max(0, movement);
-  const movementTypes = eff('movementType').map((x) => ({
-    type: x.e.type,
-    value: x.e.amount === 'movement' ? movement : half(movement),
-  }));
+  // One entry per type: the larger grant wins, and `ifAlready` effects add to an existing one.
+  const moveMap = new Map<string, number>();
+  const moveEffects = eff('movementType');
+  for (const x of [...moveEffects.filter((m) => !m.e.ifAlready), ...moveEffects.filter((m) => m.e.ifAlready)]) {
+    const value = x.e.amount === 'movement' ? movement : half(movement);
+    const cur = moveMap.get(x.e.type);
+    moveMap.set(x.e.type, cur === undefined ? value : x.e.ifAlready ? cur + x.e.ifAlready : Math.max(cur, value));
+  }
+  const movementTypes = [...moveMap.entries()].map(([type, value]) => ({ type, value }));
   const radius = 5 + triangular(points.PER);
   const senses = [...new Set(eff('sense').map((x) => x.e.name))];
 
@@ -518,7 +523,25 @@ export function derive(c: Character): Derived {
     const size = (die?: string) => Number(die?.match(/d(\d+)/)?.[1] ?? 0);
     const useOther = !!other && (!t || size(other.e.die!.die) > size(classDieLabel));
     const second = useOther ? other!.e.die!.die : t ? classDieLabel : undefined;
-    const label = second ? `${die} ${empowered ? '+' : '/'} ${second}` : empowered ? `${die} + d4` : die;
+    // Empowered: two Tandem dice that are both d4 or larger are added together; otherwise roll an
+    // extra d4. With no Attribute Die (0 points) only the other die is rolled.
+    const hasDie = die !== '—';
+    const big = (x: string) => !x.startsWith('-') && size(x) >= 4;
+    const label = !second
+      ? empowered
+        ? hasDie
+          ? `${die} + d4`
+          : 'd4'
+        : die
+      : !hasDie
+        ? empowered
+          ? `${second} + d4`
+          : second
+        : empowered
+          ? big(die) && big(second)
+            ? `${die} + ${second}`
+            : `${die} / ${second} + d4`
+          : `${die} / ${second}`;
     const notes = eff('bolster')
       .filter((x) => x.e.what.startsWith(`${a} Save`))
       .map((x) => bolstered(sc(x.e.amount)));
@@ -643,9 +666,11 @@ export function derive(c: Character): Derived {
   // Bulk: each VIG point unlocks bonus rows (row n requires n VIG).
   const bulkSlots = [1, 2, 3, 4, 5].map((rank) => ({ rank, slots: rank + (Math.max(0, points.VIG) >= rank ? rank : 0) }));
 
+  const powerful = eff('jump').some((x) => x.e.mode === 'powerful');
+  const doubled = eff('jump').some((x) => x.e.mode === 'double');
   const jump = {
-    long: 2 + points.VIG,
-    high: 1 + Math.floor(points.VIG / 2),
+    long: (powerful ? Math.max(2 + points.VIG, 2 * points.VIG) : 2 + points.VIG) * (doubled ? 2 : 1),
+    high: (powerful ? 1 + points.VIG : 1 + Math.floor(points.VIG / 2)) * (doubled ? 2 : 1),
   };
 
   return {
@@ -662,7 +687,7 @@ export function derive(c: Character): Derived {
     movementBreakdown,
     movementTypes,
     radius,
-    initiative: initiativeTandem ? `${attrs.PER.label} / ${initiativeTandem}` : attrs.PER.label,
+    initiative: initiativeTandem ? (attrs.PER.label === '—' ? initiativeTandem : `${attrs.PER.label} / ${initiativeTandem}`) : attrs.PER.label,
     initiativeNotes,
     vitalityMax,
     radianceMax,

@@ -19,6 +19,7 @@ import { ATTRS, LIGHTS, type Attr, type ClassDef, type Light } from '../src/data
 import { classAlignment, classEndurance, classTable, maxClassLevel, subclassesOf, numeric } from '../src/engine/classInfo';
 import { formatDie, half, modDieFromPoints, parseDie, stepDie, triangular } from '../src/engine/dice';
 import { castCost, maxCastLevel, scaleText } from '../src/engine/scaling';
+import { facetUseMax } from '../src/engine/play';
 import { getCastable, spells, maneuvers, weapons } from '../src/content';
 
 // ---------------------------------------------------------------------------
@@ -516,9 +517,19 @@ describe.each(MATRIX_CLASSES.map((v) => [v.label, v] as const))('matrix %s', (_l
       expect(d.radius).toBe(5 + triangular(P('PER')));
       for (const t of ['Swim', 'Climb']) {
         const has = ancTexts.some((f) => new RegExp(`${t} Movement equal to your Movement`).test(f.text));
-        if (has) expect(d.movementTypes, ctx).toContainEqual({ type: t, value: d.movement });
+        // A class facet granting it too that says "If you already have Swim Movement, it increases by 2 spaces".
+        const plus = [...classTexts, ...subTexts].some((f) => new RegExp(`If you already have \\*${t} Movement\\*, it increases by 2 spaces`).test(f.text));
+        if (has) expect(d.movementTypes, ctx).toContainEqual({ type: t, value: d.movement + (plus ? 2 : 0) });
+        expect(d.movementTypes.filter((m) => m.type === t).length, ctx).toBeLessThanOrEqual(1);
       }
-      expect(d.jump).toEqual({ long: 2 + P('VIG'), high: 1 + Math.floor(P('VIG') / 2) });
+      // Jumps: 2 + VIG long, 1 + half VIG high; Powerful Jump (class facet) and Gravity Warp (ancestry) from their text.
+      const powerful = classTexts.some((f) => /\*\*\*Powerful Jump\.\*\*\*/.test(f.text));
+      const doubled = ancTexts.some((f) => /maximum distance you can move when you Jump is doubled/.test(f.text));
+      const k = doubled ? 2 : 1;
+      expect(d.jump, ctx).toEqual({
+        long: (powerful ? Math.max(2 + P('VIG'), 2 * P('VIG')) : 2 + P('VIG')) * k,
+        high: (powerful ? 1 + P('VIG') : 1 + Math.floor(P('VIG') / 2)) * k,
+      });
 
       // Unarmored AC: two highest Attributes (+ level for the classes/ancestries that say so).
       const top = ATTRS.map(P).sort((a, b) => b - a);
@@ -782,12 +793,12 @@ describe('attributes', () => {
     ]);
     expect(d.longRestTempEndurance).toBe(3 * 2);
   });
-  it.fails('BUG: Ulu Gravity Warp — the maximum distance you can move when you Jump is doubled', () => {
+  it('Ulu Gravity Warp — the maximum distance you can move when you Jump is doubled', () => {
     expect(ancestryFacetTexts({ id: 'ulu', sub: '', label: 'ulu' }).find((f) => f.name === 'Gravity Warp')!.text).toMatch(/maximum distance you can move when you Jump is doubled/);
     const { d } = built({ ancestry: 'ulu', attributes: { method: 'manual', pool: 0, base: { VIG: 2, AGI: 0, PER: 0, INT: 0, PRS: 0 }, bonus: [] } });
     expect(d.jump.long).toBe(2 * (2 + 2));
   });
-  it.fails('BUG: Berserker Barbarous Light (Powerful Jump) — High Jump is 1 + VIG, Long Jump max 2×VIG if larger', () => {
+  it('Berserker Barbarous Light (Powerful Jump) — High Jump is 1 + VIG, Long Jump max 2×VIG if larger', () => {
     const { d } = built({ classId: 'berserker', subclass: 'roaring-fervor', attributes: { method: 'manual', pool: 0, base: { VIG: 3, AGI: 0, PER: 0, INT: 0, PRS: 0 }, bonus: [] } });
     expect(d.jump).toEqual({ long: 6, high: 4 });
   });
@@ -940,14 +951,14 @@ describe('Save Checks and Initiative', () => {
     const d = built({ attributes: attrs }).d;
     expect(d.saves.map((s) => s.label)).toEqual(['d6', 'd4', 'd4', 'd4', 'd4']);
   });
-  it.fails('BUG: Empowered Tandem save with an Attribute Die below d4 adds an extra d4 instead of summing (Arcanist INT 1)', () => {
+  it('Empowered Tandem save with an Attribute Die below d4 rolls an extra d4 instead of summing (Arcanist INT 1)', () => {
     // Rules (Empowered & Weakened): roll an extra d4, or if the Check is rolled in Tandem with two
     // Mod Dice that are BOTH d4s or larger, add their results together.
     const d = built({ classId: 'arcanist', attributes: { ...attrs, base: { ...attrs.base, INT: 1 } } }).d;
     expect(d.saves.find((s) => s.attr === 'INT')!.label).not.toBe('d2 + d6');
     expect(d.saves.find((s) => s.attr === 'INT')!.label).toContain('d4');
   });
-  it.fails('BUG: Empowered Tandem save with no Attribute Die renders "— + d6" (Thaumaturge PRS 0)', () => {
+  it('Empowered Tandem save with no Attribute Die shows only the other die plus d4 (Thaumaturge PRS 0)', () => {
     const d = built({ classId: 'thaumaturge', attributes: { ...attrs, base: { ...attrs.base, PRS: 0 } } }).d;
     expect(d.saves.find((s) => s.attr === 'PRS')!.label).not.toMatch(/^— \+/);
   });
@@ -1215,7 +1226,7 @@ describe('class specifics', () => {
     expect(d.movementTypes).toContainEqual({ type: 'Swim', value: d.movement });
     expect(d.actionCategories).toContain('Combat');
   });
-  it.fails('BUG: The King Amphibious with Swim Movement already (Daxan Oceanic) should raise Swim by 2, not add a second Swim entry', () => {
+  it('The King Amphibious with Swim Movement already (Daxan Oceanic) raises Swim by 2', () => {
     // Rules (Amphibious): "If you already have Swim Movement, it increases by 2 spaces."
     expect(section(/^#### Amphibious < lvl 1 >/)).toMatch(/If you already have \*Swim Movement\*, it increases by 2 spaces/);
     const d = built({ classId: 'incarnate', subclass: 'the-king', ancestry: 'daxan' }).d;
@@ -1233,7 +1244,9 @@ describe('class specifics', () => {
   });
   it('facet uses carry through (e.g. Action Flare 1 / Rest at level 2)', () => {
     const d = built({ classId: 'gladiator', level: 2 }).d;
-    expect(d.facets.find((f) => f.name === 'Action Flare')?.uses).toEqual({ count: 1, per: 'Rest' });
+    const f = d.facets.find((x) => x.name === 'Action Flare')!;
+    expect(f.uses?.per).toBe('Rest');
+    expect(facetUseMax(f, d)).toBe(1);
   });
 });
 
@@ -1500,7 +1513,7 @@ describe('scaling against class tables', () => {
     }
     expect(maxCastLevel(undefined, 5)).toBe(1);
   });
-  it('castCost: level in the first resource; Champion maneuvers half; cantrips free; Incarnate spells free', () => {
+  it('castCost: level in the first resource; Champion maneuvers half; cantrips free; Incarnate spells free unless Exalted', () => {
     const cls = (id: string) => classes.find((c) => c.id === id)!;
     const leveled = spells.find((s) => s.level > 0)!;
     const cantrip = spells.find((s) => s.level === 0)!;
@@ -1509,7 +1522,8 @@ describe('scaling against class tables', () => {
     expect(castCost(cls('arcanist'), cantrip, 3, true)).toBeUndefined();
     expect(castCost(cls('arcanist'), leveled, 3, false)).toBeUndefined();
     expect(castCost(cls('champion'), man, 3, true)).toEqual({ resource: 'Will', amount: 2 });
-    expect(castCost(cls('incarnate'), leveled, 2, true)).toBeUndefined();
+    expect(castCost(cls('incarnate'), leveled, leveled.level, true)).toBeUndefined();
+    expect(castCost(cls('incarnate'), leveled, leveled.level + 1, true)).toEqual({ resource: 'Stamina', amount: 1 });
     expect(castCost(cls('incarnate'), man, 2, true)).toEqual({ resource: 'Stamina', amount: 2 });
   });
   it('scaleText resolves {SL} arithmetic', () => {

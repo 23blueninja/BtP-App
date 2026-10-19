@@ -27,7 +27,9 @@ export interface BulkLayout {
 /** Bulk Rank an item counts as, after any shift for items carried on your person. */
 export function effectiveBulk(item: InventoryItem, shift: number): number | undefined {
   if (!item.bulk) return undefined;
-  return Math.min(5, item.bulk + (item.inBackpack || item.storedIn ? 0 : shift));
+  // Items in a container's pyramid are laid out with no shift (layoutContainer), so storedIn isn't checked here:
+  // an item whose container is gone is back on your person.
+  return Math.min(5, item.bulk + (item.inBackpack ? 0 : shift));
 }
 
 export interface InventoryGroups {
