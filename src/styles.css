@@ -2112,7 +2112,7 @@ tr.needs input {
    faint highlight edge, like frosted glass. */
 .app.glass {
   --glass-fill: linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.025) 45%, rgba(255, 255, 255, 0.05));
-  --glass-tint: rgba(14, 16, 26, 0.3);
+  --glass-tint: rgba(52, 56, 70, 0.25);
   --glass-blur: blur(14px) saturate(165%);
 }
 .app.glass .box,
