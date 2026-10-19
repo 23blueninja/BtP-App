@@ -455,7 +455,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
 
         {/* Weapons get a full-width row: the table needs the space most. */}
         {/* Right-hand column, level with the top row: Save Checks with Conditions,
-            Resistances and Alignments beneath, beside Weapons and the panels below. */}
+            Resistances, Alignments, Movement & Senses and Training beneath. */}
         <div className="side-col">
           <Box title="Save Checks" className="saves">
             <table>
@@ -503,6 +503,41 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               <p className="muted">None</p>
             )}
           </Box>
+          <Box title="Movement & Senses">
+            <ul className="plain">
+              <li>Movement {d.movement}</li>
+              {d.movementTypes.map((m) => (
+                <li key={m.type}>
+                  {m.type} Movement {m.value}
+                </li>
+              ))}
+              <li>
+                <Icon name="PER" /> Perception Radius {d.radius}
+              </li>
+              <li>
+                Max Long Jump {d.jump.long} · Max High Jump {d.jump.high}
+              </li>
+              {d.senses.map((s) => (
+                <li key={s}>{s}</li>
+              ))}
+            </ul>
+          </Box>
+          <Box title="Training">
+            <p className="small">
+              <strong>Armor:</strong> {d.armorTraining}
+            </p>
+            <p className="small">
+              <strong>Weapons:</strong> {d.weaponTraining}
+            </p>
+            <p className="small">
+              <strong>Action categories:</strong> {d.actionCategories.join(', ')}
+            </p>
+            {d.armorNotes.map((x) => (
+              <p key={x} className="note small">
+                {x}
+              </p>
+            ))}
+          </Box>
         </div>
 
         <div className="wide-row">
@@ -513,6 +548,15 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
 
         <div className="main-cols">
           <div className="col">
+            <Box title="Professions">
+              <SkillList slots={d.skillSlots.filter((s) => s.kind === 'profession')} />
+            </Box>
+            <Box title="Hobbies">
+              <SkillList slots={d.skillSlots.filter((s) => s.kind === 'hobby')} />
+            </Box>
+            <Box title="Experiences">
+              <Experiences c={c} update={update} />
+            </Box>
             <Box title="Rest">
               <div className="row between">
                 <span>Rest Charges</span>
@@ -533,68 +577,19 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
                 {c.settings.restRules === 'heroic' ? 'Heroic' : 'Gritty'} rules · Short Rests since Long Rest: {p.shortRests}/2 · <RuleLink id="beyond-the-prism/resting">Resting rules</RuleLink>
               </p>
             </Box>
-            <Box title="Movement & Senses">
-              <ul className="plain">
-                <li>Movement {d.movement}</li>
-                {d.movementTypes.map((m) => (
-                  <li key={m.type}>
-                    {m.type} Movement {m.value}
-                  </li>
-                ))}
-                <li>
-                  <Icon name="PER" /> Perception Radius {d.radius}
-                </li>
-                <li>
-                  Max Long Jump {d.jump.long} · Max High Jump {d.jump.high}
-                </li>
-                {d.senses.map((s) => (
-                  <li key={s}>{s}</li>
-                ))}
-              </ul>
-            </Box>
-            {/* In a column so its cards stack and the other panels sit right under Weapons. */}
-            <Box title="Items & effects">
-              <HomebrewBox d={d} update={update} />
-            </Box>
           </div>
-
           <div className="col">
-            <Box title="Professions">
-              <SkillList slots={d.skillSlots.filter((s) => s.kind === 'profession')} />
-            </Box>
-            <Box title="Hobbies">
-              <SkillList slots={d.skillSlots.filter((s) => s.kind === 'hobby')} />
-            </Box>
-            <Box title="Experiences">
-              <Experiences c={c} update={update} />
-            </Box>
-            <Box title="Inventory">
-              <BulkPyramid c={c} d={d} update={update} />
-            </Box>
-          </div>
-
-          <div className="col">
-            <Box title="Active effects">
-              <ActiveEffects effects={p.effects ?? []} setPlay={setPlay} />
-            </Box>
             <Box title="Check modifiers">
               <CheckModifiers d={d} />
             </Box>
-            <Box title="Training">
-              <p className="small">
-                <strong>Armor:</strong> {d.armorTraining}
-              </p>
-              <p className="small">
-                <strong>Weapons:</strong> {d.weaponTraining}
-              </p>
-              <p className="small">
-                <strong>Action categories:</strong> {d.actionCategories.join(', ')}
-              </p>
-              {d.armorNotes.map((x) => (
-                <p key={x} className="note small">
-                  {x}
-                </p>
-              ))}
+            <Box title="Active effects">
+              <ActiveEffects effects={p.effects ?? []} setPlay={setPlay} />
+            </Box>
+            <Box title="Items & effects">
+              <HomebrewBox d={d} update={update} />
+            </Box>
+            <Box title="Inventory">
+              <BulkPyramid c={c} d={d} update={update} />
             </Box>
           </div>
         </div>

@@ -930,18 +930,12 @@ dl.defs dd {
   grid-column: 1 / 4;
   min-width: 0;
 }
-/* Below Weapons: two panel columns, the third set of panels under the second. */
+/* Below Weapons: two panel columns. */
 .main-cols {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
   align-items: start;
-}
-.main-cols > .col:nth-child(1) {
-  grid-row: 1 / span 2;
-}
-.main-cols > .col:nth-child(3) {
-  grid-column: 2;
 }
 /* Panels stacked in one top-row column (Radiance over "I respond to new…"). */
 .top-stack {
@@ -1310,9 +1304,15 @@ input.num {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: none;
   }
+  /* Radiance / I respond to new…, then the side column, each a full-width
+     row of two columns, so the tall side column leaves no gap. */
+  .top-stack,
   .side-col {
-    grid-column: auto;
+    grid-column: 1 / -1;
     grid-row: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
   }
   .wide-row,
   .main-cols {
@@ -1332,16 +1332,14 @@ input.num {
   .main-cols {
     grid-template-columns: minmax(0, 1fr);
   }
-  .main-cols > .col:nth-child(n) {
-    grid-row: auto;
-    grid-column: auto;
-  }
 }
 @media (max-width: 480px) {
   main {
     padding: 0.75rem 1rem;
   }
-  .sheet-grid {
+  .sheet-grid,
+  .top-stack,
+  .side-col {
     grid-template-columns: minmax(0, 1fr);
   }
   .topbar nav {
@@ -2162,6 +2160,8 @@ tr.needs input {
 }
 .attr-main {
   display: flex;
+  /* Fills the space between the name and "Details", centred in it. */
+  flex: 1;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
