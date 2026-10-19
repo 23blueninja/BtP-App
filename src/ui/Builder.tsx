@@ -685,6 +685,13 @@ export function Equipment({ c, d, update }: StepProps) {
   const setEq = (fn: (e: Character['equipment']) => Character['equipment']) => update((x) => ({ ...x, equipment: fn(x.equipment) }));
   return (
     <div className="form">
+      {/* Inventory first, with the pyramids above the item list. */}
+      <section className="box">
+      <h3 className="box-title">Inventory</h3>
+      <BulkPyramid c={c} d={d} update={update} />
+      <InventoryEditor c={c} update={update} />
+      </section>
+
       <section className="box">
       <h3 className="box-title">Armor</h3>
       <div className="row wrap">
@@ -756,11 +763,6 @@ export function Equipment({ c, d, update }: StepProps) {
       <WeaponTable c={c} d={d} onRemove={(id) => setEq((q) => ({ ...q, weapons: q.weapons.filter((w) => w.id !== id) }))} />
       </section>
 
-      <section className="box">
-      <h3 className="box-title">Inventory</h3>
-      <InventoryEditor c={c} update={update} />
-      <BulkPyramid c={c} d={d} update={update} />
-      </section>
     </div>
   );
 }
