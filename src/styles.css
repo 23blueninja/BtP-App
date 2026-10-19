@@ -1,6 +1,6 @@
 :root {
   /* Slightly rounded corners for buttons, inputs, chips and toggles. */
-  --control-radius: 4px;
+  --control-radius: 12px;
   /* Always dark, like the rulebook; panels are slightly translucent so the
      prism grid shows around and faintly behind them. */
   --bg: #000;
@@ -1362,7 +1362,9 @@ textarea.full {
 .issues.banner,
 .modal {
   border-color: var(--box-border);
-  /* Solid, so the page doesn't show through forms and rules text. */
+}
+/* Solid, so the page doesn't show through forms and rules text. */
+.modal {
   background: #0b0c12;
 }
 .modal-backdrop {
@@ -1935,6 +1937,7 @@ tr.needs input {
 .split-box {
   position: relative;
   min-height: 7.6rem;
+  container-type: inline-size;
 }
 .split-shape {
   position: absolute;
@@ -1968,8 +1971,10 @@ tr.needs input {
   margin: 0;
 }
 .split-box .big {
-  font-size: 2.2rem;
-  line-height: 1.1;
+  /* Scales with the box like the attribute dice. */
+  font-size: clamp(1.8rem, 19cqi, 3.8rem);
+  font-weight: 700;
+  line-height: 1;
 }
 .split-a .big {
   margin-top: 0.2rem;
@@ -2053,8 +2058,12 @@ tr.needs input {
     z-index: 25;
     padding: 0.5rem 0;
     margin: 0;
-    background: rgba(0, 0, 0, 0.88);
-    backdrop-filter: blur(6px);
+    transition: background 0.2s;
+  }
+  /* Only once pinned, a translucent blurred backdrop like the header's. */
+  .app.pin-stats .stat-strip.stuck {
+    background: var(--bg-2);
+    backdrop-filter: blur(8px);
   }
 }
 .app.still-bg .prism-bg::before,
@@ -2069,4 +2078,83 @@ tr.needs input {
 /* Longer dice like "d12+2" use a smaller font so they still fit beside the symbol. */
 .attr-die.long {
   font-size: calc(var(--attr-size) * 0.72);
+}
+
+.turn-box-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+.turn-box-head .box-title {
+  margin: 0;
+}
+.turn-box-head .turn-temp {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* ---------- glass panels (Options → Glass panels) ----------
+   A translucent tint, a blur + saturation boost of whatever is behind, and a
+   faint highlight edge, like frosted glass. */
+.app.glass {
+  --glass-fill: linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.025) 45%, rgba(255, 255, 255, 0.05));
+  --glass-tint: rgba(14, 16, 26, 0.42);
+  --glass-blur: blur(14px) saturate(165%);
+}
+.app.glass .box,
+.app.glass .builder-content,
+.app.glass .ref-body,
+.app.glass .ref-nav,
+.app.glass .levelup,
+.app.glass .summary,
+.app.glass .detail,
+.app.glass .char-card,
+.app.glass .attr-card,
+.app.glass .spell-list-editor,
+.app.glass .pick-card,
+.app.glass .hb-card,
+.app.glass .topbar,
+.app.glass .toast {
+  background: var(--glass-fill), var(--glass-tint);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 10px 30px rgba(0, 0, 0, 0.35);
+}
+/* Panels inside panels: a lighter touch so they don't stack into milk. */
+.app.glass .box .box,
+.app.glass .box .hb-card {
+  background: rgba(255, 255, 255, 0.035);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.app.glass .split-glass {
+  position: absolute;
+  inset: 0;
+  background: var(--glass-fill), var(--glass-tint);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+.app.glass .split-glass.a {
+  clip-path: polygon(0 0, 93% 0, 0 91%);
+}
+.app.glass .split-glass.b {
+  clip-path: polygon(100% 9%, 100% 100%, 7% 100%);
+}
+.app.glass .split-shape polygon {
+  fill: transparent;
+  stroke: rgba(255, 255, 255, 0.22);
+}
+.split-glass {
+  display: none;
+}
+.app.glass .split-glass {
+  display: block;
 }
