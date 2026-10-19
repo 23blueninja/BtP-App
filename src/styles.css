@@ -907,7 +907,9 @@ dl.defs dd {
    right from Save Checks. */
 .sheet-grid {
   display: grid;
-  grid-template-columns: minmax(240px, 1.25fr) minmax(250px, 1.2fr) minmax(170px, 1fr) minmax(150px, 0.95fr);
+  /* The Radiance / "I respond to new…" column is only as wide as it needs (up
+     to a cap); Save Checks takes the rest. */
+  grid-template-columns: minmax(240px, 1.25fr) minmax(250px, 1.2fr) fit-content(230px) minmax(170px, 1.15fr);
   /* The last row takes any extra height, so a tall side column doesn't stretch the top row. */
   grid-template-rows: auto auto 1fr;
   gap: 0.75rem;
@@ -950,6 +952,19 @@ dl.defs dd {
 }
 .top-stack .respond {
   flex: 1;
+}
+.box.radiance {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 0.5rem;
+}
+.box.radiance .box-title {
+  margin: 0;
+  line-height: 1.05rem;
+}
+.box.radiance .pips {
+  justify-content: flex-end;
 }
 /* Level / Initiative / AC / Movement as a 2×2 square. */
 .stat-square {
