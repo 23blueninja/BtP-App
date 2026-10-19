@@ -393,7 +393,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
                 {p.endurance}
               </span>
               <span className="end-max muted" aria-hidden>
-                / {d.enduranceMax}
+                {d.enduranceMax}
               </span>
               <button type="button" className="end-heal" disabled={!n} onClick={() => (setPlay((x) => heal(x, n, d)), setAmount(''))}>
                 Heal
@@ -417,13 +417,22 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               </div>
             </div>
           </section>
-          <Box title="I respond to new…" className="respond">
-            <ul className="plain">
-              <li>Situations with <strong>{al.situations || '—'}</strong></li>
-              <li>Problems with <strong>{al.problems || '—'}</strong></li>
-              <li>People with <strong>{al.people || '—'}</strong></li>
-            </ul>
-          </Box>
+          {/* Radiance over "I respond to new…", stacked in one column. */}
+          <div className="top-stack">
+            <Box title="Radiance">
+              <div className="row between">
+                <span>Radiance</span>
+                <Pips total={d.radianceMax} used={p.radianceSpent} onChange={(u) => setPlay((x) => ({ ...x, radianceSpent: u }))} label="Radiance" />
+              </div>
+            </Box>
+            <Box title="I respond to new…" className="respond">
+              <ul className="plain">
+                <li>Situations with <strong>{al.situations || '—'}</strong></li>
+                <li>Problems with <strong>{al.problems || '—'}</strong></li>
+                <li>People with <strong>{al.people || '—'}</strong></li>
+              </ul>
+            </Box>
+          </div>
           <Box title="Save Checks" className="saves">
             <table>
               <tbody>
@@ -450,12 +459,6 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
         </div>
 
         <div className="col">
-          <Box title="Radiance">
-            <div className="row between">
-              <span>Radiance</span>
-              <Pips total={d.radianceMax} used={p.radianceSpent} onChange={(u) => setPlay((x) => ({ ...x, radianceSpent: u }))} label="Radiance" />
-            </div>
-          </Box>
           <Box title="Rest">
             <div className="row between">
               <span>Rest Charges</span>

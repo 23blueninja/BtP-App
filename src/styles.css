@@ -903,6 +903,16 @@ dl.defs dd {
 .wide-row {
   grid-column: 1 / -1;
 }
+/* Panels stacked in one top-row column (Radiance over "I respond to new…"). */
+.top-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.top-stack .respond {
+  flex: 1;
+}
 /* Level / Initiative / AC / Movement as a 2×2 square. */
 .stat-square {
   display: grid;
@@ -1036,6 +1046,8 @@ dl.defs dd {
 .end-max {
   grid-column: 1;
   grid-row: 3;
+  /* A divider between current and maximum, like the one above Vitality. */
+  border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
