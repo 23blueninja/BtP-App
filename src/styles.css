@@ -1,5 +1,6 @@
 :root {
-  /* Slightly rounded corners for buttons, inputs, chips and toggles. */
+  /* Corner cut for buttons, inputs, chips and toggles: sheared off (an emerald cut)
+     where corner-shape is supported (Chromium), slightly rounded elsewhere. */
   --control-radius: 12px;
   /* Always dark, like the rulebook; panels are slightly translucent so the
      prism grid shows around and faintly behind them. */
@@ -56,6 +57,7 @@ button {
   background: var(--panel-2);
   border: 1px solid var(--border);
   border-radius: var(--control-radius);
+  corner-shape: bevel;
   padding: 0.4em 0.85em;
   cursor: pointer;
 }
@@ -102,6 +104,7 @@ textarea {
   background: var(--bg-2);
   border: 1px solid var(--border);
   border-radius: var(--control-radius);
+  corner-shape: bevel;
   padding: 0.4em 0.6em;
   max-width: 100%;
 }
@@ -138,6 +141,7 @@ button:focus-visible {
   padding: 0.1em 0.5em;
   margin-left: 0.4em;
   border-radius: var(--control-radius);
+  corner-shape: bevel;
   background: var(--panel-2);
   border: 1px solid var(--border);
   color: var(--muted);
@@ -343,6 +347,7 @@ main {
   width: 1.4em;
   height: 1.4em;
   border-radius: var(--control-radius);
+  corner-shape: bevel;
   background: var(--panel-2);
   font-size: 0.8em;
   margin-right: 0.2em;
@@ -509,6 +514,7 @@ legend {
   height: 1.9em;
   padding: 0;
   border-radius: var(--control-radius);
+  corner-shape: bevel;
 }
 .stepper-value {
   min-width: 1.8em;
@@ -565,6 +571,7 @@ th {
   padding: 0.35rem 0.7rem;
   border: 1px solid var(--border);
   border-radius: var(--control-radius);
+  corner-shape: bevel;
   font-weight: 400 !important;
   cursor: pointer;
 }
@@ -605,6 +612,7 @@ th {
   gap: 0.3em;
   padding: 0.15em 0.6em;
   border-radius: var(--control-radius);
+  corner-shape: bevel;
   background: var(--panel-2);
   border: 1px solid var(--border);
   font-size: 0.85em;
@@ -631,6 +639,7 @@ th {
   display: inline-block;
   padding: 0.15em 0.7em;
   border-radius: var(--control-radius);
+  corner-shape: bevel;
   border: 1px solid var(--accent);
   color: var(--accent);
   font-size: 0.85em;
@@ -1207,6 +1216,7 @@ b.calc {
   display: inline-flex;
   border: 1px solid var(--border);
   border-radius: var(--control-radius);
+  corner-shape: bevel;
   overflow: hidden;
   margin: 0.2rem 0 0.4rem;
 }
@@ -1697,6 +1707,7 @@ tr.needs input {
   margin-left: 0.3rem;
   padding: 0 0.3rem;
   border-radius: var(--control-radius);
+  corner-shape: bevel;
   background: var(--warn);
   color: #000;
   font-size: 0.72rem;
@@ -2101,7 +2112,7 @@ tr.needs input {
    faint highlight edge, like frosted glass. */
 .app.glass {
   --glass-fill: linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.025) 45%, rgba(255, 255, 255, 0.05));
-  --glass-tint: rgba(14, 16, 26, 0.42);
+  --glass-tint: rgba(14, 16, 26, 0.33);
   --glass-blur: blur(14px) saturate(165%);
 }
 .app.glass .box,
@@ -2157,4 +2168,9 @@ tr.needs input {
 }
 .app.glass .split-glass {
   display: block;
+}
+/* Bubbles stay round (they're buttons, so they'd otherwise pick up the bevel). */
+.pip,
+.dot {
+  corner-shape: round;
 }
