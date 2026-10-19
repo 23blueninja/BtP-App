@@ -434,3 +434,24 @@ describe('unfinished items', () => {
     expect(d.todo.map((t) => t.text)).toEqual(d.issues);
   });
 });
+
+describe('containers (backpacks with their own pyramid)', async () => {
+  const { groupInventory, layoutBulk, layoutContainer, effectiveBulk } = await import('./inventory');
+  const pack = { id: 'p', name: 'Backpack', qty: 1, bulk: 1, container: true };
+  const rope = { id: 'r', name: 'Rope', qty: 2, bulk: 2, storedIn: 'p' };
+  const torch = { id: 't', name: 'Torch', qty: 1, bulk: 3 };
+  it('items stored in a container leave your pyramid; the container itself stays on you', () => {
+    const g = groupInventory([pack, rope, torch]);
+    expect(g.person.map((i) => i.id)).toEqual(['p', 't']);
+    expect(g.containers).toEqual([{ item: pack, contents: [rope] }]);
+    const l = layoutContainer(g.containers[0].contents);
+    expect(l.rows.map((r) => r.slots.length)).toEqual([1, 2, 3, 4, 5]);
+    expect(l.rows[1].slots.filter((s) => s.item).length).toBe(2);
+    expect(layoutBulk(g.person, 0).rows[0].slots[0].item?.id).toBe('p');
+  });
+  it('contents of a removed container fall back to you; stored items ignore Powerful Build', () => {
+    expect(groupInventory([rope, torch]).person.map((i) => i.id)).toEqual(['r', 't']);
+    expect(effectiveBulk(rope, 1)).toBe(2);
+    expect(effectiveBulk(torch, 1)).toBe(4);
+  });
+});

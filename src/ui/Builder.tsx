@@ -685,82 +685,87 @@ export function Equipment({ c, d, update }: StepProps) {
   const setEq = (fn: (e: Character['equipment']) => Character['equipment']) => update((x) => ({ ...x, equipment: fn(x.equipment) }));
   return (
     <div className="form">
-      <section className="box">
-      <h3 className="box-title">Armor</h3>
-      <div className="row wrap">
-        <label>
-          Type
-          <select
-            value={armor?.type ?? ''}
-            onChange={(e) => setEq((q) => ({ ...q, armor: e.target.value ? { type: e.target.value as 'Light', quality: q.armor?.quality ?? 'Basic' } : null }))}
-          >
-            <option value="">No armor</option>
-            <option>Light</option>
-            <option>Medium</option>
-            <option>Heavy</option>
-          </select>
-        </label>
-        {armor && (
-          <label>
-            Quality
-            <select value={armor.quality} onChange={(e) => setEq((q) => ({ ...q, armor: { ...armor, quality: e.target.value } }))}>
-              {armorQualities.map((a) => (
-                <option key={a.quality}>{a.quality}</option>
-              ))}
-            </select>
-          </label>
-        )}
-      </div>
-      <p>
-        AC <strong>{d.ac.value}</strong> <span className="muted">({d.ac.breakdown.join('; ')})</span>
-      </p>
-      {d.armorNotes.map((n) => (
-        <p key={n} className="note">
-          {n}
-        </p>
-      ))}
-      <p className="muted">
-        Armor training: {d.armorTraining}. <RuleLink id="equipment/armor">Armor rules</RuleLink>
-      </p>
-      </section>
-
-      <section className="box">
-      <h3 className="box-title">Weapons</h3>
-      <p className="muted">
-        Weapon training: {d.weaponTraining}. <RuleLink id="equipment/weapons/weapon-properties">Weapon properties</RuleLink>
-      </p>
-      <div className="row">
-        <select value={weapon} onChange={(e) => setWeapon(e.target.value)} aria-label="Weapon">
-          <option value="">Add a weapon…</option>
-          {groups.map((g) => (
-            <optgroup key={g} label={g}>
-              {weapons
-                .filter((w) => w.group === g)
-                .map((w) => (
-                  <option key={w.name}>{w.name}</option>
-                ))}
-            </optgroup>
-          ))}
-        </select>
-        <button
-          type="button"
-          disabled={!weapon}
-          onClick={() => {
-            setEq((q) => ({ ...q, weapons: [...q.weapons, { id: newId(), name: weapon }] }));
-            setWeapon('');
-          }}
-        >
-          Add
-        </button>
-      </div>
-      <WeaponTable c={c} d={d} onRemove={(id) => setEq((q) => ({ ...q, weapons: q.weapons.filter((w) => w.id !== id) }))} />
-      </section>
-
+      {/* Inventory first, with the pyramids above the item list. */}
       <section className="box">
       <h3 className="box-title">Inventory</h3>
-      <InventoryEditor c={c} update={update} />
       <BulkPyramid c={c} d={d} update={update} />
+      <InventoryEditor c={c} update={update} />
       </section>
+
+
+      {/* Weapons (two thirds) beside Armor. */}
+      <div className="equip-row">
+        <section className="box equip-weapons">
+        <h3 className="box-title">Weapons</h3>
+        <p className="muted">
+          Weapon training: {d.weaponTraining}. <RuleLink id="equipment/weapons/weapon-properties">Weapon properties</RuleLink>
+        </p>
+        <div className="row">
+          <select value={weapon} onChange={(e) => setWeapon(e.target.value)} aria-label="Weapon">
+            <option value="">Add a weapon…</option>
+            {groups.map((g) => (
+              <optgroup key={g} label={g}>
+                {weapons
+                  .filter((w) => w.group === g)
+                  .map((w) => (
+                    <option key={w.name}>{w.name}</option>
+                  ))}
+              </optgroup>
+            ))}
+          </select>
+          <button
+            type="button"
+            disabled={!weapon}
+            onClick={() => {
+              setEq((q) => ({ ...q, weapons: [...q.weapons, { id: newId(), name: weapon }] }));
+              setWeapon('');
+            }}
+          >
+            Add
+          </button>
+        </div>
+        <WeaponTable c={c} d={d} onRemove={(id) => setEq((q) => ({ ...q, weapons: q.weapons.filter((w) => w.id !== id) }))} />
+        </section>
+        <section className="box">
+        <h3 className="box-title">Armor</h3>
+        <div className="row wrap">
+          <label>
+            Type
+            <select
+              value={armor?.type ?? ''}
+              onChange={(e) => setEq((q) => ({ ...q, armor: e.target.value ? { type: e.target.value as 'Light', quality: q.armor?.quality ?? 'Basic' } : null }))}
+            >
+              <option value="">No armor</option>
+              <option>Light</option>
+              <option>Medium</option>
+              <option>Heavy</option>
+            </select>
+          </label>
+          {armor && (
+            <label>
+              Quality
+              <select value={armor.quality} onChange={(e) => setEq((q) => ({ ...q, armor: { ...armor, quality: e.target.value } }))}>
+                {armorQualities.map((a) => (
+                  <option key={a.quality}>{a.quality}</option>
+                ))}
+              </select>
+            </label>
+          )}
+        </div>
+        <p>
+          AC <strong>{d.ac.value}</strong> <span className="muted">({d.ac.breakdown.join('; ')})</span>
+        </p>
+        {d.armorNotes.map((n) => (
+          <p key={n} className="note">
+            {n}
+          </p>
+        ))}
+        <p className="muted">
+          Armor training: {d.armorTraining}. <RuleLink id="equipment/armor">Armor rules</RuleLink>
+        </p>
+        </section>
+      </div>
+
     </div>
   );
 }
@@ -918,6 +923,7 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
   const [bulk, setBulk] = useState('');
   const items = c.equipment.inventory;
   const shift = derive(c).bulkShift;
+  const containers = items.filter((i) => i.container);
   const setItems = (fn: (i: typeof items) => typeof items) => update((x) => ({ ...x, equipment: { ...x.equipment, inventory: fn(x.equipment.inventory) } }));
   return (
     <div>
@@ -951,6 +957,8 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
               <th>Bulk</th>
               <th>#</th>
               <th>Notes</th>
+              <th title="A backpack or similar with its own inventory pyramid">Backpack</th>
+              {containers.length > 0 && <th>Stored in</th>}
               {shift > 0 && <th title="Powerful Build only applies to items on your person">In backpack</th>}
               <th />
             </tr>
@@ -972,11 +980,39 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
                     onChange={(e) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, notes: e.target.value } : x)))}
                   />
                 </td>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={!!it.container}
+                    aria-label={`${it.name} has its own inventory pyramid`}
+                    title="Gives this item its own inventory pyramid"
+                    onChange={(e) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, container: e.target.checked || undefined, storedIn: undefined } : x)))}
+                  />
+                </td>
+                {containers.length > 0 && (
+                  <td>
+                    {!it.container && (
+                      <select
+                        value={it.storedIn && containers.some((x) => x.id === it.storedIn) ? it.storedIn : ''}
+                        aria-label={`Where ${it.name} is stored`}
+                        onChange={(e) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, storedIn: e.target.value || undefined } : x)))}
+                      >
+                        <option value="">On you</option>
+                        {containers.map((x) => (
+                          <option key={x.id} value={x.id}>
+                            {x.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </td>
+                )}
                 {shift > 0 && (
                   <td>
                     <input
                       type="checkbox"
-                      checked={!!it.inBackpack}
+                      checked={!!it.inBackpack || (!!it.storedIn && containers.some((x) => x.id === it.storedIn))}
+                      disabled={!!it.storedIn && containers.some((x) => x.id === it.storedIn)}
                       aria-label={`${it.name} is in a backpack`}
                       onChange={(e) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, inBackpack: e.target.checked } : x)))}
                     />
