@@ -9,6 +9,8 @@ import { Home } from './ui/Home';
 import { LevelUp } from './ui/LevelUp';
 import { Reference } from './ui/Reference';
 import { Sheet } from './ui/Sheet';
+import { Modal } from './ui/common';
+import { setPrefs, usePrefs, type Prefs } from './ui/prefs';
 import logo from './assets/icons/8VNXled.png';
 
 function useCharacter(id: string | undefined) {
@@ -25,8 +27,36 @@ function useCharacter(id: string | undefined) {
   return [c, update] as const;
 }
 
+const OPTIONS: { key: keyof Prefs; label: string; note?: string }[] = [
+  { key: 'pinStatBar', label: 'Pin the top bar while scrolling', note: 'Class Bonus, Attributes and AP stay at the top of the sheet (wide screens).' },
+  { key: 'animateGradients', label: 'Animate alignment gradients', note: 'Headings and attribute symbols.' },
+  { key: 'animateBackground', label: 'Animate the background' },
+];
+
+function OptionsMenu({ onClose }: { onClose: () => void }) {
+  const prefs = usePrefs();
+  return (
+    <Modal title="Options" onClose={onClose}>
+      <div className="options">
+        {OPTIONS.map((o) => (
+          <label key={o.key} className="option-row">
+            <input type="checkbox" checked={prefs[o.key]} onChange={(e) => setPrefs({ [o.key]: e.target.checked })} />
+            <span>
+              {o.label}
+              {o.note && <span className="muted small"> {o.note}</span>}
+            </span>
+          </label>
+        ))}
+        <p className="muted small">Options are saved in this browser.</p>
+      </div>
+    </Modal>
+  );
+}
+
 export function App() {
   const route = useHashRoute();
+  const prefs = usePrefs();
+  const [options, setOptions] = useState(false);
   const [section, id, view, step] = route;
   const [c, update] = useCharacter(section === 'c' ? id : undefined);
 
@@ -50,7 +80,7 @@ export function App() {
   else body = <Home />;
 
   return (
-    <div className="app">
+    <div className={['app', prefs.pinStatBar && 'pin-stats', !prefs.animateGradients && 'still-gradients', !prefs.animateBackground && 'still-bg'].filter(Boolean).join(' ')}>
       <div className="prism-bg" aria-hidden />
       <header className="topbar">
         <button type="button" className="brand" onClick={() => go()}>
@@ -68,8 +98,12 @@ export function App() {
           <button type="button" className="link" onClick={() => go('rules')}>
             Rules
           </button>
+          <button type="button" className="icon-btn options-btn" onClick={() => setOptions(true)} aria-label="Options" title="Options">
+            ⚙
+          </button>
         </nav>
       </header>
+      {options && <OptionsMenu onClose={() => setOptions(false)} />}
       <main>{body}</main>
       <footer className="footer muted small">Beyond the Prism © 2026 23BLUENINJA. Characters are saved in this browser.</footer>
     </div>
