@@ -7,7 +7,7 @@ import { derive, type Derived } from '../engine/derive';
 import { clampPlay, facetUseMax, heal, longRest, shortRest, takeDamage } from '../engine/play';
 import { AP_MAX, CONDITION_RULES, addCondition, describeCheck, endTurn, startTurn } from '../engine/conditions';
 import { ClassTableView, Equipment, WeaponTable } from './Builder';
-import { Collapsible, FacetText, go, Icon, RuleLink, Stepper, TokenText } from './common';
+import { Collapsible, FacetText, go, Icon, Modal, RuleLink, Stepper, TokenText } from './common';
 import { SpellListEditor } from './pickers';
 import { CastRow } from './Cast';
 import { BulkPyramid } from './Inventory';
@@ -297,6 +297,36 @@ function Box({ title, children, className = '' }: { title: React.ReactNode; chil
   );
 }
 
+/** A stat panel that opens its breakdown (where the number comes from) in a modal. */
+function StatBox({ title, value, children }: { title: string; value: React.ReactNode; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button type="button" className="box stat stat-btn" onClick={() => setOpen(true)} aria-haspopup="dialog" aria-label={`${title} ${value}: details`}>
+        <span className="box-title">{title}</span>
+        <span className="big">{value}</span>
+        <span className="stat-more">Details</span>
+      </button>
+      {open && (
+        <Modal title={`${title} ${value}`} onClose={() => setOpen(false)}>
+          {children}
+        </Modal>
+      )}
+    </>
+  );
+}
+
+function Details({ lines }: { lines: string[] }) {
+  if (!lines.length) return null;
+  return (
+    <ul className="plain stat-details">
+      {lines.map((l) => (
+        <li key={l}>{l}</li>
+      ))}
+    </ul>
+  );
+}
+
 function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
   const p = c.play;
   const [amount, setAmount] = useState('');
@@ -314,22 +344,21 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             <Box title="Level" className="stat">
               <div className="big">{c.level}</div>
             </Box>
-            <Box title="Initiative" className="stat">
-              <div className="big">{d.initiative}</div>
-              <div className="sub">{d.initiativeNotes.join(', ')}</div>
-            </Box>
-            <Box title="AC" className="stat">
-              <div className="big" title={d.ac.breakdown.join('\n')}>
-                {d.ac.value}
-              </div>
-              <div className="sub">{c.equipment.armor ? `${c.equipment.armor.quality} ${c.equipment.armor.type}` : 'Unarmored'}</div>
-            </Box>
-            <Box title="Movement" className="stat">
-              <div className="big" title={d.movementBreakdown.join('\n')}>
-                {d.movement}
-              </div>
-              <div className="sub">{d.movementBreakdown.join(' ')}</div>
-            </Box>
+            <StatBox title="Initiative" value={d.initiative}>
+              <p>
+                Roll your <Icon name="PER" /> PER Die ({d.attrs.PER.label})
+                {d.initiative !== d.attrs.PER.label ? ' in Tandem' : ''}.
+              </p>
+              <Details lines={d.initiativeNotes} />
+            </StatBox>
+            <StatBox title="AC" value={d.ac.value}>
+              <p>{c.equipment.armor ? `${c.equipment.armor.quality} ${c.equipment.armor.type} armor` : 'Unarmored'}</p>
+              <Details lines={d.ac.breakdown} />
+            </StatBox>
+            <StatBox title="Movement" value={d.movement}>
+              <Details lines={d.movementBreakdown} />
+              <Details lines={d.movementTypes.map((m) => `${m.type} Movement ${m.value}`)} />
+            </StatBox>
           </div>
           <section className="box endurance">
             {/* Temp sits beside the label, like Temp AP in the turn box. */}
@@ -352,6 +381,19 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               <button type="button" disabled={!n} onClick={() => (setPlay((x) => heal(x, n, d)), setAmount(''))}>
                 Heal
               </button>
+            </div>
+            <div className="end-vitality">
+              <div className="row between">
+                <span>Vitality</span>
+                {/* Restoring Vitality ends Dying. */}
+                <Pips total={d.vitalityMax} used={d.vitalityMax - p.vitality} onChange={(u) => setPlay((x) => { const v = d.vitalityMax - u; return { ...x, vitality: v, dying: v > x.vitality ? 0 : x.dying }; })} label="Vitality" />
+              </div>
+              <div className="row between">
+                <span>
+                  <RuleLink id="beyond-the-prism/endurance-and-vitality/dying">Dying</RuleLink>
+                </span>
+                <Stepper label="Dying" value={p.dying} min={0} onChange={(v) => setPlay((x) => ({ ...x, dying: v }))} />
+              </div>
             </div>
           </section>
           <Box title="I respond to new…" className="respond">
@@ -387,29 +429,17 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
         </div>
 
         <div className="col">
-            <Box title="Vitality & Radiance">
-            <div className="row between">
-              <span>Vitality</span>
-              <Stepper label="Vitality" value={p.vitality} min={0} max={d.vitalityMax} onChange={(v) => setPlay((x) => ({ ...x, vitality: v, dying: v > x.vitality ? 0 : x.dying }))} />
-              <span className="muted">/ {d.vitalityMax}</span>
-            </div>
-            <div className="row between">
-              <span>Rest Charges</span>
-              <Pips total={d.restCharges} used={p.restChargesSpent} onChange={(u) => setPlay((x) => ({ ...x, restChargesSpent: u }))} label="Rest Charge" />
-            </div>
+          <Box title="Radiance">
             <div className="row between">
               <span>Radiance</span>
               <Pips total={d.radianceMax} used={p.radianceSpent} onChange={(u) => setPlay((x) => ({ ...x, radianceSpent: u }))} label="Radiance" />
             </div>
-            <div className="row between">
-              <span>
-                <RuleLink id="beyond-the-prism/endurance-and-vitality/dying">Dying</RuleLink>
-              </span>
-              <Stepper label="Dying" value={p.dying} min={0} onChange={(v) => setPlay((x) => ({ ...x, dying: v }))} />
-            </div>
-            {d.slashingVulnerability && <p className="small muted">Unarmored Slashing Vulnerability: {d.slashingVulnerability}</p>}
           </Box>
           <Box title="Rest">
+            <div className="row between">
+              <span>Rest Charges</span>
+              <Pips total={d.restCharges} used={p.restChargesSpent} onChange={(u) => setPlay((x) => ({ ...x, restChargesSpent: u }))} label="Rest Charge" />
+            </div>
             <label className="inline small">
               <input type="checkbox" checked={useCharge} onChange={(e) => setUseCharge(e.target.checked)} /> Spend a Rest Charge on Short Rest
             </label>
