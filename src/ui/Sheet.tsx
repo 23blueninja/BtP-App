@@ -438,12 +438,11 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
           </section>
           {/* Radiance over "I respond to new…", stacked in one column. */}
           <div className="top-stack">
-            <Box title="Radiance">
-              <div className="row between">
-                <span>Radiance</span>
-                <Pips total={d.radianceMax} used={p.radianceSpent} onChange={(u) => setPlay((x) => ({ ...x, radianceSpent: u }))} label="Radiance" />
-              </div>
-            </Box>
+            {/* The title is the label; the bubbles sit right-aligned beside it and wrap downward. */}
+            <section className="box radiance">
+              <h3 className="box-title">Radiance</h3>
+              <Pips total={d.radianceMax} used={p.radianceSpent} onChange={(u) => setPlay((x) => ({ ...x, radianceSpent: u }))} label="Radiance" />
+            </section>
             <Box title="I respond to new…" className="respond">
               <ul className="plain">
                 <li>Situations with <Response value={al.situations} /></li>
