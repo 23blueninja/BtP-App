@@ -1025,10 +1025,14 @@ dl.defs dd {
 }
 .box-title {
   margin: 0 0 0.4rem;
-  font-size: 0.78rem;
+  /* Panel titles are the bigger heading; section headings inside (h4) the smaller. */
+  font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted);
+}
+.box h4 {
+  font-size: 0.78rem;
 }
 .box.stat {
   text-align: center;
