@@ -201,242 +201,244 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
   const n = Number(amount) || 0;
   const al = c.alignment;
   return (
-    <div className="sheet-grid">
-      {/* Top row: Bonus / Die / Saves / Endurance / AC / Movement / Initiative */}
-      <div className="top-row">
-        <Box title={d.cls ? `${d.cls.name} Bonus` : 'Bonus'} className="stat">
-          <div className="big">+{d.classBonus}</div>
-          <div className="sub">
-            {d.classDieName}: <strong>{d.classDie || '—'}</strong>
-          </div>
-        </Box>
-        <Box title="Save Checks" className="saves">
-          <table>
-            <tbody>
-              {d.saves.map((s) => (
-                <tr key={s.attr}>
-                  <th>
-                    <Icon name={s.attr} /> {s.attr}
-                  </th>
-                  <td>{s.label}</td>
-                  <td className="muted small">{s.notes.join(', ')}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Box>
-        <Box title="Endurance" className="endurance">
-          <div className="end-main">
-            <span className="big">{p.endurance}</span>
-            <span className="muted"> / {d.enduranceMax}</span>
-          </div>
-          <div className="row small-gap">
-            <span>Temp</span>
-            <Stepper label="Temporary Endurance" value={p.tempEndurance} min={0} onChange={(v) => setPlay((x) => ({ ...x, tempEndurance: v }))} />
-          </div>
-          <div className="row small-gap">
-            <input className="num" type="number" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" aria-label="Amount" />
-            <button type="button" className="danger" disabled={!n} onClick={() => (setPlay((x) => takeDamage(x, n, d)), setAmount(''))}>
-              Damage
-            </button>
-            <button type="button" disabled={!n} onClick={() => (setPlay((x) => heal(x, n, d)), setAmount(''))}>
-              Heal
-            </button>
-          </div>
-        </Box>
-        <Box title="AC" className="stat">
-          <div className="big" title={d.ac.breakdown.join('\n')}>
-            {d.ac.value}
-          </div>
-          <div className="sub">{c.equipment.armor ? `${c.equipment.armor.quality} ${c.equipment.armor.type}` : 'Unarmored'}</div>
-        </Box>
-        <Box title="Movement" className="stat">
-          <div className="big" title={d.movementBreakdown.join('\n')}>
-            {d.movement}
-          </div>
-          <div className="sub">{d.movementBreakdown.join(' ')}</div>
-        </Box>
-        <Box title="Initiative" className="stat">
-          <div className="big">{d.initiative}</div>
-          <div className="sub">{d.initiativeNotes.join(', ')}</div>
-        </Box>
-      </div>
+    // On wide screens Actions sit in their own column on the right; otherwise below the sheet.
+    <div className="sheet-layout">
+      <div className="sheet-grid">
+        {/* Top row: Bonus / Die / Saves / Endurance / AC / Movement / Initiative */}
+        <div className="top-row">
+          <Box title={d.cls ? `${d.cls.name} Bonus` : 'Bonus'} className="stat">
+            <div className="big">+{d.classBonus}</div>
+            <div className="sub">
+              {d.classDieName}: <strong>{d.classDie || '—'}</strong>
+            </div>
+          </Box>
+          <Box title="Save Checks" className="saves">
+            <table>
+              <tbody>
+                {d.saves.map((s) => (
+                  <tr key={s.attr}>
+                    <th>
+                      <Icon name={s.attr} /> {s.attr}
+                    </th>
+                    <td>{s.label}</td>
+                    <td className="muted small">{s.notes.join(', ')}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Box>
+          <Box title="Endurance" className="endurance">
+            <div className="end-main">
+              <span className="big">{p.endurance}</span>
+              <span className="muted"> / {d.enduranceMax}</span>
+            </div>
+            <div className="row small-gap">
+              <span>Temp</span>
+              <Stepper label="Temporary Endurance" value={p.tempEndurance} min={0} onChange={(v) => setPlay((x) => ({ ...x, tempEndurance: v }))} />
+            </div>
+            <div className="row small-gap">
+              <input className="num" type="number" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" aria-label="Amount" />
+              <button type="button" className="danger" disabled={!n} onClick={() => (setPlay((x) => takeDamage(x, n, d)), setAmount(''))}>
+                Damage
+              </button>
+              <button type="button" disabled={!n} onClick={() => (setPlay((x) => heal(x, n, d)), setAmount(''))}>
+                Heal
+              </button>
+            </div>
+          </Box>
+          <Box title="AC" className="stat">
+            <div className="big" title={d.ac.breakdown.join('\n')}>
+              {d.ac.value}
+            </div>
+            <div className="sub">{c.equipment.armor ? `${c.equipment.armor.quality} ${c.equipment.armor.type}` : 'Unarmored'}</div>
+          </Box>
+          <Box title="Movement" className="stat">
+            <div className="big" title={d.movementBreakdown.join('\n')}>
+              {d.movement}
+            </div>
+            <div className="sub">{d.movementBreakdown.join(' ')}</div>
+          </Box>
+          <Box title="Initiative" className="stat">
+            <div className="big">{d.initiative}</div>
+            <div className="sub">{d.initiativeNotes.join(', ')}</div>
+          </Box>
+        </div>
 
-      {/* Weapons get a full-width row: the table needs the space most. */}
-      <div className="wide-row">
-        <Box title="Weapons">
-          <WeaponTable c={c} d={d} />
-        </Box>
-      </div>
-      <div className="wide-row">
-        <Box title="Items & effects">
-          <HomebrewBox d={d} update={update} />
-        </Box>
-      </div>
+        {/* Weapons get a full-width row: the table needs the space most. */}
+        <div className="wide-row">
+          <Box title="Weapons">
+            <WeaponTable c={c} d={d} />
+          </Box>
+        </div>
+        <div className="wide-row">
+          <Box title="Items & effects">
+            <HomebrewBox d={d} update={update} />
+          </Box>
+        </div>
 
-      <div className="col">
-        <Box title="Attributes">
-          <div className="attrs">
-            {ATTRS.map((a) => (
-              <div key={a} className="attr">
-                <div className="attr-badge">
-                  <div className="attr-name">{ATTR_NAMES[a]}</div>
-                  <div className="attr-value">
-                    <span className="attr-icon">
-                      <Icon name={a} />
-                    </span>
-                    <span className="attr-die">{d.attrs[a].label}</span>
+        <div className="col">
+          <Box title="Attributes">
+            <div className="attrs">
+              {ATTRS.map((a) => (
+                <div key={a} className="attr">
+                  <div className="attr-badge">
+                    <div className="attr-name">{ATTR_NAMES[a]}</div>
+                    <div className="attr-value">
+                      <span className="attr-icon">
+                        <Icon name={a} />
+                      </span>
+                      <span className="attr-die">{d.attrs[a].label}</span>
+                    </div>
+                  </div>
+                  <div className="attr-desc muted small">
+                    {d.attrs[a].points} points{d.attrs[a].sources.length > 1 && ` (${d.attrs[a].sources.join(' ')})`}
+                    {d.attrs[a].dieNote && ` · ${d.attrs[a].dieNote}`}
                   </div>
                 </div>
-                <div className="attr-desc muted small">
-                  {d.attrs[a].points} points{d.attrs[a].sources.length > 1 && ` (${d.attrs[a].sources.join(' ')})`}
-                  {d.attrs[a].dieNote && ` · ${d.attrs[a].dieNote}`}
-                </div>
-              </div>
-            ))}
-          </div>
-        </Box>
-        <Box title="Vitality & Radiance">
-          <div className="row between">
-            <span>Vitality</span>
-            <Stepper label="Vitality" value={p.vitality} min={0} max={d.vitalityMax} onChange={(v) => setPlay((x) => ({ ...x, vitality: v, dying: v > x.vitality ? 0 : x.dying }))} />
-            <span className="muted">/ {d.vitalityMax}</span>
-          </div>
-          <div className="row between">
-            <span>Rest Charges</span>
-            <Pips total={d.restCharges} used={p.restChargesSpent} onChange={(u) => setPlay((x) => ({ ...x, restChargesSpent: u }))} label="Rest Charge" />
-          </div>
-          <div className="row between">
-            <span>Radiance</span>
-            <Pips total={d.radianceMax} used={p.radianceSpent} onChange={(u) => setPlay((x) => ({ ...x, radianceSpent: u }))} label="Radiance" />
-          </div>
-          <div className="row between">
-            <span>
-              <RuleLink id="beyond-the-prism/endurance-and-vitality/dying">Dying</RuleLink>
-            </span>
-            <Stepper label="Dying" value={p.dying} min={0} onChange={(v) => setPlay((x) => ({ ...x, dying: v }))} />
-          </div>
-          {d.slashingVulnerability && <p className="small muted">Unarmored Slashing Vulnerability: {d.slashingVulnerability}</p>}
-        </Box>
-        <Box title="Rest">
-          <label className="inline small">
-            <input type="checkbox" checked={useCharge} onChange={(e) => setUseCharge(e.target.checked)} /> Spend a Rest Charge on Short Rest
-          </label>
-          <div className="row">
-            <button type="button" onClick={() => update((x) => { const r = shortRest(x, derive(x), { spendRestCharge: useCharge }); onRest(r.log); return { ...x, play: r.play, homebrew: r.homebrew }; })}>
-              Short Rest
-            </button>
-            <button type="button" onClick={() => update((x) => { const r = longRest(x, derive(x)); onRest(r.log); return { ...x, play: r.play, homebrew: r.homebrew }; })}>
-              Long Rest
-            </button>
-          </div>
-          <p className="muted small">
-            {c.settings.restRules === 'heroic' ? 'Heroic' : 'Gritty'} rules · Short Rests since Long Rest: {p.shortRests}/2 · <RuleLink id="beyond-the-prism/resting">Resting rules</RuleLink>
-          </p>
-        </Box>
-        <Box title="Movement & Senses">
-          <ul className="plain">
-            <li>Movement {d.movement}</li>
-            {d.movementTypes.map((m) => (
-              <li key={m.type}>
-                {m.type} Movement {m.value}
-              </li>
-            ))}
-            <li>
-              <Icon name="PER" /> Perception Radius {d.radius}
-            </li>
-            <li>
-              Max Long Jump {d.jump.long} · Max High Jump {d.jump.high}
-            </li>
-            {d.senses.map((s) => (
-              <li key={s}>{s}</li>
-            ))}
-          </ul>
-        </Box>
-      </div>
-
-      <div className="col">
-        <Box title="Professions">
-          <SkillList slots={d.skillSlots.filter((s) => s.kind === 'profession')} />
-        </Box>
-        <Box title="Hobbies">
-          <SkillList slots={d.skillSlots.filter((s) => s.kind === 'hobby')} />
-        </Box>
-        <Box title="Experiences">
-          <Experiences c={c} update={update} />
-        </Box>
-        <Box title="Inventory">
-          <BulkPyramid c={c} d={d} update={update} />
-        </Box>
-      </div>
-
-      <div className="col">
-        <Box title="I respond to new…">
-          <ul className="plain">
-            <li>Situations with <strong>{al.situations || '—'}</strong></li>
-            <li>Problems with <strong>{al.problems || '—'}</strong></li>
-            <li>People with <strong>{al.people || '—'}</strong></li>
-          </ul>
-        </Box>
-        <Box title="Alignments">
-          {d.alignment.length ? (
-            <ul className="plain">
-              {d.alignment.map((a) => (
-                <li key={a.light} title={a.sources.join(', ')}>
-                  <span className={`dot light-${a.light.toLowerCase()}`} /> {a.light} — {['None', 'Weak', 'Firm', 'Strong'][a.level]}
-                </li>
               ))}
-            </ul>
-          ) : (
-            <p className="muted">None</p>
-          )}
-        </Box>
-        <Box title="Resistances & Vulnerabilities">
-          {d.resistances.length ? (
-            <ul className="plain">
-              {d.resistances.map((r) => (
-                <li key={r.type}>
-                  {r.type} Resistance {r.value}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="muted">None</p>
-          )}
-          {d.slashingVulnerability && <p className="small">Slashing Vulnerability {d.slashingVulnerability} (unarmored)</p>}
-        </Box>
-        <Box title="Conditions">
-          <Conditions p={p} d={d} setPlay={setPlay} />
-        </Box>
-        <Box title="Active effects">
-          <ActiveEffects effects={p.effects ?? []} setPlay={setPlay} />
-        </Box>
-        <Box title="Check modifiers">
-          <CheckModifiers d={d} />
-        </Box>
-        <Box title="Training">
-          <p className="small">
-            <strong>Armor:</strong> {d.armorTraining}
-          </p>
-          <p className="small">
-            <strong>Weapons:</strong> {d.weaponTraining}
-          </p>
-          <p className="small">
-            <strong>Action categories:</strong> {d.actionCategories.join(', ')}
-          </p>
-          {d.armorNotes.map((x) => (
-            <p key={x} className="note small">
-              {x}
+            </div>
+          </Box>
+          <Box title="Vitality & Radiance">
+            <div className="row between">
+              <span>Vitality</span>
+              <Stepper label="Vitality" value={p.vitality} min={0} max={d.vitalityMax} onChange={(v) => setPlay((x) => ({ ...x, vitality: v, dying: v > x.vitality ? 0 : x.dying }))} />
+              <span className="muted">/ {d.vitalityMax}</span>
+            </div>
+            <div className="row between">
+              <span>Rest Charges</span>
+              <Pips total={d.restCharges} used={p.restChargesSpent} onChange={(u) => setPlay((x) => ({ ...x, restChargesSpent: u }))} label="Rest Charge" />
+            </div>
+            <div className="row between">
+              <span>Radiance</span>
+              <Pips total={d.radianceMax} used={p.radianceSpent} onChange={(u) => setPlay((x) => ({ ...x, radianceSpent: u }))} label="Radiance" />
+            </div>
+            <div className="row between">
+              <span>
+                <RuleLink id="beyond-the-prism/endurance-and-vitality/dying">Dying</RuleLink>
+              </span>
+              <Stepper label="Dying" value={p.dying} min={0} onChange={(v) => setPlay((x) => ({ ...x, dying: v }))} />
+            </div>
+            {d.slashingVulnerability && <p className="small muted">Unarmored Slashing Vulnerability: {d.slashingVulnerability}</p>}
+          </Box>
+          <Box title="Rest">
+            <label className="inline small">
+              <input type="checkbox" checked={useCharge} onChange={(e) => setUseCharge(e.target.checked)} /> Spend a Rest Charge on Short Rest
+            </label>
+            <div className="row">
+              <button type="button" onClick={() => update((x) => { const r = shortRest(x, derive(x), { spendRestCharge: useCharge }); onRest(r.log); return { ...x, play: r.play, homebrew: r.homebrew }; })}>
+                Short Rest
+              </button>
+              <button type="button" onClick={() => update((x) => { const r = longRest(x, derive(x)); onRest(r.log); return { ...x, play: r.play, homebrew: r.homebrew }; })}>
+                Long Rest
+              </button>
+            </div>
+            <p className="muted small">
+              {c.settings.restRules === 'heroic' ? 'Heroic' : 'Gritty'} rules · Short Rests since Long Rest: {p.shortRests}/2 · <RuleLink id="beyond-the-prism/resting">Resting rules</RuleLink>
             </p>
-          ))}
-        </Box>
-      </div>
+          </Box>
+          <Box title="Movement & Senses">
+            <ul className="plain">
+              <li>Movement {d.movement}</li>
+              {d.movementTypes.map((m) => (
+                <li key={m.type}>
+                  {m.type} Movement {m.value}
+                </li>
+              ))}
+              <li>
+                <Icon name="PER" /> Perception Radius {d.radius}
+              </li>
+              <li>
+                Max Long Jump {d.jump.long} · Max High Jump {d.jump.high}
+              </li>
+              {d.senses.map((s) => (
+                <li key={s}>{s}</li>
+              ))}
+            </ul>
+          </Box>
+        </div>
 
-      <div className="wide-row">
+        <div className="col">
+          <Box title="Professions">
+            <SkillList slots={d.skillSlots.filter((s) => s.kind === 'profession')} />
+          </Box>
+          <Box title="Hobbies">
+            <SkillList slots={d.skillSlots.filter((s) => s.kind === 'hobby')} />
+          </Box>
+          <Box title="Experiences">
+            <Experiences c={c} update={update} />
+          </Box>
+          <Box title="Inventory">
+            <BulkPyramid c={c} d={d} update={update} />
+          </Box>
+        </div>
+
+        <div className="col">
+          <Box title="I respond to new…">
+            <ul className="plain">
+              <li>Situations with <strong>{al.situations || '—'}</strong></li>
+              <li>Problems with <strong>{al.problems || '—'}</strong></li>
+              <li>People with <strong>{al.people || '—'}</strong></li>
+            </ul>
+          </Box>
+          <Box title="Alignments">
+            {d.alignment.length ? (
+              <ul className="plain">
+                {d.alignment.map((a) => (
+                  <li key={a.light} title={a.sources.join(', ')}>
+                    <span className={`dot light-${a.light.toLowerCase()}`} /> {a.light} — {['None', 'Weak', 'Firm', 'Strong'][a.level]}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="muted">None</p>
+            )}
+          </Box>
+          <Box title="Resistances & Vulnerabilities">
+            {d.resistances.length ? (
+              <ul className="plain">
+                {d.resistances.map((r) => (
+                  <li key={r.type}>
+                    {r.type} Resistance {r.value}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="muted">None</p>
+            )}
+            {d.slashingVulnerability && <p className="small">Slashing Vulnerability {d.slashingVulnerability} (unarmored)</p>}
+          </Box>
+          <Box title="Conditions">
+            <Conditions p={p} d={d} setPlay={setPlay} />
+          </Box>
+          <Box title="Active effects">
+            <ActiveEffects effects={p.effects ?? []} setPlay={setPlay} />
+          </Box>
+          <Box title="Check modifiers">
+            <CheckModifiers d={d} />
+          </Box>
+          <Box title="Training">
+            <p className="small">
+              <strong>Armor:</strong> {d.armorTraining}
+            </p>
+            <p className="small">
+              <strong>Weapons:</strong> {d.weaponTraining}
+            </p>
+            <p className="small">
+              <strong>Action categories:</strong> {d.actionCategories.join(', ')}
+            </p>
+            {d.armorNotes.map((x) => (
+              <p key={x} className="note small">
+                {x}
+              </p>
+            ))}
+          </Box>
+        </div>
+      </div>
+      <aside className="sheet-actions-col">
         <Box title="Actions">
           <ActionsList c={c} d={d} />
         </Box>
-      </div>
+      </aside>
     </div>
   );
 }
