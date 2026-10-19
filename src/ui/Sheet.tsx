@@ -314,27 +314,32 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               <tbody>
                 {d.saves.map((s) => (
                   <tr key={s.attr}>
-                    <th>
-                      <Icon name={s.attr} /> {s.attr}
-                    </th>
-                    <td>{s.label}</td>
-                    <td className="muted small">{s.notes.join(', ')}</td>
+                    <td>
+                      <span className="save-die">
+                        <Icon name={s.attr} /> {s.label}
+                      </span>
+                      {s.notes.length > 0 && <div className="muted small">{s.notes.join(', ')}</div>}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </Box>
-          <Box title="Endurance" className="endurance">
+          <section className="box endurance">
+            {/* Temp sits beside the label, like Temp AP in the turn box. */}
+            <div className="box-head">
+              <h3 className="box-title">Endurance</h3>
+              <span className="box-head-extra">
+                <span className="muted small">Temp</span>
+                <Stepper label="Temporary Endurance" value={p.tempEndurance} min={0} onChange={(v) => setPlay((x) => ({ ...x, tempEndurance: v }))} />
+              </span>
+            </div>
             <div className="end-main">
               <span className="big">{p.endurance}</span>
               <span className="muted"> / {d.enduranceMax}</span>
             </div>
-            <div className="row small-gap">
-              <span>Temp</span>
-              <Stepper label="Temporary Endurance" value={p.tempEndurance} min={0} onChange={(v) => setPlay((x) => ({ ...x, tempEndurance: v }))} />
-            </div>
-            <div className="row small-gap">
-              <input className="num" type="number" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" aria-label="Amount" />
+            <input className="end-amount" type="number" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" aria-label="Amount" />
+            <div className="end-buttons">
               <button type="button" className="danger" disabled={!n} onClick={() => (setPlay((x) => takeDamage(x, n, d)), setAmount(''))}>
                 Damage
               </button>
@@ -342,7 +347,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
                 Heal
               </button>
             </div>
-          </Box>
+          </section>
           <Box title="AC" className="stat">
             <div className="big" title={d.ac.breakdown.join('\n')}>
               {d.ac.value}
@@ -358,6 +363,13 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
           <Box title="Initiative" className="stat">
             <div className="big">{d.initiative}</div>
             <div className="sub">{d.initiativeNotes.join(', ')}</div>
+          </Box>
+          <Box title="I respond to new…" className="respond">
+            <ul className="plain">
+              <li>Situations with <strong>{al.situations || '—'}</strong></li>
+              <li>Problems with <strong>{al.problems || '—'}</strong></li>
+              <li>People with <strong>{al.people || '—'}</strong></li>
+            </ul>
           </Box>
         </div>
 
@@ -448,13 +460,6 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
         </div>
 
         <div className="col">
-          <Box title="I respond to new…">
-            <ul className="plain">
-              <li>Situations with <strong>{al.situations || '—'}</strong></li>
-              <li>Problems with <strong>{al.problems || '—'}</strong></li>
-              <li>People with <strong>{al.people || '—'}</strong></li>
-            </ul>
-          </Box>
           <Box title="Alignments">
             {d.alignment.length ? (
               <ul className="plain">
