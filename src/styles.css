@@ -1,6 +1,6 @@
 :root {
   /* Slightly rounded corners for buttons, inputs, chips and toggles. */
-  --control-radius: 4px;
+  --control-radius: 8px;
   /* Always dark, like the rulebook; panels are slightly translucent so the
      prism grid shows around and faintly behind them. */
   --bg: #000;
@@ -1935,6 +1935,7 @@ tr.needs input {
 .split-box {
   position: relative;
   min-height: 7.6rem;
+  container-type: inline-size;
 }
 .split-shape {
   position: absolute;
@@ -1968,8 +1969,10 @@ tr.needs input {
   margin: 0;
 }
 .split-box .big {
-  font-size: 2.2rem;
-  line-height: 1.1;
+  /* Scales with the box like the attribute dice. */
+  font-size: clamp(1.8rem, 19cqi, 3.8rem);
+  font-weight: 700;
+  line-height: 1;
 }
 .split-a .big {
   margin-top: 0.2rem;
@@ -2053,8 +2056,12 @@ tr.needs input {
     z-index: 25;
     padding: 0.5rem 0;
     margin: 0;
-    background: rgba(0, 0, 0, 0.88);
-    backdrop-filter: blur(6px);
+    transition: background 0.2s;
+  }
+  /* Only once pinned, a translucent blurred backdrop like the header's. */
+  .app.pin-stats .stat-strip.stuck {
+    background: var(--bg-2);
+    backdrop-filter: blur(8px);
   }
 }
 .app.still-bg .prism-bg::before,
@@ -2069,4 +2076,20 @@ tr.needs input {
 /* Longer dice like "d12+2" use a smaller font so they still fit beside the symbol. */
 .attr-die.long {
   font-size: calc(var(--attr-size) * 0.72);
+}
+
+.turn-box-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+.turn-box-head .box-title {
+  margin: 0;
+}
+.turn-box-head .turn-temp {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }

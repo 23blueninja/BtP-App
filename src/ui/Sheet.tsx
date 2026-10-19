@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { basicActions, conditions as conditionDefs, getNode, getCastable, type RuleNode } from '../content';
 import { ancestryById } from '../data/ancestries';
 import { ATTRS, ATTR_NAMES, RANK_DIE } from '../data/types';
@@ -121,8 +121,21 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
 
 /** Class Bonus, Class Die and the five Attributes, across the top of every tab. */
 function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) {
+  // A marker just above the bar: once it scrolls out of view the bar is pinned, and
+  // only then gets a backdrop so content passing underneath stays readable.
+  const marker = useRef<HTMLDivElement>(null);
+  const [stuck, setStuck] = useState(false);
+  useEffect(() => {
+    const el = marker.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([e]) => setStuck(!e.isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   return (
-    <div className="stat-strip">
+    <>
+    <div ref={marker} className="stat-strip-marker" aria-hidden />
+    <div className={`stat-strip ${stuck ? 'stuck' : ''}`}>
       {/* Class Bonus and Class Die: one box sliced along its diagonal. */}
       <section className="split-box">
         <svg className="split-shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
@@ -154,6 +167,7 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
       ))}
       {children}
     </div>
+    </>
   );
 }
 
@@ -204,16 +218,18 @@ function TurnBar({
   if (compact) {
     return (
       <section className={`box turn-box ${myTurn ? 'my-turn' : ''}`} aria-label="Turn">
-        <h3 className="box-title">
-          AP {ap}/{AP_MAX}
-        </h3>
+        <div className="turn-box-head">
+          <h3 className="box-title">
+            AP {ap}/{AP_MAX}
+          </h3>
+          <span className="turn-temp">
+            <span className="muted small">Temp</span>
+            {temp}
+          </span>
+        </div>
         <div className="turn-box-body">
           <div className="turn-pips-v">{pips}</div>
           <div className="turn-box-controls">
-            <span className="turn-temp">
-              <span className="muted small">Temp</span>
-              {temp}
-            </span>
             <div className="turn-box-buttons">
               <button type="button" className={myTurn ? '' : 'primary'} disabled={myTurn} onClick={start}>
                 ▶ Start
