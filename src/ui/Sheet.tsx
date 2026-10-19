@@ -452,6 +452,12 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               </ul>
             </Box>
           </div>
+        </div>
+
+        {/* Weapons get a full-width row: the table needs the space most. */}
+        {/* Right-hand column, level with the top row: Save Checks with Conditions,
+            Resistances and Alignments beneath, beside Weapons and the panels below. */}
+        <div className="side-col">
           <Box title="Save Checks" className="saves">
             <table>
               <tbody>
@@ -468,89 +474,8 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               </tbody>
             </table>
           </Box>
-        </div>
-
-        {/* Weapons get a full-width row: the table needs the space most. */}
-        <div className="wide-row">
-          <Box title="Weapons">
-            <WeaponTable c={c} d={d} />
-          </Box>
-        </div>
-
-        <div className="col">
-          <Box title="Rest">
-            <div className="row between">
-              <span>Rest Charges</span>
-              <Pips total={d.restCharges} used={p.restChargesSpent} onChange={(u) => setPlay((x) => ({ ...x, restChargesSpent: u }))} label="Rest Charge" />
-            </div>
-            <label className="inline small">
-              <input type="checkbox" checked={useCharge} onChange={(e) => setUseCharge(e.target.checked)} /> Spend a Rest Charge on Short Rest
-            </label>
-            <div className="row">
-              <button type="button" onClick={() => update((x) => { const r = shortRest(x, derive(x), { spendRestCharge: useCharge }); onRest(r.log); return { ...x, play: r.play, homebrew: r.homebrew }; })}>
-                Short Rest
-              </button>
-              <button type="button" onClick={() => update((x) => { const r = longRest(x, derive(x)); onRest(r.log); return { ...x, play: r.play, homebrew: r.homebrew }; })}>
-                Long Rest
-              </button>
-            </div>
-            <p className="muted small">
-              {c.settings.restRules === 'heroic' ? 'Heroic' : 'Gritty'} rules · Short Rests since Long Rest: {p.shortRests}/2 · <RuleLink id="beyond-the-prism/resting">Resting rules</RuleLink>
-            </p>
-          </Box>
-          <Box title="Movement & Senses">
-            <ul className="plain">
-              <li>Movement {d.movement}</li>
-              {d.movementTypes.map((m) => (
-                <li key={m.type}>
-                  {m.type} Movement {m.value}
-                </li>
-              ))}
-              <li>
-                <Icon name="PER" /> Perception Radius {d.radius}
-              </li>
-              <li>
-                Max Long Jump {d.jump.long} · Max High Jump {d.jump.high}
-              </li>
-              {d.senses.map((s) => (
-                <li key={s}>{s}</li>
-              ))}
-            </ul>
-          </Box>
-          {/* In a column so its cards stack and the other panels sit right under Weapons. */}
-          <Box title="Items & effects">
-            <HomebrewBox d={d} update={update} />
-          </Box>
-        </div>
-
-        <div className="col">
-          <Box title="Professions">
-            <SkillList slots={d.skillSlots.filter((s) => s.kind === 'profession')} />
-          </Box>
-          <Box title="Hobbies">
-            <SkillList slots={d.skillSlots.filter((s) => s.kind === 'hobby')} />
-          </Box>
-          <Box title="Experiences">
-            <Experiences c={c} update={update} />
-          </Box>
-          <Box title="Inventory">
-            <BulkPyramid c={c} d={d} update={update} />
-          </Box>
-        </div>
-
-        <div className="col">
-          <Box title="Alignments">
-            {d.alignment.length ? (
-              <ul className="plain">
-                {d.alignment.map((a) => (
-                  <li key={a.light} title={a.sources.join(', ')}>
-                    <span className={`dot light-${a.light.toLowerCase()}`} /> {a.light} — {['None', 'Weak', 'Firm', 'Strong'][a.level]}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="muted">None</p>
-            )}
+          <Box title="Conditions">
+            <Conditions p={p} d={d} setPlay={setPlay} />
           </Box>
           <Box title="Resistances & Vulnerabilities">
             {d.resistances.length ? (
@@ -566,31 +491,113 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             )}
             {d.slashingVulnerability && <p className="small">Slashing Vulnerability {d.slashingVulnerability} (unarmored)</p>}
           </Box>
-          <Box title="Conditions">
-            <Conditions p={p} d={d} setPlay={setPlay} />
+          <Box title="Alignments">
+            {d.alignment.length ? (
+              <ul className="plain">
+                {d.alignment.map((a) => (
+                  <li key={a.light} title={a.sources.join(', ')}>
+                    <span className={`dot light-${a.light.toLowerCase()}`} /> {a.light} — {['None', 'Weak', 'Firm', 'Strong'][a.level]}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="muted">None</p>
+            )}
           </Box>
-          <Box title="Active effects">
-            <ActiveEffects effects={p.effects ?? []} setPlay={setPlay} />
+        </div>
+
+        <div className="wide-row">
+          <Box title="Weapons">
+            <WeaponTable c={c} d={d} />
           </Box>
-          <Box title="Check modifiers">
-            <CheckModifiers d={d} />
-          </Box>
-          <Box title="Training">
-            <p className="small">
-              <strong>Armor:</strong> {d.armorTraining}
-            </p>
-            <p className="small">
-              <strong>Weapons:</strong> {d.weaponTraining}
-            </p>
-            <p className="small">
-              <strong>Action categories:</strong> {d.actionCategories.join(', ')}
-            </p>
-            {d.armorNotes.map((x) => (
-              <p key={x} className="note small">
-                {x}
+        </div>
+
+        <div className="main-cols">
+          <div className="col">
+            <Box title="Rest">
+              <div className="row between">
+                <span>Rest Charges</span>
+                <Pips total={d.restCharges} used={p.restChargesSpent} onChange={(u) => setPlay((x) => ({ ...x, restChargesSpent: u }))} label="Rest Charge" />
+              </div>
+              <label className="inline small">
+                <input type="checkbox" checked={useCharge} onChange={(e) => setUseCharge(e.target.checked)} /> Spend a Rest Charge on Short Rest
+              </label>
+              <div className="row">
+                <button type="button" onClick={() => update((x) => { const r = shortRest(x, derive(x), { spendRestCharge: useCharge }); onRest(r.log); return { ...x, play: r.play, homebrew: r.homebrew }; })}>
+                  Short Rest
+                </button>
+                <button type="button" onClick={() => update((x) => { const r = longRest(x, derive(x)); onRest(r.log); return { ...x, play: r.play, homebrew: r.homebrew }; })}>
+                  Long Rest
+                </button>
+              </div>
+              <p className="muted small">
+                {c.settings.restRules === 'heroic' ? 'Heroic' : 'Gritty'} rules · Short Rests since Long Rest: {p.shortRests}/2 · <RuleLink id="beyond-the-prism/resting">Resting rules</RuleLink>
               </p>
-            ))}
-          </Box>
+            </Box>
+            <Box title="Movement & Senses">
+              <ul className="plain">
+                <li>Movement {d.movement}</li>
+                {d.movementTypes.map((m) => (
+                  <li key={m.type}>
+                    {m.type} Movement {m.value}
+                  </li>
+                ))}
+                <li>
+                  <Icon name="PER" /> Perception Radius {d.radius}
+                </li>
+                <li>
+                  Max Long Jump {d.jump.long} · Max High Jump {d.jump.high}
+                </li>
+                {d.senses.map((s) => (
+                  <li key={s}>{s}</li>
+                ))}
+              </ul>
+            </Box>
+            {/* In a column so its cards stack and the other panels sit right under Weapons. */}
+            <Box title="Items & effects">
+              <HomebrewBox d={d} update={update} />
+            </Box>
+          </div>
+
+          <div className="col">
+            <Box title="Professions">
+              <SkillList slots={d.skillSlots.filter((s) => s.kind === 'profession')} />
+            </Box>
+            <Box title="Hobbies">
+              <SkillList slots={d.skillSlots.filter((s) => s.kind === 'hobby')} />
+            </Box>
+            <Box title="Experiences">
+              <Experiences c={c} update={update} />
+            </Box>
+            <Box title="Inventory">
+              <BulkPyramid c={c} d={d} update={update} />
+            </Box>
+          </div>
+
+          <div className="col">
+            <Box title="Active effects">
+              <ActiveEffects effects={p.effects ?? []} setPlay={setPlay} />
+            </Box>
+            <Box title="Check modifiers">
+              <CheckModifiers d={d} />
+            </Box>
+            <Box title="Training">
+              <p className="small">
+                <strong>Armor:</strong> {d.armorTraining}
+              </p>
+              <p className="small">
+                <strong>Weapons:</strong> {d.weaponTraining}
+              </p>
+              <p className="small">
+                <strong>Action categories:</strong> {d.actionCategories.join(', ')}
+              </p>
+              {d.armorNotes.map((x) => (
+                <p key={x} className="note small">
+                  {x}
+                </p>
+              ))}
+            </Box>
+          </div>
         </div>
       </div>
       <aside className="sheet-actions-col">
@@ -636,7 +643,7 @@ function SkillList({ slots }: { slots: Derived['skillSlots'] }) {
       <tbody>
         {slots.map((s) => (
           <tr key={s.id}>
-            <td>{s.name || <span className="muted">— unnamed —</span>}</td>
+            <td>{s.name || <span className="muted">unnamed</span>}</td>
             <td>{RANK_DIE[s.rank]}</td>
             <td>{s.rank}</td>
           </tr>
@@ -681,7 +688,7 @@ function Conditions({ p, d, setPlay }: { p: PlayState; d: Derived; setPlay: (fn:
           );
         })}
       </ul>
-      <div className="row">
+      <div className="row condition-add">
         <select value={pick} onChange={(e) => setPick(e.target.value)} aria-label="Condition">
           <option value="">Add condition…</option>
           {conditionDefs

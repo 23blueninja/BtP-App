@@ -592,6 +592,19 @@ th {
 .table-wrap {
   overflow-x: auto;
 }
+/* Narrow columns: keep the Mod Die and Rank on one line. */
+table.skills th,
+table.skills td:not(:first-child) {
+  white-space: nowrap;
+}
+/* The condition picker shrinks to leave room for Add in a narrow column. */
+.condition-add {
+  flex-wrap: wrap;
+}
+.condition-add select {
+  flex: 1 1 9rem;
+  min-width: 0;
+}
 .class-table tr.current {
   background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
@@ -889,19 +902,53 @@ dl.defs dd {
   background-size: 400px 100%;
   animation: prism-slide 4s linear infinite;
 }
+/* Four columns, set by the top row: the first three hold the top-row panels,
+   Weapons and the panel columns below; the fourth (side-col) runs down the
+   right from Save Checks. */
 .sheet-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.25fr) minmax(250px, 1.2fr) minmax(170px, 1fr) minmax(150px, 0.95fr);
+  /* The last row takes any extra height, so a tall side column doesn't stretch the top row. */
+  grid-template-rows: auto auto 1fr;
+  gap: 0.75rem;
+  container-type: inline-size;
+}
+.top-row {
+  display: contents;
+}
+.side-col {
+  grid-column: 4;
+  grid-row: 1 / span 3;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.wide-row,
+.main-cols {
+  grid-column: 1 / 4;
+  min-width: 0;
+}
+.main-cols {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
+  align-items: start;
 }
-.top-row {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: minmax(240px, 1.25fr) minmax(250px, 1.2fr) minmax(170px, 1fr) minmax(150px, 0.95fr);
-  gap: 0.75rem;
+/* Three panel columns only when each gets a useful width (e.g. beside Actions at 1400px, two). */
+@container (max-width: 1080px) {
+  .main-cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
-.wide-row {
-  grid-column: 1 / -1;
+/* With two panel columns, the third set of panels goes under the second. */
+@container (max-width: 1080px) {
+  .main-cols > .col:nth-child(1) {
+    grid-row: 1 / span 2;
+  }
+  .main-cols > .col:nth-child(3) {
+    grid-column: 2;
+  }
 }
 /* Panels stacked in one top-row column (Radiance over "I respond to new…"). */
 .top-stack {
@@ -1251,11 +1298,28 @@ input.num {
 
 /* ---------- responsive ---------- */
 @media (max-width: 1100px) {
-  .top-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  /* Two columns: the top-row panels and the side column pair up, then
+     Weapons and the panel columns go full width. */
   .sheet-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
+  }
+  .side-col {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .wide-row,
+  .main-cols {
+    grid-column: 1 / -1;
+  }
+  .main-cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .main-cols > .col:nth-child(1) {
+    grid-row: 1 / span 2;
+  }
+  .main-cols > .col:nth-child(3) {
+    grid-column: 2;
   }
 }
 @media (max-width: 820px) {
@@ -1268,15 +1332,19 @@ input.num {
     position: static;
     max-height: none;
   }
-  .sheet-grid {
-    grid-template-columns: 1fr;
+  .main-cols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .main-cols > .col:nth-child(n) {
+    grid-row: auto;
+    grid-column: auto;
   }
 }
 @media (max-width: 480px) {
   main {
     padding: 0.75rem 1rem;
   }
-  .top-row {
+  .sheet-grid {
     grid-template-columns: minmax(0, 1fr);
   }
   .topbar nav {
