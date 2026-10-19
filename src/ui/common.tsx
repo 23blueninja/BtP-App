@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { getItem, getNode, type RuleNode } from '../content';
 
 export type IconName = 'VIG' | 'AGI' | 'PER' | 'INT' | 'PRS' | 'AP' | 'SL';
@@ -107,7 +108,9 @@ export function Modal({ title, onClose, children, wide }: { title: ReactNode; on
     window.addEventListener('keydown', k);
     return () => window.removeEventListener('keydown', k);
   }, [onClose]);
-  return (
+  // Rendered at the app root: a glass panel's backdrop-filter would otherwise
+  // trap the fixed backdrop inside that panel, under the panels after it.
+  return createPortal(
     <div className="modal-backdrop" onClick={onClose}>
       <div className={`modal ${wide ? 'wide' : ''}`} role="dialog" aria-modal onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
@@ -118,7 +121,8 @@ export function Modal({ title, onClose, children, wide }: { title: ReactNode; on
         </div>
         <div className="modal-body">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.querySelector('.app') ?? document.body,
   );
 }
 
