@@ -1872,25 +1872,31 @@ tr.needs input {
   gap: 0.75rem;
   margin: 0.5rem 0;
 }
-/* Attribute boxes: a tall symbol on the left, name / die / points on the right. */
+/* Attribute boxes: name across the top, symbol and die at the same size in the
+   middle, points across the bottom. */
 .stat-strip .box.attr-stat {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  grid-template-rows: auto auto 1fr;
-  column-gap: 0.75rem;
-  align-items: start;
-  text-align: left;
+  /* The symbol and die scale with the box's width (container query units). */
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.2rem;
 }
-.attr-stat .attr-symbol {
-  grid-row: 1 / -1;
-  align-self: stretch;
+.attr-stat .box-title {
+  margin: 0;
+}
+.attr-main {
   display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  /* Sized so "symbol d12" fills the width, capped so the pinned bar stays short. */
+  --attr-size: clamp(2rem, 30cqi, 4.6rem);
 }
-.attr-stat .attr-symbol .ic {
-  width: 4.2rem;
-  height: 100%;
-  min-height: 3.6rem;
+.attr-symbol .ic {
+  width: var(--attr-size);
+  height: var(--attr-size);
   vertical-align: top;
   /* The symbols are masks, so the character's alignment gradient can fill them, flowing like the headings. */
   background: var(--heading-gradient);
@@ -1898,18 +1904,20 @@ tr.needs input {
   animation: heading-flow 8s linear infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-  .attr-stat .attr-symbol .ic {
+  .attr-symbol .ic {
     animation: none;
   }
 }
-.attr-stat .box-title,
-.attr-stat .big,
-.attr-stat .sub {
-  grid-column: 2;
-  margin: 0;
+.attr-die {
+  font-size: var(--attr-size);
+  white-space: nowrap;
+  font-weight: 700;
+  line-height: 1;
 }
-.attr-stat .big {
-  line-height: 1.1;
+.attr-stat .sub {
+  margin-top: auto;
+  width: 100%;
+  line-height: 1.25;
 }
 @media (max-width: 820px) {
   .stat-strip {
@@ -1917,9 +1925,8 @@ tr.needs input {
   }
 }
 @media (max-width: 820px) {
-  .attr-stat .attr-symbol .ic {
-    width: 2.4rem;
-    min-height: 2.4rem;
+  .attr-main {
+    --attr-size: 1.9rem;
   }
 }
 
@@ -2018,4 +2025,48 @@ tr.needs input {
   .turn-box {
     display: none;
   }
+}
+
+/* ---------- options ---------- */
+.options-btn {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.option-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+}
+.option-row input {
+  margin-top: 0.25rem;
+}
+/* Pinned top bar (wide screens): stays at the top while the sheet scrolls under it. */
+@media (min-width: 1100px) {
+  .app.pin-stats .stat-strip {
+    position: sticky;
+    top: 0;
+    z-index: 25;
+    padding: 0.5rem 0;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(6px);
+  }
+}
+.app.still-bg .prism-bg::before,
+.app.still-bg .prism-bg::after {
+  animation: none;
+}
+.app.still-gradients .sheet-header h1,
+.app.still-gradients .sheet .box-title,
+.app.still-gradients .attr-symbol .ic {
+  animation: none;
+}
+/* Longer dice like "d12+2" use a smaller font so they still fit beside the symbol. */
+.attr-die.long {
+  font-size: calc(var(--attr-size) * 0.72);
 }

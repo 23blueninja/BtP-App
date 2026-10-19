@@ -140,10 +140,12 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
       </section>
       {ATTRS.map((a) => (
         <Box key={a} title={ATTR_NAMES[a]} className="stat attr-stat">
-          <div className="attr-symbol">
-            <Icon name={a} />
+          <div className="attr-main">
+            <span className="attr-symbol">
+              <Icon name={a} />
+            </span>
+            <span className={`attr-die ${d.attrs[a].label.length > 3 ? 'long' : ''}`}>{d.attrs[a].label}</span>
           </div>
-          <div className="big">{d.attrs[a].label}</div>
           <div className="sub">
             {d.attrs[a].points} points{d.attrs[a].sources.length > 1 && ` (${d.attrs[a].sources.join(' ')})`}
             {d.attrs[a].dieNote && ` · ${d.attrs[a].dieNote}`}
