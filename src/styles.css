@@ -947,6 +947,15 @@ dl.defs dd {
 .top-stack .respond {
   flex: 1;
 }
+/* Active effects: Check Modifiers, then Temporary Effects under a divider. */
+.active-effects h4 {
+  margin: 0.2rem 0 0.4rem;
+}
+.active-effects h4 ~ h4 {
+  margin-top: 0.75rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--border);
+}
 .box.radiance {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -1016,10 +1025,14 @@ dl.defs dd {
 }
 .box-title {
   margin: 0 0 0.4rem;
-  font-size: 0.78rem;
+  /* Panel titles are the bigger heading; section headings inside (h4) the smaller. */
+  font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted);
+}
+.box h4 {
+  font-size: 0.78rem;
 }
 .box.stat {
   text-align: center;

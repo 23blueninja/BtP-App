@@ -10,7 +10,6 @@ import { ClassTableView, Equipment, WeaponTable } from './Builder';
 import { Collapsible, FacetText, go, Icon, Modal, RuleLink, Stepper, TokenText } from './common';
 import { SpellListEditor } from './pickers';
 import { CastRow } from './Cast';
-import { BulkPyramid } from './Inventory';
 import { alignmentGradient, LIGHT_TEXT } from './lightColors';
 import { PlayContext, UseButton } from './Activate';
 import { HomebrewBox } from './Homebrew';
@@ -579,17 +578,15 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             </Box>
           </div>
           <div className="col">
-            <Box title="Check modifiers">
+            {/* What's changing your rolls right now, then the temporary effects behind some of it. */}
+            <Box title="Active effects" className="active-effects">
+              <h4>Check Modifiers</h4>
               <CheckModifiers d={d} />
-            </Box>
-            <Box title="Active effects">
+              <h4>Temporary Effects</h4>
               <ActiveEffects effects={p.effects ?? []} setPlay={setPlay} />
             </Box>
             <Box title="Items & effects">
               <HomebrewBox d={d} update={update} />
-            </Box>
-            <Box title="Inventory">
-              <BulkPyramid c={c} d={d} update={update} />
             </Box>
           </div>
         </div>
