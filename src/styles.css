@@ -1845,3 +1845,26 @@ tr.needs input {
   background: #0b0c12;
   padding: 0.5rem 0;
 }
+
+/* Actions: a right-hand column on wide screens, below the sheet otherwise. */
+.sheet-layout {
+  display: grid;
+  gap: 0.75rem;
+}
+@media (min-width: 1400px) {
+  .sheet-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 24%);
+    align-items: start;
+  }
+  .sheet-actions-col {
+    position: sticky;
+    /* Below the sticky turn bar. */
+    top: 5rem;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+  }
+  .sheet-actions-col .actions-table th:nth-child(3),
+  .sheet-actions-col .actions-table td:nth-child(3) {
+    display: none;
+  }
+}
