@@ -226,7 +226,7 @@ function TurnBar({
     });
   const end = () =>
     update((x) => {
-      const r = endTurn(x.play);
+      const r = endTurn(x.play, derive(x).conditionImmunities.map((i) => i.name));
       onLog(r.log, x.play);
       return { ...x, play: clampPlay(r.play, derive(x)) };
     });
@@ -730,7 +730,14 @@ function Conditions({ p, d, setPlay }: { p: PlayState; d: Derived; setPlay: (fn:
           disabled={!pick || immune.has(pick)}
           onClick={() => {
             const def = conditionDefs.find((x) => x.name === pick);
-            setPlay((x) => addCondition(x, pick, def?.leveled ? 1 : undefined));
+            setPlay((x) =>
+              addCondition(x, pick, def?.leveled ? 1 : undefined, {
+                resistances: d.resistances,
+                immune: d.damageImmunities.map((i) => i.type),
+                immuneConditions: [...immune],
+                vitalityMax: d.vitalityMax,
+              }),
+            );
             setPick('');
           }}
         >
@@ -907,6 +914,7 @@ function ActionTable({ title, actions }: { title: string; actions: typeof basicA
   return (
     <>
       <h4>{title}</h4>
+      <div className="table-wrap">
       <table className="actions-table">
         <thead>
           <tr>
@@ -935,6 +943,7 @@ function ActionTable({ title, actions }: { title: string; actions: typeof basicA
           ))}
         </tbody>
       </table>
+      </div>
     </>
   );
 }

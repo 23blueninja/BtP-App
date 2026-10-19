@@ -449,9 +449,10 @@ describe('containers (backpacks with their own pyramid)', async () => {
     expect(l.rows[1].slots.filter((s) => s.item).length).toBe(2);
     expect(layoutBulk(g.person, 0).rows[0].slots[0].item?.id).toBe('p');
   });
-  it('contents of a removed container fall back to you; stored items ignore Powerful Build', () => {
+  it('contents of a removed container fall back to you; container contents ignore Powerful Build', () => {
     expect(groupInventory([rope, torch]).person.map((i) => i.id)).toEqual(['r', 't']);
-    expect(effectiveBulk(rope, 1)).toBe(2);
     expect(effectiveBulk(torch, 1)).toBe(4);
+    // Rope (Bulk 2) stays in the Bulk 2 row of the backpack's pyramid.
+    expect(layoutContainer([rope]).rows[1].slots.filter((s) => s.item).length).toBe(2);
   });
 });

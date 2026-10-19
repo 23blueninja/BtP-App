@@ -1755,7 +1755,7 @@ Your mind is taken by chaotic forces, and you suffer the below effects.
 {{left
 **Frenzy** :: You must make at least one Attack Check on your turn, and any Attacks you make must target one of the creatures closest to you, chosen at random.
 **Madness** :: You can only cast spells that costs 3 $[AP] or less and deal damage.
-**Psychosis** :: You take 2X Infernal damage at the start of your turn.
+**Psychosis** :: You take 2X Chthonic damage at the start of your turn.
 }}
 
 At the end of your turn, make a $[PRS] Save Check against a DC of 10 plus X.
@@ -8567,7 +8567,7 @@ Hands clasped and eyes closed, you sing a hymn of night to beckon blessed sleep.
 
 #### Whirling Frost
 *Frost Evocation, 1st-level*
-**Cast Time** 3 :: $[AP]
+**Cast Time** :: 3 $[AP]
 **Range** :: Self, 2-space emanation
 **Components** :: Spoken, Two Hands
 **Duration** :: Instant

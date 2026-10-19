@@ -10,7 +10,7 @@ export interface ApCost {
   resources: { name: string; amount: number }[];
 }
 
-const RESOURCES = ['Prisma', 'Radiance', 'Favor', 'Will', 'Stamina', 'Light', 'Wonder', 'Vitality'];
+const RESOURCES = ['Prisma', 'Radiance', 'Favor', 'Will', 'Stamina', 'Light', 'Wonder', 'Vitality', 'Blood'];
 
 export function parseCost(text: string | undefined): ApCost {
   const t = (text ?? '').replace(/<[^>]+>/g, ' ');
@@ -21,7 +21,8 @@ export function parseCost(text: string | undefined): ApCost {
   const fixed = t.match(/(\d+)\s*\{AP\}/);
   if (range) cost.ap = { min: Number(range[1]), max: Number(range[2]) };
   else if (fixed) cost.ap = Number(fixed[1]);
-  else if (/Varies/i.test(t)) cost.ap = { min: 1, max: 5 };
+  // A cast lasting minutes or longer isn't paid in AP.
+  else if (/Varies/i.test(t) && !/minute|hour/i.test(t)) cost.ap = { min: 1, max: 5 };
   return withResources(cost, t);
 }
 

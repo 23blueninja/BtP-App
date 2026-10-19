@@ -107,7 +107,9 @@ export const ACTIVATIONS: ActivationDef[] = [
       const ops: Op[] = [];
       if (x.outcome === 'Success' || x.outcome === 'Deadly Success') {
         const b = x.sl + (x.outcome === 'Deadly Success' ? 1 : 0);
-        ops.push({ kind: 'effect', effect: { name: `Feint ${b}`, ends: 'endOfTurn', notes: [`Attack Checks against the target are Bolstered ${b}${x.sl >= 3 && x.outcome === 'Deadly Success' ? ' and have Advantage' : ''}.`] } });
+        // Exalted (3rd): Advantage on a Deadly Success; (4th): on any Success.
+        const advantage = x.sl >= 4 || (x.sl >= 3 && x.outcome === 'Deadly Success');
+        ops.push({ kind: 'effect', effect: { name: `Feint ${b}`, ends: 'endOfTurn', notes: [`Attack Checks against the target are Bolstered ${b}${advantage ? ' and have Advantage' : ''}.`] } });
         if (x.sl >= 5) ops.push({ kind: 'tempAp', amount: 2 }, { kind: 'note', text: 'The 2 temporary AP can only be used to Strike the target.' });
       } else if (x.outcome === 'Failure') ops.push({ kind: 'note', text: 'Your next Attack Check against the target costs 1 less AP.' });
       return ops;
@@ -234,7 +236,8 @@ export const ACTIVATIONS: ActivationDef[] = [
         effect: {
           name: `Invigorate ${x.sl}`,
           ends: 'manual',
-          checks: [{ attrs: ['VIG'], bolstered: 1 }],
+          // Exalted (+2): Bolstered an additional level every 2 levels above 1st.
+          checks: [{ attrs: ['VIG'], bolstered: 1 + Math.floor((x.sl - 1) / 2) }],
           tempEnduranceEachTurn: 2 * x.sl,
           notes: [`High Jump +${x.sl}, Long Jump +${2 * x.sl}; standing Long Jump of ${x.sl + 1} spaces.`, 'Sustained, 10 minutes.'],
         },
@@ -314,7 +317,8 @@ export const ACTIVATIONS: ActivationDef[] = [
   {
     id: 'classes/incarnate/primeval-light',
     label: 'Primeval Force',
-    effects: (x) => [{ kind: 'tempEndurance', amount: x.points.PRS }],
+    // Temporary Endurance equal to your PRS Points (none when they're negative).
+    effects: (x) => [{ kind: 'tempEndurance', amount: Math.max(0, x.points.PRS) }],
   },
   {
     id: 'classes/luminary/shining-soul',
@@ -456,7 +460,7 @@ export function apCost(req: UseRequest, p: PlayState, d: Derived, chosen?: numbe
     total += prior;
     parts.push(`+${prior} CAP`);
   }
-  const stunned = req.cost.reaction ? activeConditions(p).find((c) => c.name === 'Stunned') : undefined;
+  const stunned = req.cost.reaction ? activeConditions(p, d.conditionImmunities.map((x) => x.name)).find((c) => c.name === 'Stunned') : undefined;
   if (stunned) {
     total += stunned.level;
     parts.push(`+${stunned.level} Stunned`);
