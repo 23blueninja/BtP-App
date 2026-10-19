@@ -1875,6 +1875,8 @@ tr.needs input {
 /* Attribute boxes: name across the top, symbol and die at the same size in the
    middle, points across the bottom. */
 .stat-strip .box.attr-stat {
+  /* The symbol and die scale with the box's width (container query units). */
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1888,8 +1890,9 @@ tr.needs input {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
-  --attr-size: 3.4rem;
+  gap: 0.5rem;
+  /* Sized so "symbol d12" fills the width, capped so the pinned bar stays short. */
+  --attr-size: clamp(2rem, 30cqi, 4.6rem);
 }
 .attr-symbol .ic {
   width: var(--attr-size);
@@ -1907,6 +1910,7 @@ tr.needs input {
 }
 .attr-die {
   font-size: var(--attr-size);
+  white-space: nowrap;
   font-weight: 700;
   line-height: 1;
 }
@@ -2061,4 +2065,8 @@ tr.needs input {
 .app.still-gradients .sheet .box-title,
 .app.still-gradients .attr-symbol .ic {
   animation: none;
+}
+/* Longer dice like "d12+2" use a smaller font so they still fit beside the symbol. */
+.attr-die.long {
+  font-size: calc(var(--attr-size) * 0.72);
 }

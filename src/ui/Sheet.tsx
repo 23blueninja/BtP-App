@@ -144,7 +144,7 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
             <span className="attr-symbol">
               <Icon name={a} />
             </span>
-            <span className="attr-die">{d.attrs[a].label}</span>
+            <span className={`attr-die ${d.attrs[a].label.length > 3 ? 'long' : ''}`}>{d.attrs[a].label}</span>
           </div>
           <div className="sub">
             {d.attrs[a].points} points{d.attrs[a].sources.length > 1 && ` (${d.attrs[a].sources.join(' ')})`}
