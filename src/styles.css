@@ -258,9 +258,14 @@ ul.plain li {
 main {
   flex: 1;
   width: 100%;
-  max-width: 1280px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 1rem 1.5rem;
+}
+/* Long rules text stays readable on wide screens; the boxes around it use the full width. */
+.ref-body .rules > p,
+.ref-body .rules > ul,
+.ref-body .rules > dl {
+  max-width: 90ch;
 }
 .footer {
   text-align: center;
@@ -838,7 +843,7 @@ dl.defs dd {
 .top-row {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: 110px minmax(200px, 1.6fr) minmax(220px, 1.4fr) 90px 100px 100px;
+  grid-template-columns: minmax(110px, 0.45fr) minmax(200px, 1.6fr) minmax(220px, 1.4fr) minmax(90px, 0.35fr) minmax(100px, 0.45fr) minmax(100px, 0.55fr);
   gap: 0.75rem;
 }
 .wide-row {
