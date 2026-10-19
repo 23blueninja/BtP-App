@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { basicActions, conditions as conditionDefs, getNode, getCastable, type RuleNode } from '../content';
 import { ancestryById } from '../data/ancestries';
-import { ATTRS, ATTR_NAMES, RANK_DIE } from '../data/types';
+import { ATTRS, ATTR_NAMES, RANK_DIE, type Light } from '../data/types';
 import { newId, type Character, type Experience, type PlayState, type SessionNote } from '../engine/character';
 import { derive, type Derived } from '../engine/derive';
 import { clampPlay, facetUseMax, heal, longRest, shortRest, takeDamage } from '../engine/play';
@@ -11,7 +11,7 @@ import { Collapsible, FacetText, go, Icon, Modal, RuleLink, Stepper, TokenText }
 import { SpellListEditor } from './pickers';
 import { CastRow } from './Cast';
 import { BulkPyramid } from './Inventory';
-import { alignmentGradient } from './lightColors';
+import { alignmentGradient, LIGHT_TEXT } from './lightColors';
 import { PlayContext, UseButton } from './Activate';
 import { HomebrewBox } from './Homebrew';
 import { actionRequest, activationsFor, ACTIVATIONS } from '../engine/activations';
@@ -315,6 +315,25 @@ function Box({ title, children, className = '' }: { title: React.ReactNode; chil
   );
 }
 
+/** Each Personal Alignment response is coloured like the Light it leans toward. */
+const RESPONSE_LIGHT: Record<string, Light> = {
+  Patience: 'Frost',
+  Action: 'Flame',
+  Reason: 'Pneuma',
+  Instinct: 'Soma',
+  Apathy: 'Mordant',
+  Empathy: 'Velvet',
+};
+
+function Response({ value }: { value: string }) {
+  const light = RESPONSE_LIGHT[value];
+  return (
+    <strong style={light ? { color: LIGHT_TEXT[light] } : undefined} title={light}>
+      {value || '—'}
+    </strong>
+  );
+}
+
 /** A stat panel that opens its breakdown (where the number comes from) in a modal. */
 function StatBox({ title, value, display, className = '', children }: { title: string; value: React.ReactNode; display?: React.ReactNode; className?: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -427,9 +446,9 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             </Box>
             <Box title="I respond to new…" className="respond">
               <ul className="plain">
-                <li>Situations with <strong>{al.situations || '—'}</strong></li>
-                <li>Problems with <strong>{al.problems || '—'}</strong></li>
-                <li>People with <strong>{al.people || '—'}</strong></li>
+                <li>Situations with <Response value={al.situations} /></li>
+                <li>Problems with <Response value={al.problems} /></li>
+                <li>People with <Response value={al.people} /></li>
               </ul>
             </Box>
           </div>
