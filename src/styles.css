@@ -2157,7 +2157,7 @@ tr.needs input {
 .app.glass {
   --glass-fill: linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.025) 45%, rgba(255, 255, 255, 0.05));
   --glass-tint: rgba(60, 64, 80, 0.07);
-  --glass-blur: blur(18px) saturate(165%);
+  --glass-blur: blur(5px) saturate(165%);
 }
 .app.glass .box,
 .app.glass .builder-content,
