@@ -353,6 +353,19 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
                 Heal
               </button>
             </div>
+            <div className="end-vitality">
+              <div className="row between">
+                <span>Vitality</span>
+                {/* Restoring Vitality ends Dying. */}
+                <Pips total={d.vitalityMax} used={d.vitalityMax - p.vitality} onChange={(u) => setPlay((x) => { const v = d.vitalityMax - u; return { ...x, vitality: v, dying: v > x.vitality ? 0 : x.dying }; })} label="Vitality" />
+              </div>
+              <div className="row between">
+                <span>
+                  <RuleLink id="beyond-the-prism/endurance-and-vitality/dying">Dying</RuleLink>
+                </span>
+                <Stepper label="Dying" value={p.dying} min={0} onChange={(v) => setPlay((x) => ({ ...x, dying: v }))} />
+              </div>
+            </div>
           </section>
           <Box title="I respond to new…" className="respond">
             <ul className="plain">
@@ -387,29 +400,17 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
         </div>
 
         <div className="col">
-            <Box title="Vitality & Radiance">
-            <div className="row between">
-              <span>Vitality</span>
-              <Stepper label="Vitality" value={p.vitality} min={0} max={d.vitalityMax} onChange={(v) => setPlay((x) => ({ ...x, vitality: v, dying: v > x.vitality ? 0 : x.dying }))} />
-              <span className="muted">/ {d.vitalityMax}</span>
-            </div>
-            <div className="row between">
-              <span>Rest Charges</span>
-              <Pips total={d.restCharges} used={p.restChargesSpent} onChange={(u) => setPlay((x) => ({ ...x, restChargesSpent: u }))} label="Rest Charge" />
-            </div>
+          <Box title="Radiance">
             <div className="row between">
               <span>Radiance</span>
               <Pips total={d.radianceMax} used={p.radianceSpent} onChange={(u) => setPlay((x) => ({ ...x, radianceSpent: u }))} label="Radiance" />
             </div>
-            <div className="row between">
-              <span>
-                <RuleLink id="beyond-the-prism/endurance-and-vitality/dying">Dying</RuleLink>
-              </span>
-              <Stepper label="Dying" value={p.dying} min={0} onChange={(v) => setPlay((x) => ({ ...x, dying: v }))} />
-            </div>
-            {d.slashingVulnerability && <p className="small muted">Unarmored Slashing Vulnerability: {d.slashingVulnerability}</p>}
           </Box>
           <Box title="Rest">
+            <div className="row between">
+              <span>Rest Charges</span>
+              <Pips total={d.restCharges} used={p.restChargesSpent} onChange={(u) => setPlay((x) => ({ ...x, restChargesSpent: u }))} label="Rest Charge" />
+            </div>
             <label className="inline small">
               <input type="checkbox" checked={useCharge} onChange={(e) => setUseCharge(e.target.checked)} /> Spend a Rest Charge on Short Rest
             </label>

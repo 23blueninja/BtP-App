@@ -995,6 +995,14 @@ dl.defs dd {
   width: 100%;
   margin: 0.35rem 0;
 }
+.end-vitality {
+  margin-top: 0.5rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
 .end-buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
