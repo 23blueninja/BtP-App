@@ -131,3 +131,29 @@ describe('activations', () => {
     expect(shortRest({ ...c, play: r.play }, d, { spendRestCharge: false }).play.facetUses[key]).toBe(0);
   });
 });
+
+describe('casting debts', () => {
+  const evoke = 'classes/thaumaturge/thaumaturgy/casting-spells/evoke';
+  const prismacast = 'classes/arcanist/prismacasting/casting-spells/prismacast';
+  const use = (c: Character, id: string, sl: number, ap = 2) => {
+    const d = derive(c);
+    const node = getNode(id)!;
+    return performUse(c, d, actionRequest(d, id, node.title, node.fields?.Cost, activationsFor(id)[0]), { amount: sl, ap });
+  };
+  it('Evoke spends {SL} Favor and makes you Indebted 2{SL}, keeping the higher level', () => {
+    const c = build({ classId: 'thaumaturge', level: 5 });
+    const r = use(c, evoke, 3);
+    expect(r.play.trackers.Indebted).toBe(6);
+    expect(r.play.resources.Favor).toBe(3);
+    expect(r.play.ap).toBe(3);
+    // A lower level doesn't add to it.
+    expect(use({ ...c, play: r.play }, evoke, 1).play.trackers.Indebted).toBe(6);
+  });
+  it('Prismacast makes you Prismaburned {SL}, which drops by 1 at the start of your turn', () => {
+    const c = build({ classId: 'arcanist', level: 5 });
+    const r = use(c, prismacast, 2);
+    expect(r.play.trackers.Prismaburn).toBe(2);
+    expect(use({ ...c, play: r.play }, prismacast, 1).play.trackers.Prismaburn).toBe(2);
+    expect(startTurn(r.play, 5, []).play.trackers.Prismaburn).toBe(1);
+  });
+});

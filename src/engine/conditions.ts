@@ -419,6 +419,13 @@ export function startTurn(p: PlayState, level: number, resistances: { type: stri
       }
     }
   }
+  // Class trackers that behave like Conditions.
+  let trackers = p.trackers;
+  if ((trackers.Prismaburn ?? 0) > 0) {
+    trackers = { ...trackers, Prismaburn: trackers.Prismaburn - 1 };
+    log.push(`Prismaburned reduced to ${trackers.Prismaburn}.`);
+  }
+  if ((trackers.Indebted ?? 0) > 0) log.push(`Indebted ${trackers.Indebted}: roll your Miracle Die; if it's higher than ${trackers.Indebted}, Indebted ends.`);
   if (conditions.some((c) => c.name === 'Buffeted')) {
     conditions = conditions.filter((c) => c.name !== 'Buffeted');
     log.push('Buffeted ended.');
@@ -447,7 +454,7 @@ export function startTurn(p: PlayState, level: number, resistances: { type: stri
     }
   }
   if (!log.length) log.push('Your turn begins.');
-  return { play: { ...p, conditions, effects, tempEndurance, turn: { active: true, noApRegain } }, log, damage };
+  return { play: { ...p, conditions, effects, trackers, tempEndurance, turn: { active: true, noApRegain } }, log, damage };
 }
 
 /** End of your turn: regain AP, temporary AP disappears, and Conditions that tick down do. */

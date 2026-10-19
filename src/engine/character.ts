@@ -86,6 +86,8 @@ export type HomebrewEffect =
   | { kind: 'ac'; amount: number }
   | { kind: 'resistance'; type: string; amount: number }
   | { kind: 'immunity'; damage?: string; condition?: string }
+  /** +1 Alignment level in a Light (always applies while the entry is active; tiers can't gate it). */
+  | { kind: 'alignment'; light: Light }
   | { kind: 'vulnerability'; type: string; dice: string }
   /** Bolstered (positive) or Hindered (negative): all of an Attribute's Checks, its Saves, its Attribute Checks, Attack Checks, or custom text. */
   | { kind: 'check'; scope: 'all' | 'save' | 'attribute' | 'attack' | 'custom'; attr?: Attr; text?: string; amount: number }
@@ -121,7 +123,8 @@ export interface HomebrewPool {
 /** A homebrew item (or a boon/curse when kind is 'effect') given by the PM. */
 export interface HomebrewEntry {
   id: string;
-  kind: 'item' | 'effect';
+  /** Facets are permanent and always active (shown on the Facets tab). */
+  kind: 'item' | 'effect' | 'facet';
   name: string;
   subtitle?: string;
   description?: string;

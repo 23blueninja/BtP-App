@@ -175,3 +175,19 @@ describe('immunities and vulnerabilities', () => {
     expect(d.vulnerabilities).toEqual([{ type: 'Arctic', dice: '1d6', source: 'Ward' }]);
   });
 });
+
+describe('homebrew facets', () => {
+  const boon: HomebrewEntry = { id: 'f', kind: 'facet', name: 'Boon of Frost', rows: [{ id: '1', effect: { kind: 'alignment', light: 'Frost' } }] };
+  it('a facet can raise an Alignment level, which also raises item tiers', () => {
+    const base = derive(build({ classId: 'expert', homebrew: [chains] }));
+    const d = derive(build({ classId: 'expert', homebrew: [chains, boon] }));
+    const frost = (x: typeof d) => x.alignment.find((a) => a.light === 'Frost')?.level ?? 0;
+    expect(frost(d)).toBe(frost(base) + 1);
+    expect(d.alignment.find((a) => a.light === 'Frost')?.sources).toContain('Boon of Frost');
+    expect(d.homebrew.find((h) => h.entry.id === 'chains')!.tier).toBe(base.homebrew[0].tier + 1);
+  });
+  it('facets are permanent: a Long Rest leaves them', () => {
+    const c = build({ homebrew: [boon] });
+    expect(longRest(c, derive(c)).homebrew).toEqual([boon]);
+  });
+});

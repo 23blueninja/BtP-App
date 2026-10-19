@@ -85,7 +85,7 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
           ))}
         </div>
         {tab === 'Sheet' && <MainSheet c={c} d={d} update={update} setPlay={setPlay} onRest={(lines) => setLog({ lines })} />}
-        {tab === 'Facets' && <Facets c={c} d={d} setPlay={setPlay} />}
+        {tab === 'Facets' && <Facets c={c} d={d} setPlay={setPlay} update={update} />}
         {tab === 'Spells & Maneuvers' && <SpellsTab c={c} d={d} setPlay={setPlay} />}
         {tab === 'Equipment' && <Equipment c={c} d={d} update={update} />}
         {tab === 'Notes' && <Notes c={c} update={update} />}
@@ -1010,7 +1010,7 @@ function ActiveEffects({ effects, setPlay }: { effects: ActiveEffect[]; setPlay:
   );
 }
 
-function Facets({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: (p: PlayState) => PlayState) => void }) {
+function Facets({ c, d, setPlay, update }: { c: Character; d: Derived; setPlay: (fn: (p: PlayState) => PlayState) => void; update: Update }) {
   const groups = [...new Set(d.facets.map((f) => f.source))];
   return (
     <div className="features">
@@ -1073,6 +1073,11 @@ function Facets({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: (p:
             </section>
           );
         })}
+      {/* Facets your PM grants beyond your class and ancestry (e.g. one that raises an Alignment). */}
+      <section className="box">
+        <h3 className="box-title">Homebrew facets</h3>
+        <HomebrewBox d={d} update={update} facets />
+      </section>
     </div>
   );
 }

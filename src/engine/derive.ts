@@ -29,7 +29,7 @@ import {
 } from '../data/types';
 import type { Character } from './character';
 import { CONDITION_DAMAGE_TYPE, conditionEffects, describeCheck, type ConditionEffects } from './conditions';
-import { resolveHomebrew, type ResolvedHomebrew } from './homebrew';
+import { homebrewAlignments, resolveHomebrew, type ResolvedHomebrew } from './homebrew';
 import type { DieRef, RestRule } from '../data/types';
 import {
   classAlignment,
@@ -311,6 +311,7 @@ export function derive(c: Character): Derived {
     if (l) align.set(l, [...(align.get(l) ?? []), source]);
   };
   eff('alignment').forEach((x, i) => addAlign(x.e.light, x.source, `effect:${x.source}:${i}`));
+  homebrewAlignments(c).forEach((x) => addAlign(x.light, x.source, `homebrew:${x.source}`));
   if (cls) addAlign(classAlignment(cls), cls.name, 'class');
   const { situations, problems, people } = c.alignment;
   if (situations && problems && people) {
