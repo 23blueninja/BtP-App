@@ -1,4 +1,6 @@
 :root {
+  /* Slightly rounded corners for buttons, inputs, chips and toggles. */
+  --control-radius: 4px;
   /* Always dark, like the rulebook; panels are slightly translucent so the
      prism grid shows around and faintly behind them. */
   --bg: #000;
@@ -53,7 +55,7 @@ textarea {
 button {
   background: var(--panel-2);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--control-radius);
   padding: 0.4em 0.85em;
   cursor: pointer;
 }
@@ -99,7 +101,7 @@ select,
 textarea {
   background: var(--bg-2);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--control-radius);
   padding: 0.4em 0.6em;
   max-width: 100%;
 }
@@ -135,7 +137,7 @@ button:focus-visible {
   font-weight: 600;
   padding: 0.1em 0.5em;
   margin-left: 0.4em;
-  border-radius: 999px;
+  border-radius: var(--control-radius);
   background: var(--panel-2);
   border: 1px solid var(--border);
   color: var(--muted);
@@ -340,7 +342,7 @@ main {
   place-items: center;
   width: 1.4em;
   height: 1.4em;
-  border-radius: 50%;
+  border-radius: var(--control-radius);
   background: var(--panel-2);
   font-size: 0.8em;
   margin-right: 0.2em;
@@ -506,7 +508,7 @@ legend {
   width: 1.9em;
   height: 1.9em;
   padding: 0;
-  border-radius: 50%;
+  border-radius: var(--control-radius);
 }
 .stepper-value {
   min-width: 1.8em;
@@ -562,7 +564,7 @@ th {
   gap: 0.35rem !important;
   padding: 0.35rem 0.7rem;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--control-radius);
   font-weight: 400 !important;
   cursor: pointer;
 }
@@ -602,7 +604,7 @@ th {
   align-items: center;
   gap: 0.3em;
   padding: 0.15em 0.6em;
-  border-radius: 999px;
+  border-radius: var(--control-radius);
   background: var(--panel-2);
   border: 1px solid var(--border);
   font-size: 0.85em;
@@ -628,7 +630,7 @@ th {
 .pill-btn {
   display: inline-block;
   padding: 0.15em 0.7em;
-  border-radius: 999px;
+  border-radius: var(--control-radius);
   border: 1px solid var(--accent);
   color: var(--accent);
   font-size: 0.85em;
@@ -1204,7 +1206,7 @@ b.calc {
 .view-toggle {
   display: inline-flex;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--control-radius);
   overflow: hidden;
   margin: 0.2rem 0 0.4rem;
 }
@@ -1692,7 +1694,7 @@ tr.needs input {
   height: 1.25rem;
   margin-left: 0.3rem;
   padding: 0 0.3rem;
-  border-radius: 999px;
+  border-radius: var(--control-radius);
   background: var(--warn);
   color: #000;
   font-size: 0.72rem;
@@ -1866,7 +1868,7 @@ tr.needs input {
 /* Class Bonus, Class Die and Attributes across the top of the sheet. */
 .stat-strip {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 0.8fr)) repeat(5, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.1fr) repeat(5, minmax(0, 1fr)) minmax(0, 1.2fr);
   gap: 0.75rem;
   margin: 0.5rem 0;
 }
@@ -1918,5 +1920,102 @@ tr.needs input {
   .attr-stat .attr-symbol .ic {
     width: 2.4rem;
     min-height: 2.4rem;
+  }
+}
+
+/* Class Bonus / Class Die: two triangles, like one box sliced along its diagonal.
+   The shapes are an SVG so the borders follow the slant. */
+.split-box {
+  position: relative;
+  min-height: 7.6rem;
+}
+.split-shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.split-shape polygon {
+  fill: var(--panel);
+  stroke: var(--box-border);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.split-a,
+.split-b {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+}
+.split-a {
+  top: 0.65rem;
+  left: 0.8rem;
+}
+.split-b {
+  right: 0.9rem;
+  bottom: 0.6rem;
+  align-items: flex-end;
+}
+.split-box .box-title {
+  margin: 0;
+}
+.split-box .big {
+  font-size: 2.2rem;
+  line-height: 1.1;
+}
+.split-a .big {
+  margin-top: 0.2rem;
+}
+
+/* AP box at the end of the strip: bubbles stacked vertically beside the controls. */
+.turn-box-body {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: start;
+}
+.turn-pips-v .pips {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 0.2rem;
+}
+.turn-pips-v .pip {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+.turn-box-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.turn-box-controls .turn-temp {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.turn-box-buttons {
+  display: flex;
+  gap: 0.35rem;
+}
+.turn-box-buttons button,
+.turn-box-controls > button {
+  flex: 1;
+  padding: 0.3rem 0.5rem;
+  white-space: nowrap;
+}
+.turn-box.my-turn {
+  border-color: var(--accent-2);
+  box-shadow: 0 0 0 1px var(--accent-2) inset;
+}
+@media (min-width: 1100px) {
+  .sheet > .turn-bar {
+    display: none;
+  }
+}
+@media (max-width: 1099px) {
+  .turn-box {
+    display: none;
   }
 }
