@@ -911,7 +911,6 @@ dl.defs dd {
   /* The last row takes any extra height, so a tall side column doesn't stretch the top row. */
   grid-template-rows: auto auto 1fr;
   gap: 0.75rem;
-  container-type: inline-size;
 }
 .top-row {
   display: contents;
@@ -929,26 +928,18 @@ dl.defs dd {
   grid-column: 1 / 4;
   min-width: 0;
 }
+/* Below Weapons: two panel columns, the third set of panels under the second. */
 .main-cols {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
   align-items: start;
 }
-/* Three panel columns only when each gets a useful width (e.g. beside Actions at 1400px, two). */
-@container (max-width: 1080px) {
-  .main-cols {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.main-cols > .col:nth-child(1) {
+  grid-row: 1 / span 2;
 }
-/* With two panel columns, the third set of panels goes under the second. */
-@container (max-width: 1080px) {
-  .main-cols > .col:nth-child(1) {
-    grid-row: 1 / span 2;
-  }
-  .main-cols > .col:nth-child(3) {
-    grid-column: 2;
-  }
+.main-cols > .col:nth-child(3) {
+  grid-column: 2;
 }
 /* Panels stacked in one top-row column (Radiance over "I respond to new…"). */
 .top-stack {
@@ -1311,15 +1302,6 @@ input.num {
   .wide-row,
   .main-cols {
     grid-column: 1 / -1;
-  }
-  .main-cols {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .main-cols > .col:nth-child(1) {
-    grid-row: 1 / span 2;
-  }
-  .main-cols > .col:nth-child(3) {
-    grid-column: 2;
   }
 }
 @media (max-width: 820px) {
