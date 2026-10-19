@@ -59,7 +59,10 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
             )}
           </div>
         </header>
-        <StatStrip d={d} />
+        <StatStrip d={d}>
+          <TurnBar c={c} d={d} update={update} setPlay={setPlay} onLog={onLog} compact />
+        </StatStrip>
+        {/* Narrower screens keep the full-width sticky bar instead of the box in the strip. */}
         <TurnBar c={c} d={d} update={update} setPlay={setPlay} onLog={onLog} />
         {d.issues.length > 0 && (
           <details className="issues banner">
@@ -117,15 +120,24 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
 }
 
 /** Class Bonus, Class Die and the five Attributes, across the top of every tab. */
-function StatStrip({ d }: { d: Derived }) {
+function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) {
   return (
     <div className="stat-strip">
-      <Box title={d.cls ? `${d.cls.name} Bonus` : 'Class Bonus'} className="stat">
-        <div className="big">+{d.classBonus}</div>
-      </Box>
-      <Box title={d.classDieName} className="stat">
-        <div className="big">{d.classDie || '—'}</div>
-      </Box>
+      {/* Class Bonus and Class Die: one box sliced along its diagonal. */}
+      <section className="split-box">
+        <svg className="split-shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
+          <polygon points="0,0 93,0 0,91" />
+          <polygon points="100,9 100,100 7,100" />
+        </svg>
+        <div className="split-a">
+          <h3 className="box-title">{d.cls ? `${d.cls.name} Bonus` : 'Class Bonus'}</h3>
+          <div className="big">+{d.classBonus}</div>
+        </div>
+        <div className="split-b">
+          <div className="big">{d.classDie || '—'}</div>
+          <h3 className="box-title">{d.classDieName}</h3>
+        </div>
+      </section>
       {ATTRS.map((a) => (
         <Box key={a} title={ATTR_NAMES[a]} className="stat attr-stat">
           <div className="attr-symbol">
@@ -138,68 +150,112 @@ function StatStrip({ d }: { d: Derived }) {
           </div>
         </Box>
       ))}
+      {children}
     </div>
   );
 }
 
 /** AP tracker and Start/End Turn, kept at the top of the sheet. */
-function TurnBar({ c, d, update, setPlay, onLog }: { c: Character; d: Derived; update: Update; setPlay: (fn: (p: PlayState) => PlayState) => void; onLog: (lines: string[], undo?: PlayState) => void }) {
+function TurnBar({
+  c,
+  d,
+  update,
+  setPlay,
+  onLog,
+  compact,
+}: {
+  c: Character;
+  d: Derived;
+  update: Update;
+  setPlay: (fn: (p: PlayState) => PlayState) => void;
+  onLog: (lines: string[], undo?: PlayState) => void;
+  /** Desktop: a box at the end of the stat strip, with the AP bubbles stacked vertically. */
+  compact?: boolean;
+}) {
   const p = c.play;
   const ap = p.ap ?? AP_MAX;
   const myTurn = !!p.turn?.active;
   const blocked = d.conditionFx.active.find((x) => x.name === 'Paralyzed' || x.name === 'Unconscious' || x.name === 'Stunned');
+  const start = () =>
+    update((x) => {
+      const dx = derive(x);
+      const r = startTurn(x.play, dx.level, dx.resistances);
+      let play = r.play;
+      for (const dmg of r.damage) play = takeDamage(play, dmg.amount, dx);
+      onLog(r.log, x.play);
+      return { ...x, play: clampPlay(play, dx) };
+    });
+  const end = () =>
+    update((x) => {
+      const r = endTurn(x.play);
+      onLog(r.log, x.play);
+      return { ...x, play: clampPlay(r.play, derive(x)) };
+    });
+  const initiative = () => setPlay((x) => ({ ...x, ap: AP_MAX, tempAp: 0, turn: { active: false } }));
+  const pips = <Pips total={AP_MAX} used={AP_MAX - Math.min(ap, AP_MAX)} onChange={(u) => setPlay((x) => ({ ...x, ap: AP_MAX - u }))} label="AP" />;
+  const temp = <Stepper label="Temporary AP" value={p.tempAp ?? 0} min={0} onChange={(v) => setPlay((x) => ({ ...x, tempAp: v }))} />;
+  const warn = blocked && (
+    <p className="turn-warn small">
+      {blocked.name}: {CONDITION_RULES[blocked.name].ap?.(blocked.level)}
+    </p>
+  );
+  if (compact) {
+    return (
+      <section className={`box turn-box ${myTurn ? 'my-turn' : ''}`} aria-label="Turn">
+        <h3 className="box-title">
+          AP {ap}/{AP_MAX}
+        </h3>
+        <div className="turn-box-body">
+          <div className="turn-pips-v">{pips}</div>
+          <div className="turn-box-controls">
+            <span className="turn-temp">
+              <span className="muted small">Temp</span>
+              {temp}
+            </span>
+            <div className="turn-box-buttons">
+              <button type="button" className={myTurn ? '' : 'primary'} disabled={myTurn} onClick={start}>
+                ▶ Start
+              </button>
+              <button type="button" className={myTurn ? 'primary' : ''} disabled={!myTurn} onClick={end}>
+                ■ End
+              </button>
+            </div>
+            <button type="button" title="Rolling Initiative refills your AP" onClick={initiative}>
+              Initiative {d.initiative}
+            </button>
+          </div>
+        </div>
+        {warn}
+      </section>
+    );
+  }
   return (
     <section className={`turn-bar box ${myTurn ? 'my-turn' : ''}`} aria-label="Turn">
       <div className="turn-ap">
         <span className="turn-label">
           <Icon name="AP" /> AP
         </span>
-        <Pips total={AP_MAX} used={AP_MAX - Math.min(ap, AP_MAX)} onChange={(u) => setPlay((x) => ({ ...x, ap: AP_MAX - u }))} label="AP" />
+        {pips}
         <span className="turn-count">
           {ap}/{AP_MAX}
         </span>
         <span className="turn-temp">
           <span className="muted small">Temp</span>
-          <Stepper label="Temporary AP" value={p.tempAp ?? 0} min={0} onChange={(v) => setPlay((x) => ({ ...x, tempAp: v }))} />
+          {temp}
         </span>
       </div>
       <div className="turn-buttons">
-        <button
-          type="button"
-          className={myTurn ? '' : 'primary'}
-          disabled={myTurn}
-          onClick={() =>
-            update((x) => {
-              const dx = derive(x);
-              const r = startTurn(x.play, dx.level, dx.resistances);
-              let play = r.play;
-              for (const dmg of r.damage) play = takeDamage(play, dmg.amount, dx);
-              onLog(r.log, x.play);
-              return { ...x, play: clampPlay(play, dx) };
-            })
-          }
-        >
+        <button type="button" className={myTurn ? '' : 'primary'} disabled={myTurn} onClick={start}>
           ▶ Start Turn
         </button>
-        <button
-          type="button"
-          className={myTurn ? 'primary' : ''}
-          disabled={!myTurn}
-          onClick={() =>
-            update((x) => {
-              const r = endTurn(x.play);
-              onLog(r.log, x.play);
-              return { ...x, play: clampPlay(r.play, derive(x)) };
-            })
-          }
-        >
+        <button type="button" className={myTurn ? 'primary' : ''} disabled={!myTurn} onClick={end}>
           ■ End Turn
         </button>
-        <button type="button" title="Rolling Initiative refills your AP" onClick={() => setPlay((x) => ({ ...x, ap: AP_MAX, tempAp: 0, turn: { active: false } }))}>
+        <button type="button" title="Rolling Initiative refills your AP" onClick={initiative}>
           Initiative {d.initiative}
         </button>
       </div>
-      {blocked && <p className="turn-warn small">{blocked.name}: {CONDITION_RULES[blocked.name].ap?.(blocked.level)}</p>}
+      {warn}
     </section>
   );
 }
