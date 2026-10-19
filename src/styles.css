@@ -843,7 +843,7 @@ dl.defs dd {
 .top-row {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: minmax(110px, 0.45fr) minmax(200px, 1.6fr) minmax(220px, 1.4fr) minmax(90px, 0.35fr) minmax(100px, 0.45fr) minmax(100px, 0.55fr);
+  grid-template-columns: minmax(200px, 1.6fr) minmax(220px, 1.4fr) minmax(90px, 0.35fr) minmax(100px, 0.45fr) minmax(100px, 0.55fr);
   gap: 0.75rem;
 }
 .wide-row {
@@ -1861,4 +1861,27 @@ tr.needs input {
 .saves td:nth-child(2),
 .saves th {
   white-space: nowrap;
+}
+
+/* Class Bonus, Class Die and Attributes across the top of the sheet. */
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 0.8fr)) repeat(5, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0.5rem 0;
+}
+.stat-strip .attr-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+.stat-strip .attr-value .ic {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+@media (max-width: 820px) {
+  .stat-strip {
+    grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+  }
 }
