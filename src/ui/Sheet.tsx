@@ -485,7 +485,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               <ul className="plain">
                 {d.resistances.map((r) => (
                   <li key={r.type}>
-                    {r.type} {r.value}
+                    <strong>{r.type}</strong> {r.value}
                   </li>
                 ))}
               </ul>
@@ -496,12 +496,12 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               <ul className="plain">
                 {d.damageImmunities.map((x) => (
                   <li key={x.type} title={x.sources.join(', ')}>
-                    {x.type} damage
+                    <strong>{x.type}</strong> damage
                   </li>
                 ))}
                 {d.conditionImmunities.map((x) => (
                   <li key={x.name} title={x.sources.join(', ')}>
-                    {x.name} <span className="muted small">Condition</span>
+                    <strong>{x.name}</strong> <span className="muted small">Condition</span>
                   </li>
                 ))}
               </ul>
@@ -512,7 +512,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               <ul className="plain">
                 {d.vulnerabilities.map((v) => (
                   <li key={v.type + v.source}>
-                    {v.type} {v.dice} <span className="muted small">({v.source})</span>
+                    <strong>{v.type}</strong> {v.dice} <span className="muted small">({v.source})</span>
                   </li>
                 ))}
               </ul>
