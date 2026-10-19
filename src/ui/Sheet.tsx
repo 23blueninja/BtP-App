@@ -153,20 +153,38 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
           <h3 className="box-title">{d.classDieName}</h3>
         </div>
       </section>
-      {ATTRS.map((a) => (
-        <Box key={a} title={ATTR_NAMES[a]} className="stat attr-stat">
-          <div className="attr-main">
-            <span className="attr-symbol">
-              <Icon name={a} />
-            </span>
-            <span className={`attr-die ${d.attrs[a].label.length > 3 ? 'long' : ''}`}>{d.attrs[a].label}</span>
-          </div>
-          <div className="sub">
-            {d.attrs[a].points} points{d.attrs[a].sources.length > 1 && ` (${d.attrs[a].sources.join(' ')})`}
-            {d.attrs[a].dieNote && ` · ${d.attrs[a].dieNote}`}
-          </div>
-        </Box>
-      ))}
+      {ATTRS.map((a) => {
+        const at = d.attrs[a];
+        const save = d.saves.find((x) => x.attr === a);
+        return (
+          <StatBox
+            key={a}
+            title={ATTR_NAMES[a]}
+            value={at.label}
+            className="attr-stat"
+            display={
+              <span className="attr-main">
+                <span className="attr-symbol">
+                  <Icon name={a} />
+                </span>
+                <span className={`attr-die ${at.label.length > 3 ? 'long' : ''}`}>{at.label}</span>
+              </span>
+            }
+          >
+            <p>
+              <Icon name={a} /> {at.points} {at.points === 1 ? 'point' : 'points'}: <strong>{at.label}</strong> Mod Die
+            </p>
+            <Details lines={at.sources} />
+            {at.dieNote && <p className="note small">{at.dieNote}</p>}
+            {save && (
+              <p>
+                Save Checks: <strong>{save.label}</strong>
+                {save.notes.length > 0 && <span className="muted small"> · {save.notes.join(', ')}</span>}
+              </p>
+            )}
+          </StatBox>
+        );
+      })}
       {children}
     </div>
     </>
@@ -298,13 +316,13 @@ function Box({ title, children, className = '' }: { title: React.ReactNode; chil
 }
 
 /** A stat panel that opens its breakdown (where the number comes from) in a modal. */
-function StatBox({ title, value, children }: { title: string; value: React.ReactNode; children: React.ReactNode }) {
+function StatBox({ title, value, display, className = '', children }: { title: string; value: React.ReactNode; display?: React.ReactNode; className?: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button type="button" className="box stat stat-btn" onClick={() => setOpen(true)} aria-haspopup="dialog" aria-label={`${title} ${value}: details`}>
+      <button type="button" className={`box stat stat-btn ${className}`} onClick={() => setOpen(true)} aria-haspopup="dialog" aria-label={`${title} ${value}: details`}>
         <span className="box-title">{title}</span>
-        <span className="big">{value}</span>
+        {display ?? <span className="big">{value}</span>}
         <span className="stat-more">Details</span>
       </button>
       {open && (
