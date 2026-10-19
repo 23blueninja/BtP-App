@@ -952,7 +952,7 @@ dl.defs dd {
 /* Values stay on one line, shrinking in a narrow box (e.g. "d12+2 / d10"). */
 .stat-square .big {
   white-space: nowrap;
-  font-size: clamp(1.1rem, 24cqi, 1.9rem);
+  font-size: clamp(1.4rem, 30cqi, 2.8rem);
 }
 .col {
   display: flex;
@@ -1078,6 +1078,11 @@ dl.defs dd {
 }
 .saves .save-die {
   white-space: nowrap;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+.saves td {
+  padding-block: 0.15em;
 }
 .saves .save-die .ic {
   margin-right: 0.3em;
@@ -1163,10 +1168,10 @@ input.num {
   background: #ff8c42;
 }
 .light-frost {
-  background: #8fd8ff;
+  background: #2fe4f0;
 }
 .light-pneuma {
-  background: #ff5fd2;
+  background: #f53ce6;
 }
 .light-soma {
   background: #3fd6b8;

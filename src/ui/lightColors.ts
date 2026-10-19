@@ -3,13 +3,13 @@ import type { Light } from '../data/types';
 /** Text-friendly tints of each Light's colour (readable on the dark background). */
 export const LIGHT_TEXT: Record<Light, string> = {
   Flame: '#ff9a52',
-  Frost: '#9fe0ff',
-  Pneuma: '#ff7ad9',
+  Frost: '#5ff0ff',
+  Pneuma: '#ff5cf0',
   Soma: '#5ce6c6',
   Mordant: '#f0dc5a',
   Velvet: '#b48cff',
   Infernal: '#ff5a6e',
-  Lunar: '#8fa6ff',
+  Lunar: '#6f8dff',
   Temporal: '#6fd97a',
   Platinum: '#e3e6ef',
 };
