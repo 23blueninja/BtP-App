@@ -28,7 +28,7 @@ import {
   type SpellListDef,
 } from '../data/types';
 import type { Character } from './character';
-import { CONDITION_DAMAGE_TYPE, conditionEffects, describeCheck, type ConditionEffects } from './conditions';
+import { CONDITION_DAMAGE_TYPE, conditionEffects, describeCheck, type ConditionEffects, type ExtraCheck } from './conditions';
 import { homebrewAlignments, resolveHomebrew, type ResolvedHomebrew } from './homebrew';
 import type { DieRef, RestRule } from '../data/types';
 import {
@@ -388,6 +388,13 @@ export function derive(c: Character): Derived {
   const equippedWeapons = c.equipment.weapons.map((w) => weapons.find((x) => x.name === w.name)).filter(Boolean) as typeof weapons;
   const hasProp = (p: string) => equippedWeapons.some((w) => w.properties.some((x) => x.toLowerCase().startsWith(p.toLowerCase())));
   const armorNotes: string[] = [];
+  // Armor's Check penalties go through the same pipeline as Conditions so they show in Check Modifiers.
+  const armorChecks: ExtraCheck[] = [];
+  if (armor) {
+    const req = armorRequirements[armor.type] ?? 0;
+    if (points.VIG < req) armorChecks.push({ name: `${armor.type} armor needs ${req} VIG`, attrs: ['AGI'], amount: 0, weakened: true });
+    if (armor.type === 'Medium') armorChecks.push({ name: 'Weighty (Medium armor)', attrs: ['AGI'], save: true, amount: -1 });
+  }
 
   // ---- movement & senses ----
   const movementBreakdown = [`3 base`];
@@ -421,7 +428,7 @@ export function derive(c: Character): Derived {
   // Conditions you're immune to have no effect.
   const conditionFx = conditionEffects(
     c.play,
-    eff('checks').map((x) => ({ name: x.source, attrs: x.e.attrs, save: x.e.save, amount: x.e.amount })),
+    [...eff('checks').map((x) => ({ name: x.source, attrs: x.e.attrs, save: x.e.save, amount: x.e.amount })), ...armorChecks],
     [...condImm.keys()],
   );
   const cm = conditionFx.movementChange;
@@ -477,7 +484,7 @@ export function derive(c: Character): Derived {
     }
     const req = armorRequirements[armor.type] ?? 0;
     if (points.VIG < req) armorNotes.push(`You need ${req} VIG for ${armor.type} armor: your AGI Checks are Weakened.`);
-    if (armor.type === 'Medium') armorNotes.push('Medium armor: AGI Save Checks are Hindered 1.');
+    if (armor.type === 'Medium') armorNotes.push('Medium armor (Weighty): AGI Save Checks are Hindered 1.');
   }
   const blocking = equippedWeapons.filter((w) => w.properties.includes('Blocking'));
   for (const w of blocking) {
@@ -566,7 +573,6 @@ export function derive(c: Character): Derived {
       .map((x) => bolstered(sc(x.e.amount)));
     if (useOther) notes.push(`Tandem with ${other!.e.die!.name} Die (${other!.source})`);
     for (const x of fromFacet) notes.push(`Empowered (${x.source})`);
-    if (a === 'AGI' && armor?.type === 'Medium') notes.push('Hindered 1 (armor)');
     for (const r of conditionFx.checks) if (r.attr === a) notes.push(...describeCheck(r));
     return { attr: a, die, classDie: second, empowered, label, notes };
   });

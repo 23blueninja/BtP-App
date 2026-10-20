@@ -155,3 +155,45 @@ describe('phone layout', () => {
     expect(overflow).toBeLessThanOrEqual(1);
   });
 });
+
+// What the sheet shows, not just that it renders: scripted characters whose
+// rules-stated modifiers must appear in the Check Modifiers panel and Weapons table.
+describe('sheet shows the modifiers the rules give', () => {
+  async function sheet(over: Partial<Character>) {
+    const c = { ...character('expert', subclassesOf(classes.find((x) => x.id === 'expert')!)[0].id, 5, 'human', 'shows'), ...over };
+    const { page, errors } = await open([c]);
+    await page.goto(`${base}#/c/shows`);
+    await page.reload();
+    await page.getByRole('tab', { name: 'Sheet', exact: true }).waitFor({ timeout: 10_000 });
+    const mods = (await page.locator('.active-effects .mods').textContent()) ?? '';
+    return { page, errors, mods };
+  }
+  const attrs = (VIG: number) => ({ ...newCharacter().attributes, method: 'manual' as const, base: { VIG, AGI: 3, PER: 2, INT: 2, PRS: 2 } });
+  it('Heavy armor without 3 VIG: AGI Checks Weakened', async () => {
+    const { page, errors, mods } = await sheet({ attributes: attrs(1), equipment: { armor: { type: 'Heavy', quality: 'Basic' }, weapons: [], inventory: [] } });
+    await page.close();
+    expect(errors).toEqual([]);
+    expect(mods).toMatch(/AGI Checks\s*Weakened \(Heavy armor needs 3 VIG\)/);
+  });
+  it('Medium armor: AGI Save Checks Hindered 1 (Weighty)', async () => {
+    const { page, mods } = await sheet({ attributes: attrs(1), equipment: { armor: { type: 'Medium', quality: 'Basic' }, weapons: [], inventory: [] } });
+    await page.close();
+    expect(mods).toMatch(/AGI Save Checks\s*Hindered 1 \(Weighty/);
+  });
+  it('Keen Senses + a Bolstering item add into one line', async () => {
+    const { page, mods } = await sheet({
+      ancestry: 'praedan',
+      subAncestry: 'canine',
+      homebrew: [{ id: 'h', kind: 'effect', name: 'Sharp Ears', rows: [{ id: 'r', effect: { kind: 'check', scope: 'attribute', attr: 'PER', amount: 1 } }] }],
+    });
+    await page.close();
+    expect(mods).toContain('PER Attribute Checks: Bolstered 2 (Keen Senses, Sharp Ears)');
+  });
+  it('Unarmed Strike is always in Weapons', async () => {
+    const { page } = await sheet({ equipment: { armor: undefined, weapons: [], inventory: [] } });
+    await page.getByRole('tab', { name: 'Equipment', exact: true }).click();
+    const text = (await page.locator('main').textContent()) ?? '';
+    await page.close();
+    expect(text).toContain('Unarmed Strike');
+  });
+});

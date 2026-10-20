@@ -832,7 +832,7 @@ describe('AC and armor', () => {
       const r = resMap(d);
       if (type === 'Medium') {
         expect(r.get('Slashing')).toBe(half(acv));
-        expect(d.saves.find((s) => s.attr === 'AGI')!.notes).toContain('Hindered 1 (armor)');
+        expect(d.saves.find((s) => s.attr === 'AGI')!.notes).toContain('Hindered 1 (Weighty (Medium armor))');
       }
       if (type === 'Heavy') {
         expect(r.get('Slashing')).toBe(acv);
@@ -1688,5 +1688,40 @@ describe('Bolstered / Hindered from several sources', () => {
     const curse: HomebrewEntry = { id: 'c', kind: 'effect', name: 'Dim Eyes', rows: [{ id: '1', effect: { kind: 'check', scope: 'attribute', attr: 'PER', amount: -2 } }] };
     const d = built({ classId: 'expert', ancestry: 'praedan', subAncestry: 'canine', homebrew: [curse] }).d;
     expect(d.bolsters.filter((b) => b.startsWith('PER Attribute Checks'))).toEqual(['PER Attribute Checks: Hindered 1 (Keen Senses, Dim Eyes)']);
+  });
+});
+
+// Rules, Armor: "Weighty: Your AGI Save Checks are Hindered 1" (Medium) and
+// "If you don’t meet the VIG Point requirement of armor you are wearing, all AGI
+// Checks you make are Weakened" (Light 0, Medium 1, Heavy 3).
+describe('Armor penalties are Check Modifiers', () => {
+  const wear = (type: 'Light' | 'Medium' | 'Heavy', VIG: number) =>
+    built({
+      classId: 'expert',
+      attributes: { method: 'manual', base: { VIG, AGI: 2, PER: 2, INT: 2, PRS: 2 } } as Character['attributes'],
+      equipment: { armor: { type, quality: 'Basic' }, weapons: [], inventory: [] },
+    }).d;
+  const row = (d: ReturnType<typeof wear>, label: string) => d.conditionFx.checks.find((r) => r.label === label);
+  it('Heavy armor without 3 VIG: AGI Checks Weakened', () => {
+    const d = wear('Heavy', 2);
+    expect(row(d, 'AGI Checks')?.weakened.join()).toMatch(/Heavy armor/);
+    expect(d.saves.find((s) => s.attr === 'AGI')!.notes.join()).toMatch(/Weakened/);
+  });
+  it('Heavy armor with 3 VIG: no penalty', () => {
+    expect(row(wear('Heavy', 3), 'AGI Checks')).toBeUndefined();
+  });
+  it('Medium armor (Weighty): AGI Save Checks Hindered 1, once', () => {
+    const d = wear('Medium', 1);
+    const r = row(d, 'AGI Save Checks')!;
+    expect([r.hindered, r.hinderedFrom]).toEqual([1, ['Weighty (Medium armor)']]);
+    expect(row(d, 'AGI Checks')).toBeUndefined();
+    expect(d.saves.find((s) => s.attr === 'AGI')!.notes.filter((n) => /Hindered/.test(n))).toHaveLength(1);
+  });
+  it('Medium armor with 0 VIG: Weakened too', () => {
+    expect(row(wear('Medium', 0), 'AGI Checks')?.weakened.length).toBe(1);
+  });
+  it('Light armor needs VIG 0: fine at 0, Weakened at −1', () => {
+    expect(row(wear('Light', 0), 'AGI Checks')).toBeUndefined();
+    expect(row(wear('Light', -1), 'AGI Checks')?.weakened.length).toBe(1);
   });
 });

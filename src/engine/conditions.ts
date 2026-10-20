@@ -239,8 +239,17 @@ export interface ConditionEffects {
 const leveled = new Set(conditionDefs.filter((d) => d.leveled).map((d) => d.name));
 const label = (c: { name: string; level: number }) => (leveled.has(c.name) ? `${c.name} ${c.level}` : c.name);
 
-/** Conditions and Active Effects; `extra` adds Bolstered/Hindered Check levels from items and other effects. */
-export function conditionEffects(p: PlayState, extra: { name: string; attrs: Attr[]; save?: boolean; amount: number }[] = [], immune: string[] = []): ConditionEffects {
+/** A Check modifier from outside Conditions: items, facets, armor. Positive amounts are Bolstered, negative Hindered. */
+export interface ExtraCheck {
+  name: string;
+  attrs: Attr[];
+  save?: boolean;
+  amount: number;
+  weakened?: boolean;
+}
+
+/** Conditions and Active Effects; `extra` adds Bolstered/Hindered/Weakened Checks from items, armor and other effects. */
+export function conditionEffects(p: PlayState, extra: ExtraCheck[] = [], immune: string[] = []): ConditionEffects {
   const active = activeConditions(p, immune);
   const rows = new Map<string, CheckSummary>();
   const row = (attr: Attr, save: boolean) => {
@@ -299,10 +308,11 @@ export function conditionEffects(p: PlayState, extra: { name: string; attrs: Att
   for (const x of extra) {
     for (const a of x.attrs) {
       const r = row(a, !!x.save);
-      if (x.amount >= 0) {
+      if (x.weakened) r.weakened.push(x.name);
+      if (x.amount > 0) {
         r.bolstered += x.amount;
         r.bolsteredFrom.push(x.name);
-      } else {
+      } else if (x.amount < 0) {
         r.hindered -= x.amount;
         r.hinderedFrom.push(x.name);
       }
