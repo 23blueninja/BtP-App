@@ -13,6 +13,7 @@ import {
 import { ancestryById } from '../data/ancestries';
 import { backgroundById, heritageById } from '../data/backgrounds';
 import {
+  ATTR_NAMES,
   ATTRS,
   LIGHTS,
   type Attr,
@@ -28,7 +29,7 @@ import {
   type SpellListDef,
 } from '../data/types';
 import type { Character } from './character';
-import { CONDITION_DAMAGE_TYPE, conditionEffects, describeCheck, type ConditionEffects } from './conditions';
+import { CONDITION_DAMAGE_TYPE, conditionEffects, describeCheck, type ConditionEffects, type ExtraCheck } from './conditions';
 import { homebrewAlignments, resolveHomebrew, type ResolvedHomebrew } from './homebrew';
 import type { DieRef, RestRule } from '../data/types';
 import {
@@ -80,6 +81,17 @@ export interface ResolvedList {
 export interface ResolvedChoice extends ChoiceDef {
   source: string;
   selected?: string;
+}
+
+export interface UnarmedStrike {
+  name: string;
+  dv: number;
+  deadlyDv: number;
+  damage: string;
+  properties: string[];
+  /** Rolled with the Class Die instead of the VIG Die (e.g. Ferocious Strikes). */
+  classDie?: boolean;
+  sources: string[];
 }
 
 export interface SaveLine {
@@ -156,6 +168,8 @@ export interface Derived {
   bulkShift: number;
   /** Weapon Attack Check modifiers (Combat Styles). */
   weaponMods: (Extract<Effect, { kind: 'weapon' }> & { source: string })[];
+  /** Unarmed Strikes: your body, plus natural weapons (claws, horns…). */
+  unarmed: UnarmedStrike[];
   /** Homebrew items and effects, resolved at their current tier. */
   homebrew: ResolvedHomebrew[];
   /** Rest benefits taken away by homebrew effects. */
@@ -230,13 +244,13 @@ function gatherChoices(c: Character, cls: ClassDef | undefined): ResolvedChoice[
         id: 'save-attr',
         label: 'Additional Save Check (Tandem with class die)',
         level: 1,
-        options: ATTRS.filter((a) => !cls.saveTandem.includes(a)).map((a) => ({ id: a, name: a })),
+        options: ATTRS.filter((a) => !cls.saveTandem.includes(a)).map((a) => ({ id: a, name: ATTR_NAMES[a] })),
       },
       cls.name,
     );
   }
   if (cls.spellAttr === 'choice') {
-    push({ id: 'spell-attr', label: 'Spell Mod Die Attribute', level: 1, options: (['VIG', 'PRS'] as Attr[]).map((a) => ({ id: a, name: a })) }, cls.name);
+    push({ id: 'spell-attr', label: 'Spell Mod Die Attribute', level: 1, options: (['VIG', 'PRS'] as Attr[]).map((a) => ({ id: a, name: ATTR_NAMES[a] })) }, cls.name);
   }
   cls.choices?.forEach((ch) => push(ch, cls.name));
   const sc = subclassesOf(cls).find((s) => s.id === c.subclass);
@@ -375,6 +389,13 @@ export function derive(c: Character): Derived {
   const equippedWeapons = c.equipment.weapons.map((w) => weapons.find((x) => x.name === w.name)).filter(Boolean) as typeof weapons;
   const hasProp = (p: string) => equippedWeapons.some((w) => w.properties.some((x) => x.toLowerCase().startsWith(p.toLowerCase())));
   const armorNotes: string[] = [];
+  // Armor's Check penalties go through the same pipeline as Conditions so they show in Check Modifiers.
+  const armorChecks: ExtraCheck[] = [];
+  if (armor) {
+    const req = armorRequirements[armor.type] ?? 0;
+    if (points.VIG < req) armorChecks.push({ name: `${armor.type} armor needs ${req} VIG`, attrs: ['AGI'], amount: 0, weakened: true });
+    if (armor.type === 'Medium') armorChecks.push({ name: 'Weighty (Medium armor)', attrs: ['AGI'], save: true, amount: -1 });
+  }
 
   // ---- movement & senses ----
   const movementBreakdown = [`3 base`];
@@ -408,7 +429,7 @@ export function derive(c: Character): Derived {
   // Conditions you're immune to have no effect.
   const conditionFx = conditionEffects(
     c.play,
-    eff('checks').map((x) => ({ name: x.source, attrs: x.e.attrs, save: x.e.save, amount: x.e.amount })),
+    [...eff('checks').map((x) => ({ name: x.source, attrs: x.e.attrs, save: x.e.save, amount: x.e.amount })), ...armorChecks],
     [...condImm.keys()],
   );
   const cm = conditionFx.movementChange;
@@ -464,7 +485,7 @@ export function derive(c: Character): Derived {
     }
     const req = armorRequirements[armor.type] ?? 0;
     if (points.VIG < req) armorNotes.push(`You need ${req} VIG for ${armor.type} armor: your AGI Checks are Weakened.`);
-    if (armor.type === 'Medium') armorNotes.push('Medium armor: AGI Save Checks are Hindered 1.');
+    if (armor.type === 'Medium') armorNotes.push('Medium armor (Weighty): AGI Save Checks are Hindered 1.');
   }
   const blocking = equippedWeapons.filter((w) => w.properties.includes('Blocking'));
   for (const w of blocking) {
@@ -508,7 +529,13 @@ export function derive(c: Character): Derived {
   if (cls?.saveTandem.includes('choice') && c.choices['save-attr']) tandemSave.add(c.choices['save-attr'] as Attr);
   eff('saveTandem').forEach((x) => x.e.attr !== 'choice' && !x.e.die && tandemSave.add(x.e.attr));
   const bolstered = (n: number) => (n >= 0 ? `Bolstered ${n}` : `Hindered ${-n}`);
-  const bolsters = eff('bolster').map((x) => `${x.e.what}: ${bolstered(sc(x.e.amount))} (${x.source})`);
+  // Bolstered/Hindered levels on the same Checks add together (and cancel each other): one line per kind of Check.
+  const bolsterTotals = new Map<string, { amount: number; sources: string[] }>();
+  for (const x of eff('bolster')) {
+    const cur = bolsterTotals.get(x.e.what) ?? { amount: 0, sources: [] };
+    bolsterTotals.set(x.e.what, { amount: cur.amount + sc(x.e.amount), sources: [...cur.sources, x.source] });
+  }
+  const bolsters = [...bolsterTotals.entries()].map(([what, t]) => `${what}: ${bolstered(t.amount)} (${t.sources.join(', ')})`);
   const dieName = (die: 'class' | Attr | DieRef) => (die === 'class' ? `${cls?.dieName ?? 'Class'} Die` : typeof die === 'string' ? `${die} Die` : `${die.name} Die (${die.die})`);
   const tandems = eff('tandem').map((x) => `${x.e.what}: Tandem with ${dieName(x.e.die)} (${x.source})`);
   const saves: SaveLine[] = ATTRS.map((a) => {
@@ -547,7 +574,6 @@ export function derive(c: Character): Derived {
       .map((x) => bolstered(sc(x.e.amount)));
     if (useOther) notes.push(`Tandem with ${other!.e.die!.name} Die (${other!.source})`);
     for (const x of fromFacet) notes.push(`Empowered (${x.source})`);
-    if (a === 'AGI' && armor?.type === 'Medium') notes.push('Hindered 1 (armor)');
     for (const r of conditionFx.checks) if (r.attr === a) notes.push(...describeCheck(r));
     return { attr: a, die, classDie: second, empowered, label, notes };
   });
@@ -666,6 +692,34 @@ export function derive(c: Character): Derived {
   // Bulk: each VIG point unlocks bonus rows (row n requires n VIG).
   const bulkSlots = [1, 2, 3, 4, 5].map((rank) => ({ rank, slots: rank + (Math.max(0, points.VIG) >= rank ? rank : 0) }));
 
+  // ---- Unarmed Strikes ----
+  // Your body: Close-Up, DV 0, Deadly DV equal to your VIG points, Crushing. Facets can change
+  // that, Powerful Build adds to both DVs of every Unarmed Strike, and natural weapons add rows.
+  const unarmedBonus = eff('unarmedBonus').reduce((n, x) => n + sc(x.e.amount), 0);
+  const bonusSources = eff('unarmedBonus').map((x) => x.source);
+  const body: UnarmedStrike = { name: 'Unarmed Strike', dv: 0, deadlyDv: points.VIG, damage: 'Crushing', properties: ['Close-Up'], sources: [] };
+  for (const x of eff('unarmed')) {
+    if (x.e.dv !== undefined) body.dv = sc(x.e.dv);
+    if (x.e.deadly !== undefined) body.deadlyDv = x.e.deadly === 'twiceDv' ? 2 * body.dv : sc(x.e.deadly);
+    for (const p of x.e.properties ?? []) if (!body.properties.includes(p)) body.properties.push(p);
+    if (x.e.damage) body.damage = [body.damage, ...x.e.damage].join(' or ');
+    body.sources.push(x.source);
+  }
+  const unarmed: UnarmedStrike[] = [
+    body,
+    ...eff('naturalWeapon').map((x) => ({
+      name: x.e.name,
+      dv: sc(x.e.dv),
+      deadlyDv: sc(x.e.deadly) + (x.e.deadlyPlus ?? 0),
+      damage: x.e.damage,
+      properties: x.e.properties,
+      classDie: x.e.die === 'class',
+      sources: [x.source],
+    })),
+  ]
+    .map((u) => (unarmedBonus ? { ...u, dv: u.dv + unarmedBonus, deadlyDv: u.deadlyDv + unarmedBonus, sources: [...u.sources, ...bonusSources] } : u))
+    .map((u) => ({ ...u, dv: Math.max(0, u.dv), deadlyDv: Math.max(0, u.deadlyDv) }));
+
   const powerful = eff('jump').some((x) => x.e.mode === 'powerful');
   const doubled = eff('jump').some((x) => x.e.mode === 'double');
   const jump = {
@@ -726,6 +780,7 @@ export function derive(c: Character): Derived {
     restRules: [...new Set(eff('restRule').map((x) => x.e.rule))],
     homebrewNotes: eff('note').map((x) => ({ text: x.e.text, source: x.source })),
     weaponMods: eff('weapon').map((x) => ({ ...x.e, source: x.source.replace(/^.*: /, '') })),
+    unarmed,
     bulkShift: eff('bulkShift').reduce((sum, x) => sum + x.e.amount, 0),
     issues,
     todo,

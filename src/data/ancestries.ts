@@ -8,7 +8,8 @@ const f = (contentId: string, name: string, effects: FacetDef['effects'] = []): 
 const nightVision = (id: string) => f(id, 'Night Vision', [{ kind: 'sense', name: 'Night Vision' }]);
 const extraEndurance = (id: string) => f(id, 'Extra Endurance', [{ kind: 'endurance', amount: 'twiceLevel' }]);
 const fast = (id: string) => f(id, 'Fast', [{ kind: 'movement', amount: 1 }]);
-const powerfulBuild = (id: string) => f(id, 'Powerful Build', [{ kind: 'bulkShift', amount: 1 }]);
+// Powerful Build: Bulk shift, and both DVs of your Unarmed Strikes get a bonus equal to your VIG points.
+const powerfulBuild = (id: string) => f(id, 'Powerful Build', [{ kind: 'bulkShift', amount: 1 }, { kind: 'unarmedBonus', amount: { attr: 'VIG' } }]);
 
 const soli = (light: AncestryDef['facets'][number]['name'], facets: (id: string) => FacetDef[]) => {
   const slug = light.toLowerCase();
@@ -49,7 +50,10 @@ export const ancestries: AncestryDef[] = [
       f(`${A}/daxan/facets`, 'Salty Soul', [{ kind: 'alignment', light: 'Mordant' }]),
       f(`${A}/daxan/facets`, 'Acidic Adaptation', [{ kind: 'resistance', type: 'Caustic', amount: 'classBonus' }]),
       f(`${A}/daxan/facets`, 'Oceanic', [{ kind: 'movementType', type: 'Swim', amount: 'movement' }]),
-      f(`${A}/daxan/facets`, 'Claw and Fang'),
+      f(`${A}/daxan/facets`, 'Claw and Fang', [
+        { kind: 'naturalWeapon', name: 'Claws', damage: 'Slashing', properties: ['Light'], dv: 'halfClassBonus', deadly: 'classBonus' },
+        { kind: 'naturalWeapon', name: 'Maw', damage: 'Piercing', properties: ['Pulling'], dv: 'halfClassBonus', deadly: 'classBonus' },
+      ]),
       nightVision(`${A}/daxan/facets`),
     ],
   },
@@ -120,7 +124,7 @@ export const ancestries: AncestryDef[] = [
         name: 'Feline',
         contentId: `${A}/praedan/facets/feline`,
         facets: [
-          f(`${A}/praedan/facets/feline`, 'Claws'),
+          f(`${A}/praedan/facets/feline`, 'Claws', [{ kind: 'naturalWeapon', name: 'Claws', damage: 'Slashing', properties: ['Pulling'], dv: 'halfClassBonus', deadly: 'classBonus' }]),
           f(`${A}/praedan/facets/feline`, 'Climber', [{ kind: 'movementType', type: 'Climb', amount: 'movement' }]),
           fast(`${A}/praedan/facets/feline`),
         ],
@@ -142,7 +146,7 @@ export const ancestries: AncestryDef[] = [
         name: 'Ursine',
         contentId: `${A}/praedan/facets/ursine`,
         facets: [
-          f(`${A}/praedan/facets/ursine`, 'Bear Claws'),
+          f(`${A}/praedan/facets/ursine`, 'Bear Claws', [{ kind: 'naturalWeapon', name: 'Bear Claws', damage: 'Slashing', properties: ['Brutal'], dv: 'halfClassBonus', deadly: 'classBonus' }]),
           f(`${A}/praedan/facets/ursine`, 'Extra Vitality', [{ kind: 'vitality', amount: 1 }]),
           powerfulBuild(`${A}/praedan/facets/ursine`),
         ],
@@ -177,7 +181,7 @@ export const ancestries: AncestryDef[] = [
           { kind: 'resistance', type: 'Arctic', amount: 'classBonus' },
           { kind: 'resistance', type: 'Freezing', amount: 'halfClassBonus' },
         ]),
-        f(id, 'Claws'),
+        f(id, 'Claws', [{ kind: 'naturalWeapon', name: 'Claws', damage: 'Slashing', properties: ['Precise'], dv: 'halfClassBonus', deadly: 'classBonus' }]),
         fast(id),
         nightVision(id),
       ]),
@@ -202,7 +206,7 @@ export const ancestries: AncestryDef[] = [
       ]),
       soli('Mordant', (id) => [
         f(id, 'Caustic Soul', [{ kind: 'alignment', light: 'Mordant' }]),
-        f(id, 'Acid Tongue'),
+        f(id, 'Acid Tongue', [{ kind: 'naturalWeapon', name: 'Acid Tongue', damage: 'Caustic', properties: ['Deft'], dv: 1, deadly: 'classBonus', deadlyPlus: 1 }]),
         f(id, 'Amphibious', [{ kind: 'movementType', type: 'Swim', amount: 'movement' }]),
       ]),
       soli('Velvet', (id) => [
@@ -256,7 +260,7 @@ export const ancestries: AncestryDef[] = [
     facetsId: `${A}/taurton/facets`,
     facets: [
       f(`${A}/taurton/facets`, 'Poetic Soul', [{ kind: 'alignment', light: 'Velvet' }]),
-      f(`${A}/taurton/facets`, 'Charged Horns'),
+      f(`${A}/taurton/facets`, 'Charged Horns', [{ kind: 'naturalWeapon', name: 'Charged Horns', damage: 'Piercing', properties: ['Pushing'], dv: 'halfClassBonus', deadly: 'classBonus' }]),
       extraEndurance(`${A}/taurton/facets`),
       f(`${A}/taurton/facets`, 'Extra Hobby', [{ kind: 'hobbies', count: 1, rank: 'Novice' }]),
       f(`${A}/taurton/facets`, 'Extra Radiance', [{ kind: 'radiance', amount: 1 }]),

@@ -93,7 +93,9 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
           <div className="toast" role="status">
             <ul>
               {log.lines.map((l, i) => (
-                <li key={i}>{l}</li>
+                <li key={i}>
+                  <TokenText text={l} />
+                </li>
               ))}
             </ul>
             {log.undo && (
@@ -135,13 +137,14 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
     <>
     <div ref={marker} className="stat-strip-marker" aria-hidden />
     <div className={`stat-strip ${stuck ? 'stuck' : ''}`}>
-      {/* Class Bonus and Class Die: one box sliced along its diagonal. */}
+      {/* Class Bonus and Class Die: one box sliced on a diagonal; the Class Die takes the
+          smaller bottom-right corner so long class names fit across the top. */}
       <section className="split-box">
         <div className="split-glass a" aria-hidden />
         <div className="split-glass b" aria-hidden />
         <svg className="split-shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
-          <polygon points="0,0 93,0 0,91" />
-          <polygon points="100,9 100,100 7,100" />
+          <polygon points="0,0 100,0 100,34 34,100 0,100" />
+          <polygon points="100,44 100,100 44,100" />
         </svg>
         <div className="split-a">
           <h3 className="box-title">{d.cls ? `${d.cls.name} Bonus` : 'Class Bonus'}</h3>
@@ -174,11 +177,11 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
               <Icon name={a} /> {at.points} {at.points === 1 ? 'point' : 'points'}: <strong>{at.label}</strong> Mod Die
             </p>
             <Details lines={at.sources} />
-            {at.dieNote && <p className="note small">{at.dieNote}</p>}
+            {at.dieNote && <p className="note small"><TokenText text={at.dieNote} /></p>}
             {save && (
               <p>
                 Save Checks: <strong>{save.label}</strong>
-                {save.notes.length > 0 && <span className="muted small"> · {save.notes.join(', ')}</span>}
+                {save.notes.length > 0 && <span className="muted small"> · <TokenText text={save.notes.join(', ')} /></span>}
               </p>
             )}
           </StatBox>
@@ -235,7 +238,7 @@ function TurnBar({
   const temp = <Stepper label="Temporary AP" value={p.tempAp ?? 0} min={0} onChange={(v) => setPlay((x) => ({ ...x, tempAp: v }))} />;
   const warn = blocked && (
     <p className="turn-warn small">
-      {blocked.name}: {CONDITION_RULES[blocked.name].ap?.(blocked.level)}
+      {blocked.name}: <TokenText text={CONDITION_RULES[blocked.name].ap?.(blocked.level) ?? ''} />
     </p>
   );
   if (compact) {
@@ -243,7 +246,7 @@ function TurnBar({
       <section className={`box turn-box ${myTurn ? 'my-turn' : ''}`} aria-label="Turn">
         <div className="turn-box-head">
           <h3 className="box-title">
-            AP {ap}/{AP_MAX}
+            <Icon name="AP" /> {ap}/{AP_MAX}
           </h3>
           <span className="turn-temp">
             <span className="muted small">Temp</span>
@@ -274,7 +277,7 @@ function TurnBar({
     <section className={`turn-bar box ${myTurn ? 'my-turn' : ''}`} aria-label="Turn">
       <div className="turn-ap">
         <span className="turn-label">
-          <Icon name="AP" /> AP
+          <Icon name="AP" />
         </span>
         {pips}
         <span className="turn-count">
@@ -361,7 +364,9 @@ function Details({ lines }: { lines: string[] }) {
   return (
     <ul className="plain stat-details">
       {lines.map((l) => (
-        <li key={l}>{l}</li>
+        <li key={l}>
+          <TokenText text={l} />
+        </li>
       ))}
     </ul>
   );
@@ -386,7 +391,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             </Box>
             <StatBox title="Initiative" value={d.initiative}>
               <p>
-                Roll your <Icon name="PER" /> PER Die ({d.attrs.PER.label})
+                Roll your <Icon name="PER" /> Die ({d.attrs.PER.label})
                 {d.initiative !== d.attrs.PER.label ? ' in Tandem' : ''}.
               </p>
               <Details lines={d.initiativeNotes} />
@@ -469,7 +474,11 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
                       <span className="save-die">
                         <Icon name={s.attr} /> {s.label}
                       </span>
-                      {s.notes.length > 0 && <div className="muted small">{s.notes.join(', ')}</div>}
+                      {s.notes.length > 0 && (
+                        <div className="muted small">
+                          <TokenText text={s.notes.join(', ')} />
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -562,7 +571,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             </p>
             {d.armorNotes.map((x) => (
               <p key={x} className="note small">
-                {x}
+                <TokenText text={x} />
               </p>
             ))}
           </Box>
@@ -758,14 +767,18 @@ function CheckModifiers({ d }: { d: Derived }) {
       {fx.checks.map((r) => (
         <div key={r.label}>
           <dt>
-            <Icon name={r.attr} /> {r.label}
+            <TokenText text={r.label} />
           </dt>
-          <dd>{describeCheck(r).join('; ')}</dd>
+          <dd>
+            <TokenText text={describeCheck(r).join('; ')} />
+          </dd>
         </div>
       ))}
       {fx.otherChecks.map((t) => (
         <div key={t}>
-          <dd>{t}</dd>
+          <dd>
+            <TokenText text={t} />
+          </dd>
         </div>
       ))}
       {fx.against.length > 0 && (
@@ -794,19 +807,25 @@ function CheckModifiers({ d }: { d: Derived }) {
       {fx.ap.map((t) => (
         <div key={t}>
           <dt>
-            <Icon name="AP" /> AP
+            <Icon name="AP" />
           </dt>
-          <dd>{t}</dd>
+          <dd>
+            <TokenText text={t} />
+          </dd>
         </div>
       ))}
       {fx.notes.map((t) => (
         <div key={t}>
-          <dd>{t}</dd>
+          <dd>
+            <TokenText text={t} />
+          </dd>
         </div>
       ))}
       {[...d.bolsters, ...d.tandems].map((b) => (
         <div key={b}>
-          <dd>{b}</dd>
+          <dd>
+            <TokenText text={b} />
+          </dd>
         </div>
       ))}
     </dl>
@@ -1021,6 +1040,46 @@ function ActiveEffects({ effects, setPlay }: { effects: ActiveEffect[]; setPlay:
 
 function Facets({ c, d, setPlay, update }: { c: Character; d: Derived; setPlay: (fn: (p: PlayState) => PlayState) => void; update: Update }) {
   const groups = [...new Set(d.facets.map((f) => f.source))];
+  // Class → Subclass (and chosen options) on the left; Ancestry → Sub-ancestry → Heritage → Homebrew on the right.
+  const classSources = new Set([d.cls?.name, d.subclassName].filter(Boolean));
+  const classGroups = groups.filter((g) => classSources.has(g));
+  const otherGroups = groups.filter((g) => !classSources.has(g));
+  const group = (g: string) => (
+    <section key={g} className="box">
+      <h3 className="box-title">{g}</h3>
+      {d.facets
+        .filter((f) => f.source === g)
+        .map((f) => {
+          const max = facetUseMax(f, d);
+          const used = c.play.facetUses[f.key] ?? 0;
+          return (
+            <Collapsible
+              key={f.key}
+              title={
+                <span>
+                  <strong>{f.name}</strong> {f.level > 1 && <span className="badge">Level {f.level}</span>}
+                </span>
+              }
+              extra={
+                (max > 0 || facetActivationDefs(f.contentId).length > 0) && (
+                  <span className="facet-extra" onClick={(e) => e.stopPropagation()}>
+                    {max > 0 && (
+                      <span className="uses">
+                        <Pips total={max} used={used} label={`${f.name} use`} onChange={(u) => setPlay((x) => ({ ...x, facetUses: { ...x.facetUses, [f.key]: u } }))} />
+                        <span className="muted small"> / {f.uses!.per}</span>
+                      </span>
+                    )}
+                    <FacetActivations d={d} facetId={f.contentId} />
+                  </span>
+                )
+              }
+            >
+              <FacetText contentId={f.contentId} item={f.item} />
+            </Collapsible>
+          );
+        })}
+    </section>
+  );
   return (
     <div className="features">
       {d.cls && (
@@ -1030,63 +1089,35 @@ function Facets({ c, d, setPlay, update }: { c: Character; d: Derived; setPlay: 
           </Collapsible>
         </section>
       )}
-      {groups.map((g) => (
-        <section key={g} className="box">
-          <h3 className="box-title">{g}</h3>
-          {d.facets
-            .filter((f) => f.source === g)
-            .map((f) => {
-              const max = facetUseMax(f, d);
-              const used = c.play.facetUses[f.key] ?? 0;
+      <div className="facet-cols">
+        <div className="col">
+          {classGroups.map(group)}
+          {d.choices
+            .filter((ch) => ch.selected)
+            .map((ch) => {
+              const o = ch.options.find((x) => x.id === ch.selected)!;
               return (
-                <Collapsible
-                  key={f.key}
-                  title={
-                    <span>
-                      <strong>{f.name}</strong> {f.level > 1 && <span className="badge">Level {f.level}</span>}
-                    </span>
-                  }
-                  extra={
-                    (max > 0 || facetActivationDefs(f.contentId).length > 0) && (
-                    <span className="facet-extra" onClick={(e) => e.stopPropagation()}>
-                      {max > 0 && (
-                        <span className="uses">
-                          <Pips total={max} used={used} label={`${f.name} use`} onChange={(u) => setPlay((x) => ({ ...x, facetUses: { ...x.facetUses, [f.key]: u } }))} />
-                          <span className="muted small"> / {f.uses!.per}</span>
-                        </span>
-                      )}
-                      <FacetActivations d={d} facetId={f.contentId} />
-                    </span>
-                    )
-                  }
-                >
-                  <FacetText contentId={f.contentId} item={f.item} />
-                </Collapsible>
+                <section key={ch.id} className="box">
+                  <h3 className="box-title">{ch.label}</h3>
+                  <Collapsible
+                    title={<strong>{o.name}</strong>}
+                    extra={facetActivationDefs(o.contentId).length > 0 && <FacetActivations d={d} facetId={o.contentId} />}
+                  >
+                    <FacetText contentId={o.contentId} item={o.item} />
+                  </Collapsible>
+                </section>
               );
             })}
-        </section>
-      ))}
-      {d.choices
-        .filter((ch) => ch.selected)
-        .map((ch) => {
-          const o = ch.options.find((x) => x.id === ch.selected)!;
-          return (
-            <section key={ch.id} className="box">
-              <h3 className="box-title">{ch.label}</h3>
-              <Collapsible
-                title={<strong>{o.name}</strong>}
-                extra={facetActivationDefs(o.contentId).length > 0 && <FacetActivations d={d} facetId={o.contentId} />}
-              >
-                <FacetText contentId={o.contentId} item={o.item} />
-              </Collapsible>
-            </section>
-          );
-        })}
-      {/* Facets your PM grants beyond your class and ancestry (e.g. one that raises an Alignment). */}
-      <section className="box">
-        <h3 className="box-title">Homebrew facets</h3>
-        <HomebrewBox d={d} update={update} facets />
-      </section>
+        </div>
+        <div className="col">
+          {otherGroups.map(group)}
+          {/* Facets your PM grants beyond your class and ancestry (e.g. one that raises an Alignment). */}
+          <section className="box">
+            <h3 className="box-title">Homebrew facets</h3>
+            <HomebrewBox d={d} update={update} facets />
+          </section>
+        </div>
+      </div>
     </div>
   );
 }

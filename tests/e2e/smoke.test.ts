@@ -57,9 +57,29 @@ async function open(chars: Character[], viewport = { width: 1400, height: 1000 }
 
 const tab = (page: Page, name: string) => page.getByRole('tab', { name, exact: true }).click();
 
+/**
+ * Attribute / AP abbreviations left as plain text (they should render as icons,
+ * via TokenText). Form controls are skipped, and so is anything marked
+ * `data-plain` (text that must stay plain).
+ */
+async function abbreviations(page: Page, where: string): Promise<string[]> {
+  const found = await page.evaluate(() => {
+    const out: string[] = [];
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      if (n.parentElement?.closest('option, select, textarea, script, style, [data-plain]')) continue;
+      const t = n.textContent ?? '';
+      if (/\b(VIG|AGI|PER|INT|PRS|AP)\b/.test(t)) out.push(`${t.trim().slice(0, 100)} <${n.parentElement?.outerHTML.slice(0, 160)}>`);
+    }
+    return out;
+  });
+  return [...new Set(found)].map((t) => `${where}: ${t}`);
+}
+
 
 /** Every sheet tab plus the main interactive pieces of the Sheet tab. */
-async function exerciseSheet(page: Page, id: string) {
+async function exerciseSheet(page: Page, id: string): Promise<string[]> {
+  const abbr: string[] = [];
   await page.goto(`${base}#/c/${id}`);
   // Characters are read from storage at start-up, so reload after a hash-only navigation.
   await page.reload();
@@ -70,6 +90,7 @@ async function exerciseSheet(page: Page, id: string) {
     if (await btn.count()) {
       await btn.click();
       await page.locator('.modal').waitFor();
+      abbr.push(...(await abbreviations(page, `${name} details`)));
       await page.keyboard.press('Escape');
     }
   }
@@ -87,17 +108,26 @@ async function exerciseSheet(page: Page, id: string) {
   const pick = page.locator('.condition-add select');
   await pick.selectOption({ index: 1 });
   await page.locator('.condition-add button').click();
-  for (const t of ['Facets', 'Spells & Maneuvers', 'Equipment', 'Notes', 'Sheet']) await tab(page, t);
+  for (const t of ['Facets', 'Spells & Maneuvers', 'Equipment', 'Notes', 'Sheet']) {
+    await tab(page, t);
+    abbr.push(...(await abbreviations(page, t)));
+  }
+  return abbr;
 }
 
 /** Every builder step via the step navigation. */
-async function exerciseBuilder(page: Page, id: string) {
+async function exerciseBuilder(page: Page, id: string): Promise<string[]> {
+  const abbr: string[] = [];
   await page.goto(`${base}#/c/${id}/build/basics`);
   await page.reload();
   const steps = page.locator('nav.steps button');
   await steps.first().waitFor();
   const n = await steps.count();
-  for (let i = 0; i < n; i++) await steps.nth(i).click();
+  for (let i = 0; i < n; i++) {
+    await steps.nth(i).click();
+    abbr.push(...(await abbreviations(page, `builder step ${i + 1}`)));
+  }
+  return abbr;
 }
 
 describe('app shell', () => {
@@ -135,10 +165,11 @@ describe.each(cases)('$cls / $sub · $ancestry · L$level', ({ cls, sub, ancestr
   it('sheet tabs and builder steps render and respond without errors', async () => {
     const id = `${cls}-${sub}`;
     const { page, errors } = await open([character(cls, sub, level, ancestry, id)]);
-    await exerciseSheet(page, id);
-    await exerciseBuilder(page, id);
+    const abbr = [...(await exerciseSheet(page, id)), ...(await exerciseBuilder(page, id))];
     await page.close();
     expect(errors).toEqual([]);
+    // VIG, AGI, PER, INT, PRS and AP show as icons, not letters.
+    expect([...new Set(abbr)]).toEqual([]);
   });
 });
 
@@ -153,5 +184,52 @@ describe('phone layout', () => {
     await page.close();
     expect(errors).toEqual([]);
     expect(overflow).toBeLessThanOrEqual(1);
+  });
+});
+
+// What the sheet shows, not just that it renders: scripted characters whose
+// rules-stated modifiers must appear in the Check Modifiers panel and Weapons table.
+describe('sheet shows the modifiers the rules give', () => {
+  async function sheet(over: Partial<Character>) {
+    const c = { ...character('expert', subclassesOf(classes.find((x) => x.id === 'expert')!)[0].id, 5, 'human', 'shows'), ...over };
+    const { page, errors } = await open([c]);
+    await page.goto(`${base}#/c/shows`);
+    await page.reload();
+    await page.getByRole('tab', { name: 'Sheet', exact: true }).waitFor({ timeout: 10_000 });
+    // Icons read as their label ("AGI"), so the text matches the rules wording.
+    const mods = await page.locator('.active-effects .mods').evaluate((el) => {
+      const copy = el.cloneNode(true) as HTMLElement;
+      copy.querySelectorAll('.ic').forEach((ic) => ic.replaceWith(ic.getAttribute('aria-label') ?? ''));
+      return copy.textContent ?? '';
+    });
+    return { page, errors, mods };
+  }
+  const attrs = (VIG: number) => ({ ...newCharacter().attributes, method: 'manual' as const, base: { VIG, AGI: 3, PER: 2, INT: 2, PRS: 2 } });
+  it('Heavy armor without 3 VIG: AGI Checks Weakened', async () => {
+    const { page, errors, mods } = await sheet({ attributes: attrs(1), equipment: { armor: { type: 'Heavy', quality: 'Basic' }, weapons: [], inventory: [] } });
+    await page.close();
+    expect(errors).toEqual([]);
+    expect(mods).toMatch(/AGI Checks\s*Weakened \(Heavy armor needs 3 VIG\)/);
+  });
+  it('Medium armor: AGI Save Checks Hindered 1 (Weighty)', async () => {
+    const { page, mods } = await sheet({ attributes: attrs(1), equipment: { armor: { type: 'Medium', quality: 'Basic' }, weapons: [], inventory: [] } });
+    await page.close();
+    expect(mods).toMatch(/AGI Save Checks\s*Hindered 1 \(Weighty/);
+  });
+  it('Keen Senses + a Bolstering item add into one line', async () => {
+    const { page, mods } = await sheet({
+      ancestry: 'praedan',
+      subAncestry: 'canine',
+      homebrew: [{ id: 'h', kind: 'effect', name: 'Sharp Ears', rows: [{ id: 'r', effect: { kind: 'check', scope: 'attribute', attr: 'PER', amount: 1 } }] }],
+    });
+    await page.close();
+    expect(mods).toContain('PER Attribute Checks: Bolstered 2 (Keen Senses, Sharp Ears)');
+  });
+  it('Unarmed Strike is always in Weapons', async () => {
+    const { page } = await sheet({ equipment: { armor: undefined, weapons: [], inventory: [] } });
+    await page.getByRole('tab', { name: 'Equipment', exact: true }).click();
+    const text = (await page.locator('main').textContent()) ?? '';
+    await page.close();
+    expect(text).toContain('Unarmed Strike');
   });
 });

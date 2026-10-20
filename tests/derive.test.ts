@@ -832,7 +832,7 @@ describe('AC and armor', () => {
       const r = resMap(d);
       if (type === 'Medium') {
         expect(r.get('Slashing')).toBe(half(acv));
-        expect(d.saves.find((s) => s.attr === 'AGI')!.notes).toContain('Hindered 1 (armor)');
+        expect(d.saves.find((s) => s.attr === 'AGI')!.notes).toContain('Hindered 1 (Weighty (Medium armor))');
       }
       if (type === 'Heavy') {
         expect(r.get('Slashing')).toBe(acv);
@@ -1620,5 +1620,108 @@ describe('normalizeCharacter', () => {
 describe('test modes', () => {
   it(`runs in ${QA ? 'QA (sampled)' : 'full'} mode`, () => {
     expect(LEVELS.length).toBe(QA ? 3 : 10);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Unarmed Strikes (rules: Unarmed Strikes; Powerful Build; natural weapons; class facets)
+// ---------------------------------------------------------------------------
+describe('Unarmed Strikes', () => {
+  const vig = (VIG: number) => ({ method: 'manual' as const, pool: 0, base: { VIG, AGI: 0, PER: 0, INT: 0, PRS: 0 }, bonus: [] as never[] });
+  const body = (d: Derived) => d.unarmed.find((u) => u.name === 'Unarmed Strike')!;
+
+  it('your body: Close-Up, DV 0, Deadly DV equal to your VIG points, Crushing', () => {
+    expect(section(/^##### Unarmed Strikes/)).toMatch(/Close-Up property, a DV of 0, and a Deadly DV equal to your \$\[VIG\] Points/);
+    const d = built({ classId: 'expert', ancestry: 'human', attributes: vig(3) }).d;
+    expect(body(d)).toMatchObject({ dv: 0, deadlyDv: 3, damage: 'Crushing', properties: ['Close-Up'] });
+    expect(d.unarmed).toHaveLength(1);
+  });
+  it('Powerful Build adds your VIG points to both DVs (Corpug)', () => {
+    const d = built({ classId: 'expert', ancestry: 'corpug', attributes: vig(2) }).d;
+    expect(body(d)).toMatchObject({ dv: 2, deadlyDv: 4 });
+  });
+  it('natural weapons: DV half your Class Bonus, Deadly DV your Class Bonus (Ursine Bear Claws, with Powerful Build)', () => {
+    const d = built({ classId: 'expert', ancestry: 'praedan', subAncestry: 'ursine', attributes: vig(1) }).d;
+    expect(d.unarmed.find((u) => u.name === 'Bear Claws')).toMatchObject({ dv: half(d.classBonus) + 1, deadlyDv: d.classBonus + 1, damage: 'Slashing', properties: ['Brutal'] });
+  });
+  it('Acid Tongue: DV 1, Deadly DV your Class Bonus plus 1, Caustic, Deft', () => {
+    const d = built({ classId: 'expert', ancestry: 'soli', subAncestry: 'mordant', attributes: vig(1) }).d;
+    expect(d.unarmed.find((u) => u.name === 'Acid Tongue')).toMatchObject({ dv: 1, deadlyDv: d.classBonus + 1, damage: 'Caustic', properties: ['Deft'] });
+  });
+  it('Daxan Claw and Fang: claws (Slashing, Light) and maw (Piercing, Pulling)', () => {
+    const d = built({ classId: 'expert', ancestry: 'daxan' }).d;
+    expect(d.unarmed.map((u) => u.name)).toEqual(['Unarmed Strike', 'Claws', 'Maw']);
+  });
+  it('Berserker Barbarous Light: Pushing, DV equal to VIG points, Deadly DV twice that', () => {
+    const d = built({ classId: 'berserker', subclass: 'roaring-fervor', ancestry: 'human', attributes: vig(3) }).d;
+    expect(body(d)).toMatchObject({ dv: 3, deadlyDv: 6, properties: ['Close-Up', 'Pushing'] });
+  });
+  it('Incarnate Ferocious Strikes: an Unarmed Strike with the Primordial Die, DV half the Class Bonus, Deadly DV the Class Bonus', () => {
+    const d = built({ classId: 'incarnate', subclass: 'the-king', ancestry: 'human' }).d;
+    expect(d.unarmed.find((u) => u.classDie)).toMatchObject({ dv: half(d.classBonus), deadlyDv: d.classBonus });
+    // The King's Claws: Slashing instead of Crushing.
+    expect(body(d).damage).toBe('Crushing or Slashing');
+  });
+  it('DVs never go below 0 with negative VIG', () => {
+    const d = built({ classId: 'expert', ancestry: 'human', attributes: vig(-2) }).d;
+    expect(body(d)).toMatchObject({ dv: 0, deadlyDv: 0 });
+  });
+});
+
+// Rules (Bolstered & Hindered): "If multiple effects would add Bolstered or Hindered levels, add their
+// levels together." and "Bolstered and Hindered levels subtract from each other".
+describe('Bolstered / Hindered from several sources', () => {
+  const chains: HomebrewEntry = {
+    id: 'chains',
+    kind: 'item',
+    name: "Predator's Chains",
+    tierLight: 'Frost',
+    rows: [{ id: 'd', minTier: 1, effect: { kind: 'check', scope: 'attribute', attr: 'PER', amount: 1 } }],
+  };
+  const frost = { situations: 'Patience', problems: 'Instinct', people: 'Empathy', picks: {} } as Character['alignment'];
+  it('levels on the same Checks add together into one line (Keen Senses + Predator’s Chains)', () => {
+    const d = built({ classId: 'expert', ancestry: 'praedan', subAncestry: 'canine', alignment: frost, homebrew: [chains] }).d;
+    const per = d.bolsters.filter((b) => b.startsWith('PER Attribute Checks'));
+    expect(per).toEqual(["PER Attribute Checks: Bolstered 2 (Keen Senses, Predator's Chains)"]);
+  });
+  it('Bolstered and Hindered on the same Checks cancel level for level', () => {
+    const curse: HomebrewEntry = { id: 'c', kind: 'effect', name: 'Dim Eyes', rows: [{ id: '1', effect: { kind: 'check', scope: 'attribute', attr: 'PER', amount: -2 } }] };
+    const d = built({ classId: 'expert', ancestry: 'praedan', subAncestry: 'canine', homebrew: [curse] }).d;
+    expect(d.bolsters.filter((b) => b.startsWith('PER Attribute Checks'))).toEqual(['PER Attribute Checks: Hindered 1 (Keen Senses, Dim Eyes)']);
+  });
+});
+
+// Rules, Armor: "Weighty: Your AGI Save Checks are Hindered 1" (Medium) and
+// "If you don’t meet the VIG Point requirement of armor you are wearing, all AGI
+// Checks you make are Weakened" (Light 0, Medium 1, Heavy 3).
+describe('Armor penalties are Check Modifiers', () => {
+  const wear = (type: 'Light' | 'Medium' | 'Heavy', VIG: number) =>
+    built({
+      classId: 'expert',
+      attributes: { method: 'manual', base: { VIG, AGI: 2, PER: 2, INT: 2, PRS: 2 } } as Character['attributes'],
+      equipment: { armor: { type, quality: 'Basic' }, weapons: [], inventory: [] },
+    }).d;
+  const row = (d: ReturnType<typeof wear>, label: string) => d.conditionFx.checks.find((r) => r.label === label);
+  it('Heavy armor without 3 VIG: AGI Checks Weakened', () => {
+    const d = wear('Heavy', 2);
+    expect(row(d, 'AGI Checks')?.weakened.join()).toMatch(/Heavy armor/);
+    expect(d.saves.find((s) => s.attr === 'AGI')!.notes.join()).toMatch(/Weakened/);
+  });
+  it('Heavy armor with 3 VIG: no penalty', () => {
+    expect(row(wear('Heavy', 3), 'AGI Checks')).toBeUndefined();
+  });
+  it('Medium armor (Weighty): AGI Save Checks Hindered 1, once', () => {
+    const d = wear('Medium', 1);
+    const r = row(d, 'AGI Save Checks')!;
+    expect([r.hindered, r.hinderedFrom]).toEqual([1, ['Weighty (Medium armor)']]);
+    expect(row(d, 'AGI Checks')).toBeUndefined();
+    expect(d.saves.find((s) => s.attr === 'AGI')!.notes.filter((n) => /Hindered/.test(n))).toHaveLength(1);
+  });
+  it('Medium armor with 0 VIG: Weakened too', () => {
+    expect(row(wear('Medium', 0), 'AGI Checks')?.weakened.length).toBe(1);
+  });
+  it('Light armor needs VIG 0: fine at 0, Weakened at −1', () => {
+    expect(row(wear('Light', 0), 'AGI Checks')).toBeUndefined();
+    expect(row(wear('Light', -1), 'AGI Checks')?.weakened.length).toBe(1);
   });
 });

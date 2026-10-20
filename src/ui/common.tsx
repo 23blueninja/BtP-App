@@ -8,13 +8,16 @@ export function Icon({ name }: { name: IconName }) {
   return <span className={`ic ic-${name}`} role="img" aria-label={name} title={name} />;
 }
 
-/** Renders plain text containing `{VIG}`-style tokens with icons. */
+/**
+ * Renders text with icons for `{VIG}`-style tokens (rules text) and for bare
+ * Attribute / AP abbreviations (text the app writes, e.g. "AGI Checks", "2 AP").
+ */
 export function TokenText({ text }: { text: string }) {
-  const parts = text.split(/(\{(?:VIG|AGI|PER|INT|PRS|AP|SL)\})/g);
+  const parts = text.split(/(\{(?:VIG|AGI|PER|INT|PRS|AP|SL)\}|\b(?:VIG|AGI|PER|INT|PRS|AP)\b)/g);
   return (
     <>
       {parts.map((p, i) => {
-        const m = p.match(/^\{(\w+)\}$/);
+        const m = p.match(/^\{(\w+)\}$/) ?? p.match(/^(VIG|AGI|PER|INT|PRS|AP)$/);
         return m ? <Icon key={i} name={m[1] as IconName} /> : <Fragment key={i}>{p}</Fragment>;
       })}
     </>

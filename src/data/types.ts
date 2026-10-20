@@ -41,6 +41,12 @@ export type Effect =
   | { kind: 'radiance'; amount: Scaled }
   | { kind: 'endurance'; amount: Scaled }
   | { kind: 'resistance'; type: string; amount: Scaled }
+  /** Your body's Unarmed Strike: DV / Deadly DV ('twiceDv' = twice its DV), extra properties, damage types it can deal. */
+  | { kind: 'unarmed'; dv?: Scaled; deadly?: Scaled | 'twiceDv'; properties?: string[]; damage?: string[] }
+  /** Added to both DVs of all your Unarmed Strikes (Powerful Build). */
+  | { kind: 'unarmedBonus'; amount: Scaled }
+  /** A natural weapon used for Unarmed Strikes (claws, horns…), or an alternative way to Unarmed Strike (`die: 'class'`). */
+  | { kind: 'naturalWeapon'; name: string; damage: string; properties: string[]; dv: Scaled; deadly: Scaled; deadlyPlus?: number; die?: 'class' }
   /** Jump rules: Powerful Jump (High 1 + VIG, Long the larger of 2 + VIG and 2×VIG) or doubled distances (Gravity Warp). */
   | { kind: 'jump'; mode: 'powerful' | 'double' }
   /** Immune to a damage type (no damage of it) or to a Condition (can't gain it). */

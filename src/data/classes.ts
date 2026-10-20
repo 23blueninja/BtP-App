@@ -110,7 +110,14 @@ export const classes: ClassDef[] = [
     subclassLabel: 'Wild Fervor',
     subclassListId: `${C}/wild-fervors`,
     facetExtras: {
-      'barbarous-light': { effects: [{ kind: 'tandem', what: 'Initiative Checks', die: 'class' }, { kind: 'jump', mode: 'powerful' }] },
+      'barbarous-light': {
+        effects: [
+          { kind: 'tandem', what: 'Initiative Checks', die: 'class' },
+          { kind: 'jump', mode: 'powerful' },
+          // Unarmed Strikes: Pushing, DV equal to your VIG points, Deadly DV twice that.
+          { kind: 'unarmed', dv: { attr: 'VIG' }, deadly: 'twiceDv', properties: ['Pushing'] },
+        ],
+      },
       'somatic-wellspring': { uses: { count: 1, per: 'Rest' } },
     },
     spellLists: [maneuverList(['Feral', 'Instinctual'], { granted: [`${C}/berserker/berserker-maneuvers/rage`], note: 'Includes Rage.' })],
@@ -278,6 +285,10 @@ export const classes: ClassDef[] = [
     subclassListId: `${C}/primordial-souls`,
     facetExtras: {
       'titanus-form': { uses: { count: 1, per: 'Long Rest' } },
+      // Ferocious Strikes: Unarmed Strike with the Primordial Die; DV half your Class Bonus, Deadly DV your Class Bonus.
+      'primeval-light': {
+        effects: [{ kind: 'naturalWeapon', name: 'Unarmed Strike (Primordial Die)', damage: 'Crushing', properties: ['Close-Up'], dv: 'halfClassBonus', deadly: 'classBonus', die: 'class' }],
+      },
     },
     spellLists: [
       maneuverList(['Feral', 'Instinctual'], {
@@ -340,7 +351,8 @@ export const classes: ClassDef[] = [
         facetExtras: {
           // "If you already have Swim Movement, it increases by 2 spaces."
           amphibious: { effects: [{ kind: 'movementType', type: 'Swim', amount: 'movement', ifAlready: 2 }] },
-          'king-of-beasts': { effects: [{ kind: 'actions', categories: ['Combat'] }] },
+          // Claws: Unarmed Strikes can deal Slashing damage instead of Crushing.
+          'king-of-beasts': { effects: [{ kind: 'actions', categories: ['Combat'] }, { kind: 'unarmed', damage: ['Slashing'] }] },
         },
         spellLists: [
           {

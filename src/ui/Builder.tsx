@@ -277,7 +277,7 @@ function Attributes({ c, d, update }: StepProps) {
               {d.attrs[a].sources.length > 1 && <div className="small muted">{d.attrs[a].sources.join(' ')}</div>}
               {d.attrs[a].dieNote && <div className="small muted">{d.attrs[a].dieNote}</div>}
             </div>
-            <Collapsible title={<span className="muted">What {a} does</span>}>
+            <Collapsible title={<span className="muted">What {ATTR_NAMES[a]} does</span>}>
               <FacetText contentId={`beyond-the-prism/attributes/${ATTR_NAMES[a].toLowerCase()}-${a.toLowerCase()}`} />
             </Collapsible>
           </div>
@@ -639,7 +639,7 @@ function Details({ c, d, update }: StepProps) {
       <div className="row wrap">
         {c.ageUps.map((a, i) => (
           <span key={i} className="chip">
-            Age-up {i + 1}: −1 {a}{' '}
+            Age-up {i + 1}: −1 <Icon name={a} />{' '}
             <button type="button" className="link" onClick={() => update((x) => ({ ...x, ageUps: x.ageUps.filter((_, j) => j !== i) }))}>
               ✕
             </button>
@@ -647,7 +647,7 @@ function Details({ c, d, update }: StepProps) {
         ))}
         {(['VIG', 'AGI', 'PER'] as Attr[]).map((a) => (
           <button key={a} type="button" onClick={() => update((x) => ({ ...x, ageUps: [...x.ageUps, a] }))}>
-            Age up (−1 {a})
+            Age up (−1 <Icon name={a} />)
           </button>
         ))}
       </div>
@@ -753,11 +753,13 @@ export function Equipment({ c, d, update }: StepProps) {
           )}
         </div>
         <p>
-          AC <strong>{d.ac.value}</strong> <span className="muted">({d.ac.breakdown.join('; ')})</span>
+          AC <strong>{d.ac.value}</strong> <span className="muted">
+            (<TokenText text={d.ac.breakdown.join('; ')} />)
+          </span>
         </p>
         {d.armorNotes.map((n) => (
           <p key={n} className="note">
-            {n}
+            <TokenText text={n} />
           </p>
         ))}
         <p className="muted">
@@ -776,7 +778,6 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
     ...c.equipment.weapons.map((w) => ({ id: w.id, name: w.name, base: w.name, homebrew: false })),
     ...d.homebrew.filter((h) => h.entry.kind === 'item' && h.entry.baseWeapon).map((h) => ({ id: h.entry.id, name: h.entry.name, base: h.entry.baseWeapon!, homebrew: true })),
   ];
-  if (!rows.length) return <p className="muted">No weapons.</p>;
   return (
     <div className="table-wrap">
       <table className="weapons">
@@ -791,6 +792,26 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
           </tr>
         </thead>
         <tbody>
+          {/* Unarmed Strikes are always available: your body, plus any natural weapons. */}
+          {d.unarmed.map((u) => (
+            <tr key={u.name} className="unarmed-row">
+              <td className="w-name">
+                {u.name}
+                {u.sources.length > 0 && <div className="muted small">{u.sources.join(', ')}</div>}
+              </td>
+              <td className="w-die" data-label="Mod Die">
+                {u.classDie ? d.classDie : <WeaponDie name={u.name} props={u.properties} d={d} />}
+              </td>
+              <td className="w-dv" data-label="DV">
+                {u.dv} / {u.deadlyDv}
+              </td>
+              <td className="w-dmg">{u.damage}</td>
+              <td className="w-props small">
+                <PropertyLinks props={u.properties} />
+              </td>
+              {onRemove && <td className="w-remove" />}
+            </tr>
+          ))}
           {rows.map((we) => {
             const w = weapons.find((x) => x.name === we.base);
             const unmet = w?.requirements
@@ -816,21 +837,7 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
                 </td>
                 <td className="w-dmg">{w?.damage}</td>
                 <td className="w-props small">
-                  {w?.properties.map((p, i) => {
-                    const node = weaponPropertyNode(p);
-                    return (
-                      <span key={p}>
-                        {i > 0 && ', '}
-                        {node ? (
-                          <RuleLink id={node.id}>
-                            <TokenText text={p} />
-                          </RuleLink>
-                        ) : (
-                          <TokenText text={p} />
-                        )}
-                      </span>
-                    );
-                  })}
+                  <PropertyLinks props={w?.properties ?? []} />
                 </td>
                 {onRemove && !we.homebrew && (
                   <td className="w-remove">
@@ -852,6 +859,29 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
  * Mod Die choices for a weapon's Attack Checks. The cell shows just the dice;
  * tapping it opens what each die is (and Combat Style Tandem/Bolstered/notes).
  */
+/** Weapon properties, each linked to its rules section. */
+function PropertyLinks({ props }: { props: string[] }) {
+  return (
+    <>
+      {props.map((p, i) => {
+        const node = weaponPropertyNode(p);
+        return (
+          <span key={p}>
+            {i > 0 && ', '}
+            {node ? (
+              <RuleLink id={node.id}>
+                <TokenText text={p} />
+              </RuleLink>
+            ) : (
+              <TokenText text={p} />
+            )}
+          </span>
+        );
+      })}
+    </>
+  );
+}
+
 function WeaponDie({ name, props, d }: { name: string; props: string[]; d: Derived }): ReactNode {
   const [open, setOpen] = useState(false);
   const has = (p: string) => props.some((x) => x.toLowerCase().startsWith(p.toLowerCase()));
