@@ -39,7 +39,10 @@ function character(classId: string, subclass: string, level: number, ancestry: s
     level,
     ancestry,
     attributes: { ...newCharacter().attributes, method: 'manual', base: { VIG: 3, AGI: 3, PER: 2, INT: 2, PRS: 2 } },
-    equipment: { armor: { type: 'Light', quality: 'Basic' }, weapons: [{ id: 'w', name: 'Longsword' }], inventory: [{ id: 'i', name: 'Rope', qty: 1, bulk: 2 }] },
+    equipment: { armor: { type: 'Light', quality: 'Basic' }, weapons: [{ id: 'w', name: 'Longsword' }], inventory: [
+        { id: 'i', name: 'Rope', qty: 1, bulk: 2, storedIn: 'b', notes: '50 ft' },
+        { id: 'b', name: 'Backpack', qty: 1, bulk: 1, container: true },
+      ] },
   });
   return { ...c, play: { ...freshPlay(c), ap: 5 } };
 }
@@ -179,11 +182,15 @@ describe('phone layout', () => {
     const sub = subclassesOf(classes.find((c) => c.id === cls)!)[0]?.id ?? '';
     const { page, errors } = await open([character(cls, sub, 5, ancestries[0].id, 'phone')], { width, height: 900 });
     await exerciseSheet(page, 'phone');
-    // Nothing wider than the screen.
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    // Nothing wider than the screen, on any tab.
+    const overflow: Record<string, number> = {};
+    for (const t of ['Sheet', 'Facets', 'Spells & Maneuvers', 'Equipment', 'Notes']) {
+      await tab(page, t);
+      overflow[t] = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    }
     await page.close();
     expect(errors).toEqual([]);
-    expect(overflow).toBeLessThanOrEqual(1);
+    expect(Object.entries(overflow).filter(([, px]) => px > 1)).toEqual([]);
   });
 });
 

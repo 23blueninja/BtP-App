@@ -2000,6 +2000,55 @@ input.pyr-input:focus {
   }
 }
 
+/* Inventory on phones: one card per item (name and Bulk, then quantity and
+   flags, then notes) instead of a table wider than the screen. */
+@media (max-width: 640px) {
+  table.inventory thead {
+    display: none;
+  }
+  table.inventory tr {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.9rem;
+    padding: 0.5rem 2rem 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  table.inventory td {
+    border: none;
+    padding: 0;
+  }
+  table.inventory .i-name {
+    flex: 1 1 auto;
+    font-weight: 600;
+  }
+  table.inventory .i-qty,
+  table.inventory .i-flag {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  table.inventory td[data-label]::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: 0.75rem;
+    margin-right: 0.3rem;
+  }
+  table.inventory .i-notes {
+    flex: 1 1 100%;
+    order: 10;
+  }
+  table.inventory .notes-input {
+    min-width: 0;
+  }
+  table.inventory .i-remove {
+    position: absolute;
+    top: 0.4rem;
+    right: 0;
+  }
+}
+
 /* ---------- builder: fields that still need a choice ---------- */
 .needs {
   outline: 2px solid var(--warn);
