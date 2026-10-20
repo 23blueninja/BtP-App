@@ -1526,6 +1526,25 @@ input.num {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+/* Backstory: Age and Devotion at the top, easy to read at a glance. */
+.backstory-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.75rem;
+  margin: 0 0 0.6rem;
+}
+.backstory-facts dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.backstory-facts dd {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
 .equip-row {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
