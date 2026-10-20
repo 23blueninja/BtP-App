@@ -27,7 +27,7 @@ export interface DieRef {
 export type RestRule = 'noRadianceLongRest' | 'noVitalityLongRest' | 'noEnduranceLongRest' | 'noTempEnduranceLongRest' | 'noRestCharges' | 'noVitalityShortRest';
 
 /** `darkness`: your missing Vitality (Champion of Darkness, Endwalker). */
-export type Scaled = number | 'classBonus' | 'halfClassBonus' | 'level' | 'twiceLevel' | 'darkness' | { attr: Attr; half?: boolean };
+export type Scaled = number | 'classBonus' | 'halfClassBonus' | 'level' | 'twiceLevel' | 'darkness' | 'halfDarkness' | { attr: Attr; half?: boolean };
 
 /**
  * Mechanical effects the engine applies. Anything not modelled here is still
@@ -52,6 +52,8 @@ export type Effect =
   | { kind: 'jump'; mode: 'powerful' | 'double' }
   /** You contain Darkness equal to your missing Vitality (scaled values can use it as 'darkness'). */
   | { kind: 'darkness' }
+  /** Each time you take damage, reduce one type of it by this much (after Resistance). */
+  | { kind: 'damageReduction'; amount: Scaled }
   /** Immune to a damage type (no damage of it) or to a Condition (can't gain it). */
   | { kind: 'immunity'; damage?: string; condition?: string }
   /** Vulnerability to a damage type: these dice are added to damage of it. */

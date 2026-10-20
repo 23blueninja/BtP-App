@@ -107,7 +107,7 @@ async function exerciseSheet(page: Page, id: string): Promise<string[]> {
   // A condition.
   const pick = page.locator('.condition-add select');
   await pick.selectOption({ index: 1 });
-  await page.locator('.condition-add button').click();
+  await page.locator('.condition-add button', { hasText: 'Add' }).click();
   for (const t of ['Facets', 'Spells & Maneuvers', 'Equipment', 'Notes', 'Sheet']) {
     await tab(page, t);
     abbr.push(...(await abbreviations(page, t)));
@@ -224,6 +224,21 @@ describe('sheet shows the modifiers the rules give', () => {
     });
     await page.close();
     expect(mods).toContain('PER Attribute Checks: Bolstered 2 (Keen Senses, Sharp Ears)');
+  });
+  it('a Condition is gained at the chosen level (Burning 3: 9 Thermic damage)', async () => {
+    const { page, errors } = await sheet({});
+    const endurance = async () => Number(await page.locator('.end-current').textContent());
+    const before = await endurance();
+    await page.locator('.condition-add select').selectOption('Burning');
+    await page.getByRole('button', { name: 'Increase Condition level' }).click();
+    await page.getByRole('button', { name: 'Increase Condition level' }).click();
+    await page.locator('.condition-add button', { hasText: 'Add' }).click();
+    const after = await endurance();
+    const mods = await page.locator('.active-effects .mods').textContent();
+    await page.close();
+    expect(errors).toEqual([]);
+    expect(before - after).toBe(9);
+    expect(mods).toContain('Numbed 3');
   });
   it('Unarmed Strike is listed once picked, above Simple weapons, and can be removed', async () => {
     const { page } = await sheet({ equipment: { armor: undefined, weapons: [], inventory: [] } });

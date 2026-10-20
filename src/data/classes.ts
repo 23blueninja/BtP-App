@@ -189,7 +189,7 @@ export const classes: ClassDef[] = [
       darkness: {
         facetExtras: {
           'vital-sacrifice': { uses: { count: 1, per: 'Rest' } },
-          endwalker: { effects: [{ kind: 'darkness' }, { kind: 'movement', amount: 'darkness' }] },
+          endwalker: { effects: [{ kind: 'darkness' }, { kind: 'movement', amount: 'darkness' }, { kind: 'damageReduction', amount: 'halfDarkness' }] },
         },
         spellLists: [
           {

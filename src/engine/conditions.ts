@@ -363,6 +363,8 @@ export interface GainContext {
   vitalityMax?: number;
   /** Conditions you're immune to: gaining one does nothing. */
   immuneConditions?: string[];
+  /** Taken damage reduced by this after Resistance (e.g. Endwalker). */
+  reduction?: { amount: number; source: string };
 }
 
 /**
@@ -380,7 +382,7 @@ export function addCondition(p: PlayState, name: string, level?: number, ctx: Ga
   if (dmg?.onGain && !ctx.immune?.includes(dmg.type)) {
     const raw = dmg.amount(level ?? 1, 0, p);
     const res = ctx.resistances?.find((r) => r.type === dmg.type)?.value ?? 0;
-    next = applyDamage(next, Math.max(dmg.min ?? 0, raw - res), ctx.vitalityMax);
+    next = applyDamage(next, Math.max(dmg.min ?? 0, raw - res - (ctx.reduction?.amount ?? 0)), ctx.vitalityMax);
   }
   return next;
 }
@@ -417,6 +419,8 @@ export interface Defenses {
   vulnerable: { type: string; dice: string }[];
   /** Conditions you're immune to (they have no effect). */
   immuneConditions?: string[];
+  /** Taken damage reduced by this after Resistance (e.g. Endwalker). */
+  reduction?: { amount: number; source: string };
 }
 
 export interface TurnResult {
@@ -448,11 +452,13 @@ export function startTurn(p: PlayState, level: number, resistances: { type: stri
       continue;
     }
     const res = resistances.find((r) => r.type === type)?.value ?? 0;
-    const amount = Math.max(rule.startDamage.min ?? 0, raw - res);
+    const red = defenses.reduction?.amount ?? 0;
+    const amount = Math.max(rule.startDamage.min ?? 0, raw - res - red);
     damage.push({ type, amount, source: label(c) });
     const vuln = defenses.vulnerable.find((v) => v.type === type);
+    const why = [res ? `Resistance ${res}` : '', red ? `${defenses.reduction!.source} ${red}` : ''].filter(Boolean);
     log.push(
-      `${label(c)}: take ${amount} ${type} damage${res ? ` (${raw} − Resistance ${res})` : ''}.` +
+      `${label(c)}: take ${amount} ${type} damage${why.length ? ` (${raw} − ${why.join(' − ')})` : ''}.` +
         (vuln ? ` Roll your ${type} Vulnerability ${vuln.dice} and take that too.` : ''),
     );
   }
