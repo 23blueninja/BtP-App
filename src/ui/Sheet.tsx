@@ -436,6 +436,12 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
                 {/* Restoring Vitality ends Dying. */}
                 <Pips total={d.vitalityMax} used={d.vitalityMax - p.vitality} onChange={(u) => setPlay((x) => { const v = d.vitalityMax - u; return { ...x, vitality: v, dying: v > x.vitality ? 0 : x.dying }; })} label="Vitality" />
               </div>
+              {d.darkness && (
+                <div className="row between" title={`Your missing Vitality (${d.darkness.sources.join(', ')})`}>
+                  <span>Darkness</span>
+                  <strong>{d.darkness.value}</strong>
+                </div>
+              )}
               <div className="row between">
                 <span>
                   <RuleLink id="beyond-the-prism/endurance-and-vitality/dying">Dying</RuleLink>

@@ -5211,6 +5211,83 @@
        ],
        "id": "classes/champions-causes/the-throne",
        "html": "<p>For power, authority, and the rule of the strong. Champions of the throne demand that a greater will is brought forth, and that lesser wills bend the knee.</p>"
+      },
+      {
+       "title": "Darkness",
+       "titleHtml": "Darkness",
+       "depth": 3,
+       "children": [
+        {
+         "title": "Vital Sacrifice",
+         "titleHtml": "Vital Sacrifice",
+         "depth": 4,
+         "lvl": 1,
+         "children": [
+          {
+           "title": "Evoke Darkness",
+           "titleHtml": "Evoke Darkness",
+           "depth": 5,
+           "id": "classes/champions-causes/darkness/vital-sacrifice/evoke-darkness",
+           "html": "<dl class=\"defs\"><div><dt>Categories</dt><dd>Supernatural, Hostile</dd></div><div><dt>Cost</dt><dd>1 <em>Vitality</em> (you don’t begin Dying), 2 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span>; You haven’t Evoked Darkness since your last Rest.</dd></div></dl>\n\n\n\n<p>You briefly shroud yourself in darkness. Each Hostile creature within your Aura makes a <span class=\"ic ic-PRS\" role=\"img\" aria-label=\"PRS\" title=\"PRS\"></span> Save Check against your Spell DC Check.</p>\n<dl class=\"defs\"><div><dt>Failure</dt><dd>Panicked 2.</dd></div><div><dt>Complete Failure</dt><dd>Panicked 3.</dd></div><div><dt>Success</dt><dd>Panicked 1.</dd></div><div><dt>Complete Success</dt><dd>Nothing.</dd></div></dl>",
+           "fields": {
+            "Categories": "Supernatural, Hostile",
+            "Cost": "1 Vitality (you don’t begin Dying), 2 {AP}; You haven’t Evoked Darkness since your last Rest.",
+            "Failure": "Panicked 2.",
+            "Complete Failure": "Panicked 3.",
+            "Success": "Panicked 1.",
+            "Complete Success": "Nothing."
+           }
+          }
+         ],
+         "id": "classes/champions-causes/darkness/vital-sacrifice",
+         "html": "<p>You gain the <strong>Evoke Darkness</strong> action, described below.</p>"
+        },
+        {
+         "title": "Endwalker",
+         "titleHtml": "Endwalker",
+         "depth": 4,
+         "lvl": 1,
+         "id": "classes/champions-causes/darkness/endwalker",
+         "html": "<p>The closer you are to the grave, the stronger you become. You contain <strong>Darkness</strong> equal to your missing <em>Vitality</em>, giving you the following benefits.</p>\n<ul>\n<li><p><em><strong>Movement.</strong></em> Your <em>Movement</em> gains a bonus equal to your Darkness.</p>\n</li>\n<li><p><em><strong>Damage.</strong></em> Each time you take or deal damage, you can increase or reduce one type of the damage by half your Darkness.</p>\n</li>\n</ul>",
+         "items": [
+          {
+           "name": "Movement",
+           "html": "<p>Your <em>Movement</em> gains a bonus equal to your Darkness.</p>",
+           "text": "Your Movement gains a bonus equal to your Darkness."
+          },
+          {
+           "name": "Damage",
+           "html": "<p>Each time you take or deal damage, you can increase or reduce one type of the damage by half your Darkness.</p>",
+           "text": "Each time you take or deal damage, you can increase or reduce one type of the damage by half your Darkness."
+          }
+         ]
+        },
+        {
+         "title": "Darkness Exploits",
+         "titleHtml": "Darkness Exploits",
+         "depth": 4,
+         "lvl": 2,
+         "children": [
+          {
+           "title": "Void Smite",
+           "titleHtml": "Void Smite",
+           "depth": 5,
+           "id": "classes/champions-causes/darkness/darkness-exploits/void-smite",
+           "html": "<p>Your Smite gains the Void type, and when you Smite, your Attack Check is against the target’s <span class=\"ic ic-VIG\" role=\"img\" aria-label=\"VIG\" title=\"VIG\"></span> and gains the following additional effects.</p>\n<dl class=\"defs\"><div><dt>Success</dt><dd><span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> Divine damage, and the target loses 1 <em>Vitality</em>.</dd></div><div><dt>Deadly Success</dt><dd>2 <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> Divine damage, and the target loses 2 <em>Vitality</em>.</dd></div><div><dt>Failure</dt><dd>The target loses <em>Endurance</em> equal to its Level.</dd></div><div><dt>Complete Failure</dt><dd>Nothing.</dd></div></dl>",
+           "fields": {
+            "Success": "{SL} Divine damage, and the target loses 1 Vitality.",
+            "Deadly Success": "2 {SL} Divine damage, and the target loses 2 Vitality.",
+            "Failure": "The target loses Endurance equal to its Level.",
+            "Complete Failure": "Nothing."
+           }
+          }
+         ],
+         "id": "classes/champions-causes/darkness/darkness-exploits",
+         "html": "<p>As a Champion of Darkness, you can learn Feral and Martial Maneuvers, as well as Void and Infernal Evocations when you gain a new Glorious Exploit. Choose two Exploits to learn when you gain this facet in addition to Smite.</p>"
+        }
+       ],
+       "id": "classes/champions-causes/darkness",
+       "html": "<p>In darkness, we are all equals. Champions of Darkness serve to push all things towards their natural end, and ward against the evils of immortality and prolonged existence. Everything must end, eventually.</p>"
       }
      ],
      "id": "classes/champions-causes",

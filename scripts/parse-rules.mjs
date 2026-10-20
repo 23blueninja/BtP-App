@@ -6,10 +6,11 @@
 // Each heading becomes a node with its own body rendered to HTML, plus any
 // `**Key** :: value` fields, an italic subtitle line (spell/maneuver type),
 // tables, and the `< lvl N >` facet level. Commented-out (unreleased) content
-// is dropped. Attribute/AP icons ($[VIG] etc.) become `{VIG}` tokens in plain
+// is dropped, except the blocks in UNRELEASED_INCLUDES. Attribute/AP icons ($[VIG] etc.) become `{VIG}` tokens in plain
 // text and <span class="ic ic-VIG"> in HTML.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { marked } from 'marked';
+import { includeUnreleased } from './unreleased.mjs';
 
 const [, , src = 'rules/BtP-Alpha-Rules.md', out = 'src/content/rules.json'] = process.argv;
 const ICONS = ['VIG', 'AGI', 'PER', 'INT', 'PRS', 'AP', 'SL'];
@@ -17,7 +18,7 @@ const ICONS = ['VIG', 'AGI', 'PER', 'INT', 'PRS', 'AP', 'SL'];
 marked.setOptions({ gfm: true, breaks: false });
 
 function preprocess(text) {
-  text = text.replace(/\r\n/g, '\n').replace(/<!--[\s\S]*?-->/g, '');
+  text = includeUnreleased(text.replace(/\r\n/g, '\n')).replace(/<!--[\s\S]*?-->/g, '');
   const lines = text.split('\n');
   const start = lines.findIndex((l) => /^# Beyond the Prism\s*$/.test(l));
   const outLines = [];

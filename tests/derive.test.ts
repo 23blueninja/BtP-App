@@ -8,6 +8,7 @@
 // Where the app deviates from the document the test is marked `it.fails('BUG: …')`.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { includeUnreleased } from '../scripts/unreleased.mjs';
 import { describe, expect, it } from 'vitest';
 import { LEVELS, QA, badNumbers, built, makeCharacter, sample } from './helpers';
 import { derive, attributeCap, resolveScaled, slugify, MAX_LEVEL, POINT_BUY_POOL, type Derived } from '../src/engine/derive';
@@ -28,7 +29,7 @@ import { getCastable, spells, maneuvers, weapons } from '../src/content';
 
 const RAW_MD = readFileSync(fileURLToPath(new URL('../rules/BtP-Alpha-Rules.md', import.meta.url)), 'utf8');
 /** The document as rendered: HTML comments (unreleased levels/facets) removed. */
-const MD = RAW_MD.replace(/<!--[\s\S]*?-->/g, '');
+const MD = includeUnreleased(RAW_MD).replace(/<!--[\s\S]*?-->/g, '');
 const LINES = MD.split('\n');
 
 const norm = (s: string) =>
@@ -1736,5 +1737,45 @@ describe('Save Check training', () => {
   });
   it('every class has Save Check training', () => {
     for (const cl of classes) expect(built({ classId: cl.id }).d.saveTraining, cl.id).toMatch(/in Tandem with your .+ Die/);
+  });
+});
+
+// Playtest Cause, commented out in the rules source and included up to level 2
+// by parse-rules: "Vital Sacrifice" (Evoke Darkness: 1 Vitality, 2 AP, once per
+// Rest), "Endwalker" (Darkness = missing Vitality; Movement + Darkness) and
+// "Darkness Exploits" (Feral/Martial Maneuvers, Void/Infernal Evocations, Smite).
+describe('Champion of Darkness (playtest Cause)', async () => {
+  const { getNode } = await import('../src/content');
+  const { actionRequest, performUse } = await import('../src/engine/activations');
+  const champion = classes.find((c) => c.id === 'champion')!;
+  const dark = (level: number, vitality: number) =>
+    built({ classId: 'champion', subclass: 'darkness', level, attributes: { method: 'manual', base: { VIG: 2, AGI: 0, PER: 0, INT: 0, PRS: 2 } } as Character['attributes'], play: { initialized: true, vitality } });
+  it('is a Champion’s Cause, with nothing above level 2', () => {
+    expect(subclassesOf(champion).map((s) => s.id)).toContain('darkness');
+    expect(getNode('classes/champions-causes/darkness/void-ally')).toBeUndefined();
+    expect(dark(10, 4).d.facets.filter((f) => f.source === 'Darkness').map((f) => f.name)).toEqual(['Vital Sacrifice', 'Endwalker', 'Darkness Exploits']);
+  });
+  it('Endwalker: Darkness is your missing Vitality, added to Movement', () => {
+    // 3 + half of 2 VIG + Apostle’s Light (half the Champion Bonus).
+    const full = dark(1, 5).d;
+    expect(full.vitalityMax).toBe(5);
+    expect(full.darkness?.value).toBe(0);
+    const hurt = dark(1, 2).d;
+    expect(hurt.darkness?.value).toBe(3);
+    expect(hurt.movement).toBe(full.movement + 3);
+  });
+  it('Evoke Darkness costs 1 Vitality and 2 AP, once per Rest', () => {
+    const { c, d } = dark(1, 5);
+    const node = getNode('classes/champions-causes/darkness/vital-sacrifice/evoke-darkness')!;
+    const req = actionRequest(d, node.id, 'Evoke Darkness', node.fields?.Cost);
+    const r = performUse({ ...c, play: { ...c.play, ap: 5 } }, d, req);
+    expect([r.play.vitality, r.play.ap]).toEqual([4, 3]);
+    expect(req.facetKey).toBeDefined();
+    expect(r.play.facetUses[req.facetKey!]).toBe(1);
+  });
+  it('Darkness Exploits at level 2: Smite plus Feral/Martial Maneuvers and Infernal Evocations', () => {
+    const list = dark(2, 5).d.spellLists.find((l) => l.def.id === 'exploits')!;
+    expect(list.granted.map((g) => g.id)).toEqual(['classes/champion/glorious-exploits/casting-spells/smite']);
+    expect(new Set(list.pool.map((p) => p.type))).toEqual(new Set(['Feral', 'Martial', 'Infernal']));
   });
 });

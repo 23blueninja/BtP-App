@@ -26,7 +26,8 @@ export interface DieRef {
 /** Rest benefits a homebrew effect can take away. */
 export type RestRule = 'noRadianceLongRest' | 'noVitalityLongRest' | 'noEnduranceLongRest' | 'noTempEnduranceLongRest' | 'noRestCharges' | 'noVitalityShortRest';
 
-export type Scaled = number | 'classBonus' | 'halfClassBonus' | 'level' | 'twiceLevel' | { attr: Attr; half?: boolean };
+/** `darkness`: your missing Vitality (Champion of Darkness, Endwalker). */
+export type Scaled = number | 'classBonus' | 'halfClassBonus' | 'level' | 'twiceLevel' | 'darkness' | { attr: Attr; half?: boolean };
 
 /**
  * Mechanical effects the engine applies. Anything not modelled here is still
@@ -49,6 +50,8 @@ export type Effect =
   | { kind: 'naturalWeapon'; name: string; damage: string; properties: string[]; dv: Scaled; deadly: Scaled; deadlyPlus?: number; die?: 'class' }
   /** Jump rules: Powerful Jump (High 1 + VIG, Long the larger of 2 + VIG and 2×VIG) or doubled distances (Gravity Warp). */
   | { kind: 'jump'; mode: 'powerful' | 'double' }
+  /** You contain Darkness equal to your missing Vitality (scaled values can use it as 'darkness'). */
+  | { kind: 'darkness' }
   /** Immune to a damage type (no damage of it) or to a Condition (can't gain it). */
   | { kind: 'immunity'; damage?: string; condition?: string }
   /** Vulnerability to a damage type: these dice are added to damage of it. */
