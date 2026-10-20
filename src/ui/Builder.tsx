@@ -1019,12 +1019,14 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
           <tbody>
             {items.map((it) => (
               <tr key={it.id}>
-                <td>{it.name}</td>
-                <td>{it.bulk ?? '—'}</td>
-                <td>
+                <td className="i-name">{it.name}</td>
+                <td className="i-bulk" data-label="Bulk">
+                  {it.bulk ?? '—'}
+                </td>
+                <td className="i-qty" data-label="Qty">
                   <Stepper label="quantity" value={it.qty} min={0} onChange={(v) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, qty: v } : x)))} />
                 </td>
-                <td>
+                <td className="i-notes">
                   <input
                     className="notes-input"
                     value={it.notes ?? ''}
@@ -1033,7 +1035,7 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
                     onChange={(e) => setItems((i) => i.map((x) => (x.id === it.id ? { ...x, notes: e.target.value } : x)))}
                   />
                 </td>
-                <td>
+                <td className="i-flag" data-label="Backpack">
                   <input
                     type="checkbox"
                     checked={!!it.container}
@@ -1043,7 +1045,7 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
                   />
                 </td>
                 {containers.length > 0 && (
-                  <td>
+                  <td className="i-flag" data-label={it.container ? undefined : 'Stored in'}>
                     {!it.container && (
                       <select
                         value={it.storedIn && containers.some((x) => x.id === it.storedIn) ? it.storedIn : ''}
@@ -1061,7 +1063,7 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
                   </td>
                 )}
                 {shift > 0 && (
-                  <td>
+                  <td className="i-flag" data-label="In backpack">
                     <input
                       type="checkbox"
                       checked={!!it.inBackpack || (!!it.storedIn && containers.some((x) => x.id === it.storedIn))}
@@ -1071,7 +1073,7 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
                     />
                   </td>
                 )}
-                <td>
+                <td className="i-remove">
                   <button type="button" className="icon-btn" onClick={() => setItems((i) => i.filter((x) => x.id !== it.id))} aria-label={`Remove ${it.name}`}>
                     ✕
                   </button>
