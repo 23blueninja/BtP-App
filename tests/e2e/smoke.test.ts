@@ -261,6 +261,32 @@ describe('sheet shows the modifiers the rules give', () => {
     expect(named).toMatch(/Level \d+ · Kobold ·/);
     expect(named).toContain('Kobold (Custom ancestry)');
   });
+  it('Radiance panel opens the Radiance rules', async () => {
+    const { page, errors } = await sheet({});
+    await page.locator('.box.radiance').click({ position: { x: 10, y: 10 } });
+    const modal = (await page.locator('.modal').textContent()) ?? '';
+    await page.keyboard.press('Escape');
+    await page.close();
+    expect(errors).toEqual([]);
+    expect(modal).toMatch(/Radiance \d+\/\d+/);
+    expect(modal.length).toBeGreaterThan(100);
+  });
+  it('Short Rest asks how many Rest Charges, previews Endurance, then rests', async () => {
+    const base0 = character('expert', subclassesOf(classes.find((x) => x.id === 'expert')!)[0].id, 5, 'human', 'shows');
+    const { page, errors } = await sheet({ play: { ...base0.play, endurance: 0 } });
+    await page.getByRole('button', { name: 'Short Rest' }).click();
+    const preview = async () => (await page.locator('.rest-preview').textContent()) ?? '';
+    const max = Number((await preview()).match(/\/ (\d+)/)![1]);
+    await page.locator('.rest-charges').getByRole('button', { name: '1', exact: true }).click();
+    expect(await preview()).toContain(`0 → ${Math.ceil(max / 2)} / ${max}`);
+    await page.locator('.rest-charges').getByRole('button', { name: '2', exact: true }).click();
+    expect(await preview()).toContain(`0 → ${Math.min(max, 2 * Math.ceil(max / 2))} / ${max}`);
+    await page.locator('.modal').getByRole('button', { name: 'Rest', exact: true }).click();
+    const endurance = Number(await page.locator('.end-current').textContent());
+    await page.close();
+    expect(errors).toEqual([]);
+    expect(endurance).toBe(max);
+  });
   it('Unarmed Strike is listed once picked, above Simple weapons, and can be removed', async () => {
     const { page } = await sheet({ equipment: { armor: undefined, weapons: [], inventory: [] } });
     await page.getByRole('tab', { name: 'Equipment', exact: true }).click();

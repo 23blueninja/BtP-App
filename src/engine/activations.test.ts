@@ -116,7 +116,7 @@ describe('activations', () => {
     expect(p.tempAp).toBe(1);
     p = startTurn(p, 1, []).play;
     expect(p.effects?.map((e) => e.name)).toEqual(['Embolden 1']);
-    expect(shortRest({ ...c, play: p }, d, { spendRestCharge: false }).play.effects).toEqual([]);
+    expect(shortRest({ ...c, play: p }, d, { restCharges: 0 }).play.effects).toEqual([]);
   });
 
   it('Reignite has its own uses, one regained on a Short Rest', () => {
@@ -128,7 +128,7 @@ describe('activations', () => {
     expect(r.play.ap).toBe(4);
     const key = `act:${def.id}:${def.label}`;
     expect(r.play.facetUses[key]).toBe(1);
-    expect(shortRest({ ...c, play: r.play }, d, { spendRestCharge: false }).play.facetUses[key]).toBe(0);
+    expect(shortRest({ ...c, play: r.play }, d, { restCharges: 0 }).play.facetUses[key]).toBe(0);
   });
 });
 

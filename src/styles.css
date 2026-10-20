@@ -975,6 +975,32 @@ dl.defs dd {
 .box.radiance .pips {
   justify-content: flex-end;
 }
+/* The panel opens the Radiance rules; the title is its button. */
+.box.radiance {
+  cursor: pointer;
+}
+.box.radiance .pips {
+  cursor: auto;
+}
+.title-btn {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  corner-shape: round;
+  cursor: pointer;
+}
+.rest-charges {
+  border: 0;
+  padding: 0;
+  margin: 0 0 0.75rem;
+}
+.rest-charges legend {
+  margin-bottom: 0.4rem;
+}
 /* Level / Initiative / AC / Movement as a 2×2 square. */
 .stat-square {
   display: grid;

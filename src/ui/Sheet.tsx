@@ -7,7 +7,7 @@ import { derive, type Derived } from '../engine/derive';
 import { clampPlay, facetUseMax, heal, longRest, shortRest, takeDamage } from '../engine/play';
 import { AP_MAX, CONDITION_RULES, addCondition, describeCheck, endTurn, startTurn } from '../engine/conditions';
 import { ClassTableView, Equipment, WeaponTable } from './Builder';
-import { Collapsible, FacetText, go, Icon, Modal, RuleLink, Stepper, TokenText } from './common';
+import { Collapsible, FacetText, go, Icon, Modal, RuleBlock, RuleLink, Stepper, TokenText } from './common';
 import { SpellListEditor } from './pickers';
 import { CastRow } from './Cast';
 import { alignmentGradient, LIGHT_TEXT } from './lightColors';
@@ -360,6 +360,71 @@ function StatBox({ title, value, display, className = '', children }: { title: s
   );
 }
 
+/** Short Rest: choose how many Rest Charges to spend, with a preview of what you'll have after. */
+function ShortRestModal({ c, d, onClose, onRest }: { c: Character; d: Derived; onClose: () => void; onRest: (restCharges: number) => void }) {
+  const p = c.play;
+  const left = d.restCharges - p.restChargesSpent;
+  const blocked = d.restRules.includes('noRestCharges');
+  const options = [0, 1, 2].filter((n) => n === 0 || (!blocked && n <= left));
+  // Default: as many as it takes to fill Endurance (up to two).
+  const needed = Math.ceil((d.enduranceMax - p.endurance) / Math.max(1, Math.ceil(d.enduranceMax / 2)));
+  const [n, setN] = useState(Math.min(needed, options[options.length - 1]));
+  // The preview is the Short Rest itself, not saved.
+  const after = shortRest(c, d, { restCharges: n }).play;
+  return (
+    <Modal title="Short Rest" onClose={onClose}>
+      {p.shortRests >= 2 ? (
+        <p className="warn">You’ve had two Short Rests since your last Long Rest, so this one restores nothing.</p>
+      ) : (
+        <>
+          <fieldset className="rest-charges">
+            <legend>
+              Spend Rest Charges <span className="muted small">({blocked ? 'you can’t spend Rest Charges' : `${left} of ${d.restCharges} left`})</span>
+            </legend>
+            <div className="row">
+              {options.map((k) => (
+                <button key={k} type="button" className={k === n ? 'primary' : ''} aria-pressed={k === n} onClick={() => setN(k)}>
+                  {k === 0 ? 'None' : k}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+          <dl className="defs rest-preview">
+            <div>
+              <dt>Endurance</dt>
+              <dd>
+                {p.endurance} → <strong>{after.endurance}</strong> / {d.enduranceMax}
+              </dd>
+            </div>
+            {after.vitality !== p.vitality && (
+              <div>
+                <dt>Vitality</dt>
+                <dd>
+                  {p.vitality} → <strong>{after.vitality}</strong> / {d.vitalityMax}
+                </dd>
+              </div>
+            )}
+            <div>
+              <dt>Rest Charges</dt>
+              <dd>
+                {left} → <strong>{d.restCharges - after.restChargesSpent}</strong>
+              </dd>
+            </div>
+          </dl>
+        </>
+      )}
+      <div className="row">
+        <button type="button" className="primary" onClick={() => onRest(n)}>
+          Rest
+        </button>
+        <button type="button" onClick={onClose}>
+          Cancel
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
 function Details({ lines }: { lines: string[] }) {
   if (!lines.length) return null;
   return (
@@ -376,7 +441,8 @@ function Details({ lines }: { lines: string[] }) {
 function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
   const p = c.play;
   const [amount, setAmount] = useState('');
-  const [useCharge, setUseCharge] = useState(true);
+  const [resting, setResting] = useState(false);
+  const [radianceRules, setRadianceRules] = useState(false);
   // Endwalker and the like: you can reduce damage you take (on by default).
   const [reduce, setReduce] = useState(true);
   const dmgReduction = reduce && d.damageReduction ? d.damageReduction.amount : 0;
@@ -462,10 +528,20 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
           {/* Radiance over "I respond to new…", stacked in one column. */}
           <div className="top-stack">
             {/* The title is the label; the bubbles sit right-aligned beside it and wrap downward. */}
-            <section className="box radiance">
-              <h3 className="box-title">Radiance</h3>
+            {/* Clicking the panel (not the bubbles) opens the Radiance rules. */}
+            <section className="box radiance" onClick={(e) => !(e.target as Element).closest('.pips') && setRadianceRules(true)}>
+              <h3 className="box-title">
+                <button type="button" className="title-btn" aria-haspopup="dialog" onClick={(e) => (e.stopPropagation(), setRadianceRules(true))}>
+                  Radiance
+                </button>
+              </h3>
               <Pips total={d.radianceMax} used={p.radianceSpent} onChange={(u) => setPlay((x) => ({ ...x, radianceSpent: u }))} label="Radiance" />
             </section>
+            {radianceRules && (
+              <Modal title={`Radiance ${d.radianceMax - p.radianceSpent}/${d.radianceMax}`} onClose={() => setRadianceRules(false)}>
+                <RuleBlock node={getNode('beyond-the-prism/radiance')!} showTitle={false} />
+              </Modal>
+            )}
             <Box title="I respond to new…" className="respond">
               <ul className="plain">
                 <li>Situations with <Response value={al.situations} /></li>
@@ -624,11 +700,8 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
                 <span>Rest Charges</span>
                 <Pips total={d.restCharges} used={p.restChargesSpent} onChange={(u) => setPlay((x) => ({ ...x, restChargesSpent: u }))} label="Rest Charge" />
               </div>
-              <label className="inline small">
-                <input type="checkbox" checked={useCharge} onChange={(e) => setUseCharge(e.target.checked)} /> Spend a Rest Charge on Short Rest
-              </label>
               <div className="row">
-                <button type="button" onClick={() => update((x) => { const r = shortRest(x, derive(x), { spendRestCharge: useCharge }); onRest(r.log); return { ...x, play: r.play, homebrew: r.homebrew }; })}>
+                <button type="button" aria-haspopup="dialog" onClick={() => setResting(true)}>
                   Short Rest
                 </button>
                 <button type="button" onClick={() => update((x) => { const r = longRest(x, derive(x)); onRest(r.log); return { ...x, play: r.play, homebrew: r.homebrew }; })}>
@@ -638,6 +711,17 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               <p className="muted small">
                 {c.settings.restRules === 'heroic' ? 'Heroic' : 'Gritty'} rules · Short Rests since Long Rest: {p.shortRests}/2 · <RuleLink id="beyond-the-prism/resting">Resting rules</RuleLink>
               </p>
+              {resting && (
+                <ShortRestModal
+                  c={c}
+                  d={d}
+                  onClose={() => setResting(false)}
+                  onRest={(restCharges) => {
+                    update((x) => { const r = shortRest(x, derive(x), { restCharges }); onRest(r.log); return { ...x, play: r.play, homebrew: r.homebrew }; });
+                    setResting(false);
+                  }}
+                />
+              )}
             </Box>
           </div>
           <div className="col">
