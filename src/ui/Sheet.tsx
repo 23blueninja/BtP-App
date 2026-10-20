@@ -142,20 +142,8 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
       <section className="split-box">
         <div className="split-glass a" aria-hidden />
         <div className="split-glass b" aria-hidden />
-        {/* Outer corners cut like the panels', with the same prismatic edge. */}
+        {/* Outer corners cut like the panels'; the prismatic edge is the box's ::before ring. */}
         <svg className="split-shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
-          <defs>
-            <linearGradient id="split-prism" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stopColor="#fff" stopOpacity="0.85" />
-              <stop offset="0.12" stopColor="#ff5f6d" stopOpacity="0.55" />
-              <stop offset="0.3" stopColor="#ffb35c" stopOpacity="0.5" />
-              <stop offset="0.45" stopColor="#ffe066" stopOpacity="0.45" />
-              <stop offset="0.6" stopColor="#5fd39a" stopOpacity="0.45" />
-              <stop offset="0.75" stopColor="#4fd1ff" stopOpacity="0.5" />
-              <stop offset="0.88" stopColor="#7aa2ff" stopOpacity="0.55" />
-              <stop offset="1" stopColor="#c38bff" stopOpacity="0.55" />
-            </linearGradient>
-          </defs>
           <polygon points="0,6 6,0 94,0 100,6 100,20 0,71" />
           <polygon points="100,27 100,94 94,100 6,100 0,94 0,78" />
         </svg>

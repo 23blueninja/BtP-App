@@ -21,10 +21,16 @@
   --prism-loop: linear-gradient(90deg, #ff5f6d, #ffb35c, #ffe066, #5fd39a, #4fd1ff, #7aa2ff, #c38bff, #ff5f6d);
   /* Containers have square corners; controls keep their small rounding. */
   --radius: 0;
-  /* Top-level panels: cut corners and a prismatic edge (see .box). */
+  /* The background's drifting rainbow (.prism-bg). Panel edges show the same
+     field pinned to the screen, so each edge takes the colour behind it. */
+  --prism-field: repeating-linear-gradient(135deg, #1fb84a 0px, #15b3b3 175px, #1f5bff 350px, #1a1aa8 525px, #8a1fd6 700px, #d61fa3 875px, #e0262e 1050px, #e88a1a 1225px, #1fb84a 1400px);
+  /* Top-level panels: cut corners and a prismatic edge (see .box). Strength is
+     the edge's opacity, width, colour boost and the glint at the top-left. */
   --panel-cut: 12px;
-  --prism-edge: conic-gradient(from 200deg, rgba(255, 95, 109, 0.55), rgba(255, 179, 92, 0.5), rgba(255, 224, 102, 0.45), rgba(95, 211, 154, 0.45), rgba(79, 209, 255, 0.5), rgba(122, 162, 255, 0.55), rgba(195, 139, 255, 0.55), rgba(255, 95, 109, 0.55));
-  --prism-glint: radial-gradient(120px 60px at 0 0, rgba(255, 255, 255, 0.85), transparent 70%);
+  --prism-edge-strength: 0.53;
+  --prism-edge-width: 1.5px;
+  --prism-edge-boost: brightness(1.17) saturate(1.1);
+  --prism-glint: radial-gradient(106px 53px at 0 0, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0.34) 35%, transparent 75%);
   --shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
   color-scheme: dark;
   font-family: 'Open Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -1059,10 +1065,10 @@ dl.defs dd {
   padding: 0.6rem 0.75rem;
   min-width: 0;
 }
-/* Panels as prism glass: corners cut flat, and an edge that splits light into a
-   spectrum (a conic gradient drawn as a ring), with a white glint where light
-   enters at the top-left. Top-level panels and the big containers on other
-   pages; nested panels and small cards keep their plain edge. */
+/* Panels as prism glass: corners cut flat, and an edge (a ring) that shows the
+   background's rainbow behind it, drifting with it, plus a white glint where
+   light enters at the top-left. Top-level panels and the big containers on
+   other pages; nested panels and small cards keep their plain edge. */
 :is(.box:not(.box .box), .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card) {
   corner-shape: bevel;
   border-radius: var(--panel-cut);
@@ -1072,18 +1078,41 @@ dl.defs dd {
 :is(.box:not(.box .box), .builder-content, .ref-body, .levelup, .char-card):not(.turn-bar) {
   position: relative;
 }
-:is(.box:not(.box .box), .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card)::before {
+:is(.box:not(.box .box), .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card)::before,
+.split-box::before {
   content: '';
   position: absolute;
   inset: -1px;
-  padding: 1.5px;
+  padding: var(--prism-edge-width);
   border-radius: var(--panel-cut);
   corner-shape: bevel;
-  background: var(--prism-glint), var(--prism-edge);
+  /* The field is fixed to the screen and slides like the background's (kept on
+     one clock by App.tsx), so it lines up with the grid behind the panel. */
+  background: var(--prism-glint), var(--prism-field) 0 0 / calc(100vw + 1980px) 100vh no-repeat fixed;
+  opacity: var(--prism-edge-strength);
+  filter: var(--prism-edge-boost);
+  animation: prism-edge-drift 34s linear infinite reverse;
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
+}
+@keyframes prism-edge-drift {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: 0 0, -1980px 0;
+  }
+}
+/* The split box's ring follows its two cut halves: the same edge, masked to their
+   outlines (-1% insets line the 102-unit viewBox up with the box). */
+.split-box::before {
+  inset: -1%;
+  padding: 0;
+  border-radius: 0;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1 -1 102 102' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='white' stroke-width='1.5' vector-effect='non-scaling-stroke'%3E%3Cpolygon points='0,6 6,0 94,0 100,6 100,20 0,71' vector-effect='non-scaling-stroke'/%3E%3Cpolygon points='100,27 100,94 94,100 6,100 0,94 0,78' vector-effect='non-scaling-stroke'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1 -1 102 102' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='white' stroke-width='1.5' vector-effect='non-scaling-stroke'%3E%3Cpolygon points='0,6 6,0 94,0 100,6 100,20 0,71' vector-effect='non-scaling-stroke'/%3E%3Cpolygon points='100,27 100,94 94,100 6,100 0,94 0,78' vector-effect='non-scaling-stroke'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
 }
 .box-title {
   margin: 0 0 0.4rem;
@@ -1619,18 +1648,7 @@ b.calc {
   left: 0;
   height: 100%;
   width: calc(100% + 1980px);
-  background: repeating-linear-gradient(
-    135deg,
-    #1fb84a 0px,
-    #15b3b3 175px,
-    #1f5bff 350px,
-    #1a1aa8 525px,
-    #8a1fd6 700px,
-    #d61fa3 875px,
-    #e0262e 1050px,
-    #e88a1a 1225px,
-    #1fb84a 1400px
-  );
+  background: var(--prism-field);
   animation: prism-drift 34s linear infinite reverse;
   will-change: transform;
 }
@@ -1647,6 +1665,7 @@ b.calc {
 }
 @media (prefers-reduced-motion: reduce) {
   .prism-bg::before,
+  :is(.box, .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card, .split-box)::before,
   .tabs button.active::after,
   .topbar::after {
     animation: none;
@@ -2504,7 +2523,8 @@ tr.needs input {
   }
 }
 .app.still-bg .prism-bg::before,
-.app.still-bg .prism-bg::after {
+.app.still-bg .prism-bg::after,
+.app.still-bg :is(.box, .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card, .split-box)::before {
   animation: none;
 }
 .app.still-gradients .hero h1,
@@ -2589,10 +2609,9 @@ tr.needs input {
 .app.glass .split-shape polygon {
   fill: transparent;
 }
-/* The split box's two halves get the same prismatic edge as the panels. */
+/* The split box's edge is its ::before ring (above). */
 .split-shape polygon {
-  stroke: url(#split-prism);
-  stroke-width: 1.5;
+  stroke: none;
 }
 .split-glass {
   display: none;

@@ -80,6 +80,26 @@ export function App() {
   else if (section === 'c' && c) body = <Sheet c={c} update={update} />;
   else body = <Home />;
 
+  // Panel edges show the same drifting rainbow as the background (see --prism-field):
+  // keep the background and every edge on one clock so they line up, including
+  // edges of panels added later.
+  useEffect(() => {
+    if (typeof CSSAnimation === 'undefined') return;
+    const names = new Set(['prism-drift', 'prism-edge-drift']);
+    let queued = false;
+    const sync = () => {
+      queued = false;
+      for (const a of document.getAnimations()) if (a instanceof CSSAnimation && names.has(a.animationName) && a.startTime !== 0) a.startTime = 0;
+    };
+    const queue = () => {
+      if (!queued) (queued = true), requestAnimationFrame(sync);
+    };
+    sync();
+    const mo = new MutationObserver(queue);
+    mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    return () => mo.disconnect();
+  }, []);
+
   return (
     <div className={['app', prefs.pinStatBar && 'pin-stats', !prefs.animateGradients && 'still-gradients', !prefs.animateBackground && 'still-bg', prefs.glassPanels && 'glass'].filter(Boolean).join(' ')}>
       <div className="prism-bg" aria-hidden />
