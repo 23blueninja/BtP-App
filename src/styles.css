@@ -1521,6 +1521,10 @@ input.num {
   gap: 0.75rem;
   align-items: start;
 }
+/* Notes tab: Session notes take two thirds. */
+.notes-cols {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
 @media (max-width: 820px) {
   .facet-cols {
     grid-template-columns: minmax(0, 1fr);
