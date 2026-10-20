@@ -13,6 +13,7 @@ import {
 import { ancestryById } from '../data/ancestries';
 import { backgroundById, heritageById } from '../data/backgrounds';
 import {
+  ATTR_NAMES,
   ATTRS,
   LIGHTS,
   type Attr,
@@ -243,13 +244,13 @@ function gatherChoices(c: Character, cls: ClassDef | undefined): ResolvedChoice[
         id: 'save-attr',
         label: 'Additional Save Check (Tandem with class die)',
         level: 1,
-        options: ATTRS.filter((a) => !cls.saveTandem.includes(a)).map((a) => ({ id: a, name: a })),
+        options: ATTRS.filter((a) => !cls.saveTandem.includes(a)).map((a) => ({ id: a, name: ATTR_NAMES[a] })),
       },
       cls.name,
     );
   }
   if (cls.spellAttr === 'choice') {
-    push({ id: 'spell-attr', label: 'Spell Mod Die Attribute', level: 1, options: (['VIG', 'PRS'] as Attr[]).map((a) => ({ id: a, name: a })) }, cls.name);
+    push({ id: 'spell-attr', label: 'Spell Mod Die Attribute', level: 1, options: (['VIG', 'PRS'] as Attr[]).map((a) => ({ id: a, name: ATTR_NAMES[a] })) }, cls.name);
   }
   cls.choices?.forEach((ch) => push(ch, cls.name));
   const sc = subclassesOf(cls).find((s) => s.id === c.subclass);

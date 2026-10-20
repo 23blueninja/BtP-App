@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { newId, type Character, type InventoryItem } from '../engine/character';
 import type { Derived } from '../engine/derive';
 import { effectiveBulk, groupInventory, layoutBulk, layoutContainer, type BulkRow } from '../engine/inventory';
-import { RuleLink } from './common';
+import { RuleLink, TokenText } from './common';
 
 /** An empty slot you can type an item name into; Enter (or leaving the field) adds it. */
 function EmptySlot({ rank, onAdd }: { rank: number; onAdd: (name: string) => void }) {
@@ -41,7 +41,9 @@ function Pyramid({
 }) {
   return (
     <div className="pyramid">
-      <h4 className="pyr-title">{title}</h4>
+      <h4 className="pyr-title">
+        <TokenText text={title} />
+      </h4>
       {rows.map((r) => (
         <div key={r.rank} className="pyr-row">
           <span className="pyr-rank">{r.rank}</span>

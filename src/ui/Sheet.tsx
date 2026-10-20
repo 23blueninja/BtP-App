@@ -93,7 +93,9 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
           <div className="toast" role="status">
             <ul>
               {log.lines.map((l, i) => (
-                <li key={i}>{l}</li>
+                <li key={i}>
+                  <TokenText text={l} />
+                </li>
               ))}
             </ul>
             {log.undo && (
@@ -175,11 +177,11 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
               <Icon name={a} /> {at.points} {at.points === 1 ? 'point' : 'points'}: <strong>{at.label}</strong> Mod Die
             </p>
             <Details lines={at.sources} />
-            {at.dieNote && <p className="note small">{at.dieNote}</p>}
+            {at.dieNote && <p className="note small"><TokenText text={at.dieNote} /></p>}
             {save && (
               <p>
                 Save Checks: <strong>{save.label}</strong>
-                {save.notes.length > 0 && <span className="muted small"> · {save.notes.join(', ')}</span>}
+                {save.notes.length > 0 && <span className="muted small"> · <TokenText text={save.notes.join(', ')} /></span>}
               </p>
             )}
           </StatBox>
@@ -236,7 +238,7 @@ function TurnBar({
   const temp = <Stepper label="Temporary AP" value={p.tempAp ?? 0} min={0} onChange={(v) => setPlay((x) => ({ ...x, tempAp: v }))} />;
   const warn = blocked && (
     <p className="turn-warn small">
-      {blocked.name}: {CONDITION_RULES[blocked.name].ap?.(blocked.level)}
+      {blocked.name}: <TokenText text={CONDITION_RULES[blocked.name].ap?.(blocked.level) ?? ''} />
     </p>
   );
   if (compact) {
@@ -244,7 +246,7 @@ function TurnBar({
       <section className={`box turn-box ${myTurn ? 'my-turn' : ''}`} aria-label="Turn">
         <div className="turn-box-head">
           <h3 className="box-title">
-            AP {ap}/{AP_MAX}
+            <Icon name="AP" /> {ap}/{AP_MAX}
           </h3>
           <span className="turn-temp">
             <span className="muted small">Temp</span>
@@ -275,7 +277,7 @@ function TurnBar({
     <section className={`turn-bar box ${myTurn ? 'my-turn' : ''}`} aria-label="Turn">
       <div className="turn-ap">
         <span className="turn-label">
-          <Icon name="AP" /> AP
+          <Icon name="AP" />
         </span>
         {pips}
         <span className="turn-count">
@@ -362,7 +364,9 @@ function Details({ lines }: { lines: string[] }) {
   return (
     <ul className="plain stat-details">
       {lines.map((l) => (
-        <li key={l}>{l}</li>
+        <li key={l}>
+          <TokenText text={l} />
+        </li>
       ))}
     </ul>
   );
@@ -387,7 +391,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             </Box>
             <StatBox title="Initiative" value={d.initiative}>
               <p>
-                Roll your <Icon name="PER" /> PER Die ({d.attrs.PER.label})
+                Roll your <Icon name="PER" /> Die ({d.attrs.PER.label})
                 {d.initiative !== d.attrs.PER.label ? ' in Tandem' : ''}.
               </p>
               <Details lines={d.initiativeNotes} />
@@ -470,7 +474,11 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
                       <span className="save-die">
                         <Icon name={s.attr} /> {s.label}
                       </span>
-                      {s.notes.length > 0 && <div className="muted small">{s.notes.join(', ')}</div>}
+                      {s.notes.length > 0 && (
+                        <div className="muted small">
+                          <TokenText text={s.notes.join(', ')} />
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -563,7 +571,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             </p>
             {d.armorNotes.map((x) => (
               <p key={x} className="note small">
-                {x}
+                <TokenText text={x} />
               </p>
             ))}
           </Box>
@@ -759,14 +767,18 @@ function CheckModifiers({ d }: { d: Derived }) {
       {fx.checks.map((r) => (
         <div key={r.label}>
           <dt>
-            <Icon name={r.attr} /> {r.label}
+            <TokenText text={r.label} />
           </dt>
-          <dd>{describeCheck(r).join('; ')}</dd>
+          <dd>
+            <TokenText text={describeCheck(r).join('; ')} />
+          </dd>
         </div>
       ))}
       {fx.otherChecks.map((t) => (
         <div key={t}>
-          <dd>{t}</dd>
+          <dd>
+            <TokenText text={t} />
+          </dd>
         </div>
       ))}
       {fx.against.length > 0 && (
@@ -795,19 +807,25 @@ function CheckModifiers({ d }: { d: Derived }) {
       {fx.ap.map((t) => (
         <div key={t}>
           <dt>
-            <Icon name="AP" /> AP
+            <Icon name="AP" />
           </dt>
-          <dd>{t}</dd>
+          <dd>
+            <TokenText text={t} />
+          </dd>
         </div>
       ))}
       {fx.notes.map((t) => (
         <div key={t}>
-          <dd>{t}</dd>
+          <dd>
+            <TokenText text={t} />
+          </dd>
         </div>
       ))}
       {[...d.bolsters, ...d.tandems].map((b) => (
         <div key={b}>
-          <dd>{b}</dd>
+          <dd>
+            <TokenText text={b} />
+          </dd>
         </div>
       ))}
     </dl>

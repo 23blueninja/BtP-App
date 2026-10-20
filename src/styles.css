@@ -1704,6 +1704,10 @@ textarea.full {
   /* Size the gradient to the text, not the full box width. */
   display: inline-block;
 }
+/* Icons in a gradient heading: the text colour is transparent, so paint the icon with the gradient. */
+.sheet .box-title .ic {
+  background: var(--heading-gradient) 50% 50% / 400% 400%;
+}
 .sheet-header h1 {
   display: inline-block;
 }

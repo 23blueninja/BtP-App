@@ -3,7 +3,7 @@ import type { Character, PlayState } from '../engine/character';
 import { derive, type Derived } from '../engine/derive';
 import { activationUseKey, apChoice, apCost, needsPrompt, performUse, useMax, type UseInputs, type UseRequest } from '../engine/activations';
 import { clampPlay, facetUseMax } from '../engine/play';
-import { Modal } from './common';
+import { Icon, Modal, TokenText } from './common';
 
 /** What a Use button needs from the sheet: the character, and how to save and report changes. */
 export interface PlayApi {
@@ -49,7 +49,12 @@ export function UseButton({ req, label, primary, disabled, hideCost }: { req: Us
         onClick={() => (needsPrompt(req, d) ? setOpen(true) : apply({}))}
       >
         {label ?? def?.label ?? 'Use'}
-        {apText && <span className="use-cost"> · {apText}</span>}
+        {apText && (
+          <span className="use-cost">
+            {' '}
+            · <TokenText text={apText} />
+          </span>
+        )}
       </button>
       {def?.uses && (
         <span className="muted small">
@@ -88,7 +93,9 @@ function UseDialog({ req, onClose, onConfirm }: { req: UseRequest; onClose: () =
       >
         {choice && (
           <label>
-            AP to spend
+            <span>
+              <Icon name="AP" /> to spend
+            </span>
             <select value={ap} onChange={(e) => setAp(Number(e.target.value))}>
               {Array.from({ length: choice.max - choice.min + 1 }, (_, i) => choice.min + i).map((n) => (
                 <option key={n} value={n}>

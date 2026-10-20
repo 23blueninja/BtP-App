@@ -277,7 +277,7 @@ function Attributes({ c, d, update }: StepProps) {
               {d.attrs[a].sources.length > 1 && <div className="small muted">{d.attrs[a].sources.join(' ')}</div>}
               {d.attrs[a].dieNote && <div className="small muted">{d.attrs[a].dieNote}</div>}
             </div>
-            <Collapsible title={<span className="muted">What {a} does</span>}>
+            <Collapsible title={<span className="muted">What {ATTR_NAMES[a]} does</span>}>
               <FacetText contentId={`beyond-the-prism/attributes/${ATTR_NAMES[a].toLowerCase()}-${a.toLowerCase()}`} />
             </Collapsible>
           </div>
@@ -639,7 +639,7 @@ function Details({ c, d, update }: StepProps) {
       <div className="row wrap">
         {c.ageUps.map((a, i) => (
           <span key={i} className="chip">
-            Age-up {i + 1}: −1 {a}{' '}
+            Age-up {i + 1}: −1 <Icon name={a} />{' '}
             <button type="button" className="link" onClick={() => update((x) => ({ ...x, ageUps: x.ageUps.filter((_, j) => j !== i) }))}>
               ✕
             </button>
@@ -647,7 +647,7 @@ function Details({ c, d, update }: StepProps) {
         ))}
         {(['VIG', 'AGI', 'PER'] as Attr[]).map((a) => (
           <button key={a} type="button" onClick={() => update((x) => ({ ...x, ageUps: [...x.ageUps, a] }))}>
-            Age up (−1 {a})
+            Age up (−1 <Icon name={a} />)
           </button>
         ))}
       </div>
@@ -753,11 +753,13 @@ export function Equipment({ c, d, update }: StepProps) {
           )}
         </div>
         <p>
-          AC <strong>{d.ac.value}</strong> <span className="muted">({d.ac.breakdown.join('; ')})</span>
+          AC <strong>{d.ac.value}</strong> <span className="muted">
+            (<TokenText text={d.ac.breakdown.join('; ')} />)
+          </span>
         </p>
         {d.armorNotes.map((n) => (
           <p key={n} className="note">
-            {n}
+            <TokenText text={n} />
           </p>
         ))}
         <p className="muted">
