@@ -1079,7 +1079,8 @@ dl.defs dd {
   position: relative;
 }
 :is(.box:not(.box .box), .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card)::before,
-.split-box::before {
+.split-box::before,
+.split-box::after {
   content: '';
   position: absolute;
   inset: -1px;
@@ -1105,14 +1106,45 @@ dl.defs dd {
     background-position: 0 0, -1980px 0;
   }
 }
-/* The split box's ring follows its two cut halves: the same edge, masked to their
-   outlines (-1% insets line the 102-unit viewBox up with the box). */
-.split-box::before {
-  inset: -1%;
+/* The split box's edge: one ring per cut half, the same width and corner cut as
+   the panels' (in px, like theirs), cut out of the edge layer with clip-path
+   (outer outline, then the inner one as a hole). */
+.split-box::before,
+.split-box::after {
   padding: 0;
   border-radius: 0;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1 -1 102 102' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='white' stroke-width='1.5' vector-effect='non-scaling-stroke'%3E%3Cpolygon points='0,6 6,0 94,0 100,6 100,20 0,71' vector-effect='non-scaling-stroke'/%3E%3Cpolygon points='100,27 100,94 94,100 6,100 0,94 0,78' vector-effect='non-scaling-stroke'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1 -1 102 102' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='white' stroke-width='1.5' vector-effect='non-scaling-stroke'%3E%3Cpolygon points='0,6 6,0 94,0 100,6 100,20 0,71' vector-effect='non-scaling-stroke'/%3E%3Cpolygon points='100,27 100,94 94,100 6,100 0,94 0,78' vector-effect='non-scaling-stroke'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+  -webkit-mask: none;
+  mask: none;
+  /* Above the halves' fills (child elements), below the text. */
+  z-index: 1;
+}
+.split-box::before {
+  clip-path: polygon(
+    evenodd,
+    0 var(--panel-cut), var(--panel-cut) 0, calc(100% - var(--panel-cut)) 0, 100% var(--panel-cut), 100% 20%, 0 71%, 0 var(--panel-cut),
+    var(--prism-edge-width) calc(var(--panel-cut) + 0.4 * var(--prism-edge-width)),
+    var(--prism-edge-width) calc(71% - 1.1 * var(--prism-edge-width)),
+    calc(100% - var(--prism-edge-width)) calc(20% - 1.1 * var(--prism-edge-width)),
+    calc(100% - var(--prism-edge-width)) calc(var(--panel-cut) + 0.4 * var(--prism-edge-width)),
+    calc(100% - var(--panel-cut) - 0.4 * var(--prism-edge-width)) var(--prism-edge-width),
+    calc(var(--panel-cut) + 0.4 * var(--prism-edge-width)) var(--prism-edge-width),
+    var(--prism-edge-width) calc(var(--panel-cut) + 0.4 * var(--prism-edge-width))
+  );
+}
+.split-box::after {
+  /* No glint at the bottom-right; the transparent layer keeps the drift on the field layer. */
+  background: linear-gradient(transparent, transparent), var(--prism-field) 0 0 / calc(100vw + 1980px) 100vh no-repeat fixed;
+  clip-path: polygon(
+    evenodd,
+    100% 27%, 100% calc(100% - var(--panel-cut)), calc(100% - var(--panel-cut)) 100%, var(--panel-cut) 100%, 0 calc(100% - var(--panel-cut)), 0 78%, 100% 27%,
+    calc(100% - var(--prism-edge-width)) calc(27% + 1.1 * var(--prism-edge-width)),
+    var(--prism-edge-width) calc(78% + 1.1 * var(--prism-edge-width)),
+    var(--prism-edge-width) calc(100% - var(--panel-cut) - 0.4 * var(--prism-edge-width)),
+    calc(var(--panel-cut) + 0.4 * var(--prism-edge-width)) calc(100% - var(--prism-edge-width)),
+    calc(100% - var(--panel-cut) - 0.4 * var(--prism-edge-width)) calc(100% - var(--prism-edge-width)),
+    calc(100% - var(--prism-edge-width)) calc(100% - var(--panel-cut) - 0.4 * var(--prism-edge-width)),
+    calc(100% - var(--prism-edge-width)) calc(27% + 1.1 * var(--prism-edge-width))
+  );
 }
 .box-title {
   margin: 0 0 0.4rem;
@@ -1489,10 +1521,33 @@ input.num {
   gap: 0.75rem;
   align-items: start;
 }
+/* Notes tab: Session notes take two thirds. */
+.notes-cols {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
 @media (max-width: 820px) {
   .facet-cols {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+/* Backstory: Age and Devotion at the top, easy to read at a glance. */
+.backstory-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.75rem;
+  margin: 0 0 0.6rem;
+}
+.backstory-facts dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.backstory-facts dd {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.15rem;
+  font-weight: 600;
 }
 .equip-row {
   display: grid;
@@ -1666,6 +1721,7 @@ b.calc {
 @media (prefers-reduced-motion: reduce) {
   .prism-bg::before,
   :is(.box, .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card, .split-box)::before,
+  .split-box::after,
   .tabs button.active::after,
   .topbar::after {
     animation: none;
@@ -2386,29 +2442,30 @@ tr.needs input {
   }
 }
 
-/* Class Bonus / Class Die: two triangles, like one box sliced along its diagonal.
-   The shapes are an SVG so the borders follow the slant. */
+/* Class Bonus / Class Die: one box sliced along a slant into two halves.
+   The halves are clip-path shapes so the edges follow the slant. */
 .split-box {
   position: relative;
+  isolation: isolate;
   min-height: 7.6rem;
   container-type: inline-size;
 }
-.split-shape {
+/* The two halves' fills, cut like the panels (12px corners) along the slant. */
+.split-glass {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
+  background: var(--panel);
 }
-.split-shape polygon {
-  fill: var(--panel);
-  stroke: var(--box-border);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
+.split-glass.a {
+  clip-path: polygon(0 var(--panel-cut), var(--panel-cut) 0, calc(100% - var(--panel-cut)) 0, 100% var(--panel-cut), 100% 20%, 0 71%);
+}
+.split-glass.b {
+  clip-path: polygon(100% 27%, 100% calc(100% - var(--panel-cut)), calc(100% - var(--panel-cut)) 100%, var(--panel-cut) 100%, 0 calc(100% - var(--panel-cut)), 0 78%);
 }
 .split-a,
 .split-b {
   position: absolute;
+  z-index: 2;
   display: flex;
   flex-direction: column;
 }
@@ -2524,7 +2581,8 @@ tr.needs input {
 }
 .app.still-bg .prism-bg::before,
 .app.still-bg .prism-bg::after,
-.app.still-bg :is(.box, .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card, .split-box)::before {
+.app.still-bg :is(.box, .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card, .split-box)::before,
+.app.still-bg .split-box::after {
   animation: none;
 }
 .app.still-gradients .hero h1,
@@ -2594,30 +2652,9 @@ tr.needs input {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 .app.glass .split-glass {
-  position: absolute;
-  inset: 0;
   background: var(--glass-fill), var(--glass-tint);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
-}
-.app.glass .split-glass.a {
-  clip-path: polygon(0 6%, 6% 0, 94% 0, 100% 6%, 100% 20%, 0 71%);
-}
-.app.glass .split-glass.b {
-  clip-path: polygon(100% 27%, 100% 94%, 94% 100%, 6% 100%, 0 94%, 0 78%);
-}
-.app.glass .split-shape polygon {
-  fill: transparent;
-}
-/* The split box's edge is its ::before ring (above). */
-.split-shape polygon {
-  stroke: none;
-}
-.split-glass {
-  display: none;
-}
-.app.glass .split-glass {
-  display: block;
 }
 /* Bubbles stay round (they're buttons, so they'd otherwise pick up the bevel). */
 .pip,

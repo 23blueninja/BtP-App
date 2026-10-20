@@ -142,11 +142,7 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
       <section className="split-box">
         <div className="split-glass a" aria-hidden />
         <div className="split-glass b" aria-hidden />
-        {/* Outer corners cut like the panels'; the prismatic edge is the box's ::before ring. */}
-        <svg className="split-shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
-          <polygon points="0,6 6,0 94,0 100,6 100,20 0,71" />
-          <polygon points="100,27 100,94 94,100 6,100 0,94 0,78" />
-        </svg>
+        {/* The halves' fills; their prismatic edges are the box's ::before / ::after rings. */}
         <div className="split-a">
           <h3 className="box-title">{d.cls ? `${d.cls.name} Bonus` : 'Class Bonus'}</h3>
           <div className="big">+{d.classBonus}</div>
@@ -1418,19 +1414,31 @@ function SessionNotes({ c, update }: { c: Character; update: Update }) {
 function Notes({ c, update }: { c: Character; update: Update }) {
   const set = (k: keyof Character['details'], v: string) => update((x) => ({ ...x, details: { ...x.details, [k]: v } }));
   return (
-    <div className="form">
-      <Box title="Session notes">
-        <SessionNotes c={c} update={update} />
-      </Box>
-      <Box title="Appearance">
-        <textarea className="full" rows={3} value={c.details.appearance} onChange={(e) => set('appearance', e.target.value)} aria-label="Appearance" />
-      </Box>
-      <Box title="Backstory">
-        <textarea className="full" rows={6} value={c.details.backstory} onChange={(e) => set('backstory', e.target.value)} aria-label="Backstory" />
-        <p className="muted small">
-          Age: {c.details.age || '—'} · Devotion: {c.details.devotion || 'None'}
-        </p>
-      </Box>
+    // Session notes on the left; Appearance and Backstory on the right (one column on phones).
+    <div className="facet-cols notes-cols">
+      <div className="col">
+        <Box title="Session notes">
+          <SessionNotes c={c} update={update} />
+        </Box>
+      </div>
+      <div className="col">
+        <Box title="Appearance">
+          <textarea className="full" rows={3} value={c.details.appearance} onChange={(e) => set('appearance', e.target.value)} aria-label="Appearance" />
+        </Box>
+        <Box title="Backstory">
+          <dl className="backstory-facts">
+            <div>
+              <dt>Age</dt>
+              <dd>{c.details.age || '—'}</dd>
+            </div>
+            <div>
+              <dt>Devotion</dt>
+              <dd>{c.details.devotion || 'None'}</dd>
+            </div>
+          </dl>
+          <textarea className="full" rows={6} value={c.details.backstory} onChange={(e) => set('backstory', e.target.value)} aria-label="Backstory" />
+        </Box>
+      </div>
     </div>
   );
 }
