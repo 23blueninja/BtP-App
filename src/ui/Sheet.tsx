@@ -221,6 +221,7 @@ function TurnBar({
         immune: dx.damageImmunities.map((i) => i.type),
         vulnerable: dx.vulnerabilities,
         immuneConditions: dx.conditionImmunities.map((i) => i.name),
+        reduction: dx.damageReduction,
       });
       let play = r.play;
       for (const dmg of r.damage) play = takeDamage(play, dmg.amount, dx);
@@ -376,6 +377,9 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
   const p = c.play;
   const [amount, setAmount] = useState('');
   const [useCharge, setUseCharge] = useState(true);
+  // Endwalker and the like: you can reduce damage you take (on by default).
+  const [reduce, setReduce] = useState(true);
+  const dmgReduction = reduce && d.damageReduction ? d.damageReduction.amount : 0;
   const n = Number(amount) || 0;
   const al = c.alignment;
   return (
@@ -426,10 +430,15 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
                 Heal
               </button>
               <input className="end-amount" type="number" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" aria-label="Amount" />
-              <button type="button" className="danger end-damage" disabled={!n} onClick={() => (setPlay((x) => takeDamage(x, n, d)), setAmount(''))}>
+              <button type="button" className="danger end-damage" disabled={!n} onClick={() => (setPlay((x) => takeDamage(x, Math.max(0, n - dmgReduction), d)), setAmount(''))}>
                 Damage
               </button>
             </div>
+            {d.damageReduction && (
+              <label className="small end-reduce">
+                <input type="checkbox" checked={reduce} onChange={(e) => setReduce(e.target.checked)} /> Reduce damage by {d.damageReduction.amount} ({d.damageReduction.source})
+              </label>
+            )}
             <div className="end-vitality">
               <div className="row between">
                 <span>Vitality</span>
@@ -700,6 +709,8 @@ function SkillList({ slots }: { slots: Derived['skillSlots'] }) {
 
 function Conditions({ p, d, setPlay }: { p: PlayState; d: Derived; setPlay: (fn: (p: PlayState) => PlayState) => void }) {
   const [pick, setPick] = useState('');
+  const [pickLevel, setPickLevel] = useState(1);
+  const pickDef = conditionDefs.find((x) => x.name === pick);
   // Conditions given by other Conditions (Burning → Numbed) and Dying from the Vitality box.
   const implied = d.conditionFx.active.filter((x) => !x.own);
   const immune = new Set(d.conditionImmunities.map((x) => x.name));
@@ -738,7 +749,7 @@ function Conditions({ p, d, setPlay }: { p: PlayState; d: Derived; setPlay: (fn:
         })}
       </ul>
       <div className="row condition-add">
-        <select value={pick} onChange={(e) => setPick(e.target.value)} aria-label="Condition">
+        <select value={pick} onChange={(e) => (setPick(e.target.value), setPickLevel(1))} aria-label="Condition">
           <option value="">Add condition…</option>
           {conditionDefs
             .filter((x) => x.name !== 'Dying')
@@ -750,20 +761,23 @@ function Conditions({ p, d, setPlay }: { p: PlayState; d: Derived; setPlay: (fn:
               </option>
             ))}
         </select>
+        {/* Leveled Conditions (Burning 3) are gained at a level; gaining damage scales with it. */}
+        {pickDef?.leveled && <Stepper label="Condition level" value={pickLevel} min={1} onChange={setPickLevel} />}
         <button
           type="button"
           disabled={!pick || immune.has(pick)}
           onClick={() => {
-            const def = conditionDefs.find((x) => x.name === pick);
             setPlay((x) =>
-              addCondition(x, pick, def?.leveled ? 1 : undefined, {
+              addCondition(x, pick, pickDef?.leveled ? pickLevel : undefined, {
                 resistances: d.resistances,
                 immune: d.damageImmunities.map((i) => i.type),
                 immuneConditions: [...immune],
                 vitalityMax: d.vitalityMax,
+                reduction: d.damageReduction,
               }),
             );
             setPick('');
+            setPickLevel(1);
           }}
         >
           Add

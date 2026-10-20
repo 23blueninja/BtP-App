@@ -1779,3 +1779,27 @@ describe('Champion of Darkness (playtest Cause)', async () => {
     expect(new Set(list.pool.map((p) => p.type))).toEqual(new Set(['Feral', 'Martial', 'Infernal']));
   });
 });
+
+// Endwalker: "Each time you take or deal damage, you can increase or reduce one
+// type of the damage by half your Darkness." Burning X: "take 3X Thermic damage
+// when you gain this Condition and at the start of your turn."
+describe('Endwalker reduces damage the app applies', async () => {
+  const { addCondition, startTurn } = await import('../src/engine/conditions');
+  const dark = (vitality: number) =>
+    built({ classId: 'champion', subclass: 'darkness', level: 2, attributes: { method: 'manual', base: { VIG: 2, AGI: 0, PER: 0, INT: 0, PRS: 2 } } as Character['attributes'], play: { initialized: true, vitality, endurance: 30 } });
+  it('half Darkness, rounded down; none at full Vitality', () => {
+    expect(dark(5).d.damageReduction).toBeUndefined();
+    expect(dark(1).d.damageReduction).toEqual({ amount: 2, source: 'Endwalker' });
+  });
+  it('gaining Burning 3 deals 9 Thermic, minus half Darkness', () => {
+    const { c, d } = dark(1);
+    expect(addCondition(c.play, 'Burning', 3, { vitalityMax: d.vitalityMax }).endurance).toBe(21);
+    expect(addCondition(c.play, 'Burning', 3, { vitalityMax: d.vitalityMax, reduction: d.damageReduction }).endurance).toBe(23);
+  });
+  it('start-of-turn Burning damage is reduced too, and the log says why', () => {
+    const { c, d } = dark(1);
+    const r = startTurn({ ...c.play, conditions: [{ name: 'Burning', level: 3 }] }, d.level, d.resistances, { immune: [], vulnerable: [], reduction: d.damageReduction });
+    expect(r.damage).toEqual([{ type: 'Thermic', amount: 7, source: 'Burning 3' }]);
+    expect(r.log.join(' ')).toContain('take 7 Thermic damage (9 − Endwalker 2)');
+  });
+});

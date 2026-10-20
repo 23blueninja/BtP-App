@@ -130,6 +130,8 @@ export interface Derived {
   vitalityMax: number;
   /** Champion of Darkness: Darkness (your missing Vitality) and the facets that give it. */
   darkness?: { value: number; sources: string[] };
+  /** Taken damage reduced by this (one type per instance), e.g. Endwalker's half Darkness. The biggest applies. */
+  damageReduction?: { amount: number; source: string };
   radianceMax: number;
   enduranceMax: number;
   restCharges: number;
@@ -209,6 +211,8 @@ export function resolveScaled(v: Scaled, ctx: Ctx): number {
       return ctx.level * 2;
     case 'darkness':
       return ctx.darkness ?? 0;
+    case 'halfDarkness':
+      return half(ctx.darkness ?? 0);
     default:
       return v.half ? half(ctx.points[v.attr]) : ctx.points[v.attr];
   }
@@ -216,7 +220,7 @@ export function resolveScaled(v: Scaled, ctx: Ctx): number {
 
 function scaledLabel(v: Scaled): string {
   if (typeof v === 'number') return String(v);
-  if (typeof v === 'string') return { classBonus: 'Class Bonus', halfClassBonus: '½ Class Bonus', level: 'level', twiceLevel: '2 × level', darkness: 'Darkness' }[v];
+  if (typeof v === 'string') return { classBonus: 'Class Bonus', halfClassBonus: '½ Class Bonus', level: 'level', twiceLevel: '2 × level', darkness: 'Darkness', halfDarkness: '½ Darkness' }[v];
   return `${v.half ? '½ ' : ''}${v.attr}`;
 }
 
@@ -392,6 +396,10 @@ export function derive(c: Character): Derived {
   // Champion of Darkness (Endwalker): Darkness equals your missing Vitality.
   const darkness = eff('darkness').length && c.play.initialized ? Math.max(0, vitalityMax - c.play.vitality) : 0;
   ctx.darkness = darkness;
+  const damageReduction = eff('damageReduction')
+    .map((x) => ({ amount: sc(x.e.amount), source: x.source }))
+    .filter((x) => x.amount > 0)
+    .sort((a, b) => b.amount - a.amount)[0];
 
   // ---- equipment ----
   const armor = c.equipment.armor;
@@ -757,6 +765,7 @@ export function derive(c: Character): Derived {
     initiativeNotes,
     vitalityMax,
     darkness: eff('darkness').length ? { value: darkness, sources: eff('darkness').map((x) => x.source) } : undefined,
+    damageReduction,
     radianceMax,
     enduranceMax,
     restCharges: vitalityMax,
