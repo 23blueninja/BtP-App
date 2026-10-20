@@ -212,11 +212,11 @@ describe('play', () => {
     const c = base();
     const d = derive(c);
     c.play = { ...c.play, endurance: 2, vitality: 2, resources: { Stamina: 3 }, radianceSpent: 1 };
-    const s = shortRest(c, d, { spendRestCharge: true });
+    const s = shortRest(c, d, { restCharges: 1 });
     expect(s.play.vitality).toBe(3); // +ceil(2/2)
     expect(s.play.endurance).toBe(2 + 11);
     expect(s.play.resources.Stamina).toBe(0);
-    const gritty = shortRest({ ...c, settings: { restRules: 'gritty' } }, d, { spendRestCharge: false });
+    const gritty = shortRest({ ...c, settings: { restRules: 'gritty' } }, d, { restCharges: 0 });
     expect(gritty.play.vitality).toBe(2);
     const l = longRest(c, d);
     expect(l.play.endurance).toBe(22);

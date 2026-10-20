@@ -91,7 +91,8 @@ function endHomebrew(c: Character, kind: 'rest' | 'longRest', log: string[]): Ch
   return (c.homebrew ?? []).filter((e) => !ends(e));
 }
 
-export function shortRest(c: Character, d: Derived, opts: { spendRestCharge: boolean }): RestResult {
+/** `restCharges`: how many Rest Charges to spend, each regaining half your Endurance Maximum. */
+export function shortRest(c: Character, d: Derived, opts: { restCharges: number }): RestResult {
   // Bruised lasts until you finish a Rest.
   const p = { ...c.play, resources: { ...c.play.resources }, facetUses: { ...c.play.facetUses }, conditions: c.play.conditions.filter((x) => x.name !== 'Bruised') };
   const log: string[] = [];
@@ -111,12 +112,13 @@ export function shortRest(c: Character, d: Derived, opts: { spendRestCharge: boo
       if (p.vitality > 0) p.dying = 0;
     }
   }
-  if (opts.spendRestCharge && rules.has('noRestCharges')) log.push('You can’t spend Rest Charges.');
-  else if (opts.spendRestCharge && p.restChargesSpent < d.restCharges) {
-    p.restChargesSpent += 1;
-    const gain = Math.min(half(d.enduranceMax), d.enduranceMax - p.endurance);
-    p.endurance += gain;
-    log.push(`Spent a Rest Charge: regained ${gain} Endurance.`);
+  const charges = Math.max(0, Math.min(opts.restCharges, d.restCharges - p.restChargesSpent));
+  if (opts.restCharges > 0 && rules.has('noRestCharges')) log.push('You can’t spend Rest Charges.');
+  else if (charges > 0) {
+    const before = p.endurance;
+    p.restChargesSpent += charges;
+    p.endurance = Math.min(d.enduranceMax, p.endurance + charges * half(d.enduranceMax));
+    log.push(`Spent ${charges === 1 ? 'a Rest Charge' : `${charges} Rest Charges`}: regained ${p.endurance - before} Endurance.`);
   }
   for (const r of d.resources) {
     if (r.mode === 'pool') {

@@ -640,7 +640,7 @@ describe('Short Rest', () => {
       [3, 2],
     ] as const) {
       const { c, d } = setup('berserker', {}, { VIG: vig });
-      const r = shortRest({ ...c, play: { ...c.play, vitality: 1, dying: d.vitalityMax - 1 } }, d, { spendRestCharge: false });
+      const r = shortRest({ ...c, play: { ...c.play, vitality: 1, dying: d.vitalityMax - 1 } }, d, { restCharges: 0 });
       expect(r.play.vitality, `VIG ${vig}`).toBe(1 + gain);
       expect(r.play.dying).toBe(gain ? 0 : d.vitalityMax - 1);
     }
@@ -648,40 +648,51 @@ describe('Short Rest', () => {
 
   it('Heroic: Vitality regain is capped at the maximum', () => {
     const { c, d } = setup('berserker', {}, { VIG: 3 });
-    const r = shortRest({ ...c, play: { ...c.play, vitality: d.vitalityMax - 1 } }, d, { spendRestCharge: false });
+    const r = shortRest({ ...c, play: { ...c.play, vitality: d.vitalityMax - 1 } }, d, { restCharges: 0 });
     expect(r.play.vitality).toBe(d.vitalityMax);
   });
 
   it('Gritty: no Vitality on a Short Rest', () => {
     const { c, d } = setup('berserker', {}, { VIG: 3 }, { settings: { restRules: 'gritty' } });
-    const r = shortRest({ ...c, play: { ...c.play, vitality: 1 } }, d, { spendRestCharge: false });
+    const r = shortRest({ ...c, play: { ...c.play, vitality: 1 } }, d, { restCharges: 0 });
     expect(r.play.vitality).toBe(1);
   });
 
   it('homebrew noVitalityShortRest removes the Vitality', () => {
     const { c, d } = setup('berserker', { vitality: 1 }, { VIG: 3 }, { homebrew: [homebrewEffect('Curse', [row('r', { kind: 'restRule', rule: 'noVitalityShortRest' })])] });
-    expect(shortRest(c, d, { spendRestCharge: false }).play.vitality).toBe(1);
+    expect(shortRest(c, d, { restCharges: 0 }).play.vitality).toBe(1);
   });
 
   it('a Rest Charge restores half the Endurance Maximum (rounded up), capped; charges = maximum Vitality', () => {
     const { c, d } = setup('arcanist', { endurance: 0 });
     expect(d.restCharges).toBe(d.vitalityMax);
-    const r = shortRest(c, d, { spendRestCharge: true });
+    const r = shortRest(c, d, { restCharges: 1 });
     expect(r.play.endurance).toBe(Math.ceil(d.enduranceMax / 2));
     expect(r.play.restChargesSpent).toBe(1);
-    const full = shortRest({ ...c, play: { ...c.play, endurance: d.enduranceMax - 1 } }, d, { spendRestCharge: true });
+    const full = shortRest({ ...c, play: { ...c.play, endurance: d.enduranceMax - 1 } }, d, { restCharges: 1 });
     expect(full.play.endurance).toBe(d.enduranceMax);
+  });
+
+  it('two Rest Charges restore twice as much, capped at the maximum; only charges you have are spent', () => {
+    const { c, d } = setup('arcanist', { endurance: 0 });
+    const two = shortRest(c, d, { restCharges: 2 });
+    expect(two.play.endurance).toBe(Math.min(d.enduranceMax, 2 * Math.ceil(d.enduranceMax / 2)));
+    expect(two.play.restChargesSpent).toBe(2);
+    expect(two.log.join(' ')).toMatch(/Spent 2 Rest Charges/);
+    const lastOne = shortRest({ ...c, play: { ...c.play, restChargesSpent: d.restCharges - 1 } }, d, { restCharges: 2 });
+    expect(lastOne.play.restChargesSpent).toBe(d.restCharges);
+    expect(lastOne.play.endurance).toBe(Math.ceil(d.enduranceMax / 2));
   });
 
   it('no Rest Charge spent when none are left or when not asked', () => {
     const { c, d } = setup('arcanist', { endurance: 0 });
-    expect(shortRest({ ...c, play: { ...c.play, restChargesSpent: d.restCharges } }, d, { spendRestCharge: true }).play.endurance).toBe(0);
-    expect(shortRest(c, d, { spendRestCharge: false }).play.restChargesSpent).toBe(0);
+    expect(shortRest({ ...c, play: { ...c.play, restChargesSpent: d.restCharges } }, d, { restCharges: 1 }).play.endurance).toBe(0);
+    expect(shortRest(c, d, { restCharges: 0 }).play.restChargesSpent).toBe(0);
   });
 
   it('homebrew noRestCharges blocks spending them', () => {
     const { c, d } = setup('arcanist', { endurance: 0 }, {}, { homebrew: [homebrewEffect('Curse', [row('r', { kind: 'restRule', rule: 'noRestCharges' })])] });
-    const r = shortRest(c, d, { spendRestCharge: true });
+    const r = shortRest(c, d, { restCharges: 1 });
     expect(r.play.endurance).toBe(0);
     expect(r.log.join(' ')).toMatch(/can’t spend Rest Charges/);
   });
@@ -693,7 +704,7 @@ describe('Short Rest', () => {
     ['gladiator', 'Stamina'],
   ])('%s: %s (regained when you finish a Rest) is fully restored', (cls, res) => {
     const { c, d } = setup(cls, { resources: { [res]: 2 } });
-    expect(shortRest(c, d, { spendRestCharge: false }).play.resources[res]).toBe(0);
+    expect(shortRest(c, d, { restCharges: 0 }).play.resources[res]).toBe(0);
   });
 
   it.each([
@@ -702,24 +713,24 @@ describe('Short Rest', () => {
     ['luminary', 'Light'],
   ])('%s: %s applied to the Limit is reduced by the Class Bonus', (cls, res) => {
     const { c, d } = setup(cls, { resources: { [res]: 3 } });
-    expect(shortRest(c, d, { spendRestCharge: false }).play.resources[res]).toBe(Math.max(0, 3 - d.classBonus));
-    expect(shortRest({ ...c, play: { ...c.play, resources: { [res]: 1 } } }, d, { spendRestCharge: false }).play.resources[res]).toBe(0);
+    expect(shortRest(c, d, { restCharges: 0 }).play.resources[res]).toBe(Math.max(0, 3 - d.classBonus));
+    expect(shortRest({ ...c, play: { ...c.play, resources: { [res]: 1 } } }, d, { restCharges: 0 }).play.resources[res]).toBe(0);
   });
 
   it('facets used per Rest refresh; per Long Rest don’t', () => {
     const champ = setup('champion', { facetUses: { 'classes/champion/undaunted': 1 } });
-    expect(shortRest(champ.c, champ.d, { spendRestCharge: false }).play.facetUses['classes/champion/undaunted']).toBe(0);
+    expect(shortRest(champ.c, champ.d, { restCharges: 0 }).play.facetUses['classes/champion/undaunted']).toBe(0);
     const inc = setup('incarnate', { facetUses: { 'classes/incarnate/titanus-form': 1 } });
-    expect(shortRest(inc.c, inc.d, { spendRestCharge: false }).play.facetUses['classes/incarnate/titanus-form']).toBe(1);
+    expect(shortRest(inc.c, inc.d, { restCharges: 0 }).play.facetUses['classes/incarnate/titanus-form']).toBe(1);
   });
 
   it('activation uses: Inspire (per Rest) resets, Reignite (per Long Rest) regains one', () => {
     const insp = activationUseKey(act('Inspire'));
     const reig = activationUseKey(act('Reignite'));
     const t = setup('troubadour', { facetUses: { [insp]: 3 } });
-    expect(shortRest(t.c, t.d, { spendRestCharge: false }).play.facetUses[insp]).toBe(0);
+    expect(shortRest(t.c, t.d, { restCharges: 0 }).play.facetUses[insp]).toBe(0);
     const g = setup('gladiator', { facetUses: { [reig]: 2 } });
-    const r = shortRest(g.c, g.d, { spendRestCharge: false });
+    const r = shortRest(g.c, g.d, { restCharges: 0 });
     expect(r.play.facetUses[reig]).toBe(1);
     expect(r.log.join(' ')).toMatch(/Reignite: regained 1 use/);
   });
@@ -727,7 +738,7 @@ describe('Short Rest', () => {
   it('homebrew pools refreshing on a Rest restore; Long Rest pools don’t', () => {
     const entry: HomebrewEntry = { id: 'orb', kind: 'item', name: 'Orb', rows: [], pools: [{ id: 'a', name: 'Charges', max: 3, refresh: 'Rest' }, { id: 'b', name: 'Big', max: 1, refresh: 'Long Rest' }] };
     const { c, d } = setup('berserker', { facetUses: { 'hb:orb:a': 2, 'hb:orb:b': 1 } }, {}, { homebrew: [entry] });
-    const r = shortRest(c, d, { spendRestCharge: false });
+    const r = shortRest(c, d, { restCharges: 0 });
     expect(r.play.facetUses['hb:orb:a']).toBe(0);
     expect(r.play.facetUses['hb:orb:b']).toBe(1);
     expect(longRest(c, d).play.facetUses['hb:orb:b'] ?? 0).toBe(0);
@@ -735,14 +746,14 @@ describe('Short Rest', () => {
 
   it('active effects in minutes end; effects lasting to a Long Rest stay', () => {
     const { c, d } = setup('berserker', { effects: [{ id: '1', name: 'Rage 1', ends: 'manual' }, { id: '2', name: 'Blessing', ends: 'longRest' }] });
-    expect(shortRest(c, d, { spendRestCharge: false }).play.effects!.map((e) => e.name)).toEqual(['Blessing']);
+    expect(shortRest(c, d, { restCharges: 0 }).play.effects!.map((e) => e.name)).toEqual(['Blessing']);
   });
 
   it('human (Radiant) regains 1 Radiance; Luminary regains half its Class Bonus', () => {
     const h = setup('berserker', { radianceSpent: 2 }, {}, { ancestry: 'human' });
-    expect(shortRest(h.c, h.d, { spendRestCharge: false }).play.radianceSpent).toBe(1);
+    expect(shortRest(h.c, h.d, { restCharges: 0 }).play.radianceSpent).toBe(1);
     const l = setup('luminary', { radianceSpent: 2 });
-    expect(shortRest(l.c, l.d, { spendRestCharge: false }).play.radianceSpent).toBe(2 - Math.ceil(l.d.classBonus / 2));
+    expect(shortRest(l.c, l.d, { restCharges: 0 }).play.radianceSpent).toBe(2 - Math.ceil(l.d.classBonus / 2));
   });
 
   it('homebrew effects ending on a Rest end; Long Rest / manual effects and facets persist', () => {
@@ -753,7 +764,7 @@ describe('Short Rest', () => {
       { id: 'f', kind: 'facet', name: 'Gift', rows: [] },
     ];
     const { c, d } = setup('berserker', {}, {}, { homebrew: hb });
-    const r = shortRest(c, d, { spendRestCharge: false });
+    const r = shortRest(c, d, { restCharges: 0 });
     expect(r.homebrew.map((e) => e.name)).toEqual(['Long Boon', 'Curse', 'Gift']);
     expect(r.log).toContain('Rest Boon ended.');
     expect(longRest(c, d).homebrew.map((e) => e.name)).toEqual(['Curse', 'Gift']);
@@ -761,7 +772,7 @@ describe('Short Rest', () => {
 
   it('counts Short Rests and warns after two', () => {
     const { c, d } = setup('berserker', { shortRests: 2 });
-    const r = shortRest(c, d, { spendRestCharge: false });
+    const r = shortRest(c, d, { restCharges: 0 });
     expect(r.play.shortRests).toBe(3);
     expect(r.log[0]).toMatch(/only two Short Rests/);
   });
@@ -769,7 +780,7 @@ describe('Short Rest', () => {
   // Rules (Short Rests): "A PC can only benefit from two Short Rests per Long Rest".
   it('a third Short Rest before a Long Rest restores nothing', () => {
     const { c, d } = setup('berserker', { shortRests: 2, vitality: 1, endurance: 0, resources: { Stamina: 3 } }, { VIG: 3 });
-    const r = shortRest(c, d, { spendRestCharge: true });
+    const r = shortRest(c, d, { restCharges: 1 });
     expect(r.play.vitality).toBe(1);
     expect(r.play.endurance).toBe(0);
     expect(r.play.resources.Stamina).toBe(3);
@@ -778,7 +789,7 @@ describe('Short Rest', () => {
   // Rules (Bruised): "Your VIG and AGI Checks are Weakened until you finish a Rest."
   it('Bruised ends when you finish a Short Rest', () => {
     const { c, d } = setup('berserker', { conditions: [{ name: 'Bruised' }] });
-    expect(shortRest(c, d, { spendRestCharge: false }).play.conditions).toEqual([]);
+    expect(shortRest(c, d, { restCharges: 0 }).play.conditions).toEqual([]);
   });
 
   it('Bruised ends when you finish a Long Rest', () => {
@@ -788,7 +799,7 @@ describe('Short Rest', () => {
 
   it('a Short Rest with nothing to restore says so', () => {
     const { c, d } = setup('expert');
-    expect(shortRest(c, d, { spendRestCharge: false }).log).toEqual(['Rested. Nothing to restore.']);
+    expect(shortRest(c, d, { restCharges: 0 }).log).toEqual(['Rested. Nothing to restore.']);
   });
 });
 
