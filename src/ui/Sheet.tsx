@@ -135,13 +135,14 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
     <>
     <div ref={marker} className="stat-strip-marker" aria-hidden />
     <div className={`stat-strip ${stuck ? 'stuck' : ''}`}>
-      {/* Class Bonus and Class Die: one box sliced along its diagonal. */}
+      {/* Class Bonus and Class Die: one box sliced on a diagonal; the Class Die takes the
+          smaller bottom-right corner so long class names fit across the top. */}
       <section className="split-box">
         <div className="split-glass a" aria-hidden />
         <div className="split-glass b" aria-hidden />
         <svg className="split-shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
-          <polygon points="0,0 93,0 0,91" />
-          <polygon points="100,9 100,100 7,100" />
+          <polygon points="0,0 100,0 100,34 34,100 0,100" />
+          <polygon points="100,44 100,100 44,100" />
         </svg>
         <div className="split-a">
           <h3 className="box-title">{d.cls ? `${d.cls.name} Bonus` : 'Class Bonus'}</h3>
@@ -1021,6 +1022,46 @@ function ActiveEffects({ effects, setPlay }: { effects: ActiveEffect[]; setPlay:
 
 function Facets({ c, d, setPlay, update }: { c: Character; d: Derived; setPlay: (fn: (p: PlayState) => PlayState) => void; update: Update }) {
   const groups = [...new Set(d.facets.map((f) => f.source))];
+  // Class → Subclass (and chosen options) on the left; Ancestry → Sub-ancestry → Heritage → Homebrew on the right.
+  const classSources = new Set([d.cls?.name, d.subclassName].filter(Boolean));
+  const classGroups = groups.filter((g) => classSources.has(g));
+  const otherGroups = groups.filter((g) => !classSources.has(g));
+  const group = (g: string) => (
+    <section key={g} className="box">
+      <h3 className="box-title">{g}</h3>
+      {d.facets
+        .filter((f) => f.source === g)
+        .map((f) => {
+          const max = facetUseMax(f, d);
+          const used = c.play.facetUses[f.key] ?? 0;
+          return (
+            <Collapsible
+              key={f.key}
+              title={
+                <span>
+                  <strong>{f.name}</strong> {f.level > 1 && <span className="badge">Level {f.level}</span>}
+                </span>
+              }
+              extra={
+                (max > 0 || facetActivationDefs(f.contentId).length > 0) && (
+                  <span className="facet-extra" onClick={(e) => e.stopPropagation()}>
+                    {max > 0 && (
+                      <span className="uses">
+                        <Pips total={max} used={used} label={`${f.name} use`} onChange={(u) => setPlay((x) => ({ ...x, facetUses: { ...x.facetUses, [f.key]: u } }))} />
+                        <span className="muted small"> / {f.uses!.per}</span>
+                      </span>
+                    )}
+                    <FacetActivations d={d} facetId={f.contentId} />
+                  </span>
+                )
+              }
+            >
+              <FacetText contentId={f.contentId} item={f.item} />
+            </Collapsible>
+          );
+        })}
+    </section>
+  );
   return (
     <div className="features">
       {d.cls && (
@@ -1030,63 +1071,35 @@ function Facets({ c, d, setPlay, update }: { c: Character; d: Derived; setPlay: 
           </Collapsible>
         </section>
       )}
-      {groups.map((g) => (
-        <section key={g} className="box">
-          <h3 className="box-title">{g}</h3>
-          {d.facets
-            .filter((f) => f.source === g)
-            .map((f) => {
-              const max = facetUseMax(f, d);
-              const used = c.play.facetUses[f.key] ?? 0;
+      <div className="facet-cols">
+        <div className="col">
+          {classGroups.map(group)}
+          {d.choices
+            .filter((ch) => ch.selected)
+            .map((ch) => {
+              const o = ch.options.find((x) => x.id === ch.selected)!;
               return (
-                <Collapsible
-                  key={f.key}
-                  title={
-                    <span>
-                      <strong>{f.name}</strong> {f.level > 1 && <span className="badge">Level {f.level}</span>}
-                    </span>
-                  }
-                  extra={
-                    (max > 0 || facetActivationDefs(f.contentId).length > 0) && (
-                    <span className="facet-extra" onClick={(e) => e.stopPropagation()}>
-                      {max > 0 && (
-                        <span className="uses">
-                          <Pips total={max} used={used} label={`${f.name} use`} onChange={(u) => setPlay((x) => ({ ...x, facetUses: { ...x.facetUses, [f.key]: u } }))} />
-                          <span className="muted small"> / {f.uses!.per}</span>
-                        </span>
-                      )}
-                      <FacetActivations d={d} facetId={f.contentId} />
-                    </span>
-                    )
-                  }
-                >
-                  <FacetText contentId={f.contentId} item={f.item} />
-                </Collapsible>
+                <section key={ch.id} className="box">
+                  <h3 className="box-title">{ch.label}</h3>
+                  <Collapsible
+                    title={<strong>{o.name}</strong>}
+                    extra={facetActivationDefs(o.contentId).length > 0 && <FacetActivations d={d} facetId={o.contentId} />}
+                  >
+                    <FacetText contentId={o.contentId} item={o.item} />
+                  </Collapsible>
+                </section>
               );
             })}
-        </section>
-      ))}
-      {d.choices
-        .filter((ch) => ch.selected)
-        .map((ch) => {
-          const o = ch.options.find((x) => x.id === ch.selected)!;
-          return (
-            <section key={ch.id} className="box">
-              <h3 className="box-title">{ch.label}</h3>
-              <Collapsible
-                title={<strong>{o.name}</strong>}
-                extra={facetActivationDefs(o.contentId).length > 0 && <FacetActivations d={d} facetId={o.contentId} />}
-              >
-                <FacetText contentId={o.contentId} item={o.item} />
-              </Collapsible>
-            </section>
-          );
-        })}
-      {/* Facets your PM grants beyond your class and ancestry (e.g. one that raises an Alignment). */}
-      <section className="box">
-        <h3 className="box-title">Homebrew facets</h3>
-        <HomebrewBox d={d} update={update} facets />
-      </section>
+        </div>
+        <div className="col">
+          {otherGroups.map(group)}
+          {/* Facets your PM grants beyond your class and ancestry (e.g. one that raises an Alignment). */}
+          <section className="box">
+            <h3 className="box-title">Homebrew facets</h3>
+            <HomebrewBox d={d} update={update} facets />
+          </section>
+        </div>
+      </div>
     </div>
   );
 }

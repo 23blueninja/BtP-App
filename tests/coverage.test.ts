@@ -159,6 +159,34 @@ const DETECTORS: Detector[] = [
   { name: 'AC', test: /\b(add your \w+ to your AC|your AC (?:gains|increases))/i, check: (_s, f) => (has(f, 'acUnarmored') ? [] : ['no AC effect']) },
 ];
 
+/**
+ * Unarmed Strike rules are written as "When you Unarmed Strike…", which reads as
+ * situational but always applies to the Unarmed Strike rows in the weapons table,
+ * so these run on every sentence.
+ */
+const UNARMED_DETECTORS: Detector[] = [
+  {
+    name: 'Natural weapon',
+    test: /\bnatural weapons?\b/i,
+    check: (_s, f, d) => {
+      if (!has(f, 'naturalWeapon')) return ['no naturalWeapon effect'];
+      const names = (f.effects ?? []).flatMap((e) => (e.kind === 'naturalWeapon' ? [e.name] : []));
+      return names.filter((n) => !d.unarmed.some((u) => u.name === n)).map((n) => `${n} not in the Unarmed Strike rows`);
+    },
+  },
+  { name: 'Unarmed Strike DV bonus', test: /DV.s of your Unarmed Strikes/, check: (_s, f) => (has(f, 'unarmedBonus') ? [] : ['no unarmedBonus effect']) },
+  {
+    name: 'Unarmed Strike body',
+    test: /When you Unarmed Strike, (your body has|you can deal|its DV|the DV)/,
+    check: (_s, f) => (has(f, 'unarmed', 'naturalWeapon') ? [] : ['no unarmed effect']),
+  },
+  {
+    name: 'Primordial Die Unarmed Strike',
+    test: /replace your \{VIG\} Die with your \w+ Die when you Unarmed Strike/,
+    check: (_s, f, d) => (d.unarmed.some((u) => u.classDie) && has(f, 'naturalWeapon') ? [] : ['no Unarmed Strike row with the Class Die']),
+  },
+];
+
 const FACETS = allFacets();
 
 describe('facet coverage audit', () => {
@@ -173,6 +201,9 @@ describe('facet coverage audit', () => {
     if (ALLOWED[key]) return;
     const problems: string[] = [];
     for (const sentence of facetText(facet).split(/(?<=[.!?])\s+/)) {
+      for (const det of UNARMED_DETECTORS) {
+        if (det.test.test(sentence)) for (const p of det.check(sentence, facet, d)) problems.push(`${det.name}: ${p} — "${sentence.trim()}"`);
+      }
       if (SITUATIONAL.test(sentence)) continue;
       for (const det of DETECTORS) {
         if (!det.test.test(sentence)) continue;

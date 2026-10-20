@@ -82,6 +82,17 @@ export interface ResolvedChoice extends ChoiceDef {
   selected?: string;
 }
 
+export interface UnarmedStrike {
+  name: string;
+  dv: number;
+  deadlyDv: number;
+  damage: string;
+  properties: string[];
+  /** Rolled with the Class Die instead of the VIG Die (e.g. Ferocious Strikes). */
+  classDie?: boolean;
+  sources: string[];
+}
+
 export interface SaveLine {
   attr: Attr;
   die: string;
@@ -156,6 +167,8 @@ export interface Derived {
   bulkShift: number;
   /** Weapon Attack Check modifiers (Combat Styles). */
   weaponMods: (Extract<Effect, { kind: 'weapon' }> & { source: string })[];
+  /** Unarmed Strikes: your body, plus natural weapons (claws, horns…). */
+  unarmed: UnarmedStrike[];
   /** Homebrew items and effects, resolved at their current tier. */
   homebrew: ResolvedHomebrew[];
   /** Rest benefits taken away by homebrew effects. */
@@ -508,7 +521,13 @@ export function derive(c: Character): Derived {
   if (cls?.saveTandem.includes('choice') && c.choices['save-attr']) tandemSave.add(c.choices['save-attr'] as Attr);
   eff('saveTandem').forEach((x) => x.e.attr !== 'choice' && !x.e.die && tandemSave.add(x.e.attr));
   const bolstered = (n: number) => (n >= 0 ? `Bolstered ${n}` : `Hindered ${-n}`);
-  const bolsters = eff('bolster').map((x) => `${x.e.what}: ${bolstered(sc(x.e.amount))} (${x.source})`);
+  // Bolstered/Hindered levels on the same Checks add together (and cancel each other): one line per kind of Check.
+  const bolsterTotals = new Map<string, { amount: number; sources: string[] }>();
+  for (const x of eff('bolster')) {
+    const cur = bolsterTotals.get(x.e.what) ?? { amount: 0, sources: [] };
+    bolsterTotals.set(x.e.what, { amount: cur.amount + sc(x.e.amount), sources: [...cur.sources, x.source] });
+  }
+  const bolsters = [...bolsterTotals.entries()].map(([what, t]) => `${what}: ${bolstered(t.amount)} (${t.sources.join(', ')})`);
   const dieName = (die: 'class' | Attr | DieRef) => (die === 'class' ? `${cls?.dieName ?? 'Class'} Die` : typeof die === 'string' ? `${die} Die` : `${die.name} Die (${die.die})`);
   const tandems = eff('tandem').map((x) => `${x.e.what}: Tandem with ${dieName(x.e.die)} (${x.source})`);
   const saves: SaveLine[] = ATTRS.map((a) => {
@@ -666,6 +685,34 @@ export function derive(c: Character): Derived {
   // Bulk: each VIG point unlocks bonus rows (row n requires n VIG).
   const bulkSlots = [1, 2, 3, 4, 5].map((rank) => ({ rank, slots: rank + (Math.max(0, points.VIG) >= rank ? rank : 0) }));
 
+  // ---- Unarmed Strikes ----
+  // Your body: Close-Up, DV 0, Deadly DV equal to your VIG points, Crushing. Facets can change
+  // that, Powerful Build adds to both DVs of every Unarmed Strike, and natural weapons add rows.
+  const unarmedBonus = eff('unarmedBonus').reduce((n, x) => n + sc(x.e.amount), 0);
+  const bonusSources = eff('unarmedBonus').map((x) => x.source);
+  const body: UnarmedStrike = { name: 'Unarmed Strike', dv: 0, deadlyDv: points.VIG, damage: 'Crushing', properties: ['Close-Up'], sources: [] };
+  for (const x of eff('unarmed')) {
+    if (x.e.dv !== undefined) body.dv = sc(x.e.dv);
+    if (x.e.deadly !== undefined) body.deadlyDv = x.e.deadly === 'twiceDv' ? 2 * body.dv : sc(x.e.deadly);
+    for (const p of x.e.properties ?? []) if (!body.properties.includes(p)) body.properties.push(p);
+    if (x.e.damage) body.damage = [body.damage, ...x.e.damage].join(' or ');
+    body.sources.push(x.source);
+  }
+  const unarmed: UnarmedStrike[] = [
+    body,
+    ...eff('naturalWeapon').map((x) => ({
+      name: x.e.name,
+      dv: sc(x.e.dv),
+      deadlyDv: sc(x.e.deadly) + (x.e.deadlyPlus ?? 0),
+      damage: x.e.damage,
+      properties: x.e.properties,
+      classDie: x.e.die === 'class',
+      sources: [x.source],
+    })),
+  ]
+    .map((u) => (unarmedBonus ? { ...u, dv: u.dv + unarmedBonus, deadlyDv: u.deadlyDv + unarmedBonus, sources: [...u.sources, ...bonusSources] } : u))
+    .map((u) => ({ ...u, dv: Math.max(0, u.dv), deadlyDv: Math.max(0, u.deadlyDv) }));
+
   const powerful = eff('jump').some((x) => x.e.mode === 'powerful');
   const doubled = eff('jump').some((x) => x.e.mode === 'double');
   const jump = {
@@ -726,6 +773,7 @@ export function derive(c: Character): Derived {
     restRules: [...new Set(eff('restRule').map((x) => x.e.rule))],
     homebrewNotes: eff('note').map((x) => ({ text: x.e.text, source: x.source })),
     weaponMods: eff('weapon').map((x) => ({ ...x.e, source: x.source.replace(/^.*: /, '') })),
+    unarmed,
     bulkShift: eff('bulkShift').reduce((sum, x) => sum + x.e.amount, 0),
     issues,
     todo,
