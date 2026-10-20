@@ -225,11 +225,19 @@ describe('sheet shows the modifiers the rules give', () => {
     await page.close();
     expect(mods).toContain('PER Attribute Checks: Bolstered 2 (Keen Senses, Sharp Ears)');
   });
-  it('Unarmed Strike is always in Weapons', async () => {
+  it('Unarmed Strike is listed once picked, above Simple weapons, and can be removed', async () => {
     const { page } = await sheet({ equipment: { armor: undefined, weapons: [], inventory: [] } });
     await page.getByRole('tab', { name: 'Equipment', exact: true }).click();
-    const text = (await page.locator('main').textContent()) ?? '';
+    const table = page.locator('table.weapons');
+    expect(await table.textContent()).not.toContain('Unarmed Strike');
+    const options = await page.locator('select[aria-label="Weapon"] > *').evaluateAll((els) => els.map((e) => e.getAttribute('label') ?? e.textContent));
+    expect(options.slice(1, 3)).toEqual(['Unarmed Strike', 'Simple Weapons']);
+    await page.locator('select[aria-label="Weapon"]').selectOption('Unarmed Strike');
+    await page.getByRole('button', { name: 'Add', exact: true }).click();
+    expect(await table.textContent()).toContain('Unarmed Strike');
+    await page.getByRole('button', { name: 'Remove Unarmed Strike' }).click();
+    const after = (await table.textContent()) ?? '';
     await page.close();
-    expect(text).toContain('Unarmed Strike');
+    expect(after).not.toContain('Unarmed Strike');
   });
 });

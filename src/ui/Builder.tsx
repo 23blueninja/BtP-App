@@ -703,6 +703,7 @@ export function Equipment({ c, d, update }: StepProps) {
         <div className="row">
           <select value={weapon} onChange={(e) => setWeapon(e.target.value)} aria-label="Weapon">
             <option value="">Add a weapon…</option>
+            <option disabled={c.equipment.weapons.some((w) => w.name === UNARMED)}>{UNARMED}</option>
             {groups.map((g) => (
               <optgroup key={g} label={g}>
                 {weapons
@@ -772,10 +773,14 @@ export function Equipment({ c, d, update }: StepProps) {
   );
 }
 
+/** The weapon-list entry for Unarmed Strikes: your body plus any natural weapons (claws, horns…). */
+export const UNARMED = 'Unarmed Strike';
+
 export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRemove?: (id: string) => void }) {
+  const unarmed = c.equipment.weapons.find((w) => w.name === UNARMED);
   // Your weapons, plus homebrew items that are weapons (named, with the base weapon's stats).
   const rows = [
-    ...c.equipment.weapons.map((w) => ({ id: w.id, name: w.name, base: w.name, homebrew: false })),
+    ...c.equipment.weapons.filter((w) => w !== unarmed).map((w) => ({ id: w.id, name: w.name, base: w.name, homebrew: false })),
     ...d.homebrew.filter((h) => h.entry.kind === 'item' && h.entry.baseWeapon).map((h) => ({ id: h.entry.id, name: h.entry.name, base: h.entry.baseWeapon!, homebrew: true })),
   ];
   return (
@@ -792,8 +797,8 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
           </tr>
         </thead>
         <tbody>
-          {/* Unarmed Strikes are always available: your body, plus any natural weapons. */}
-          {d.unarmed.map((u) => (
+          {/* Unarmed Strike, when picked: your body, plus any natural weapons (you Unarmed Strike with them). */}
+          {(unarmed ? d.unarmed : []).map((u, i) => (
             <tr key={u.name} className="unarmed-row">
               <td className="w-name">
                 {u.name}
@@ -809,7 +814,15 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
               <td className="w-props small">
                 <PropertyLinks props={u.properties} />
               </td>
-              {onRemove && <td className="w-remove" />}
+              {onRemove && (
+                <td className="w-remove">
+                  {i === 0 && (
+                    <button type="button" className="icon-btn" onClick={() => onRemove(unarmed!.id)} aria-label={`Remove ${UNARMED}`}>
+                      ✕
+                    </button>
+                  )}
+                </td>
+              )}
             </tr>
           ))}
           {rows.map((we) => {

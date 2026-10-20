@@ -1725,3 +1725,16 @@ describe('Armor penalties are Check Modifiers', () => {
     expect(row(wear('Light', -1), 'AGI Checks')?.weakened.length).toBe(1);
   });
 });
+
+// Rules, Gladiator: Save Checks PER and one Attribute of your choice, in Tandem with your Martial Die.
+describe('Save Check training', () => {
+  it('Gladiator: PER plus the chosen Attribute', () => {
+    expect(built({ classId: 'gladiator', choices: { 'save-attr': 'VIG' } }).d.saveTraining).toBe('PER, VIG in Tandem with your Martial Die');
+  });
+  it('Gladiator before choosing says so', () => {
+    expect(built({ classId: 'gladiator' }).d.saveTraining).toMatch(/^PER, one more Attribute \(choose in the builder\)/);
+  });
+  it('every class has Save Check training', () => {
+    for (const cl of classes) expect(built({ classId: cl.id }).d.saveTraining, cl.id).toMatch(/in Tandem with your .+ Die/);
+  });
+});

@@ -566,6 +566,16 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             <p className="small">
               <strong>Weapons:</strong> {d.weaponTraining}
             </p>
+            {d.saveTraining && (
+              <p className="small">
+                <strong>Save Checks:</strong> <TokenText text={d.saveTraining} />
+              </p>
+            )}
+            {d.cls?.spellAttr === 'choice' && (
+              <p className="small">
+                <strong>Spell Mod Die:</strong> <TokenText text={c.choices['spell-attr'] ?? 'choose VIG or PRS in the builder'} />
+              </p>
+            )}
             <p className="small">
               <strong>Action categories:</strong> {d.actionCategories.join(', ')}
             </p>
@@ -1092,8 +1102,9 @@ function Facets({ c, d, setPlay, update }: { c: Character; d: Derived; setPlay: 
       <div className="facet-cols">
         <div className="col">
           {classGroups.map(group)}
+          {/* Choices with rules text of their own; bare picks (Save Check, Spell Mod Die Attribute) show under Training. */}
           {d.choices
-            .filter((ch) => ch.selected)
+            .filter((ch) => ch.options.some((o) => o.id === ch.selected && (o.contentId || o.item)))
             .map((ch) => {
               const o = ch.options.find((x) => x.id === ch.selected)!;
               return (

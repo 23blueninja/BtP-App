@@ -154,6 +154,8 @@ export interface Derived {
   actionCategories: string[];
   armorTraining: string;
   weaponTraining: string;
+  /** The class's Save Check training, e.g. "PER, VIG in Tandem with your Martial Die". */
+  saveTraining?: string;
   armorNotes: string[];
   spellModDie?: string;
   maneuverModDie?: string;
@@ -527,6 +529,8 @@ export function derive(c: Character): Derived {
   const classDieLabel = classDie || undefined;
   const tandemSave = new Set<Attr>((cls?.saveTandem ?? []).filter((a): a is Attr => a !== 'choice'));
   if (cls?.saveTandem.includes('choice') && c.choices['save-attr']) tandemSave.add(c.choices['save-attr'] as Attr);
+  const classSaves = (cls?.saveTandem ?? []).map((a) => (a === 'choice' ? (c.choices['save-attr'] ?? 'one more Attribute (choose in the builder)') : a));
+  const saveTraining = cls && classSaves.length ? `${classSaves.join(', ')} in Tandem with your ${cls.dieName} Die${cls.saveEmpowered ? ', Empowered' : ''}` : undefined;
   eff('saveTandem').forEach((x) => x.e.attr !== 'choice' && !x.e.die && tandemSave.add(x.e.attr));
   const bolstered = (n: number) => (n >= 0 ? `Bolstered ${n}` : `Hindered ${-n}`);
   // Bolstered/Hindered levels on the same Checks add together (and cancel each other): one line per kind of Check.
@@ -765,6 +769,7 @@ export function derive(c: Character): Derived {
     actionCategories: [...new Set(actionCategories)],
     armorTraining: cls?.armorTraining ?? '—',
     weaponTraining: cls?.weaponTraining ?? 'Simple weapons',
+    saveTraining,
     armorNotes,
     spellModDie: spellAttr ? (cls?.spellDie === 'attr' ? attrs[spellAttr].label : classDie) : undefined,
     maneuverModDie: cls?.maneuverDie ? classDie : undefined,
