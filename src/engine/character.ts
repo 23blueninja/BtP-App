@@ -192,6 +192,8 @@ export interface Character {
 
   ancestry: string;
   subAncestry: string;
+  /** The name of a Custom ancestry (e.g. "Kobold"). */
+  customAncestryName?: string;
 
   background: {
     /** Pre-made background id, or '' for custom. */
