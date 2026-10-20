@@ -128,6 +128,8 @@ export interface Derived {
   initiative: string;
   initiativeNotes: string[];
   vitalityMax: number;
+  /** Champion of Darkness: Darkness (your missing Vitality) and the facets that give it. */
+  darkness?: { value: number; sources: string[] };
   radianceMax: number;
   enduranceMax: number;
   restCharges: number;
@@ -191,6 +193,7 @@ interface Ctx {
   level: number;
   classBonus: number;
   points: Record<Attr, number>;
+  darkness?: number;
 }
 
 export function resolveScaled(v: Scaled, ctx: Ctx): number {
@@ -204,6 +207,8 @@ export function resolveScaled(v: Scaled, ctx: Ctx): number {
       return ctx.level;
     case 'twiceLevel':
       return ctx.level * 2;
+    case 'darkness':
+      return ctx.darkness ?? 0;
     default:
       return v.half ? half(ctx.points[v.attr]) : ctx.points[v.attr];
   }
@@ -211,7 +216,7 @@ export function resolveScaled(v: Scaled, ctx: Ctx): number {
 
 function scaledLabel(v: Scaled): string {
   if (typeof v === 'number') return String(v);
-  if (typeof v === 'string') return { classBonus: 'Class Bonus', halfClassBonus: '½ Class Bonus', level: 'level', twiceLevel: '2 × level' }[v];
+  if (typeof v === 'string') return { classBonus: 'Class Bonus', halfClassBonus: '½ Class Bonus', level: 'level', twiceLevel: '2 × level', darkness: 'Darkness' }[v];
   return `${v.half ? '½ ' : ''}${v.attr}`;
 }
 
@@ -383,6 +388,10 @@ export function derive(c: Character): Derived {
 
   const ctx: Ctx = { level, classBonus, points };
   const sc = (v: Scaled) => resolveScaled(v, ctx);
+  const vitalityMax = 3 + Math.floor(Math.max(0, points.VIG) / 2) + eff('vitality').reduce((s, x) => s + sc(x.e.amount), 0);
+  // Champion of Darkness (Endwalker): Darkness equals your missing Vitality.
+  const darkness = eff('darkness').length && c.play.initialized ? Math.max(0, vitalityMax - c.play.vitality) : 0;
+  ctx.darkness = darkness;
 
   // ---- equipment ----
   const armor = c.equipment.armor;
@@ -456,7 +465,6 @@ export function derive(c: Character): Derived {
   const senses = [...new Set(eff('sense').map((x) => x.e.name))];
 
   // ---- health & resources ----
-  const vitalityMax = 3 + Math.floor(Math.max(0, points.VIG) / 2) + eff('vitality').reduce((s, x) => s + sc(x.e.amount), 0);
   const radianceMax = 1 + Math.floor(Math.max(0, points.PRS) / 2) + eff('radiance').reduce((s, x) => s + sc(x.e.amount), 0);
   const end = cls ? classEndurance(cls) : { start: 0, perLevel: 0 };
   const enduranceMax = end.start + end.perLevel * (level - 1) + eff('endurance').reduce((s, x) => s + sc(x.e.amount), 0);
@@ -748,6 +756,7 @@ export function derive(c: Character): Derived {
     initiative: initiativeTandem ? (attrs.PER.label === '—' ? initiativeTandem : `${attrs.PER.label} / ${initiativeTandem}`) : attrs.PER.label,
     initiativeNotes,
     vitalityMax,
+    darkness: eff('darkness').length ? { value: darkness, sources: eff('darkness').map((x) => x.source) } : undefined,
     radianceMax,
     enduranceMax,
     restCharges: vitalityMax,

@@ -15,6 +15,7 @@ import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { includeUnreleased } from '../scripts/unreleased.mjs';
 import { describe, expect, it } from 'vitest';
 import rulesJson from '../src/content/rules.json';
 import {
@@ -86,7 +87,7 @@ const clean = (s: string) =>
 
 const MD_RAW = readFileSync(MD_PATH, 'utf8').replace(/\r\n/g, '\n');
 /** Commented-out (unreleased) content is not part of the rules. */
-const MD_TEXT = MD_RAW.replace(/<!--[\s\S]*?-->/g, '');
+const MD_TEXT = includeUnreleased(MD_RAW).replace(/<!--[\s\S]*?-->/g, '');
 const MD_LINES = (() => {
   const lines = MD_TEXT.split('\n');
   const start = lines.findIndex((l) => l.trimEnd() === '# Beyond the Prism');
@@ -314,7 +315,7 @@ describe('rules parser (scripts/parse-rules.mjs)', () => {
   });
 
   it('commented-out (unreleased) headings are not in the content', () => {
-    const commented = [...MD_RAW.matchAll(/<!--([\s\S]*?)-->/g)].flatMap((m) => [...m[1].matchAll(/^#{1,6}\s+(.*)$/gm)].map((h) => clean(h[1].replace(/<\s*lvl\s*\d+\s*>/i, ''))));
+    const commented = [...includeUnreleased(MD_RAW).matchAll(/<!--([\s\S]*?)-->/g)].flatMap((m) => [...m[1].matchAll(/^#{1,6}\s+(.*)$/gm)].map((h) => clean(h[1].replace(/<\s*lvl\s*\d+\s*>/i, ''))));
     expect(commented.length).toBeGreaterThan(0);
     // e.g. the Vampyre class and the later Arcanist facets are commented out.
     expect(getNode('classes/vampyre')).toBeUndefined();

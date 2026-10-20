@@ -185,6 +185,31 @@ export const classes: ClassDef[] = [
           },
         ],
       },
+      // Playtest Cause (commented out in the rules source; parse-rules includes it up to level 2).
+      darkness: {
+        facetExtras: {
+          'vital-sacrifice': { uses: { count: 1, per: 'Rest' } },
+          endwalker: { effects: [{ kind: 'darkness' }, { kind: 'movement', amount: 'darkness' }] },
+        },
+        spellLists: [
+          {
+            id: 'exploits',
+            label: 'Glorious Exploits',
+            mode: 'known',
+            level: 2,
+            count: { column: 'Known' },
+            granted: [`${C}/champion/glorious-exploits/casting-spells/smite`],
+            pool: {
+              kind: 'maneuver',
+              types: ['Feral', 'Martial'],
+              maxLevelColumn: 'Max',
+              // The Cause also lists Void Evocations; there are none in the rules yet.
+              or: [{ kind: 'spell', group: 'Evocations', types: ['Infernal'], maxLevelColumn: 'Max' }],
+            },
+            note: 'Smite plus two Feral or Martial maneuvers or Infernal evocations (no Void evocations exist yet).',
+          },
+        ],
+      },
     },
   },
   {
