@@ -2476,10 +2476,10 @@ tr.needs input {
   backdrop-filter: var(--glass-blur);
 }
 .app.glass .split-glass.a {
-  clip-path: polygon(0 0, 100% 0, 100% 34%, 34% 100%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 14%, 14% 100%, 0 100%);
 }
 .app.glass .split-glass.b {
-  clip-path: polygon(100% 44%, 100% 100%, 44% 100%);
+  clip-path: polygon(100% 22%, 100% 100%, 22% 100%);
 }
 .app.glass .split-shape polygon {
   fill: transparent;
