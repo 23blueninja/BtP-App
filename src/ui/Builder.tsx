@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { allNodes, armorQualities, getNode, weaponPropertyNode, weapons } from '../content';
-import { ancestries, ancestryById } from '../data/ancestries';
+import { ancestries, ancestryById, CUSTOM_ANCESTRY, CUSTOM_ANCESTRY_NOTE } from '../data/ancestries';
 import { backgroundById, backgrounds, heritageById, heritageFacets } from '../data/backgrounds';
 import { classes } from '../data/classes';
 import { ATTRS, ATTR_NAMES, LIGHTS, RANK_DIE, type Attr, type Light } from '../data/types';
@@ -325,7 +325,7 @@ function Ancestry({ c, d, update }: StepProps) {
     <div className="form">
       <Guide id="player-characters/character-creation/choosing-an-ancestry" />
       <div className={needs(d, 'ancestry', 'card-grid')}>
-        {ancestries.map((a) => (
+        {[...ancestries, CUSTOM_ANCESTRY].map((a) => (
           <button
             key={a.id}
             type="button"
@@ -333,7 +333,7 @@ function Ancestry({ c, d, update }: StepProps) {
             onClick={() => update((x) => ({ ...x, ancestry: a.id, subAncestry: x.ancestry === a.id ? x.subAncestry : '' }))}
           >
             <strong>{a.name}</strong>
-            <small>{excerpt(getNode(a.contentId)?.html, 90)}</small>
+            <small>{a === CUSTOM_ANCESTRY ? 'Your own ancestry, with facets you add as Homebrew facets.' : excerpt(getNode(a.contentId)?.html, 90)}</small>
           </button>
         ))}
       </div>
@@ -352,7 +352,7 @@ function Ancestry({ c, d, update }: StepProps) {
               </select>
             </label>
           )}
-          <RuleBlock node={getNode(anc.contentId)!} />
+          {anc === CUSTOM_ANCESTRY ? <p className="note">{CUSTOM_ANCESTRY_NOTE}</p> : <RuleBlock node={getNode(anc.contentId)!} />}
         </div>
       )}
     </div>

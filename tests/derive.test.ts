@@ -1803,3 +1803,23 @@ describe('Endwalker reduces damage the app applies', async () => {
     expect(r.log.join(' ')).toContain('take 7 Thermic damage (9 − Endwalker 2)');
   });
 });
+
+describe('Custom ancestry', () => {
+  it('has no facets of its own and needs no sub-ancestry', () => {
+    const { d } = built({ classId: 'expert', ancestry: 'custom' });
+    expect(d.facets.filter((f) => f.key.startsWith('anc:'))).toEqual([]);
+    expect(d.todo.filter((t) => t.step === 'ancestry')).toEqual([]);
+  });
+  it('takes its facets from Homebrew facets', () => {
+    const gills: HomebrewEntry = { id: 'g', kind: 'facet', name: 'Gills', rows: [{ id: 'r', effect: { kind: 'movementType', type: 'Swim', amount: 'movement' } }] };
+    const soul: HomebrewEntry = { id: 's', kind: 'facet', name: 'Tidal Soul', rows: [{ id: 'r', effect: { kind: 'alignment', light: 'Frost' } }] };
+    const { d } = built({ classId: 'expert', ancestry: 'custom', homebrew: [gills, soul] });
+    expect(d.movementTypes).toContainEqual({ type: 'Swim', value: d.movement });
+    expect(d.alignment.find((a) => a.light === 'Frost')?.sources).toContain('Tidal Soul');
+  });
+  it('is not one of the rules ancestries', async () => {
+    const { ancestries, ancestryById, CUSTOM_ANCESTRY } = await import('../src/data/ancestries');
+    expect(ancestries).not.toContain(CUSTOM_ANCESTRY);
+    expect(ancestryById.get('custom')).toBe(CUSTOM_ANCESTRY);
+  });
+});

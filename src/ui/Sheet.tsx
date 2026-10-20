@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { basicActions, conditions as conditionDefs, getNode, getCastable, type RuleNode } from '../content';
-import { ancestryById } from '../data/ancestries';
+import { ancestryById, CUSTOM_ANCESTRY, CUSTOM_ANCESTRY_NOTE } from '../data/ancestries';
 import { ATTRS, ATTR_NAMES, RANK_DIE, type Light } from '../data/types';
 import { newId, type Character, type Experience, type PlayState, type SessionNote } from '../engine/character';
 import { derive, type Derived } from '../engine/derive';
@@ -1141,6 +1141,12 @@ function Facets({ c, d, setPlay, update }: { c: Character; d: Derived; setPlay: 
             })}
         </div>
         <div className="col">
+          {c.ancestry === CUSTOM_ANCESTRY.id && (
+            <section className="box">
+              <h3 className="box-title">Custom ancestry</h3>
+              <p className="muted small">{CUSTOM_ANCESTRY_NOTE}</p>
+            </section>
+          )}
           {otherGroups.map(group)}
           {/* Facets your PM grants beyond your class and ancestry (e.g. one that raises an Alignment). */}
           <section className="box">
