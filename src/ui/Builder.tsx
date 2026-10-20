@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { allNodes, armorQualities, getNode, weaponPropertyNode, weapons } from '../content';
-import { ancestries, ancestryById, CUSTOM_ANCESTRY, CUSTOM_ANCESTRY_NOTE } from '../data/ancestries';
+import { ancestries, ancestryById, ancestryName, CUSTOM_ANCESTRY, CUSTOM_ANCESTRY_NOTE } from '../data/ancestries';
 import { backgroundById, backgrounds, heritageById, heritageFacets } from '../data/backgrounds';
 import { classes } from '../data/classes';
 import { ATTRS, ATTR_NAMES, LIGHTS, RANK_DIE, type Attr, type Light } from '../data/types';
@@ -99,7 +99,7 @@ function Summary({ c, d }: { c: Character; d: Derived }) {
     <aside className="summary" aria-label="Character summary">
       <h3>{c.name || 'Unnamed'}</h3>
       <p className="muted">
-        Level {d.level} {anc?.name ?? ''} {d.cls?.name ?? ''}
+        Level {d.level} {anc ? ancestryName(c) : ''} {d.cls?.name ?? ''}
         {d.subclassName ? ` (${d.subclassName})` : ''}
       </p>
       <div className="attr-row">
@@ -352,7 +352,17 @@ function Ancestry({ c, d, update }: StepProps) {
               </select>
             </label>
           )}
-          {anc === CUSTOM_ANCESTRY ? <p className="note">{CUSTOM_ANCESTRY_NOTE}</p> : <RuleBlock node={getNode(anc.contentId)!} />}
+          {anc === CUSTOM_ANCESTRY ? (
+            <>
+              <label>
+                Ancestry name
+                <input value={c.customAncestryName ?? ''} onChange={(e) => update((x) => ({ ...x, customAncestryName: e.target.value }))} placeholder="e.g. Kobold" />
+              </label>
+              <p className="note">{CUSTOM_ANCESTRY_NOTE}</p>
+            </>
+          ) : (
+            <RuleBlock node={getNode(anc.contentId)!} />
+          )}
         </div>
       )}
     </div>

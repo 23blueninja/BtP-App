@@ -7,6 +7,7 @@ export interface CharacterSummary {
   name: string;
   level: number;
   ancestry: string;
+  customAncestryName?: string;
   classId: string;
   updatedAt: string;
 }
@@ -50,7 +51,7 @@ export class LocalStore implements CharacterStore {
 
   list(): CharacterSummary[] {
     return Object.values(this.all())
-      .map((c) => ({ id: c.id, name: c.name, level: c.level, ancestry: c.ancestry, classId: c.classId, updatedAt: c.updatedAt }))
+      .map((c) => ({ id: c.id, name: c.name, level: c.level, ancestry: c.ancestry, customAncestryName: c.customAncestryName, classId: c.classId, updatedAt: c.updatedAt }))
       .sort((a, b) => (b.updatedAt ?? '').localeCompare(a.updatedAt ?? ''));
   }
 

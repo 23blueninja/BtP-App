@@ -248,11 +248,18 @@ describe('sheet shows the modifiers the rules give', () => {
     await page.reload();
     await page.locator('.pick-card.selected', { hasText: 'Custom' }).waitFor();
     const builder = (await page.locator('main').textContent()) ?? '';
+    // Naming it: the name replaces "Custom" on the sheet.
+    await page.getByLabel('Ancestry name').fill('Kobold');
+    await page.goto(`${base}#/c/shows`);
+    await page.getByRole('tab', { name: 'Facets', exact: true }).click();
+    const named = (await page.locator('main').textContent()) ?? '';
     await page.close();
     expect(errors).toEqual([]);
     expect(facets).toContain('Custom ancestry');
     expect(facets).toContain('Add its facets');
     expect(builder).toContain('Add its facets');
+    expect(named).toMatch(/Level \d+ · Kobold ·/);
+    expect(named).toContain('Kobold (Custom ancestry)');
   });
   it('Unarmed Strike is listed once picked, above Simple weapons, and can be removed', async () => {
     const { page } = await sheet({ equipment: { armor: undefined, weapons: [], inventory: [] } });

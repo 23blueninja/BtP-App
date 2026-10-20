@@ -305,3 +305,9 @@ export const CUSTOM_ANCESTRY: AncestryDef = { id: 'custom', name: 'Custom', cont
 export const CUSTOM_ANCESTRY_NOTE = 'A Custom ancestry has no facets of its own. Add its facets (and its Soul’s Alignment) with Homebrew facets on the Facets tab.';
 
 export const ancestryById = new Map([...ancestries, CUSTOM_ANCESTRY].map((a) => [a.id, a]));
+
+/** The ancestry's display name: a Custom ancestry's own name when it has one. */
+export function ancestryName(c: { ancestry: string; customAncestryName?: string }): string {
+  if (c.ancestry === CUSTOM_ANCESTRY.id) return c.customAncestryName?.trim() || CUSTOM_ANCESTRY.name;
+  return ancestryById.get(c.ancestry)?.name ?? '';
+}

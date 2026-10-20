@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { ancestryById } from '../data/ancestries';
+import { ancestryName } from '../data/ancestries';
 import { classById } from '../data/classes';
 import { newCharacter, newId } from '../engine/character';
 import { exportCharacter, importCharacter, store } from '../storage/storage';
@@ -69,7 +69,7 @@ export function Home() {
               <button type="button" className="char-open" onClick={() => go('c', s.id)}>
                 <strong>{s.name || 'Unnamed'}</strong>
                 <span className="muted">
-                  Level {s.level} {ancestryById.get(s.ancestry)?.name ?? ''} {classById.get(s.classId)?.name ?? ''}
+                  Level {s.level} {ancestryName(s)} {classById.get(s.classId)?.name ?? ''}
                 </span>
                 <small className="muted">Updated {new Date(s.updatedAt).toLocaleString()}</small>
               </button>

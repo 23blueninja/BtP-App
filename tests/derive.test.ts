@@ -1817,6 +1817,13 @@ describe('Custom ancestry', () => {
     expect(d.movementTypes).toContainEqual({ type: 'Swim', value: d.movement });
     expect(d.alignment.find((a) => a.light === 'Frost')?.sources).toContain('Tidal Soul');
   });
+  it('shows its own name when given one', async () => {
+    const { ancestryName } = await import('../src/data/ancestries');
+    expect(ancestryName({ ancestry: 'custom', customAncestryName: '  Kobold ' })).toBe('Kobold');
+    expect(ancestryName({ ancestry: 'custom', customAncestryName: '' })).toBe('Custom');
+    expect(ancestryName({ ancestry: 'custom' })).toBe('Custom');
+    expect(ancestryName({ ancestry: 'praedan', customAncestryName: 'Kobold' })).toBe('Praedan');
+  });
   it('is not one of the rules ancestries', async () => {
     const { ancestries, ancestryById, CUSTOM_ANCESTRY } = await import('../src/data/ancestries');
     expect(ancestries).not.toContain(CUSTOM_ANCESTRY);
