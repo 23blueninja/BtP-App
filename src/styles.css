@@ -21,6 +21,10 @@
   --prism-loop: linear-gradient(90deg, #ff5f6d, #ffb35c, #ffe066, #5fd39a, #4fd1ff, #7aa2ff, #c38bff, #ff5f6d);
   /* Containers have square corners; controls keep their small rounding. */
   --radius: 0;
+  /* Top-level panels: cut corners and a prismatic edge (see .box). */
+  --panel-cut: 12px;
+  --prism-edge: conic-gradient(from 200deg, rgba(255, 95, 109, 0.55), rgba(255, 179, 92, 0.5), rgba(255, 224, 102, 0.45), rgba(95, 211, 154, 0.45), rgba(79, 209, 255, 0.5), rgba(122, 162, 255, 0.55), rgba(195, 139, 255, 0.55), rgba(255, 95, 109, 0.55));
+  --prism-glint: radial-gradient(120px 60px at 0 0, rgba(255, 255, 255, 0.85), transparent 70%);
   --shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
   color-scheme: dark;
   font-family: 'Open Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -1054,6 +1058,32 @@ dl.defs dd {
   border-radius: var(--radius);
   padding: 0.6rem 0.75rem;
   min-width: 0;
+}
+/* Panels as prism glass: corners cut flat, and an edge that splits light into a
+   spectrum (a conic gradient drawn as a ring), with a white glint where light
+   enters at the top-left. Top-level panels and the big containers on other
+   pages; nested panels and small cards keep their plain edge. */
+:is(.box:not(.box .box), .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card) {
+  corner-shape: bevel;
+  border-radius: var(--panel-cut);
+  border-color: transparent;
+}
+/* The ring is positioned against the panel (sticky ones already anchor it). */
+:is(.box:not(.box .box), .builder-content, .ref-body, .levelup, .char-card):not(.turn-bar) {
+  position: relative;
+}
+:is(.box:not(.box .box), .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card)::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  padding: 1.5px;
+  border-radius: var(--panel-cut);
+  corner-shape: bevel;
+  background: var(--prism-glint), var(--prism-edge);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 .box-title {
   margin: 0 0 0.4rem;
@@ -2551,14 +2581,18 @@ tr.needs input {
   backdrop-filter: var(--glass-blur);
 }
 .app.glass .split-glass.a {
-  clip-path: polygon(0 0, 100% 0, 100% 20%, 0 71%);
+  clip-path: polygon(0 6%, 6% 0, 94% 0, 100% 6%, 100% 20%, 0 71%);
 }
 .app.glass .split-glass.b {
-  clip-path: polygon(100% 27%, 100% 100%, 0 100%, 0 78%);
+  clip-path: polygon(100% 27%, 100% 94%, 94% 100%, 6% 100%, 0 94%, 0 78%);
 }
 .app.glass .split-shape polygon {
   fill: transparent;
-  stroke: rgba(255, 255, 255, 0.22);
+}
+/* The split box's two halves get the same prismatic edge as the panels. */
+.split-shape polygon {
+  stroke: url(#split-prism);
+  stroke-width: 1.5;
 }
 .split-glass {
   display: none;
