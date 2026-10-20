@@ -142,11 +142,7 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
       <section className="split-box">
         <div className="split-glass a" aria-hidden />
         <div className="split-glass b" aria-hidden />
-        {/* Outer corners cut like the panels'; the prismatic edge is the box's ::before ring. */}
-        <svg className="split-shape" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
-          <polygon points="0,6 6,0 94,0 100,6 100,20 0,71" />
-          <polygon points="100,27 100,94 94,100 6,100 0,94 0,78" />
-        </svg>
+        {/* The halves' fills; their prismatic edges are the box's ::before / ::after rings. */}
         <div className="split-a">
           <h3 className="box-title">{d.cls ? `${d.cls.name} Bonus` : 'Class Bonus'}</h3>
           <div className="big">+{d.classBonus}</div>
