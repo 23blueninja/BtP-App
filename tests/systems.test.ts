@@ -1363,7 +1363,7 @@ describe('storage', () => {
 // ===========================================================================
 describe('prefs', () => {
   const KEY = 'btp.prefs.v1';
-  const DEFAULTS = { pinStatBar: true, animateGradients: true, animateBackground: true, animateEdges: true, glassPanels: true };
+  const DEFAULTS = { pinStatBar: true, animateGradients: true, animateBackground: true, animateEdges: true, glassPanels: true, cutCorners: true, look: 'faceted', tourSeen: false };
   let ls: FakeStorage;
   let subscribed: (() => void)[];
 

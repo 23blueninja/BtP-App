@@ -54,7 +54,11 @@ async function open(chars: Character[], viewport = { width: 1400, height: 1000 }
   page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
   page.on('console', (m) => m.type() === 'error' && errors.push(`console: ${m.text()}`));
   await page.goto(base);
-  await page.evaluate((list) => localStorage.setItem('btp.characters.v1', JSON.stringify(Object.fromEntries(list.map((c) => [c.id, c])))), chars);
+  // The guided tour has its own tests; elsewhere it would cover the page.
+  await page.evaluate((list) => {
+    localStorage.setItem('btp.characters.v1', JSON.stringify(Object.fromEntries(list.map((c) => [c.id, c]))));
+    localStorage.setItem('btp.prefs.v1', JSON.stringify({ tourSeen: true }));
+  }, chars);
   return { page, errors };
 }
 
@@ -335,5 +339,76 @@ describe('sheet shows the modifiers the rules give', () => {
     const after = (await table.textContent()) ?? '';
     await page.close();
     expect(after).not.toContain('Unarmed Strike');
+  });
+});
+
+describe('guided tour', () => {
+  /** A fresh browser: no characters, no prefs. */
+  async function fresh(viewport = { width: 1400, height: 1000 }) {
+    const page = await browser.newPage({ viewport });
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
+    page.on('console', (m) => m.type() === 'error' && errors.push(`console: ${m.text()}`));
+    await page.goto(base);
+    return { page, errors };
+  }
+  it.each([
+    { width: 1400, height: 1000 },
+    { width: 412, height: 900 },
+  ])('starts on first visit and runs through every step ($width px)', async (viewport) => {
+    const { page, errors } = await fresh(viewport);
+    const card = page.locator('.tour-card');
+    await card.waitFor();
+    const missing: string[] = [];
+    for (let i = 0; i < 30; i++) {
+      const [n, total] = ((await card.locator('p.small').first().textContent()) ?? '').split('/').map((x) => Number(x.trim()));
+      await page.waitForTimeout(150);
+      const title = await card.locator('h3').textContent();
+      // Steps 1 and the last are centred cards; all others highlight an element.
+      if (n !== 1 && n !== total && !(await page.locator('.tour-spot').count())) missing.push(`${n}: ${title}`);
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+      if (overflow > 1) missing.push(`${n}: overflow ${overflow}px`);
+      const next = card.getByRole('button', { name: /^(Next|Finish)$/ });
+      const finishing = (await next.textContent()) === 'Finish';
+      await next.click();
+      if (finishing) break;
+    }
+    await page.waitForTimeout(200);
+    const after = await page.evaluate(() => ({ hash: location.hash, prefs: JSON.parse(localStorage.getItem('btp.prefs.v1') ?? '{}'), keys: Object.keys(localStorage) }));
+    const open = await page.locator('.tour').count();
+    await page.close();
+    expect(errors).toEqual([]);
+    expect(missing).toEqual([]);
+    expect(open).toBe(0);
+    expect(after.prefs.tourSeen).toBe(true);
+    // The demo character is gone and the tour ends on the home page.
+    expect(after.keys.filter((k) => k.includes('tour-demo'))).toEqual([]);
+    expect(after.hash).toBe('#/');
+  });
+  it('can be skipped, does not start again, and can be taken again', async () => {
+    const { page, errors } = await fresh();
+    await page.locator('.tour-card').getByRole('button', { name: 'Skip tour' }).click();
+    expect(await page.locator('.tour').count()).toBe(0);
+    await page.reload();
+    await page.getByRole('button', { name: /New character/ }).waitFor();
+    await page.waitForTimeout(300);
+    expect(await page.locator('.tour').count()).toBe(0);
+    await page.getByRole('button', { name: 'Take the tour' }).click();
+    await page.locator('.tour-card').waitFor();
+    await page.keyboard.press('Escape');
+    expect(await page.locator('.tour').count()).toBe(0);
+    await page.close();
+    expect(errors).toEqual([]);
+  });
+  it('does not start by itself when characters already exist', async () => {
+    const page = await browser.newPage({ viewport: { width: 1400, height: 1000 } });
+    await page.goto(base);
+    await page.evaluate((c) => localStorage.setItem('btp.characters.v1', JSON.stringify({ [c.id]: c })), character('expert', 'investigator', 2, 'human', 'has-one'));
+    await page.reload();
+    await page.getByRole('button', { name: /New character/ }).waitFor();
+    await page.waitForTimeout(300);
+    const open = await page.locator('.tour').count();
+    await page.close();
+    expect(open).toBe(0);
   });
 });
