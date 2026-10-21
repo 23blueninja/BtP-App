@@ -6,6 +6,7 @@ import { derive, type Derived } from '../engine/derive';
 import { describeEffect, newHomebrew, RULE_TEXT, spendPool, TIER_NAMES, type ResolvedHomebrew } from '../engine/homebrew';
 import { PlayContext } from './Activate';
 import { Collapsible, Modal } from './common';
+import { tourActive } from './Tour';
 
 type Update = (fn: (c: Character) => Character) => void;
 
@@ -345,7 +346,8 @@ function HomebrewEditor({ entry, onClose, onSave }: { entry: HomebrewEntry; onCl
         </div>
         <label>
           Name
-          <input value={e.name} onChange={(x) => set({ name: x.target.value })} autoFocus />
+          {/* Not while the tour shows the editor: focusing a text box brings up a phone's keyboard. */}
+          <input value={e.name} onChange={(x) => set({ name: x.target.value })} autoFocus={!tourActive()} />
         </label>
         <label>
           Subtitle
