@@ -1109,25 +1109,54 @@ dl.defs dd {
     background-position: 0 0, -1980px 0;
   }
 }
-/* Firefox (.page-edges, set by App.tsx): it scrolls screen-fixed backgrounds a
-   frame behind the content, so the edges flicker after scrolling. There the field
-   is anchored to the page instead: each panel offsets it by its page position
-   (--edge-x/-y). Square tiles of 1400px × √2 repeat the 135° field seamlessly. */
-.app.page-edges :is(.box:not(.box .box), .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card)::before,
-.app.page-edges .split-box::before,
-.app.page-edges .split-box::after {
-  background-attachment: scroll;
-  background-size: auto, 1979.9px 1979.9px;
-  background-repeat: no-repeat, repeat;
-  background-position: 0 0, calc(-1 * var(--edge-x, 0px)) calc(-1 * var(--edge-y, 0px));
-  animation-name: prism-edge-drift-page;
+/* Firefox (.gecko, set by App.tsx) shakes anything drawn through a cut-out (the
+   edge's mask, clip-path) while smooth-scrolling, and lags screen-fixed
+   backgrounds. There the edge is a plain gradient border (no mask), anchored to
+   the page: the spectrum's stops are offset by the panel's page position
+   (--edge-x/-y, projected onto the 135° line) plus the drift. Square corners:
+   Firefox has no corner-shape, and border-image draws square corners anyway. */
+@property --edge-drift {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
 }
-@keyframes prism-edge-drift-page {
+.app.gecko {
+  --panel-cut: 0px;
+}
+.app.gecko :is(.box:not(.box .box), .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card)::before,
+.app.gecko .split-box::before {
+  --edge-o: calc((var(--edge-x, 0px) + var(--edge-y, 0px)) * 0.70711 + var(--edge-drift));
+  -webkit-mask: none;
+  mask: none;
+  clip-path: none;
+  background: none;
+  padding: 0;
+  border: var(--prism-edge-width) solid transparent;
+  border-image: repeating-linear-gradient(
+      135deg,
+      #1fb84a calc(0px - var(--edge-o)),
+      #15b3b3 calc(175px - var(--edge-o)),
+      #1f5bff calc(350px - var(--edge-o)),
+      #1a1aa8 calc(525px - var(--edge-o)),
+      #8a1fd6 calc(700px - var(--edge-o)),
+      #d61fa3 calc(875px - var(--edge-o)),
+      #e0262e calc(1050px - var(--edge-o)),
+      #e88a1a calc(1225px - var(--edge-o)),
+      #1fb84a calc(1400px - var(--edge-o))
+    )
+    1;
+  animation-name: prism-edge-drift-gecko;
+}
+/* The split box gets one edge around the whole box (its halves keep their slant). */
+.app.gecko .split-box::after {
+  display: none;
+}
+@keyframes prism-edge-drift-gecko {
   from {
-    background-position: 0 0, calc(-1 * var(--edge-x, 0px)) calc(-1 * var(--edge-y, 0px));
+    --edge-drift: 0px;
   }
   to {
-    background-position: 0 0, calc(-1 * var(--edge-x, 0px) - 1980px) calc(-1 * var(--edge-y, 0px));
+    --edge-drift: 1400px;
   }
 }
 /* The split box's edge: one ring per cut half, the same width and corner cut as
@@ -1865,6 +1894,19 @@ textarea.full {
 /* Icons in a gradient heading: the text colour is transparent, so paint the icon with the gradient. */
 .sheet .box-title .ic {
   background: var(--heading-gradient) 50% 50% / 400% 400%;
+}
+/* Firefox shakes text filled through background-clip: text while scrolling, so
+   there headings are solid, in the character's strongest Light. */
+.app.gecko .sheet-header h1,
+.app.gecko .sheet .box-title {
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  color: var(--heading-color, var(--text));
+  animation: none;
+}
+.app.gecko .sheet .box-title .ic {
+  background: currentColor;
 }
 .sheet-header h1 {
   display: inline-block;

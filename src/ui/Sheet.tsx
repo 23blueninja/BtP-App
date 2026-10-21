@@ -19,10 +19,10 @@ import type { ActiveEffect } from '../engine/character';
 
 type Update = (fn: (c: Character) => Character) => void;
 
-/** Heading gradient from the character's alignments (see lightColors.ts). */
+/** Heading gradient from the character's alignments (see lightColors.ts); solid colour (strongest Light) for Firefox. */
 function headingStyle(d: Derived): React.CSSProperties | undefined {
   const g = alignmentGradient(d.alignmentRanked);
-  return g ? ({ '--heading-gradient': g } as React.CSSProperties) : undefined;
+  return g ? ({ '--heading-gradient': g, '--heading-color': LIGHT_TEXT[d.alignmentRanked[0].light] } as React.CSSProperties) : undefined;
 }
 
 const TABS = ['Sheet', 'Facets', 'Spells & Maneuvers', 'Equipment', 'Notes'] as const;
