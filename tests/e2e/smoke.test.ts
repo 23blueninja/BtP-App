@@ -210,6 +210,40 @@ describe('phone layout', () => {
   });
 });
 
+describe('panel edges on a phone', () => {
+  // Each prismatic edge (::before, at inset -1px over the 1px border) is drawn around
+  // its own panel, not an ancestor, with or without glass (whose backdrop filter
+  // would anchor it anyway).
+  it.each(['.ref-nav', '.summary'].flatMap((sel) => [true, false].map((glass) => ({ sel, glass }))))('$sel, glass $glass', async ({ sel, glass }) => {
+    const { page, errors } = await open([], { width: 360, height: 900 });
+    await page.evaluate((glassPanels) => localStorage.setItem('btp.prefs.v1', JSON.stringify({ tourSeen: true, glassPanels })), glass);
+    if (sel === '.ref-nav') {
+      await page.goto(`${base}#/rules`);
+      await page.reload();
+    } else {
+      await page.reload();
+      await page.getByRole('button', { name: /New character/ }).click();
+    }
+    await page.locator(sel).waitFor();
+    const m = await page.evaluate((sel) => {
+      const el = document.querySelector(sel)!;
+      const r = el.getBoundingClientRect();
+      const ring = getComputedStyle(el, '::before');
+      const px = (k: string) => parseFloat(ring.getPropertyValue(k));
+      return {
+        w: r.width,
+        h: r.height,
+        rw: px('width') + px('padding-left') + px('padding-right'),
+        rh: px('height') + px('padding-top') + px('padding-bottom'),
+      };
+    }, sel);
+    await page.close();
+    expect(errors).toEqual([]);
+    expect(Math.abs(m.rw - m.w)).toBeLessThanOrEqual(1);
+    expect(Math.abs(m.rh - m.h)).toBeLessThanOrEqual(1);
+  });
+});
+
 // What the sheet shows, not just that it renders: scripted characters whose
 // rules-stated modifiers must appear in the Check Modifiers panel and Weapons table.
 describe('sheet shows the modifiers the rules give', () => {

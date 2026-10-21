@@ -184,7 +184,8 @@ function parse(lines) {
       while (stack.length > 1 && stack[stack.length - 1].depth >= depth) stack.pop();
       const parent = stack[stack.length - 1];
       const node = {
-        title: plain(title),
+        // Icons ($[SL] → {SL}) stay in titleHtml; the plain title (nav, search, crumbs) drops them.
+        title: plain(title).replace(/\{[A-Z]+\}\s*/g, ''),
         titleHtml: inline(title),
         depth,
         ...(lvl !== undefined ? { lvl } : {}),

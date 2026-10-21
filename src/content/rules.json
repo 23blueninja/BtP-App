@@ -123,7 +123,7 @@
        "html": "<p>The simplest way to roll a d2 is by rolling your favorite die, counting an odd roll as a 1 and an even roll as a 2. Ie, you can roll 1d6, treating 1, 3, and 5 as 1, and 2, 4, and 6 as 2.</p>\n<p>When you roll a d2 in Tandem with another Modifier Die, be sure to use a different sized die for the d2 so you don&#39;t get them confused.</p>\n<p>Each Attribute Point beyond 6 add +1 to Checks with that Attribute. When something refers to the number of points you have in a given Attribute, it will use the symbol of that Attribute. For example, heavy armor allows you to add your <span class=\"ic ic-VIG\" role=\"img\" aria-label=\"VIG\" title=\"VIG\"></span> Points (Vigor Points) to your character’s AC.</p>\n<p>There is a limit to how high your Attributes can be, determined by your level. The limit starts at 3 points, and rises with your level as shown in the table below.</p>"
       },
       {
-       "title": "{VIG} Vigor (VIG)",
+       "title": "Vigor (VIG)",
        "titleHtml": "<span class=\"ic ic-VIG\" role=\"img\" aria-label=\"VIG\" title=\"VIG\"></span> Vigor (VIG)",
        "depth": 3,
        "id": "beyond-the-prism/attributes/vigor-vig",
@@ -135,7 +135,7 @@
        }
       },
       {
-       "title": "{AGI} Agility (AGI)",
+       "title": "Agility (AGI)",
        "titleHtml": "<span class=\"ic ic-AGI\" role=\"img\" aria-label=\"AGI\" title=\"AGI\"></span> Agility (AGI)",
        "depth": 3,
        "id": "beyond-the-prism/attributes/agility-agi",
@@ -147,7 +147,7 @@
        }
       },
       {
-       "title": "{PER} Perception (PER)",
+       "title": "Perception (PER)",
        "titleHtml": "<span class=\"ic ic-PER\" role=\"img\" aria-label=\"PER\" title=\"PER\"></span> Perception (PER)",
        "depth": 3,
        "id": "beyond-the-prism/attributes/perception-per",
@@ -159,7 +159,7 @@
        }
       },
       {
-       "title": "{INT} Intelligence (INT)",
+       "title": "Intelligence (INT)",
        "titleHtml": "<span class=\"ic ic-INT\" role=\"img\" aria-label=\"INT\" title=\"INT\"></span> Intelligence (INT)",
        "depth": 3,
        "id": "beyond-the-prism/attributes/intelligence-int",
@@ -171,7 +171,7 @@
        }
       },
       {
-       "title": "{PRS} Presence (PRS)",
+       "title": "Presence (PRS)",
        "titleHtml": "<span class=\"ic ic-PRS\" role=\"img\" aria-label=\"PRS\" title=\"PRS\"></span> Presence (PRS)",
        "depth": 3,
        "id": "beyond-the-prism/attributes/presence-prs",
@@ -667,7 +667,7 @@
      "depth": 2,
      "children": [
       {
-       "title": "{AP} Action Points (AP)",
+       "title": "Action Points (AP)",
        "titleHtml": "<span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span> Action Points (AP)",
        "depth": 3,
        "children": [
@@ -2614,7 +2614,7 @@
          "depth": 4,
          "children": [
           {
-           "title": "{VIG} Vigor",
+           "title": "Vigor",
            "titleHtml": "<span class=\"ic ic-VIG\" role=\"img\" aria-label=\"VIG\" title=\"VIG\"></span> Vigor",
            "depth": 5,
            "id": "player-characters/character-creation/filling-in-your-sheet/step-1-fill-in-your-attributes/vigor",
@@ -2638,7 +2638,7 @@
            ]
           },
           {
-           "title": "{AGI} Agility",
+           "title": "Agility",
            "titleHtml": "<span class=\"ic ic-AGI\" role=\"img\" aria-label=\"AGI\" title=\"AGI\"></span> Agility",
            "depth": 5,
            "id": "player-characters/character-creation/filling-in-your-sheet/step-1-fill-in-your-attributes/agility",
@@ -2652,7 +2652,7 @@
            ]
           },
           {
-           "title": "{PER} Perception",
+           "title": "Perception",
            "titleHtml": "<span class=\"ic ic-PER\" role=\"img\" aria-label=\"PER\" title=\"PER\"></span> Perception",
            "depth": 5,
            "id": "player-characters/character-creation/filling-in-your-sheet/step-1-fill-in-your-attributes/perception",
@@ -2671,7 +2671,7 @@
            ]
           },
           {
-           "title": "{INT} Intelligence",
+           "title": "Intelligence",
            "titleHtml": "<span class=\"ic ic-INT\" role=\"img\" aria-label=\"INT\" title=\"INT\"></span> Intelligence",
            "depth": 5,
            "id": "player-characters/character-creation/filling-in-your-sheet/step-1-fill-in-your-attributes/intelligence",
@@ -2690,7 +2690,7 @@
            ]
           },
           {
-           "title": "{PRS} Presence",
+           "title": "Presence",
            "titleHtml": "<span class=\"ic ic-PRS\" role=\"img\" aria-label=\"PRS\" title=\"PRS\"></span> Presence",
            "depth": 5,
            "id": "player-characters/character-creation/filling-in-your-sheet/step-1-fill-in-your-attributes/presence",
@@ -8096,7 +8096,7 @@
      "subtitle": "< Type > < Level >"
     },
     {
-     "title": "{SL} Level",
+     "title": "Level",
      "titleHtml": "<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> Level",
      "depth": 3,
      "id": "reading-spells-maneuvers/level",
