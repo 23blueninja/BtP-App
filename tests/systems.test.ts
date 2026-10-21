@@ -1140,7 +1140,10 @@ describe('inventory', () => {
 // storage/storage.ts
 // ===========================================================================
 describe('storage', () => {
+  /** Older saves: every character in one map (migrated on first read). */
   const KEY = 'btp.characters.v1';
+  /** Now: one key per character. */
+  const PREFIX = 'btp.character.';
   let ls: FakeStorage;
   beforeEach(() => {
     ls = new FakeStorage();
@@ -1170,8 +1173,10 @@ describe('storage', () => {
       { id: a.id, name: 'Ann', level: 2, ancestry: 'human', classId: 'arcanist', updatedAt: a.updatedAt },
     ]);
     expect(s.get(a.id)).toEqual(normalizeCharacter(a));
-    // Persisted under the versioned key, readable by a fresh store.
-    expect(Object.keys(JSON.parse(ls.data.get(KEY)!))).toEqual([a.id, b.id]);
+    // Persisted one key per character (once flushed), readable by a fresh store.
+    s.flush();
+    expect([...ls.data.keys()].sort()).toEqual([PREFIX + a.id, PREFIX + b.id].sort());
+    expect(JSON.parse(ls.data.get(PREFIX + a.id)!)).toEqual(a);
     expect(new LocalStore().get(b.id)?.name).toBe('Bob');
   });
 
@@ -1215,6 +1220,44 @@ describe('storage', () => {
     expect(c.experiences).toMatchObject([{ name: 'Saved the town', uses: 1, used: 0, effect: '' }]);
     expect(c.sessions).toMatchObject([{ title: 'Earlier notes', date: '2025-05-05', body: 'Met a dragon.' }]);
     expect(c.play.facetUses).toEqual({});
+    // Migrated: one key per character, the old map removed.
+    expect([...ls.data.keys()]).toEqual([PREFIX + 'old']);
+  });
+
+  it('saves are batched: nothing is written until the delay passes or flush(), then each changed character once', async () => {
+    vi.useFakeTimers();
+    try {
+      const { LocalStore } = await load();
+      const s = new LocalStore();
+      const a = char('Ann', '2026-01-01T00:00:00.000Z');
+      const b = char('Bob', '2026-01-01T00:00:00.000Z');
+      s.save(b);
+      vi.advanceTimersByTime(1000);
+      const set = vi.spyOn(ls, 'setItem');
+      // Typing: many saves of one character in quick succession.
+      for (let i = 0; i < 20; i++) s.save({ ...a, name: `Ann${i}` });
+      vi.advanceTimersByTime(100);
+      expect(set).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(1000);
+      // One write, of that character only (Bob isn't re-serialised).
+      expect(set.mock.calls.map(([k]) => k)).toEqual([PREFIX + a.id]);
+      expect(JSON.parse(ls.data.get(PREFIX + a.id)!).name).toBe('Ann19');
+      // flush() writes immediately (used when the page is hidden or closed).
+      s.save({ ...a, name: 'Anne' });
+      s.flush();
+      expect(JSON.parse(ls.data.get(PREFIX + a.id)!).name).toBe('Anne');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('a corrupt character entry is skipped without losing the others', async () => {
+    const a = char('Ann', '2026-01-01T00:00:00.000Z');
+    ls.data.set(PREFIX + a.id, JSON.stringify(a));
+    ls.data.set(PREFIX + 'broken', '{not json');
+    ls.data.set('btp.prefs.v1', '{}');
+    const { LocalStore } = await load();
+    expect(new LocalStore().list().map((x) => x.name)).toEqual(['Ann']);
   });
 
   it('corrupt JSON or unreadable storage reads as empty, and saving then works', async () => {
@@ -1224,7 +1267,8 @@ describe('storage', () => {
     expect(s.list()).toEqual([]);
     const a = char('Ann', '2026-01-01T00:00:00.000Z');
     s.save(a);
-    expect(JSON.parse(ls.data.get(KEY)!)[a.id].name).toBe('Ann');
+    s.flush();
+    expect(JSON.parse(ls.data.get(PREFIX + a.id)!).name).toBe('Ann');
 
     ls.failGet = true;
     expect(new LocalStore().list()).toEqual([]);
@@ -1236,8 +1280,9 @@ describe('storage', () => {
     ls.failSet = true;
     const a = char('Ann', '2026-01-01T00:00:00.000Z');
     expect(() => s.save(a)).not.toThrow();
+    expect(() => s.flush()).not.toThrow();
     expect(s.get(a.id)?.name).toBe('Ann');
-    expect(ls.data.has(KEY)).toBe(false);
+    expect(ls.data.has(PREFIX + a.id)).toBe(false);
     expect(() => s.remove(a.id)).not.toThrow();
   });
 
@@ -1318,7 +1363,7 @@ describe('storage', () => {
 // ===========================================================================
 describe('prefs', () => {
   const KEY = 'btp.prefs.v1';
-  const DEFAULTS = { pinStatBar: true, animateGradients: true, animateBackground: true, glassPanels: true };
+  const DEFAULTS = { pinStatBar: true, animateGradients: true, animateBackground: true, animateEdges: true, glassPanels: true };
   let ls: FakeStorage;
   let subscribed: (() => void)[];
 

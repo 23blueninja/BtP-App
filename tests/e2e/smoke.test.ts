@@ -294,6 +294,21 @@ describe('sheet shows the modifiers the rules give', () => {
     expect(errors).toEqual([]);
     expect(endurance).toBe(max);
   });
+  it('an edit survives an immediate reload (batched saves are written when the page goes away)', async () => {
+    const { page, errors } = await sheet({});
+    await page.getByRole('tab', { name: 'Notes', exact: true }).click();
+    await page.getByLabel('Appearance').fill('Scar across the left eye');
+    await page.reload();
+    await page.getByRole('tab', { name: 'Notes', exact: true }).click();
+    const value = await page.getByLabel('Appearance').inputValue();
+    const keys = await page.evaluate(() => Object.keys(localStorage).sort());
+    await page.close();
+    expect(errors).toEqual([]);
+    expect(value).toBe('Scar across the left eye');
+    // Stored per character; the old all-characters key was migrated away.
+    expect(keys).toContain('btp.character.shows');
+    expect(keys).not.toContain('btp.characters.v1');
+  });
   it('Unarmed Strike is listed once picked, above Simple weapons, and can be removed', async () => {
     const { page } = await sheet({ equipment: { armor: undefined, weapons: [], inventory: [] } });
     await page.getByRole('tab', { name: 'Equipment', exact: true }).click();
