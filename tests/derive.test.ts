@@ -601,7 +601,7 @@ describe.each(MATRIX_CLASSES.map((v) => [v.label, v] as const))('matrix %s', (_l
       // "Your $[X] Save (and Skill) Checks are Bolstered N" step the larger Mod Die (Bolstered & Hindered).
       const saveBolster = new Map<string, number>();
       for (const f of [...ancTexts, ...subTexts, ...classTexts])
-        for (const x of f.text.matchAll(/Your (?:\$\[)?([A-Z]{3})\]? Save (?:and Skill )?Checks are Bolstered (\d+)/g)) saveBolster.set(x[1], (saveBolster.get(x[1]) ?? 0) + Number(x[2]));
+        for (const x of f.text.matchAll(/[Yy]our (?:\$\[)?([A-Z]{3})\]? Save (?:and Skill )?Checks are Bolstered (\d+)/g)) saveBolster.set(x[1], (saveBolster.get(x[1]) ?? 0) + Number(x[2]));
       for (const s of d.saves) {
         const n = saveBolster.get(s.attr) ?? 0;
         const t = tandem.has(s.attr);
