@@ -368,6 +368,18 @@ describe('guided tour', () => {
       if (n !== 1 && n !== total && !(await page.locator('.tour-spot').count())) missing.push(`${n}: ${title}`);
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
       if (overflow > 1) missing.push(`${n}: overflow ${overflow}px`);
+      // The page can't be scrolled while the tour is open.
+      const y0 = await page.evaluate(() => scrollY);
+      await page.mouse.move(viewport.width / 2, 40);
+      await page.mouse.wheel(0, 400);
+      await page.waitForTimeout(100);
+      if ((await page.evaluate(() => scrollY)) !== y0) missing.push(`${n}: page scrolled`);
+      // The whole card, with its buttons, is on screen.
+      const box = await card.boundingBox();
+      if (!box || box.y < 0 || box.y + box.height > viewport.height || box.x < 0 || box.x + box.width > viewport.width) missing.push(`${n}: card off screen`);
+      // The item creator is open only on its own step.
+      const modal = await page.locator('.modal').count();
+      if ((title === 'The item creator') !== modal > 0) missing.push(`${n}: creator ${modal ? 'open' : 'closed'}`);
       const next = card.getByRole('button', { name: /^(Next|Finish)$/ });
       const finishing = (await next.textContent()) === 'Finish';
       await next.click();
