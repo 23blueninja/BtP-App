@@ -377,6 +377,9 @@ describe('guided tour', () => {
       // The whole card, with its buttons, is on screen.
       const box = await card.boundingBox();
       if (!box || box.y < 0 || box.y + box.height > viewport.height || box.x < 0 || box.x + box.width > viewport.width) missing.push(`${n}: card off screen`);
+      // Nothing a step opens takes focus into a text field (that brings up a phone's keyboard).
+      const focused = await page.evaluate(() => document.activeElement?.matches('input, textarea, select, [contenteditable]') ?? false);
+      if (focused) missing.push(`${n}: a text field has focus`);
       // The item creator is open only on its own step.
       const modal = await page.locator('.modal').count();
       if ((title === 'The item creator') !== modal > 0) missing.push(`${n}: creator ${modal ? 'open' : 'closed'}`);

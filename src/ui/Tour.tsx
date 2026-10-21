@@ -155,6 +155,12 @@ export function Tour() {
         entered = true;
         s.enter?.();
       }
+      // Whatever a step opens, keep focus on the card: a focused text field would
+      // bring up a phone's keyboard.
+      if (document.activeElement?.matches('input, textarea, select, [contenteditable]')) {
+        (document.activeElement as HTMLElement).blur();
+        cardRef.current?.focus();
+      }
       el = s.target ? findTarget(s.target) : undefined;
       if (el) {
         el.scrollIntoView({ block: 'center' });
