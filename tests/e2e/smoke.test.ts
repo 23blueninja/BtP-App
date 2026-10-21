@@ -192,6 +192,18 @@ describe('phone layout', () => {
     expect(errors).toEqual([]);
     expect(Object.entries(overflow).filter(([, px]) => px > 1)).toEqual([]);
   });
+
+  // Rules pages with wide tables (class tables) must not scroll the page sideways either.
+  it.each(classes.map((c) => c.id))('%s rules page on a 360 px screen', async (cls) => {
+    const { page, errors } = await open([], { width: 360, height: 900 });
+    await page.goto(`${base}#/rules/classes/${cls}`);
+    await page.reload();
+    await page.locator('.ref-body').waitFor();
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    await page.close();
+    expect(errors).toEqual([]);
+    expect(overflow).toBeLessThanOrEqual(1);
+  });
 });
 
 // What the sheet shows, not just that it renders: scripted characters whose

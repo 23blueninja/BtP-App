@@ -773,6 +773,10 @@ table.skills td:not(:first-child) {
   border-collapse: collapse;
   margin: 0.5em 0;
   font-size: 0.9em;
+  /* Wide tables (class tables) scroll sideways on their own instead of the page. */
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
 }
 .rules ul {
   padding-left: 1.2rem;
@@ -1462,6 +1466,13 @@ input.num {
   top: 4rem;
   align-self: start;
   max-height: calc(100vh - 5rem);
+  display: flex;
+  flex-direction: column;
+}
+/* The scrolling happens inside: an element positioned in a scroll container (the
+   panel's prismatic edge) would scroll away with the list. */
+.ref-nav-scroll {
+  min-height: 0;
   overflow-y: auto;
 }
 .ref-nav input {

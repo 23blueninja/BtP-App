@@ -21,43 +21,46 @@ export function Reference({ id }: { id?: string }) {
 
   return (
     <div className="reference">
+      {/* The panel (and its edge) stays put; only the list inside scrolls. */}
       <aside className="ref-nav">
-        <input type="search" placeholder="Search the rules…" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Search the rules" />
-        {q.trim().length >= 2 ? (
-          <ul className="ref-results">
-            {results.map((n) => (
-              <li key={n.id}>
-                <button type="button" className="link" onClick={() => go('rules', n.id)}>
-                  {n.title}
-                </button>
-                <small className="muted"> {getParent(n.id)?.title}</small>
-              </li>
-            ))}
-            {!results.length && <li className="muted">No matches.</li>}
-          </ul>
-        ) : (
-          <ul className="ref-tree">
-            {sections.map((s) => (
-              <li key={s.id}>
-                <button type="button" className={`link ${node?.id === s.id ? 'active' : ''}`} onClick={() => go('rules', s.id)}>
-                  {s.title}
-                </button>
-                <ul>
-                  {s.children
-                    ?.filter((c) => c.depth <= 3)
-                    .map((c) => (
-                      <li key={c.id}>
-                        <button type="button" className={`link ${crumbs.some((x) => x.id === c.id) ? 'active' : ''}`} onClick={() => go('rules', c.id)}>
-                          {c.title}
-                        </button>
-                      </li>
-                    ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
-        )}
-        <p className="muted small">Source: {rulesSource}</p>
+        <div className="ref-nav-scroll">
+          <input type="search" placeholder="Search the rules…" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Search the rules" />
+          {q.trim().length >= 2 ? (
+            <ul className="ref-results">
+              {results.map((n) => (
+                <li key={n.id}>
+                  <button type="button" className="link" onClick={() => go('rules', n.id)}>
+                    {n.title}
+                  </button>
+                  <small className="muted"> {getParent(n.id)?.title}</small>
+                </li>
+              ))}
+              {!results.length && <li className="muted">No matches.</li>}
+            </ul>
+          ) : (
+            <ul className="ref-tree">
+              {sections.map((s) => (
+                <li key={s.id}>
+                  <button type="button" className={`link ${node?.id === s.id ? 'active' : ''}`} onClick={() => go('rules', s.id)}>
+                    {s.title}
+                  </button>
+                  <ul>
+                    {s.children
+                      ?.filter((c) => c.depth <= 3)
+                      .map((c) => (
+                        <li key={c.id}>
+                          <button type="button" className={`link ${crumbs.some((x) => x.id === c.id) ? 'active' : ''}`} onClick={() => go('rules', c.id)}>
+                            {c.title}
+                          </button>
+                        </li>
+                      ))}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="muted small">Source: {rulesSource}</p>
+        </div>
       </aside>
       <article className="ref-body">
         {crumbs.length > 1 && (
