@@ -16,12 +16,12 @@ import logo from './assets/icons/8VNXled.png';
 /** Panel-edge hosts (see the prismatic edge in styles.css). */
 const EDGE_HOSTS = '.box, .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card, .split-box';
 /**
- * Firefox (Gecko) scrolls screen-fixed backgrounds a frame or two behind the
- * content, so its panel edges flicker after scrolling. There the edges' rainbow is
- * anchored to the page instead (.page-edges). Detected by engine feature, not by
- * user agent: only Gecko supports -moz-appearance.
+ * Firefox (Gecko) shakes content drawn through a cut-out (masks, background-clip:
+ * text) while smooth-scrolling, and lags screen-fixed backgrounds. There (.gecko)
+ * panel edges are gradient borders anchored to the page and headings are solid.
+ * Detected by engine feature, not by user agent: only Gecko supports -moz-appearance.
  */
-const PAGE_EDGES = typeof CSS !== 'undefined' && CSS.supports('-moz-appearance', 'none');
+const GECKO = typeof CSS !== 'undefined' && CSS.supports('-moz-appearance', 'none');
 
 function useCharacter(id: string | undefined) {
   const [c, setC] = useState<Character | undefined>(() => (id ? store.get(id) : undefined));
@@ -94,16 +94,16 @@ export function App() {
   // Panel edges show the same drifting rainbow as the background (see --prism-field):
   // keep the background and every edge on one clock so they line up, including
   // edges of panels added later.
-  // With page-anchored edges (Firefox), each panel also gets its position on the
-  // page (--edge-x/--edge-y) so its edge shows the colour for its own spot.
+  // In Firefox each panel also gets its position on the page (--edge-x/--edge-y) so
+  // its edge shows the colour for its own spot.
   useEffect(() => {
     if (typeof CSSAnimation === 'undefined') return;
-    const names = new Set(['prism-drift', 'prism-edge-drift', 'prism-edge-drift-page']);
+    const names = new Set(['prism-drift', 'prism-edge-drift', 'prism-edge-drift-gecko']);
     let queued = false;
     const sync = () => {
       queued = false;
       for (const a of document.getAnimations()) if (a instanceof CSSAnimation && names.has(a.animationName) && a.startTime !== 0) a.startTime = 0;
-      if (PAGE_EDGES)
+      if (GECKO)
         document.querySelectorAll<HTMLElement>(EDGE_HOSTS).forEach((el) => {
           const r = el.getBoundingClientRect();
           el.style.setProperty('--edge-x', `${Math.round(r.left + scrollX)}px`);
@@ -117,13 +117,13 @@ export function App() {
     const mo = new MutationObserver(queue);
     mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
     // Panels move when others grow or the window resizes.
-    const ro = PAGE_EDGES && typeof ResizeObserver !== 'undefined' ? new ResizeObserver(queue) : undefined;
+    const ro = GECKO && typeof ResizeObserver !== 'undefined' ? new ResizeObserver(queue) : undefined;
     ro?.observe(document.body);
     return () => (mo.disconnect(), ro?.disconnect());
   }, []);
 
   return (
-    <div className={['app', prefs.pinStatBar && 'pin-stats', !prefs.animateGradients && 'still-gradients', !prefs.animateBackground && 'still-bg', !prefs.animateEdges && 'still-edges', prefs.glassPanels && 'glass', PAGE_EDGES && 'page-edges'].filter(Boolean).join(' ')}>
+    <div className={['app', prefs.pinStatBar && 'pin-stats', !prefs.animateGradients && 'still-gradients', !prefs.animateBackground && 'still-bg', !prefs.animateEdges && 'still-edges', prefs.glassPanels && 'glass', GECKO && 'gecko'].filter(Boolean).join(' ')}>
       <div className="prism-bg" aria-hidden />
       <header className="topbar">
         <button type="button" className="brand" onClick={() => go()}>
