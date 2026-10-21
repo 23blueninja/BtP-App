@@ -2815,7 +2815,13 @@ tr.needs input {
 }
 
 /* ---------- guided tour ---------- */
+/* The page doesn't scroll while the tour is open (it scrolls each step into view). */
+html.tour-open,
+html.tour-open body {
+  overflow: hidden;
+}
 .tour {
+  touch-action: none;
   position: fixed;
   inset: 0;
   z-index: 1000;

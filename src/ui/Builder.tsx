@@ -696,7 +696,7 @@ export function Equipment({ c, d, update }: StepProps) {
   return (
     <div className="form">
       {/* Inventory first, with the pyramids above the item list. */}
-      <section className="box">
+      <section className="box" data-tour="equipment">
       <h3 className="box-title">Inventory</h3>
       <BulkPyramid c={c} d={d} update={update} />
       <InventoryEditor c={c} update={update} />

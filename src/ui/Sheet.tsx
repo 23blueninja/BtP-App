@@ -754,7 +754,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               <h4>Temporary Effects</h4>
               <ActiveEffects effects={p.effects ?? []} setPlay={setPlay} />
             </Box>
-            <Box title="Items & effects">
+            <Box title="Items & effects" tour="homebrew">
               <HomebrewBox d={d} update={update} />
             </Box>
           </div>
@@ -1225,7 +1225,7 @@ function Facets({ c, d, setPlay, update }: { c: Character; d: Derived; setPlay: 
           </Collapsible>
         </section>
       )}
-      <div className="facet-cols">
+      <div className="facet-cols" data-tour="facets">
         <div className="col">
           {classGroups.map(group)}
           {/* Choices with rules text of their own; bare picks (Save Check, Spell Mod Die Attribute) show under Training. */}
@@ -1274,7 +1274,7 @@ function SpellsTab({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: 
   const fromClass = (source: string) => source === d.cls?.name || source === d.subclassName || source === 'Facets';
   if (!known.length && !prepared.length && !d.resources.length) return <p className="muted">No spells or maneuvers.</p>;
   return (
-    <div className="spells-tab">
+    <div className="spells-tab" data-tour="spells">
       <div className="row wrap">
         {d.spellModDie && (
           <Box title="Spell Mod Die" className="stat">
@@ -1440,7 +1440,7 @@ function Notes({ c, update }: { c: Character; update: Update }) {
   const set = (k: keyof Character['details'], v: string) => update((x) => ({ ...x, details: { ...x.details, [k]: v } }));
   return (
     // Session notes on the left; Appearance and Backstory on the right (one column on phones).
-    <div className="facet-cols notes-cols">
+    <div className="facet-cols notes-cols" data-tour="notes">
       <div className="col">
         <Box title="Session notes">
           <SessionNotes c={c} update={update} />
