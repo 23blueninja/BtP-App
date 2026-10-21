@@ -1092,7 +1092,10 @@ dl.defs dd {
   background: var(--prism-glint), var(--prism-field) 0 0 / calc(100vw + 1980px) 100vh no-repeat fixed;
   opacity: var(--prism-edge-strength);
   filter: var(--prism-edge-boost);
-  animation: prism-edge-drift 34s linear infinite reverse;
+  /* In steps, about 5 a second, not every frame: the field can't be moved on the
+     GPU, so each step repaints every edge. The drift is slow (~58px/s through a
+     1400px spectrum), so the steps don't show. */
+  animation: prism-edge-drift 34s steps(170) infinite reverse;
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -2582,7 +2585,9 @@ tr.needs input {
 .app.still-bg .prism-bg::before,
 .app.still-bg .prism-bg::after,
 .app.still-bg :is(.box, .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card, .split-box)::before,
-.app.still-bg .split-box::after {
+.app.still-bg .split-box::after,
+.app.still-edges :is(.box, .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card, .split-box)::before,
+.app.still-edges .split-box::after {
   animation: none;
 }
 .app.still-gradients .hero h1,

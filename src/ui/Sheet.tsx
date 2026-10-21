@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { basicActions, conditions as conditionDefs, getNode, getCastable, type RuleNode } from '../content';
 import { ancestryById, ancestryName, CUSTOM_ANCESTRY, CUSTOM_ANCESTRY_NOTE } from '../data/ancestries';
 import { ATTRS, ATTR_NAMES, RANK_DIE, type Light } from '../data/types';
@@ -152,7 +152,17 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
           <h3 className="box-title">{d.classDieName}</h3>
         </div>
       </section>
-      {ATTRS.map((a) => {
+      <StripCells d={d} />
+      {children}
+    </div>
+    </>
+  );
+}
+
+/** The Attribute boxes: redrawn only when what they show changes (not on every edit). */
+const StripCells = memo(
+  function StripCells({ d }: { d: Derived }) {
+    return ATTRS.map((a) => {
         const at = d.attrs[a];
         const save = d.saves.find((x) => x.attr === a);
         return (
@@ -183,15 +193,29 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
             )}
           </StatBox>
         );
-      })}
-      {children}
-    </div>
-    </>
-  );
-}
+      });
+  },
+  (a, b) => a.d === b.d || stripKey(a.d) === stripKey(b.d),
+);
+const stripKey = (d: Derived) => JSON.stringify([d.attrs, d.saves]);
+
+/**
+ * Redrawn only when AP/turn state, Initiative or Conditions change, not on every
+ * edit (e.g. typing a note). Its callbacks only use the stable `update`/`setLog`,
+ * so a fresh setPlay/onLog with otherwise equal props needs no redraw.
+ */
+const TurnBar = memo(
+  (props: Parameters<typeof TurnBarView>[0]) => <TurnBarView {...props} />,
+  (a, b) =>
+    a.c.play === b.c.play &&
+    a.compact === b.compact &&
+    a.update === b.update &&
+    a.d.initiative === b.d.initiative &&
+    JSON.stringify(a.d.conditionFx.active) === JSON.stringify(b.d.conditionFx.active),
+);
 
 /** AP tracker and Start/End Turn, kept at the top of the sheet. */
-function TurnBar({
+function TurnBarView({
   c,
   d,
   update,

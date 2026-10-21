@@ -300,7 +300,18 @@ function countOf(e: CountExpr, ctx: Ctx, cls: ClassDef | undefined): number {
   return n;
 }
 
+// Characters are immutable (every edit makes a new object), so the derived sheet is
+// cached per character object: a render, its update callbacks and the App's clamp
+// effect all ask for the same one.
+const derived = new WeakMap<Character, Derived>();
+
 export function derive(c: Character): Derived {
+  let d = derived.get(c);
+  if (!d) derived.set(c, (d = deriveUncached(c)));
+  return d;
+}
+
+function deriveUncached(c: Character): Derived {
   const issues: string[] = [];
   const todo: Todo[] = [];
   const need = (text: string, step: string, ...fields: string[]) => {

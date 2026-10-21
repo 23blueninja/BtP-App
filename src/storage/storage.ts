@@ -17,23 +17,51 @@ export interface CharacterStore {
   get(id: string): Character | undefined;
   save(c: Character): void;
   remove(id: string): void;
+  /** Writes any saves still waiting (they're batched while you edit). */
+  flush(): void;
 }
 
-const KEY = 'btp.characters.v1';
+/** One key per character, so a save only serialises that character. */
+const PREFIX = 'btp.character.';
+/** Before per-character keys: every character in one JSON map. Migrated on first read. */
+const LEGACY_KEY = 'btp.characters.v1';
+/** Edits within this window are written once (typing a note doesn't save per keystroke). */
+const SAVE_DELAY_MS = 400;
 
 function readAll(): Record<string, Character> {
+  const all: Record<string, Character> = {};
   try {
-    const raw = localStorage.getItem(KEY);
-    const all = raw ? JSON.parse(raw) : {};
-    return all && typeof all === 'object' ? (all as Record<string, Character>) : {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k?.startsWith(PREFIX)) continue;
+      try {
+        const c = JSON.parse(localStorage.getItem(k) ?? 'null');
+        if (c && typeof c === 'object') all[k.slice(PREFIX.length)] = c as Character;
+      } catch {
+        // A corrupt entry doesn't take the others with it.
+      }
+    }
+    const legacy = localStorage.getItem(LEGACY_KEY);
+    if (legacy !== null) {
+      let old: unknown = null;
+      try {
+        old = JSON.parse(legacy);
+      } catch {
+        // Unreadable: nothing to migrate.
+      }
+      const moved = old && typeof old === 'object' ? Object.values(old as Record<string, Character>).filter((c) => c && typeof c === 'object' && c.id) : [];
+      for (const c of moved) all[c.id] = c;
+      if (moved.every((c) => write(c))) localStorage.removeItem(LEGACY_KEY);
+    }
   } catch {
-    return {};
+    // Storage unavailable (private mode, blocked): start empty for this session.
   }
+  return all;
 }
 
-function writeAll(all: Record<string, Character>): boolean {
+function write(c: Character): boolean {
   try {
-    localStorage.setItem(KEY, JSON.stringify(all));
+    localStorage.setItem(PREFIX + c.id, JSON.stringify(c));
     return true;
   } catch {
     return false;
@@ -43,6 +71,16 @@ function writeAll(all: Record<string, Character>): boolean {
 /** Browser-local storage. Data stays on this device unless exported. */
 export class LocalStore implements CharacterStore {
   private memory: Record<string, Character> | null = null;
+  private pending = new Set<string>();
+  private timer: ReturnType<typeof setTimeout> | undefined;
+
+  constructor() {
+    // Write batched saves before the page goes away (closing a tab, switching apps on a phone).
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+      window.addEventListener('pagehide', () => this.flush());
+      window.addEventListener('visibilitychange', () => document.visibilityState === 'hidden' && this.flush());
+    }
+  }
 
   private all(): Record<string, Character> {
     if (!this.memory) this.memory = readAll();
@@ -61,15 +99,28 @@ export class LocalStore implements CharacterStore {
   }
 
   save(c: Character): void {
-    const all = this.all();
-    all[c.id] = c;
-    writeAll(all);
+    this.all()[c.id] = c;
+    this.pending.add(c.id);
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => this.flush(), SAVE_DELAY_MS);
   }
 
   remove(id: string): void {
+    delete this.all()[id];
+    this.pending.delete(id);
+    try {
+      localStorage.removeItem(PREFIX + id);
+    } catch {
+      // Storage unavailable: it's gone from this session.
+    }
+  }
+
+  flush(): void {
+    clearTimeout(this.timer);
+    this.timer = undefined;
     const all = this.all();
-    delete all[id];
-    writeAll(all);
+    for (const id of this.pending) if (all[id]) write(all[id]);
+    this.pending.clear();
   }
 }
 

@@ -31,6 +31,7 @@ const OPTIONS: { key: keyof Prefs; label: string; note?: string }[] = [
   { key: 'pinStatBar', label: 'Pin the top bar while scrolling', note: 'Class Bonus, Attributes and AP stay at the top of the sheet (wide screens).' },
   { key: 'animateGradients', label: 'Animate alignment gradients', note: 'Headings and attribute symbols.' },
   { key: 'animateBackground', label: 'Animate the background' },
+  { key: 'animateEdges', label: 'Animate panel edges', note: 'Panel edges drift with the background’s colours. Off: they keep their colours but stay still.' },
   { key: 'glassPanels', label: 'Glass panels', note: 'Frosted-glass panel backgrounds. Turn off if scrolling feels slow on this device.' },
 ];
 
@@ -101,7 +102,7 @@ export function App() {
   }, []);
 
   return (
-    <div className={['app', prefs.pinStatBar && 'pin-stats', !prefs.animateGradients && 'still-gradients', !prefs.animateBackground && 'still-bg', prefs.glassPanels && 'glass'].filter(Boolean).join(' ')}>
+    <div className={['app', prefs.pinStatBar && 'pin-stats', !prefs.animateGradients && 'still-gradients', !prefs.animateBackground && 'still-bg', !prefs.animateEdges && 'still-edges', prefs.glassPanels && 'glass'].filter(Boolean).join(' ')}>
       <div className="prism-bg" aria-hidden />
       <header className="topbar">
         <button type="button" className="brand" onClick={() => go()}>

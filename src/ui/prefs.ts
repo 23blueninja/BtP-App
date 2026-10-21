@@ -8,12 +8,14 @@ export interface Prefs {
   animateGradients: boolean;
   /** The drifting rainbow behind the triangle grid. */
   animateBackground: boolean;
+  /** Panel edges drift with the background's rainbow (in steps, ~5 a second). */
+  animateEdges: boolean;
   /** Frosted-glass panels (blur what's behind them; heavier on the GPU). */
   glassPanels: boolean;
 }
 
 const KEY = 'btp.prefs.v1';
-const DEFAULTS: Prefs = { pinStatBar: true, animateGradients: true, animateBackground: true, glassPanels: true };
+const DEFAULTS: Prefs = { pinStatBar: true, animateGradients: true, animateBackground: true, animateEdges: true, glassPanels: true };
 
 function read(): Prefs {
   try {
