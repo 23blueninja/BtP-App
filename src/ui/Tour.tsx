@@ -57,8 +57,24 @@ const STEPS: Step[] = [
     leave: () => click('.modal [aria-label="Close"]'),
   },
   { page: 'sheet', tab: 'Facets', target: 'facets', title: 'Facets', body: 'Everything your class, ancestry and heritage give you, by source. Facets with uses have their bubbles and Use buttons here, and Homebrew facets cover anything else your PM grants.' },
-  { page: 'sheet', tab: 'Spells & Maneuvers', target: 'spells', title: 'Spells & Maneuvers', body: 'Choose the spells or maneuvers you know and prepare. Each shows its text with your numbers worked in, and using one spends its AP and resources.' },
-  { page: 'sheet', tab: 'Equipment', target: 'equipment', title: 'Equipment', body: 'Your inventory pyramid, with Bulk and backpacks, then weapons (Mod Die and DVs worked out) and armor with your AC.' },
+  { page: 'sheet', tab: 'Spells & Maneuvers', target: 'spells', title: 'Spells & Maneuvers', body: 'Choose the spells or maneuvers you know and prepare. Using one spends its AP and resources.' },
+  {
+    page: 'sheet',
+    tab: 'Spells & Maneuvers',
+    target: '.spells-tab .collapsible',
+    title: 'A spell, worked out',
+    body: 'Here’s Fire Spout. Pick the level you cast it at: Calculated shows exactly what it does at that level, with the spell level and your own numbers worked in and Exalted effects added once that level unlocks them. Original text shows the rules as written.',
+    enter: () => click('.spells-tab .collapsible:not(.open) .collapsible-head'),
+  },
+  {
+    page: 'sheet',
+    tab: 'Equipment',
+    target: 'pyramid',
+    title: 'Inventory pyramid',
+    body: 'Each row holds items of one Bulk rank. Type into an empty slot to add an item right there: its Bulk comes from the row. Backpacks get a pyramid of their own.',
+  },
+  { page: 'sheet', tab: 'Equipment', target: 'add-item', title: 'Add an item', body: 'Or add an item by name with its Bulk here, and it takes its place in the pyramid.' },
+  { page: 'sheet', tab: 'Equipment', target: 'add-weapon', title: 'Add a weapon', body: 'Pick weapons from the rules’ tables, or Unarmed Strike. Their Mod Die, DVs and properties are worked out in the table below; armor and your AC are next to it.' },
   { page: 'sheet', tab: 'Notes', target: 'notes', title: 'Notes', body: 'Session notes by date, plus your character’s Appearance and Backstory.' },
   { page: 'sheet', target: 'edit', title: 'Edit', body: 'Reopen the builder to change choices or level up. Characters are saved in this browser; Export backs them up.' },
   { page: 'sheet', title: 'That’s the tour', body: 'Have fun out there. You can take the tour again from the home page or Options.' },
@@ -93,17 +109,18 @@ function endTour(): void {
   go();
 }
 
-/** A demo character for the sheet steps: a level 2 Victor Gladiator. */
+/** A demo character for the sheet steps: a level 2 Flaming Luminance Luminary who knows Fire Spout. */
 function demoCharacter(): Character {
   const c = normalizeCharacter({
     ...newCharacter(),
     id: TOUR_DEMO_ID,
     name: 'Aria (demo)',
-    classId: 'gladiator',
-    subclass: 'victor',
+    classId: 'luminary',
+    subclass: 'flaming-luminance',
     level: 2,
     ancestry: 'human',
-    attributes: { ...newCharacter().attributes, method: 'manual', base: { VIG: 2, AGI: 2, PER: 1, INT: 0, PRS: 1 } },
+    attributes: { ...newCharacter().attributes, method: 'manual', base: { VIG: 1, AGI: 2, PER: 1, INT: 2, PRS: 1 } },
+    spells: { arcana: ['spells/arcana/fire/fire-spout'] },
     equipment: { armor: { type: 'Medium', quality: 'Basic' }, weapons: [{ id: 'w', name: 'Longsword' }], inventory: [{ id: 'i', name: 'Rope', qty: 1, bulk: 1 }] },
   });
   return { ...c, play: { ...freshPlay(c), initialized: true } };
@@ -143,7 +160,14 @@ export function Tour() {
     let tries = 0;
     let frame = 0;
     let entered = false;
+    let ro: ResizeObserver | undefined;
     const measure = () => el && setRect(el.getBoundingClientRect());
+    // Bring the element into view: centred, or from its top when it's taller than the space.
+    const reveal = () => {
+      if (!el) return;
+      el.scrollIntoView({ block: el.offsetHeight > innerHeight - 280 ? 'start' : 'center' });
+      measure();
+    };
     const find = () => {
       if (s.page === 'sheet') {
         const tab = s.tab ?? 'Sheet';
@@ -163,8 +187,12 @@ export function Tour() {
       }
       el = s.target ? findTarget(s.target) : undefined;
       if (el) {
-        el.scrollIntoView({ block: 'center' });
-        measure();
+        reveal();
+        // It may still grow (a row the step just opened): follow it.
+        if (typeof ResizeObserver !== 'undefined') {
+          ro = new ResizeObserver(reveal);
+          ro.observe(el);
+        }
       } else if (s.target && tries++ < 120) frame = requestAnimationFrame(find);
     };
     find();
@@ -172,6 +200,7 @@ export function Tour() {
     addEventListener('resize', measure);
     return () => {
       cancelAnimationFrame(frame);
+      ro?.disconnect();
       removeEventListener('scroll', measure, true);
       removeEventListener('resize', measure);
       if (entered) s.leave?.();

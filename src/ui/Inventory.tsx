@@ -110,7 +110,7 @@ export function BulkPyramid({ c, d, update }: { c: Character; d: Derived; update
   const onAdd = update ? (name: string, rank: number) => add(name, rank) : undefined;
   return (
     <div className="bulk-pyramid">
-      <div className="pyramids">
+      <div className="pyramids" data-tour="pyramid">
         <Pyramid title="Inventory" rows={rows} shift={d.bulkShift} onAdd={onAdd} />
         <Pyramid title={`VIG Bonus Inventory (${vig} VIG)`} rows={rows} bonus shift={d.bulkShift} onAdd={onAdd} />
         {groups.containers.map(({ item, contents }) => {

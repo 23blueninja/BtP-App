@@ -710,7 +710,7 @@ export function Equipment({ c, d, update }: StepProps) {
         <p className="muted">
           Weapon training: {d.weaponTraining}. <RuleLink id="equipment/weapons/weapon-properties">Weapon properties</RuleLink>
         </p>
-        <div className="row">
+        <div className="row" data-tour="add-weapon">
           <select value={weapon} onChange={(e) => setWeapon(e.target.value)} aria-label="Weapon">
             <option value="">Add a weapon…</option>
             <option disabled={c.equipment.weapons.some((w) => w.name === UNARMED)}>{UNARMED}</option>
@@ -980,7 +980,7 @@ export function InventoryEditor({ c, update }: { c: Character; update: Update })
   const setItems = (fn: (i: typeof items) => typeof items) => update((x) => ({ ...x, equipment: { ...x.equipment, inventory: fn(x.equipment.inventory) } }));
   return (
     <div>
-      <div className="row wrap">
+      <div className="row wrap" data-tour="add-item">
         <input placeholder="Item" value={name} onChange={(e) => setName(e.target.value)} aria-label="Item name" />
         <select value={bulk} onChange={(e) => setBulk(e.target.value)} aria-label="Bulk rank">
           <option value="">Bulkless</option>
