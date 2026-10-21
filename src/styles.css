@@ -1109,6 +1109,27 @@ dl.defs dd {
     background-position: 0 0, -1980px 0;
   }
 }
+/* Firefox (.page-edges, set by App.tsx): it scrolls screen-fixed backgrounds a
+   frame behind the content, so the edges flicker after scrolling. There the field
+   is anchored to the page instead: each panel offsets it by its page position
+   (--edge-x/-y). Square tiles of 1400px × √2 repeat the 135° field seamlessly. */
+.app.page-edges :is(.box:not(.box .box), .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card)::before,
+.app.page-edges .split-box::before,
+.app.page-edges .split-box::after {
+  background-attachment: scroll;
+  background-size: auto, 1979.9px 1979.9px;
+  background-repeat: no-repeat, repeat;
+  background-position: 0 0, calc(-1 * var(--edge-x, 0px)) calc(-1 * var(--edge-y, 0px));
+  animation-name: prism-edge-drift-page;
+}
+@keyframes prism-edge-drift-page {
+  from {
+    background-position: 0 0, calc(-1 * var(--edge-x, 0px)) calc(-1 * var(--edge-y, 0px));
+  }
+  to {
+    background-position: 0 0, calc(-1 * var(--edge-x, 0px) - 1980px) calc(-1 * var(--edge-y, 0px));
+  }
+}
 /* The split box's edge: one ring per cut half, the same width and corner cut as
    the panels' (in px, like theirs), cut out of the edge layer with clip-path
    (outer outline, then the inner one as a hole). */
@@ -1723,11 +1744,14 @@ b.calc {
 }
 @media (prefers-reduced-motion: reduce) {
   .prism-bg::before,
-  :is(.box, .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card, .split-box)::before,
-  .split-box::after,
   .tabs button.active::after,
   .topbar::after {
     animation: none;
+  }
+  /* !important: the edge rules are more specific (and the Firefox one more so). */
+  :is(.box, .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card, .split-box)::before,
+  .split-box::after {
+    animation: none !important;
   }
 }
 
@@ -2583,12 +2607,15 @@ tr.needs input {
   }
 }
 .app.still-bg .prism-bg::before,
-.app.still-bg .prism-bg::after,
+.app.still-bg .prism-bg::after {
+  animation: none;
+}
+/* !important: the edge rules are more specific (and the Firefox one more so). */
 .app.still-bg :is(.box, .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card, .split-box)::before,
 .app.still-bg .split-box::after,
 .app.still-edges :is(.box, .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card, .split-box)::before,
 .app.still-edges .split-box::after {
-  animation: none;
+  animation: none !important;
 }
 .app.still-gradients .hero h1,
 .app.still-gradients .sheet-header h1,
