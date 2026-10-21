@@ -29,7 +29,7 @@ import {
   type SpellListDef,
 } from '../data/types';
 import type { Character } from './character';
-import { CONDITION_DAMAGE_TYPE, conditionEffects, describeCheck, type ConditionEffects, type ExtraCheck } from './conditions';
+import { CONDITION_DAMAGE_TYPE, conditionEffects, describeCheck, describeLevels, type ConditionEffects, type ExtraCheck } from './conditions';
 import { homebrewAlignments, resolveHomebrew, type ResolvedHomebrew } from './homebrew';
 import type { DieRef, RestRule } from '../data/types';
 import {
@@ -94,12 +94,23 @@ export interface UnarmedStrike {
   sources: string[];
 }
 
+/** A piece of a Save Check's dice: a die, with how many steps it was Bolstered (+) or Hindered (−), or text between dice. */
+export interface SavePart {
+  text: string;
+  shift?: number;
+}
+
 export interface SaveLine {
   attr: Attr;
+  /** The Attribute Die and the die rolled in Tandem with it, after Bolstered/Hindered steps. */
   die: string;
   classDie?: string;
   empowered: boolean;
   label: string;
+  /** The label in pieces, so the stepped die can be marked. */
+  parts: SavePart[];
+  /** Net Bolstered (+) or Hindered (−) levels, already applied to the larger die. */
+  shift: number;
   notes: string[];
 }
 
@@ -573,40 +584,65 @@ function deriveUncached(c: Character): Derived {
     const t = tandemSave.has(a) && !!classDieLabel;
     const fromFacet = eff('saveEmpowered').filter((x) => x.e.attr === a);
     const empowered = (t && !!cls?.saveEmpowered && cls.saveTandem.includes(a)) || fromFacet.length > 0;
-    const die = attrs[a].label;
-    // Empowered: Tandem dice are added together; a single die adds a d4.
     // Tandem with another die (e.g. a sentient item's) when not already Tandem with the Class Die.
     const other = eff('saveTandem').find((x) => x.e.attr === a && x.e.die);
     // Only one die can be rolled in Tandem: use the bigger of the Class Die and the other die.
     const size = (die?: string) => Number(die?.match(/d(\d+)/)?.[1] ?? 0);
     const useOther = !!other && (!t || size(other.e.die!.die) > size(classDieLabel));
-    const second = useOther ? other!.e.die!.die : t ? classDieLabel : undefined;
+    const tandemDie = useOther ? other!.e.die!.die : t ? classDieLabel : undefined;
+    // Bolstered and Hindered levels from facets, Conditions, armor and active effects cancel out,
+    // and what's left steps the larger Mod Die up or down (Bolstered & Hindered).
+    const bFrom: string[] = [];
+    const hFrom: string[] = [];
+    let b = 0;
+    let h = 0;
+    for (const x of eff('bolster').filter((x) => x.e.what.startsWith(`${a} Save`))) {
+      const n = sc(x.e.amount);
+      if (n > 0) (b += n), bFrom.push(x.source);
+      else if (n < 0) (h -= n), hFrom.push(x.source);
+    }
+    for (const r of conditionFx.checks.filter((r) => r.attr === a)) {
+      b += r.bolstered;
+      bFrom.push(...r.bolsteredFrom);
+      h += r.hindered;
+      hFrom.push(...r.hinderedFrom);
+    }
+    const shift = b - h;
+    const secondDie = tandemDie ? parseDie(tandemDie) : undefined;
+    const shiftSecond = !!secondDie && secondDie.step > attrs[a].die.step;
+    const die = formatDie(shiftSecond ? attrs[a].die : stepDie(attrs[a].die, shift));
+    const stepped = secondDie && formatDie(shiftSecond ? stepDie(secondDie, shift) : secondDie);
+    const second = stepped && stepped !== '—' ? stepped : undefined;
+    const D: SavePart = { text: die, shift: !shiftSecond && shift ? shift : undefined };
+    const S: SavePart | undefined = second ? { text: second, shift: shiftSecond && shift ? shift : undefined } : undefined;
+    const sep = (text: string): SavePart => ({ text });
     // Empowered: two Tandem dice that are both d4 or larger are added together; otherwise roll an
     // extra d4. With no Attribute Die (0 points) only the other die is rolled.
     const hasDie = die !== '—';
     const big = (x: string) => !x.startsWith('-') && size(x) >= 4;
-    const label = !second
+    const parts: SavePart[] = !S
       ? empowered
         ? hasDie
-          ? `${die} + d4`
-          : 'd4'
-        : die
+          ? [D, sep(' + d4')]
+          : [sep('d4')]
+        : [D]
       : !hasDie
         ? empowered
-          ? `${second} + d4`
-          : second
+          ? [S, sep(' + d4')]
+          : [S]
         : empowered
-          ? big(die) && big(second)
-            ? `${die} + ${second}`
-            : `${die} / ${second} + d4`
-          : `${die} / ${second}`;
-    const notes = eff('bolster')
-      .filter((x) => x.e.what.startsWith(`${a} Save`))
-      .map((x) => bolstered(sc(x.e.amount)));
+          ? big(die) && big(S.text)
+            ? [D, sep(' + '), S]
+            : [D, sep(' / '), S, sep(' + d4')]
+          : [D, sep(' / '), S];
+    const label = parts.map((p) => p.text).join('');
+    const notes: string[] = [];
+    const levels = describeLevels(b, bFrom, h, hFrom);
+    if (levels) notes.push(levels);
     if (useOther) notes.push(`Tandem with ${other!.e.die!.name} Die (${other!.source})`);
     for (const x of fromFacet) notes.push(`Empowered (${x.source})`);
-    for (const r of conditionFx.checks) if (r.attr === a) notes.push(...describeCheck(r));
-    return { attr: a, die, classDie: second, empowered, label, notes };
+    for (const r of conditionFx.checks) if (r.attr === a) notes.push(...describeCheck(r, false));
+    return { attr: a, die, classDie: second, empowered, label, parts, shift, notes };
   });
   // Initiative in Tandem with another die shows it beside the PER Die, like Save Checks
   // (only one die can be rolled in Tandem, so the biggest).

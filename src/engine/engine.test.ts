@@ -109,7 +109,7 @@ describe('derive', () => {
     expect(d.ac.value).toBe(5); // INT 3 + PER 2
     expect(d.resistances).toContainEqual({ type: 'Psychic', value: 2 });
     expect(d.alignment.map((a) => a.light)).toEqual(['Flame', 'Frost', 'Pneuma', 'Velvet', 'Lunar']); // Kinesis adds Flame/Frost/Velvet
-    expect(d.saves.find((s) => s.attr === 'INT')?.label).toBe('d6 + d6');
+    expect(d.saves.find((s) => s.attr === 'INT')?.label).toBe('d8 + d6'); // INT d6 Bolstered 1 (Vibrant Thought) → d8, Empowered Tandem with the d6 Class Die
     expect(d.resources).toEqual([{ name: 'Prisma', max: 2, mode: 'limit' }]);
     expect(d.skillSlots.filter((s) => s.kind === 'hobby')).toHaveLength(2 + 3 + 1);
     expect(d.skillSlots.filter((s) => s.kind === 'profession')).toHaveLength(2);

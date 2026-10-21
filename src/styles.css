@@ -1328,6 +1328,20 @@ dl.defs dd {
 .saves .save-die .ic {
   margin-right: 0.3em;
 }
+/* A Save Check die stepped by Bolstered (green) or Hindered (red) levels. */
+.die-up,
+.die-down {
+  padding: 0 0.2em;
+  border-radius: 4px;
+}
+.die-up {
+  color: var(--ok);
+  background: rgba(95, 211, 154, 0.14);
+}
+.die-down {
+  color: var(--danger);
+  background: rgba(255, 107, 129, 0.14);
+}
 input.num {
   width: 4.5em;
 }
