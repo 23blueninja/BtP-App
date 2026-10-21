@@ -113,7 +113,7 @@ const MD_ROOT: MdNode = (() => {
     }
     while (stack.length > 1 && stack[stack.length - 1].depth >= depth) stack.pop();
     const parent = stack[stack.length - 1];
-    const node: MdNode = { depth, title: clean(title), lvl, lines: [], children: [], parent };
+    const node: MdNode = { depth, title: clean(title).replace(/\{[A-Z]+\}\s*/g, ''), lvl, lines: [], children: [], parent };
     parent.children.push(node);
     stack.push(node);
   }
@@ -397,6 +397,12 @@ describe('rules.json tree', () => {
         for (const m of s.matchAll(/class="ic ic-([A-Za-z]+)"/g)) if (!ICONS.includes(m[1])) unknown.add(`${n.id}: ic-${m[1]}`);
     }
     expect([...unknown]).toEqual([]);
+  });
+
+  it('plain section titles (rules nav, search, crumbs) carry no icon tokens; titleHtml keeps the icon', () => {
+    expect(nodes.filter((n) => /\{[A-Z]+\}/.test(n.title)).map((n) => n.id)).toEqual([]);
+    const level = nodes.find((n) => n.titleHtml.includes('ic-SL') && n.title === 'Level');
+    expect(level).toBeDefined();
   });
 
   it('no Homebrewery markup leaks into the content ($[X], {{ }}, \\page, <lvl>)', () => {

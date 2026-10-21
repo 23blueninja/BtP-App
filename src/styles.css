@@ -1530,6 +1530,12 @@ input.num {
     position: static;
     max-height: none;
   }
+  /* Still the anchors for their prismatic edges. */
+  .summary,
+  .ref-nav {
+    position: relative;
+    top: auto;
+  }
   .main-cols {
     grid-template-columns: minmax(0, 1fr);
   }
