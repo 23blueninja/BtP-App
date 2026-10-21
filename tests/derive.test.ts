@@ -269,6 +269,13 @@ function complete(over: Parameters<typeof makeCharacter>[0] = {}, opts: { light?
 }
 
 /** Facet texts that apply: ancestry (+sub) from the document. */
+// Bolstered & Hindered: each level is one step along the Mod Die sizes; past d12 it's +1 a level.
+const DIE_LADDER = ['-d12', '-d10', '-d8', '-d6', '-d4', '-d2', '—', 'd2', 'd4', 'd6', 'd8', 'd10', 'd12'];
+const stepLadder = (die: string, n: number) => {
+  const i = DIE_LADDER.indexOf(die) + n;
+  return i >= DIE_LADDER.length ? `d12+${i - DIE_LADDER.length + 1}` : DIE_LADDER[Math.max(0, i)];
+};
+
 function ancestryFacetTexts(v: Variant): MdFacet[] {
   const a = MD_ANCESTRIES.get(v.id)!;
   const anc = ancestries.find((x) => x.id === v.id)!;
@@ -591,11 +598,19 @@ describe.each(MATRIX_CLASSES.map((v) => [v.label, v] as const))('matrix %s', (_l
       const chosenTandem = chosenTexts.flatMap((t) => [...t.matchAll(/You roll \$\[(\w+)\] Save Checks in Tandem/g)].map((x) => x[1]));
       chosenTandem.forEach((a) => tandem.add(a));
       const empoweredFacet = new Set([...subTexts, ...classTexts].flatMap((f) => [...f.text.matchAll(/Your \$\[(\w+)\] Save Checks are Empowered/g)].map((x) => x[1])));
+      // "Your $[X] Save (and Skill) Checks are Bolstered N" step the larger Mod Die (Bolstered & Hindered).
+      const saveBolster = new Map<string, number>();
+      for (const f of [...ancTexts, ...subTexts, ...classTexts])
+        for (const x of f.text.matchAll(/Your (?:\$\[)?([A-Z]{3})\]? Save (?:and Skill )?Checks are Bolstered (\d+)/g)) saveBolster.set(x[1], (saveBolster.get(x[1]) ?? 0) + Number(x[2]));
       for (const s of d.saves) {
-        const die = d.attrs[s.attr].label;
+        const n = saveBolster.get(s.attr) ?? 0;
         const t = tandem.has(s.attr);
+        const attrDie = d.attrs[s.attr].label;
+        const stepAttr = !t || DIE_LADDER.indexOf(attrDie) >= DIE_LADDER.indexOf(d.classDie!);
+        const die = stepAttr ? stepLadder(attrDie, n) : attrDie;
+        const classDie = t && !stepAttr ? stepLadder(d.classDie!, n) : d.classDie;
         const emp = (t && /Empowered/.test(m.saveLine) && !chosenTandem.includes(s.attr)) || empoweredFacet.has(s.attr);
-        const want = t ? `${die} ${emp ? '+' : '/'} ${d.classDie}` : emp ? `${die} + d4` : die;
+        const want = t ? `${die} ${emp ? '+' : '/'} ${classDie}` : emp ? `${die} + d4` : die;
         expect(s.label, `${ctx} ${s.attr} save`).toBe(want);
         expect(s.empowered).toBe(emp);
       }
@@ -937,16 +952,46 @@ describe('Save Checks and Initiative', () => {
     expect(v.initiativeNotes.join(' ')).toMatch(/Tandem with Martial Die/);
     expect(built({ classId: 'gladiator', subclass: '', attributes: attrs }).d.initiative).toBe('d4'); // no Victor, no Tandem
     const fr = built({ background: { preset: '', heritage: 'first-responder' }, attributes: attrs }).d;
-    expect(fr.initiativeNotes).toContain('Bolstered 1');
+    expect(fr.initiativeNotes).toContain('Bolstered 1 (First Responder)');
+    expect(fr.initiative).toBe(stepLadder(fr.attrs.PER.label, 1));
+    expect(fr.initiativeParts).toEqual([{ text: fr.initiative, shift: 1 }]);
+  });
+  it('Initiative is a PER Check: Hindered PER Checks step its larger die (Numbed 1 on Victor d2 / d6 → d2 / d4)', () => {
+    const play = { ...newCharacter().play, conditions: [{ name: 'Numbed', level: 1 }] };
+    const v = built({ classId: 'gladiator', subclass: 'victor', attributes: { ...attrs, base: { ...attrs.base, PER: 1 } }, play }).d;
+    expect(v.initiative).toBe('d2 / d4');
+    expect(v.initiativeParts).toEqual([{ text: 'd2' }, { text: ' / ' }, { text: 'd4', shift: -1 }]);
+    expect(v.initiativeNotes).toContain('Hindered 1 (Numbed 1)');
   });
   it('Incarnate INT Manifestation adds INT saves in Tandem (not Empowered)', () => {
     const d = built({ classId: 'incarnate', level: 2, attributes: attrs, choices: { manifestation: 'INT' } }).d;
     expect(d.saves.find((s) => s.attr === 'INT')!.label).toBe('d4 / d6');
     expect(built({ classId: 'incarnate', level: 1, attributes: attrs, choices: { manifestation: 'INT' } }).d.saves.find((s) => s.attr === 'INT')!.label).toBe('d4');
   });
-  it('ancestry save bolsters show as notes (Corpug Grit on VIG, Ori Unyielding on PRS)', () => {
-    expect(built({ ancestry: 'corpug', attributes: attrs }).d.saves.find((s) => s.attr === 'VIG')!.notes).toContain('Bolstered 1');
-    expect(built({ ancestry: 'ori', attributes: attrs }).d.saves.find((s) => s.attr === 'PRS')!.notes).toContain('Bolstered 1');
+  it('ancestry save bolsters step the die and show their source (Corpug Grit on VIG, Ori Unyielding on PRS)', () => {
+    const vig = built({ ancestry: 'corpug', attributes: attrs }).d.saves.find((s) => s.attr === 'VIG')!;
+    expect(vig.notes).toContain('Bolstered 1 (Grit)');
+    expect(vig.label).toBe(stepLadder(built({ ancestry: 'corpug', attributes: attrs }).d.attrs.VIG.label, 1));
+    expect(vig.shift).toBe(1);
+    const prs = built({ ancestry: 'ori', attributes: attrs }).d.saves.find((s) => s.attr === 'PRS')!;
+    expect(prs.notes).toContain('Bolstered 1 (Unyielding)');
+    expect(prs.label).toBe(stepLadder(built({ ancestry: 'ori', attributes: attrs }).d.attrs.PRS.label, 1));
+  });
+  it('Bolstered and Hindered levels on a save add up across Conditions and armor, and step the die', () => {
+    // Sluggish 1 (AGI Checks Hindered 1) and Medium armor (Weighty: AGI Save Checks Hindered 1): one line, Hindered 2.
+    const medium = { armor: { type: 'Medium' as const, quality: ARMOR_AC[0].quality }, weapons: [], inventory: [] };
+    const { d } = built({ attributes: { ...attrs, base: { ...attrs.base, AGI: 4 } }, equipment: medium, play: { ...newCharacter().play, conditions: [{ name: 'Sluggish', level: 1 }] } });
+    const agi = d.saves.find((s) => s.attr === 'AGI')!;
+    expect(agi.notes.filter((n) => /Hindered/.test(n))).toEqual(['Hindered 2 (Sluggish 1, Weighty (Medium armor))']);
+    expect(agi.shift).toBe(-2);
+    expect(agi.label).toBe(stepLadder(d.attrs.AGI.label, -2));
+    expect(agi.parts).toEqual([{ text: agi.label, shift: -2 }]);
+  });
+  it('a Hindered Tandem save steps only the larger die (Victor AGI d4 / d6, Weighty → d4 / d4)', () => {
+    const medium = { armor: { type: 'Medium' as const, quality: ARMOR_AC[0].quality }, weapons: [], inventory: [] };
+    const agi = built({ classId: 'gladiator', subclass: 'victor', attributes: attrs, choices: { 'save-attr': 'AGI' }, equipment: medium }).d.saves.find((s) => s.attr === 'AGI')!;
+    expect(agi.label).toBe('d4 / d4');
+    expect(agi.parts).toEqual([{ text: 'd4' }, { text: ' / ' }, { text: 'd4', shift: -1 }]);
   });
   it('without a class, saves are just the Attribute Die', () => {
     const d = built({ attributes: attrs }).d;

@@ -3,7 +3,7 @@ import { basicActions, conditions as conditionDefs, getNode, getCastable, type R
 import { ancestryById, ancestryName, CUSTOM_ANCESTRY, CUSTOM_ANCESTRY_NOTE } from '../data/ancestries';
 import { ATTRS, ATTR_NAMES, RANK_DIE, type Light } from '../data/types';
 import { newId, type Character, type Experience, type PlayState, type SessionNote } from '../engine/character';
-import { derive, type Derived } from '../engine/derive';
+import { derive, type Derived, type DiePart } from '../engine/derive';
 import { clampPlay, facetUseMax, heal, longRest, shortRest, takeDamage } from '../engine/play';
 import { AP_MAX, CONDITION_RULES, addCondition, describeCheck, endTurn, startTurn } from '../engine/conditions';
 import { ClassTableView, Equipment, WeaponTable } from './Builder';
@@ -159,6 +159,19 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
   );
 }
 
+/** A Check's dice (Save Checks, Initiative), the one Bolstered (green) or Hindered (red) marked. */
+function Dice({ parts }: { parts: DiePart[] }) {
+  return parts.map((p, i) =>
+    p.shift ? (
+      <span key={i} className={p.shift > 0 ? 'die-up' : 'die-down'} title={p.shift > 0 ? `Bolstered ${p.shift}` : `Hindered ${-p.shift}`}>
+        {p.text}
+      </span>
+    ) : (
+      p.text
+    ),
+  );
+}
+
 /** The Attribute boxes: redrawn only when what they show changes (not on every edit). */
 const StripCells = memo(
   function StripCells({ d }: { d: Derived }) {
@@ -187,7 +200,7 @@ const StripCells = memo(
             {at.dieNote && <p className="note small"><TokenText text={at.dieNote} /></p>}
             {save && (
               <p>
-                Save Checks: <strong>{save.label}</strong>
+                Save Checks: <strong><Dice parts={save.parts} /></strong>
                 {save.notes.length > 0 && <span className="muted small"> · <TokenText text={save.notes.join(', ')} /></span>}
               </p>
             )}
@@ -211,6 +224,7 @@ const TurnBar = memo(
     a.compact === b.compact &&
     a.update === b.update &&
     a.d.initiative === b.d.initiative &&
+    a.d.initiativeShift === b.d.initiativeShift &&
     JSON.stringify(a.d.conditionFx.active) === JSON.stringify(b.d.conditionFx.active),
 );
 
@@ -287,7 +301,7 @@ function TurnBarView({
               </button>
             </div>
             <button type="button" title="Rolling Initiative refills your AP" onClick={initiative}>
-              Initiative {d.initiative}
+              Initiative <Dice parts={d.initiativeParts} />
             </button>
           </div>
         </div>
@@ -318,7 +332,7 @@ function TurnBarView({
           ■ End Turn
         </button>
         <button type="button" title="Rolling Initiative refills your AP" onClick={initiative}>
-          Initiative {d.initiative}
+          Initiative <Dice parts={d.initiativeParts} />
         </button>
       </div>
       {warn}
@@ -481,7 +495,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             <Box title="Level" className="stat">
               <div className="big">{c.level}</div>
             </Box>
-            <StatBox title="Initiative" value={d.initiative}>
+            <StatBox title="Initiative" value={d.initiative} display={<span className="big"><Dice parts={d.initiativeParts} /></span>}>
               <p>
                 Roll your <Icon name="PER" /> Die ({d.attrs.PER.label})
                 {d.initiative !== d.attrs.PER.label ? ' in Tandem' : ''}.
@@ -585,7 +599,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
                   <tr key={s.attr}>
                     <td>
                       <span className="save-die">
-                        <Icon name={s.attr} /> {s.label}
+                        <Icon name={s.attr} /> <Dice parts={s.parts} />
                       </span>
                       {s.notes.length > 0 && (
                         <div className="muted small">

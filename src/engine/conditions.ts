@@ -340,14 +340,20 @@ export function conditionEffects(p: PlayState, extra: ExtraCheck[] = [], immune:
   return fx;
 }
 
-/** Short text for a Check row: "Hindered 2 (Dulled 1, Exhausted 1), Weakened (Bruised)". */
-export function describeCheck(r: CheckSummary): string[] {
+/** Bolstered and Hindered levels with their sources, and what they come to (they cancel out). */
+export function describeLevels(bolstered: number, bolsteredFrom: string[], hindered: number, hinderedFrom: string[]): string | undefined {
+  const net = bolstered - hindered;
+  if (bolstered && hindered)
+    return `Bolstered ${bolstered} (${bolsteredFrom.join(', ')}) and Hindered ${hindered} (${hinderedFrom.join(', ')}): ${net === 0 ? 'no change' : net > 0 ? `Bolstered ${net}` : `Hindered ${-net}`}`;
+  if (bolstered) return `Bolstered ${bolstered} (${bolsteredFrom.join(', ')})`;
+  if (hindered) return `Hindered ${hindered} (${hinderedFrom.join(', ')})`;
+}
+
+/** Short text for a Check row: "Hindered 2 (Dulled 1, Exhausted 1), Weakened (Bruised)". `levels: false` leaves out Bolstered/Hindered. */
+export function describeCheck(r: CheckSummary, levels = true): string[] {
   const out: string[] = [];
-  const net = r.bolstered - r.hindered;
-  if (r.bolstered && r.hindered) {
-    out.push(`Bolstered ${r.bolstered} (${r.bolsteredFrom.join(', ')}) and Hindered ${r.hindered} (${r.hinderedFrom.join(', ')}): ${net === 0 ? 'no change' : net > 0 ? `Bolstered ${net}` : `Hindered ${-net}`}`);
-  } else if (r.bolstered) out.push(`Bolstered ${r.bolstered} (${r.bolsteredFrom.join(', ')})`);
-  else if (r.hindered) out.push(`Hindered ${r.hindered} (${r.hinderedFrom.join(', ')})`);
+  const lv = levels && describeLevels(r.bolstered, r.bolsteredFrom, r.hindered, r.hinderedFrom);
+  if (lv) out.push(lv);
   if (r.weakened.length) out.push(`Weakened (${r.weakened.join(', ')})`);
   if (r.disadvantage.length) out.push(`Disadvantage (${r.disadvantage.join(', ')})`);
   out.push(...r.autofail);

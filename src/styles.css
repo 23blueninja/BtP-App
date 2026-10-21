@@ -1328,6 +1328,13 @@ dl.defs dd {
 .saves .save-die .ic {
   margin-right: 0.3em;
 }
+/* A die stepped by Bolstered (green) or Hindered (red) levels. */
+.die-up {
+  color: var(--ok);
+}
+.die-down {
+  color: var(--danger);
+}
 input.num {
   width: 4.5em;
 }
