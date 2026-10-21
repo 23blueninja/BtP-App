@@ -94,8 +94,8 @@ export interface UnarmedStrike {
   sources: string[];
 }
 
-/** A piece of a Save Check's dice: a die, with how many steps it was Bolstered (+) or Hindered (−), or text between dice. */
-export interface SavePart {
+/** A piece of a Check's dice (Save Checks, Initiative): a die, with how many steps it was Bolstered (+) or Hindered (−), or text between dice. */
+export interface DiePart {
   text: string;
   shift?: number;
 }
@@ -108,7 +108,7 @@ export interface SaveLine {
   empowered: boolean;
   label: string;
   /** The label in pieces, so the stepped die can be marked. */
-  parts: SavePart[];
+  parts: DiePart[];
   /** Net Bolstered (+) or Hindered (−) levels, already applied to the larger die. */
   shift: number;
   notes: string[];
@@ -137,6 +137,10 @@ export interface Derived {
   movementTypes: { type: string; value: number }[];
   radius: number;
   initiative: string;
+  /** The Initiative dice in pieces, the Bolstered/Hindered one marked. */
+  initiativeParts: DiePart[];
+  /** Net Bolstered (+) or Hindered (−) levels on Initiative, already applied to the larger die. */
+  initiativeShift: number;
   initiativeNotes: string[];
   vitalityMax: number;
   /** Champion of Darkness: Darkness (your missing Vitality) and the facets that give it. */
@@ -580,6 +584,33 @@ function deriveUncached(c: Character): Derived {
   const bolsters = [...bolsterTotals.entries()].map(([what, t]) => `${what}: ${bolstered(t.amount)} (${t.sources.join(', ')})`);
   const dieName = (die: 'class' | Attr | DieRef) => (die === 'class' ? `${cls?.dieName ?? 'Class'} Die` : typeof die === 'string' ? `${die} Die` : `${die.name} Die (${die.die})`);
   const tandems = eff('tandem').map((x) => `${x.e.what}: Tandem with ${dieName(x.e.die)} (${x.source})`);
+  // Bolstered and Hindered levels from facets (by what they name), Conditions, armor and active
+  // effects (by Check row) cancel out; what's left steps the larger Mod Die (Bolstered & Hindered).
+  const levelsOn = (what: (w: string) => boolean, rows: ConditionEffects['checks']) => {
+    const lv = { b: 0, h: 0, bFrom: [] as string[], hFrom: [] as string[] };
+    for (const x of eff('bolster').filter((x) => what(x.e.what))) {
+      const n = sc(x.e.amount);
+      if (n > 0) (lv.b += n), lv.bFrom.push(x.source);
+      else if (n < 0) (lv.h -= n), lv.hFrom.push(x.source);
+    }
+    for (const r of rows) {
+      lv.b += r.bolstered;
+      lv.bFrom.push(...r.bolsteredFrom);
+      lv.h += r.hindered;
+      lv.hFrom.push(...r.hinderedFrom);
+    }
+    return { shift: lv.b - lv.h, note: describeLevels(lv.b, lv.bFrom, lv.h, lv.hFrom) };
+  };
+  const stepLarger = (attrDie: ModDie, tandem: string | undefined, shift: number) => {
+    const t = tandem ? parseDie(tandem) : undefined;
+    const onTandem = !!t && t.step > attrDie.step;
+    const die = formatDie(onTandem ? attrDie : stepDie(attrDie, shift));
+    const stepped = t && formatDie(onTandem ? stepDie(t, shift) : t);
+    const second = stepped && stepped !== '—' ? stepped : undefined;
+    const D: DiePart = { text: die, shift: !onTandem && shift ? shift : undefined };
+    const S: DiePart | undefined = second ? { text: second, shift: onTandem && shift ? shift : undefined } : undefined;
+    return { die, second, D, S };
+  };
   const saves: SaveLine[] = ATTRS.map((a) => {
     const t = tandemSave.has(a) && !!classDieLabel;
     const fromFacet = eff('saveEmpowered').filter((x) => x.e.attr === a);
@@ -590,37 +621,18 @@ function deriveUncached(c: Character): Derived {
     const size = (die?: string) => Number(die?.match(/d(\d+)/)?.[1] ?? 0);
     const useOther = !!other && (!t || size(other.e.die!.die) > size(classDieLabel));
     const tandemDie = useOther ? other!.e.die!.die : t ? classDieLabel : undefined;
-    // Bolstered and Hindered levels from facets, Conditions, armor and active effects cancel out,
-    // and what's left steps the larger Mod Die up or down (Bolstered & Hindered).
-    const bFrom: string[] = [];
-    const hFrom: string[] = [];
-    let b = 0;
-    let h = 0;
-    for (const x of eff('bolster').filter((x) => x.e.what.startsWith(`${a} Save`))) {
-      const n = sc(x.e.amount);
-      if (n > 0) (b += n), bFrom.push(x.source);
-      else if (n < 0) (h -= n), hFrom.push(x.source);
-    }
-    for (const r of conditionFx.checks.filter((r) => r.attr === a)) {
-      b += r.bolstered;
-      bFrom.push(...r.bolsteredFrom);
-      h += r.hindered;
-      hFrom.push(...r.hinderedFrom);
-    }
-    const shift = b - h;
-    const secondDie = tandemDie ? parseDie(tandemDie) : undefined;
-    const shiftSecond = !!secondDie && secondDie.step > attrs[a].die.step;
-    const die = formatDie(shiftSecond ? attrs[a].die : stepDie(attrs[a].die, shift));
-    const stepped = secondDie && formatDie(shiftSecond ? stepDie(secondDie, shift) : secondDie);
-    const second = stepped && stepped !== '—' ? stepped : undefined;
-    const D: SavePart = { text: die, shift: !shiftSecond && shift ? shift : undefined };
-    const S: SavePart | undefined = second ? { text: second, shift: shiftSecond && shift ? shift : undefined } : undefined;
-    const sep = (text: string): SavePart => ({ text });
+    const lv = levelsOn(
+      (w) => w.startsWith(`${a} Save`),
+      conditionFx.checks.filter((r) => r.attr === a),
+    );
+    const shift = lv.shift;
+    const { die, second, D, S } = stepLarger(attrs[a].die, tandemDie, shift);
+    const sep = (text: string): DiePart => ({ text });
     // Empowered: two Tandem dice that are both d4 or larger are added together; otherwise roll an
     // extra d4. With no Attribute Die (0 points) only the other die is rolled.
     const hasDie = die !== '—';
     const big = (x: string) => !x.startsWith('-') && size(x) >= 4;
-    const parts: SavePart[] = !S
+    const parts: DiePart[] = !S
       ? empowered
         ? hasDie
           ? [D, sep(' + d4')]
@@ -637,8 +649,7 @@ function deriveUncached(c: Character): Derived {
           : [D, sep(' / '), S];
     const label = parts.map((p) => p.text).join('');
     const notes: string[] = [];
-    const levels = describeLevels(b, bFrom, h, hFrom);
-    if (levels) notes.push(levels);
+    if (lv.note) notes.push(lv.note);
     if (useOther) notes.push(`Tandem with ${other!.e.die!.name} Die (${other!.source})`);
     for (const x of fromFacet) notes.push(`Empowered (${x.source})`);
     for (const r of conditionFx.checks) if (r.attr === a) notes.push(...describeCheck(r, false));
@@ -653,11 +664,17 @@ function deriveUncached(c: Character): Derived {
     .map((x) => tandemDieLabel(x.e.die))
     .filter((x): x is string => !!x)
     .sort((a, b) => dieSize(b) - dieSize(a))[0];
+  // An Initiative Check is a PER Check: Initiative facets and anything on all PER Checks (not PER Saves) count.
+  const perRows = conditionFx.checks.filter((r) => r.attr === 'PER' && !r.save);
+  const initLevels = levelsOn((w) => w.startsWith('Initiative'), perRows);
+  const init = stepLarger(attrs.PER.die, initiativeTandem, initLevels.shift);
+  const initiativeParts: DiePart[] = !init.S ? [init.D] : init.die === '—' ? [init.S] : [init.D, { text: ' / ' }, init.S];
   const initiativeNotes = [
     ...eff('tandem')
       .filter((x) => x.e.what.startsWith('Initiative'))
       .map((x) => `Tandem with ${dieName(x.e.die)}${x.source === cls?.name ? '' : ` (${x.source})`}`),
-    ...eff('bolster').filter((x) => x.e.what.startsWith('Initiative')).map((x) => bolstered(sc(x.e.amount))),
+    ...(initLevels.note ? [initLevels.note] : []),
+    ...perRows.flatMap((r) => describeCheck(r, false)),
   ];
   const actionCategories = ['Basic', ...(cls?.actions ?? []), ...eff('actions').flatMap((x) => x.e.categories)];
 
@@ -808,7 +825,9 @@ function deriveUncached(c: Character): Derived {
     movementBreakdown,
     movementTypes,
     radius,
-    initiative: initiativeTandem ? (attrs.PER.label === '—' ? initiativeTandem : `${attrs.PER.label} / ${initiativeTandem}`) : attrs.PER.label,
+    initiative: initiativeParts.map((p) => p.text).join(''),
+    initiativeParts,
+    initiativeShift: initLevels.shift,
     initiativeNotes,
     vitalityMax,
     darkness: eff('darkness').length ? { value: darkness, sources: eff('darkness').map((x) => x.source) } : undefined,

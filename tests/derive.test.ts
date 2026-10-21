@@ -952,7 +952,16 @@ describe('Save Checks and Initiative', () => {
     expect(v.initiativeNotes.join(' ')).toMatch(/Tandem with Martial Die/);
     expect(built({ classId: 'gladiator', subclass: '', attributes: attrs }).d.initiative).toBe('d4'); // no Victor, no Tandem
     const fr = built({ background: { preset: '', heritage: 'first-responder' }, attributes: attrs }).d;
-    expect(fr.initiativeNotes).toContain('Bolstered 1');
+    expect(fr.initiativeNotes).toContain('Bolstered 1 (First Responder)');
+    expect(fr.initiative).toBe(stepLadder(fr.attrs.PER.label, 1));
+    expect(fr.initiativeParts).toEqual([{ text: fr.initiative, shift: 1 }]);
+  });
+  it('Initiative is a PER Check: Hindered PER Checks step its larger die (Numbed 1 on Victor d2 / d6 → d2 / d4)', () => {
+    const play = { ...newCharacter().play, conditions: [{ name: 'Numbed', level: 1 }] };
+    const v = built({ classId: 'gladiator', subclass: 'victor', attributes: { ...attrs, base: { ...attrs.base, PER: 1 } }, play }).d;
+    expect(v.initiative).toBe('d2 / d4');
+    expect(v.initiativeParts).toEqual([{ text: 'd2' }, { text: ' / ' }, { text: 'd4', shift: -1 }]);
+    expect(v.initiativeNotes).toContain('Hindered 1 (Numbed 1)');
   });
   it('Incarnate INT Manifestation adds INT saves in Tandem (not Empowered)', () => {
     const d = built({ classId: 'incarnate', level: 2, attributes: attrs, choices: { manifestation: 'INT' } }).d;
