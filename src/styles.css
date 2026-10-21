@@ -1771,13 +1771,13 @@ b.calc {
   height: calc(100% + 157.04px);
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='136' height='78.52' viewBox='0 0 136 78.52'%3E%3Cpath d='M0 -1V79.52M68 -1V79.52M136 -1V79.52M-136 -157.04L272 78.52M-136 -78.52L272 157.04M-136 0.00L272 235.56M-136 78.52L272 -157.04M-136 157.04L272 -78.52M-136 235.56L272 0.00' stroke='white' stroke-width='1.3' fill='none'/%3E%3C/svg%3E") repeat 0 0 / 272px 157.04px;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='136' height='78.52' viewBox='0 0 136 78.52'%3E%3Cpath d='M0 -1V79.52M68 -1V79.52M136 -1V79.52M-136 -157.04L272 78.52M-136 -78.52L272 157.04M-136 0.00L272 235.56M-136 78.52L272 -157.04M-136 157.04L272 -78.52M-136 235.56L272 0.00' stroke='white' stroke-width='1.3' fill='none'/%3E%3C/svg%3E") repeat 0 0 / 272px 157.04px;
-  animation: prism-grid-drift 24s linear infinite;
+  animation: prism-grid-drift 48s linear infinite;
   will-change: transform;
 }
 .prism-counter {
   position: absolute;
   inset: 0;
-  animation: prism-grid-counter 24s linear infinite;
+  animation: prism-grid-counter 48s linear infinite;
   will-change: transform;
 }
 @keyframes prism-grid-drift {
