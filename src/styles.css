@@ -1758,10 +1758,39 @@ b.calc {
   pointer-events: none;
   overflow: hidden;
   opacity: 0.5;
+}
+/* The grid drifts up-left (one tile per loop) while the rainbow drifts on its own:
+   .prism-grid carries the mask and moves; .prism-counter moves back by the same
+   amount so the rainbow inside stays put on screen. All transforms, so the GPU
+   moves them without repainting (kept on one clock by App.tsx). */
+.prism-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% + 272px);
+  height: calc(100% + 157.04px);
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='136' height='78.52' viewBox='0 0 136 78.52'%3E%3Cpath d='M0 -1V79.52M68 -1V79.52M136 -1V79.52M-136 -157.04L272 78.52M-136 -78.52L272 157.04M-136 0.00L272 235.56M-136 78.52L272 -157.04M-136 157.04L272 -78.52M-136 235.56L272 0.00' stroke='white' stroke-width='1.3' fill='none'/%3E%3C/svg%3E") repeat 0 0 / 272px 157.04px;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='136' height='78.52' viewBox='0 0 136 78.52'%3E%3Cpath d='M0 -1V79.52M68 -1V79.52M136 -1V79.52M-136 -157.04L272 78.52M-136 -78.52L272 157.04M-136 0.00L272 235.56M-136 78.52L272 -157.04M-136 157.04L272 -78.52M-136 235.56L272 0.00' stroke='white' stroke-width='1.3' fill='none'/%3E%3C/svg%3E") repeat 0 0 / 272px 157.04px;
+  animation: prism-grid-drift 24s linear infinite;
+  will-change: transform;
 }
-.prism-bg::before {
+.prism-counter {
+  position: absolute;
+  inset: 0;
+  animation: prism-grid-counter 24s linear infinite;
+  will-change: transform;
+}
+@keyframes prism-grid-drift {
+  to {
+    transform: translate(-272px, -157.04px);
+  }
+}
+@keyframes prism-grid-counter {
+  to {
+    transform: translate(272px, 157.04px);
+  }
+}
+.prism-counter::before {
   content: '';
   position: absolute;
   top: 0;
@@ -1784,7 +1813,9 @@ b.calc {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .prism-bg::before,
+  .prism-grid,
+  .prism-counter,
+  .prism-counter::before,
   .tabs button.active::after,
   .topbar::after {
     animation: none;
@@ -2644,6 +2675,40 @@ tr.needs input {
 .option-row input {
   margin-top: 0.25rem;
 }
+/* Options: the two looks, each with its own dropdown of toggles. */
+.looks {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.looks legend {
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+.look {
+  border: 1px solid var(--border);
+  padding: 0.55rem 0.7rem;
+}
+.look.selected {
+  border-color: var(--accent);
+}
+.look-custom {
+  margin: 0.5rem 0 0 1.6rem;
+}
+.look-custom summary {
+  cursor: pointer;
+  color: var(--accent);
+}
+.look-custom .option-row {
+  margin-top: 0.5rem;
+}
+/* Polished (or cut corners off): square panels. */
+.app.square-corners {
+  --panel-cut: 0px;
+}
 /* Pinned top bar (wide screens): stays at the top while the sheet scrolls under it. */
 @media (min-width: 1100px) {
   .app.pin-stats .stat-strip {
@@ -2660,8 +2725,9 @@ tr.needs input {
     backdrop-filter: blur(8px);
   }
 }
-.app.still-bg .prism-bg::before,
-.app.still-bg .prism-bg::after {
+.app.still-bg .prism-grid,
+.app.still-bg .prism-counter,
+.app.still-bg .prism-counter::before {
   animation: none;
 }
 /* !important: the edge rules are more specific (and the Firefox one more so). */
@@ -2746,4 +2812,47 @@ tr.needs input {
 .pip,
 .dot {
   corner-shape: round;
+}
+
+/* ---------- guided tour ---------- */
+.tour {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+/* The highlighted element: everything around it is dimmed by the spot's shadow. */
+.tour-spot {
+  position: fixed;
+  box-shadow: 0 0 0 200vmax rgba(0, 0, 0, 0.62);
+  outline: 2px solid var(--accent);
+  transition: top 0.2s ease, left 0.2s ease, width 0.2s ease, height 0.2s ease;
+  pointer-events: none;
+}
+.tour-shade {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.62);
+}
+.tour-card {
+  position: fixed;
+  background: var(--bg-2);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--accent);
+  padding: 0.8rem 1rem;
+  box-shadow: var(--shadow);
+}
+.tour-card:focus {
+  outline: none;
+}
+.tour-card h3 {
+  margin: 0.1rem 0 0.4rem;
+}
+.tour-card p {
+  margin: 0.2rem 0 0.7rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-spot {
+    transition: none;
+  }
 }

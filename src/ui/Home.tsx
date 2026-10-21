@@ -1,17 +1,25 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ancestryName } from '../data/ancestries';
 import { classById } from '../data/classes';
 import { newCharacter, newId } from '../engine/character';
 import { exportCharacter, importCharacter, store } from '../storage/storage';
 import { go } from './common';
+import { usePrefs } from './prefs';
+import { startTour, TOUR_DEMO_ID, tourActive } from './Tour';
 import logo from '../assets/icons/8VNXled.png';
 
 export function Home() {
   const [, setTick] = useState(0);
   const [error, setError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
-  const list = store.list();
+  const list = store.list().filter((s) => s.id !== TOUR_DEMO_ID);
   const refresh = () => setTick((t) => t + 1);
+  const { tourSeen } = usePrefs();
+  // The tour starts by itself the first time the app opens with no characters.
+  const firstVisit = !tourSeen && list.length === 0;
+  useEffect(() => {
+    if (firstVisit && !tourActive()) startTour();
+  }, [firstVisit]);
 
   return (
     <div className="home">
@@ -23,6 +31,7 @@ export function Home() {
           <button
             type="button"
             className="primary"
+            data-tour="new"
             onClick={() => {
               const c = newCharacter();
               store.save(c);
@@ -31,10 +40,10 @@ export function Home() {
           >
             + New character
           </button>
-          <button type="button" onClick={() => fileRef.current?.click()}>
+          <button type="button" data-tour="import" onClick={() => fileRef.current?.click()}>
             Import JSON
           </button>
-          <button type="button" onClick={() => go('rules')}>
+          <button type="button" data-tour="rules" onClick={() => go('rules')}>
             📖 Rules reference
           </button>
           <input
@@ -59,6 +68,11 @@ export function Home() {
           />
         </div>
         {error && <p className="warn">{error}</p>}
+        <p className="small">
+          <button type="button" className="link" onClick={startTour}>
+            Take the tour
+          </button>
+        </p>
       </section>
       <section>
         <h2>Your characters</h2>

@@ -48,7 +48,7 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
             </p>
           </div>
           <div className="sheet-actions">
-            <button type="button" onClick={() => go('c', c.id, 'build', 'basics')}>
+            <button type="button" data-tour="edit" onClick={() => go('c', c.id, 'build', 'basics')}>
               ✎ Edit
             </button>
             {d.level < d.maxLevel && d.cls && (
@@ -77,7 +77,7 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
             </ul>
           </details>
         )}
-        <div className="tabs" role="tablist">
+        <div className="tabs" role="tablist" data-tour="tabs">
           {TABS.map((t) => (
             <button key={t} type="button" role="tab" aria-selected={tab === t} className={tab === t ? 'active' : ''} onClick={() => setTab(t)}>
               {t}
@@ -136,7 +136,7 @@ function StatStrip({ d, children }: { d: Derived; children?: React.ReactNode }) 
   return (
     <>
     <div ref={marker} className="stat-strip-marker" aria-hidden />
-    <div className={`stat-strip ${stuck ? 'stuck' : ''}`}>
+    <div className={`stat-strip ${stuck ? 'stuck' : ''}`} data-tour="stats">
       {/* Class Bonus and Class Die: one box sliced on a shallow diagonal (left edge low, right edge high); the Class Die takes the
           bottom, sized so long class names and die names both fit. */}
       <section className="split-box">
@@ -265,7 +265,7 @@ function TurnBarView({
   );
   if (compact) {
     return (
-      <section className={`box turn-box ${myTurn ? 'my-turn' : ''}`} aria-label="Turn">
+      <section className={`box turn-box ${myTurn ? 'my-turn' : ''}`} aria-label="Turn" data-tour="turn">
         <div className="turn-box-head">
           <h3 className="box-title">
             <Icon name="AP" /> {ap}/{AP_MAX}
@@ -296,7 +296,7 @@ function TurnBarView({
     );
   }
   return (
-    <section className={`turn-bar box ${myTurn ? 'my-turn' : ''}`} aria-label="Turn">
+    <section className={`turn-bar box ${myTurn ? 'my-turn' : ''}`} aria-label="Turn" data-tour="turn">
       <div className="turn-ap">
         <span className="turn-label">
           <Icon name="AP" />
@@ -334,9 +334,10 @@ interface MainProps {
   onRest: (log: string[]) => void;
 }
 
-function Box({ title, children, className = '' }: { title: React.ReactNode; children: React.ReactNode; className?: string }) {
+/** `tour` marks the panel for a guided-tour step (data-tour). */
+function Box({ title, children, className = '', tour }: { title: React.ReactNode; children: React.ReactNode; className?: string; tour?: string }) {
   return (
-    <section className={`box ${className}`}>
+    <section className={`box ${className}`} data-tour={tour}>
       <h3 className="box-title">{title}</h3>
       {children}
     </section>
@@ -496,7 +497,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               <Details lines={d.movementTypes.map((m) => `${m.type} Movement ${m.value}`)} />
             </StatBox>
           </div>
-          <section className="box endurance">
+          <section className="box endurance" data-tour="endurance">
             {/* Temp sits beside the label, like Temp AP in the turn box. */}
             <div className="box-head">
               <h3 className="box-title">Endurance</h3>
@@ -597,7 +598,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
               </tbody>
             </table>
           </Box>
-          <Box title="Conditions">
+          <Box title="Conditions" tour="conditions">
             <Conditions p={p} d={d} setPlay={setPlay} />
           </Box>
           {/* Each shown only when the character has something in it. */}
@@ -716,7 +717,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
             <Box title="Experiences">
               <Experiences c={c} update={update} />
             </Box>
-            <Box title="Rest">
+            <Box title="Rest" tour="rest">
               <div className="row between">
                 <span>Rest Charges</span>
                 <Pips total={d.restCharges} used={p.restChargesSpent} onChange={(u) => setPlay((x) => ({ ...x, restChargesSpent: u }))} label="Rest Charge" />
@@ -760,7 +761,7 @@ function MainSheet({ c, d, update, setPlay, onRest }: MainProps) {
         </div>
       </div>
       <aside className="sheet-actions-col">
-        <Box title="Actions">
+        <Box title="Actions" tour="actions">
           <ActionsList c={c} d={d} />
         </Box>
       </aside>

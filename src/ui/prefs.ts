@@ -12,10 +12,32 @@ export interface Prefs {
   animateEdges: boolean;
   /** Frosted-glass panels (blur what's behind them; heavier on the GPU). */
   glassPanels: boolean;
+  /** Panels with corners cut flat (bevelled); off: square corners. */
+  cutCorners: boolean;
+  /** The chosen look; choosing one applies its LOOKS settings, which can then be customised. */
+  look: Look;
+  /** The guided tour has been finished or skipped (it starts by itself only before that). */
+  tourSeen: boolean;
 }
 
+export type Look = 'faceted' | 'polished';
+
+/** What each look turns on or off. */
+export const LOOKS: Record<Look, { name: string; description: string; settings: Pick<Prefs, 'cutCorners' | 'glassPanels' | 'animateEdges'> }> = {
+  faceted: {
+    name: 'Faceted',
+    description: 'Fully stylised: cut corners, frosted-glass panels and edges that drift with the background.',
+    settings: { cutCorners: true, glassPanels: true, animateEdges: true },
+  },
+  polished: {
+    name: 'Polished',
+    description: 'Quieter and lighter: square corners, solid panels and still edges with their glint.',
+    settings: { cutCorners: false, glassPanels: false, animateEdges: false },
+  },
+};
+
 const KEY = 'btp.prefs.v1';
-const DEFAULTS: Prefs = { pinStatBar: true, animateGradients: true, animateBackground: true, animateEdges: true, glassPanels: true };
+const DEFAULTS: Prefs = { pinStatBar: true, animateGradients: true, animateBackground: true, animateEdges: true, glassPanels: true, cutCorners: true, look: 'faceted', tourSeen: false };
 
 function read(): Prefs {
   try {
