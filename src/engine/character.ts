@@ -1,4 +1,4 @@
-import type { Attr, Light, RestRule } from '../data/types';
+import type { Attr, Light, Rank, RestRule } from '../data/types';
 
 export const CHARACTER_VERSION = 1;
 
@@ -202,6 +202,10 @@ export interface Character {
   };
   /** Names for Hobby/Profession slots, keyed by slot id from the engine. */
   skills: Record<string, string>;
+  /** Hobby/Profession ranks raised above a slot's starting rank (Ranks & Leveling up), by slot id. */
+  skillRanks: Record<string, Rank>;
+  /** Hobbies gained at Novice rank instead of a rank increase. */
+  noviceHobbies: number;
 
   classId: string;
   subclass: string;
@@ -281,6 +285,8 @@ export function newCharacter(): Character {
     subAncestry: '',
     background: { preset: '', heritage: '' },
     skills: {},
+    skillRanks: {},
+    noviceHobbies: 0,
     classId: '',
     subclass: '',
     choices: {},
@@ -314,6 +320,8 @@ export function normalizeCharacter(raw: unknown): Character {
     settings: { ...base.settings, ...c.settings },
     play: { ...emptyPlay(), ...c.play, conditions: (c.play?.conditions ?? []).map((x) => ({ ...x, name: RENAMED_CONDITIONS[x.name] ?? x.name })) },
     skills: { ...c.skills },
+    skillRanks: { ...c.skillRanks },
+    noviceHobbies: c.noviceHobbies ?? 0,
     choices: { ...c.choices },
     spells: { ...c.spells },
     ageUps: c.ageUps ?? [],

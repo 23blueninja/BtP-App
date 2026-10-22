@@ -297,6 +297,30 @@ describe('sheet shows the modifiers the rules give', () => {
     expect(before - after).toBe(9);
     expect(mods).toContain('Numbed 3');
   });
+  it('Hobby/Profession ranks can be changed, and Novice Hobbies added and removed', async () => {
+    const { page, errors } = await sheet({ skills: { 'bg-hobby-1': 'Climbing' } });
+    await page.goto(`${base}#/c/shows/build/background`);
+    await page.reload();
+    const rank = page.getByLabel('Rank of Climbing');
+    await rank.selectOption('Proficient');
+    const row = page.locator('.skill-table tr', { has: rank });
+    const raised = (await row.textContent()) ?? '';
+    await page.getByRole('button', { name: '+ Novice Hobby' }).click();
+    await page.getByLabel('hobby from Level-up').fill('Whittling');
+    await page.goto(`${base}#/c/shows`);
+    await page.getByRole('tab', { name: 'Notes', exact: true }).waitFor();
+    const onSheet = (await page.locator('table.skills').allTextContents()).join(' ');
+    await page.goto(`${base}#/c/shows/build/background`);
+    await page.getByRole('button', { name: 'Remove Whittling' }).click();
+    const removed = await page.getByLabel('hobby from Level-up').count();
+    await page.close();
+    expect(errors).toEqual([]);
+    expect(raised).toContain('d8');
+    expect(raised).toContain('from Amateur');
+    expect(onSheet).toMatch(/Climbingd8Proficient/);
+    expect(onSheet).toMatch(/Whittlingd4Novice/);
+    expect(removed).toBe(0);
+  });
   it('Custom ancestry: no ancestry facets, and a note pointing to Homebrew facets', async () => {
     const { page, errors } = await sheet({ ancestry: 'custom', subAncestry: '' });
     await page.getByRole('tab', { name: 'Facets', exact: true }).click();

@@ -3,10 +3,10 @@ import { allNodes, armorQualities, getNode, weaponPropertyNode, weapons } from '
 import { ancestries, ancestryById, ancestryName, CUSTOM_ANCESTRY, CUSTOM_ANCESTRY_NOTE } from '../data/ancestries';
 import { backgroundById, backgrounds, heritageById, heritageFacets } from '../data/backgrounds';
 import { classes } from '../data/classes';
-import { ATTRS, ATTR_NAMES, LIGHTS, RANK_DIE, type Attr, type Light } from '../data/types';
+import { ATTRS, ATTR_NAMES, LIGHTS, RANK_DIE, RANKS, type Attr, type Light, type Rank } from '../data/types';
 import { newId, type Character } from '../engine/character';
 import { classAlignment, classTable, subclassesOf } from '../engine/classInfo';
-import { derive, POINT_BUY_POOL, type Derived } from '../engine/derive';
+import { derive, POINT_BUY_POOL, type Derived, type SkillSlot } from '../engine/derive';
 import { freshPlay } from '../engine/play';
 import { Collapsible, excerpt, FacetText, go, Html, Icon, Modal, RuleBlock, RuleLink, Stepper, TokenText } from './common';
 import { ChoicePicker, SpellListEditor } from './pickers';
@@ -382,9 +382,6 @@ function Background({ c, d, update }: StepProps) {
       }
       return { ...x, background: { preset: id, heritage: b ? b.heritage : x.background.heritage }, skills };
     });
-  const setSkill = (id: string, name: string) => update((x) => ({ ...x, skills: { ...x.skills, [id]: name } }));
-  const hobbies = d.skillSlots.filter((s) => s.kind === 'hobby');
-  const profs = d.skillSlots.filter((s) => s.kind === 'profession');
   const her = heritageById.get(c.background.heritage);
   return (
     <div className="form">
@@ -413,16 +410,76 @@ function Background({ c, d, update }: StepProps) {
         </select>
       </label>
       {her && <FacetText contentId={her.contentId} />}
-      <h3>Professions</h3>
-      <SkillTable d={d} slots={profs} setSkill={setSkill} />
-      <h3>Hobbies</h3>
-      <SkillTable d={d} slots={hobbies} setSkill={setSkill} />
+      <SkillsEditor d={d} update={update} />
       <Guide id="beyond-the-prism/hobbies-professions/guidelines-for-hobbies-professions" title="Guidelines" />
     </div>
   );
 }
 
-function SkillTable({ d, slots, setSkill }: { d: Derived; slots: Derived['skillSlots']; setSkill: (id: string, name: string) => void }) {
+/** Hobbies and Professions: their names, and ranks raised (or Novice Hobbies gained) at level 3 and every odd level after. */
+export function SkillsEditor({ d, update }: { d: Derived; update: Update }) {
+  const setSkill = (id: string, name: string) => update((x) => ({ ...x, skills: { ...x.skills, [id]: name } }));
+  const setRank = (s: SkillSlot, rank: Rank) =>
+    update((x) => {
+      const skillRanks = { ...x.skillRanks };
+      if (rank === s.baseRank) delete skillRanks[s.id];
+      else skillRanks[s.id] = rank;
+      return { ...x, skillRanks };
+    });
+  const addNovice = () => update((x) => ({ ...x, noviceHobbies: x.noviceHobbies + 1 }));
+  // Removing a Novice Hobby moves the later ones (names and ranks) down a slot.
+  const removeNovice = (n: number) =>
+    update((x) => {
+      const skills = { ...x.skills };
+      const skillRanks = { ...x.skillRanks };
+      for (let i = n; i <= x.noviceHobbies; i++) {
+        const [from, to] = [`lvl-hobby-${i + 1}`, `lvl-hobby-${i}`];
+        if (skills[from] !== undefined) skills[to] = skills[from];
+        else delete skills[to];
+        if (skillRanks[from]) skillRanks[to] = skillRanks[from];
+        else delete skillRanks[to];
+      }
+      return { ...x, skills, skillRanks, noviceHobbies: Math.max(0, x.noviceHobbies - 1) };
+    });
+  const { available, used, cap } = d.skillRanks;
+  const table = (slots: SkillSlot[]) => <SkillTable d={d} slots={slots} setSkill={setSkill} setRank={setRank} removeNovice={removeNovice} />;
+  return (
+    <>
+      <p className={needs(d, 'skill-ranks', 'skill-ranks muted small')}>
+        Each starts at its source’s rank. The rules raise one rank a step (or add a Hobby at Novice rank) at level 3 and every odd level after
+        {available > 0 && (
+          <>
+            {' '}
+            — <strong className={used > available ? 'over' : undefined}>{used}</strong> of {available} used
+          </>
+        )}
+        ; the rank cap at level {d.level} is {cap}. Ranks can be changed freely if your PM allows.{' '}
+        <button type="button" className="small" onClick={addNovice}>
+          + Novice Hobby
+        </button>
+      </p>
+      <h3>Professions</h3>
+      {table(d.skillSlots.filter((s) => s.kind === 'profession'))}
+      <h3>Hobbies</h3>
+      {table(d.skillSlots.filter((s) => s.kind === 'hobby'))}
+    </>
+  );
+}
+
+function SkillTable({
+  d,
+  slots,
+  setSkill,
+  setRank,
+  removeNovice,
+}: {
+  d: Derived;
+  slots: SkillSlot[];
+  setSkill: (id: string, name: string) => void;
+  setRank: (s: SkillSlot, rank: Rank) => void;
+  removeNovice: (n: number) => void;
+}) {
+  const capIdx = RANKS.indexOf(d.skillRanks.cap);
   return (
     <table className="skill-table">
       <thead>
@@ -430,30 +487,52 @@ function SkillTable({ d, slots, setSkill }: { d: Derived; slots: Derived['skillS
           <th>Name</th>
           <th>Rank</th>
           <th>Die</th>
-          <th>From</th>
         </tr>
       </thead>
       <tbody>
-        {slots.map((s) => (
-          <tr key={s.id} className={needs(d, `skill:${s.id}`)}>
-            <td>
-              <input
-                value={s.name}
-                placeholder={s.suggested ?? (s.social ? 'Social hobby (involves people)' : s.kind === 'hobby' ? 'e.g. Oil Painting' : 'e.g. Blacksmith')}
-                onChange={(e) => setSkill(s.id, e.target.value)}
-                aria-label={`${s.kind} from ${s.source}`}
-              />
-              {s.suggested && !s.name && (
-                <button type="button" className="link small" onClick={() => setSkill(s.id, s.suggested!)}>
-                  use “{s.suggested}”
-                </button>
-              )}
-            </td>
-            <td>{s.rank}</td>
-            <td>{RANK_DIE[s.rank]}</td>
-            <td className="muted">{s.source}</td>
-          </tr>
-        ))}
+        {slots.map((s) => {
+          const novice = s.id.match(/^lvl-hobby-(\d+)$/);
+          return (
+            <tr key={s.id} className={needs(d, `skill:${s.id}`)}>
+              <td>
+                <input
+                  value={s.name}
+                  placeholder={s.suggested ?? (s.social ? 'Social hobby (involves people)' : s.kind === 'hobby' ? 'e.g. Oil Painting' : 'e.g. Blacksmith')}
+                  onChange={(e) => setSkill(s.id, e.target.value)}
+                  aria-label={`${s.kind} from ${s.source}`}
+                />
+                {s.suggested && !s.name && (
+                  <button type="button" className="link small" onClick={() => setSkill(s.id, s.suggested!)}>
+                    use “{s.suggested}”
+                  </button>
+                )}
+                <div className="muted small">
+                  {s.source}
+                  {novice && (
+                    <>
+                      {' · '}
+                      <button type="button" className="link small" onClick={() => removeNovice(Number(novice[1]))} aria-label={`Remove ${s.name || 'Novice Hobby'}`}>
+                        remove
+                      </button>
+                    </>
+                  )}
+                </div>
+              </td>
+              <td>
+                <select value={s.rank} onChange={(e) => setRank(s, e.target.value as Rank)} aria-label={`Rank of ${s.name || s.kind}`}>
+                  {RANKS.map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+                {s.rank !== s.baseRank && <div className="muted small">from {s.baseRank}</div>}
+                {RANKS.indexOf(s.rank) > capIdx && <div className="over small">above the {d.skillRanks.cap} cap</div>}
+              </td>
+              <td>{RANK_DIE[s.rank]}</td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );

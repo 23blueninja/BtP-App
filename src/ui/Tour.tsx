@@ -121,7 +121,7 @@ function demoCharacter(): Character {
     ancestry: 'human',
     attributes: { ...newCharacter().attributes, method: 'manual', base: { VIG: 1, AGI: 2, PER: 1, INT: 2, PRS: 1 } },
     spells: { arcana: ['spells/arcana/fire/fire-spout'] },
-    equipment: { armor: { type: 'Medium', quality: 'Basic' }, weapons: [{ id: 'w', name: 'Longsword' }], inventory: [{ id: 'i', name: 'Rope', qty: 1, bulk: 1 }] },
+    equipment: { armor: { type: 'Medium', quality: 'Basic' }, weapons: [{ id: 'w', name: 'Longsword' }], inventory: [{ id: 'i', name: 'Claymore', qty: 1, bulk: 1 }] },
   });
   return { ...c, play: { ...freshPlay(c), initialized: true } };
 }

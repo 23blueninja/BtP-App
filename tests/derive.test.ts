@@ -11,12 +11,12 @@ import { fileURLToPath } from 'node:url';
 import { includeUnreleased } from '../scripts/unreleased.mjs';
 import { describe, expect, it } from 'vitest';
 import { LEVELS, QA, badNumbers, built, makeCharacter, sample } from './helpers';
-import { derive, attributeCap, resolveScaled, slugify, MAX_LEVEL, POINT_BUY_POOL, type Derived } from '../src/engine/derive';
+import { derive, attributeCap, resolveScaled, skillRankAllowance, slugify, MAX_LEVEL, POINT_BUY_POOL, type Derived } from '../src/engine/derive';
 import { newCharacter, normalizeCharacter, type Character, type HomebrewEffect, type HomebrewEntry } from '../src/engine/character';
 import { classes } from '../src/data/classes';
 import { ancestries } from '../src/data/ancestries';
 import { backgrounds, heritageFacets } from '../src/data/backgrounds';
-import { ATTRS, LIGHTS, type Attr, type ClassDef, type Light } from '../src/data/types';
+import { ATTRS, LIGHTS, RANK_DIE, type Attr, type ClassDef, type Light } from '../src/data/types';
 import { classAlignment, classEndurance, classTable, maxClassLevel, subclassesOf, numeric } from '../src/engine/classInfo';
 import { formatDie, half, modDieFromPoints, parseDie, stepDie, triangular } from '../src/engine/dice';
 import { castCost, maxCastLevel, scaleText } from '../src/engine/scaling';
@@ -1086,6 +1086,43 @@ describe('alignment', () => {
 // ---------------------------------------------------------------------------
 
 describe('Hobby & Profession slots', () => {
+  // Ranks & Leveling up: "Starting at level 3 and every odd level after, you can increase the rank of
+  // one of your Hobbies or Professions by one step, or you can become a Novice in a new Hobby."
+  const rankBlock = LINES.slice(LINES.findIndex((l) => /^##### Hobby & Profession Ranks/.test(l)));
+  const rankRows = rankBlock.slice(0, rankBlock.findIndex((l) => l.startsWith('}}'))).filter((l) => /^\|\s*\w/.test(l)).map((l) => l.split('|').slice(1, -1).map((x) => x.trim()));
+  const RANK_TABLE = rankRows.filter((r) => /^1d\d+$/.test(r[0])).map(([die, rank]) => ({ die: die.slice(1), rank }));
+  const CAP_TABLE = rankRows.filter((r) => /^\d+$/.test(r[0])).map(([lv, rank]) => ({ level: Number(lv), rank }));
+  const capAt = (lv: number) => [...CAP_TABLE].reverse().find((r) => lv >= r.level)!.rank;
+  const zero = { method: 'manual' as const, pool: 0, base: { VIG: 0, AGI: 0, PER: 0, INT: 0, PRS: 0 }, bonus: [] };
+  it('rank increases: one at level 3 and every odd level after; the cap follows the rules table', () => {
+    expect(RANK_TABLE.map((r) => r.rank)).toEqual(['Novice', 'Amateur', 'Proficient', 'Adept', 'Master']);
+    expect(CAP_TABLE.length).toBe(3);
+    for (let lv = 1; lv <= 20; lv++) {
+      expect(skillRankAllowance(lv).available, `level ${lv}`).toBe([3, 5, 7, 9, 11, 13, 15, 17, 19].filter((x) => x <= lv).length);
+      expect(skillRankAllowance(lv).cap, `level ${lv}`).toBe(capAt(lv));
+    }
+    // What derive reports for a character (the alpha rules stop at level 2: no increases yet).
+    const { d } = built({ classId: 'expert', subclass: 'investigator', level: 2, attributes: zero });
+    expect(d.skillRanks).toEqual({ ...skillRankAllowance(d.level), used: 0 });
+  });
+  it('raising a rank steps its die and uses an increase; a Novice Hobby uses one too', () => {
+    const { d } = built({ classId: 'expert', subclass: 'investigator', level: 2, attributes: zero, skills: { 'bg-hobby-1': 'Climbing', 'lvl-hobby-1': 'Whittling' }, skillRanks: { 'bg-hobby-1': 'Proficient' }, noviceHobbies: 1 });
+    const raised = d.skillSlots.find((s) => s.id === 'bg-hobby-1')!;
+    expect([raised.baseRank, raised.rank]).toEqual(['Amateur', 'Proficient']);
+    expect(RANK_DIE[raised.rank]).toBe(RANK_TABLE.find((r) => r.rank === 'Proficient')!.die);
+    const novice = d.skillSlots.find((s) => s.id === 'lvl-hobby-1')!;
+    expect([novice.kind, novice.rank, novice.name]).toEqual(['hobby', 'Novice', 'Whittling']);
+    expect(d.skillRanks.used).toBe(2);
+  });
+  it('ranks can be edited freely (a PM may allow it): only unspent increases are left to do', () => {
+    const cls = { classId: 'expert', subclass: 'investigator' };
+    // Raised at level 1 (no increases yet) or lowered: shown as set, nothing to fix.
+    const free = built({ ...cls, level: 1, attributes: zero, skillRanks: { 'bg-hobby-1': 'Master', 'bg-prof-1': 'Novice' } }).d;
+    expect(free.skillSlots.find((s) => s.id === 'bg-hobby-1')!.rank).toBe('Master');
+    expect(free.skillSlots.find((s) => s.id === 'bg-prof-1')!.rank).toBe('Novice');
+    expect(free.skillRanks.used).toBe(3); // Amateur → Master; lowering doesn't give any back
+    expect(free.todo.filter((t) => t.fields.includes('skill-ranks'))).toEqual([]);
+  });
   it('background: one Proficient Profession and two Amateur Hobbies, suggested from a preset', () => {
     const { d } = built({ background: { preset: 'mountaineer', heritage: 'climber' }, attributes: { method: 'manual', pool: 0, base: { VIG: 0, AGI: 0, PER: 0, INT: 0, PRS: 0 }, bonus: [] } });
     const bg = d.skillSlots.filter((s) => s.source === 'Background');

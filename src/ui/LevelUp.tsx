@@ -5,6 +5,7 @@ import { derive } from '../engine/derive';
 import { levelUp, type LevelUpSummary } from '../engine/play';
 import { FacetText, go, Html, Collapsible } from './common';
 import { ChoicePicker, SpellListEditor } from './pickers';
+import { SkillsEditor } from './Builder';
 
 type Update = (fn: (c: Character) => Character) => void;
 
@@ -93,6 +94,13 @@ export function LevelUp({ c, update }: { c: Character; update: Update }) {
             onChange={(ids) => update((x) => ({ ...x, spells: { ...x.spells, [l.def.id]: ids } }))}
           />
         ))}
+      {/* Level 3 and every odd level after give a rank increase (or a Novice Hobby). */}
+      {summary.to >= 3 && summary.to % 2 === 1 && (
+        <>
+          <h3>Hobby & Profession ranks</h3>
+          <SkillsEditor d={d} update={update} />
+        </>
+      )}
       {d.issues.length > 0 && (
         <details className="issues">
           <summary>{d.issues.length} item(s) still open</summary>
