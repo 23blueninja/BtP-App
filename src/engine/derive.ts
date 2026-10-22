@@ -16,6 +16,7 @@ import {
   ATTR_NAMES,
   ATTRS,
   LIGHTS,
+  RANKS,
   type Attr,
   type ChoiceDef,
   type ClassDef,
@@ -57,10 +58,17 @@ export function attributeCap(level: number): number {
   return 3;
 }
 
+/** Ranks & Leveling up: one rank increase (or Novice Hobby) at level 3 and every odd level after, and the rank cap by level. */
+export function skillRankAllowance(level: number): { available: number; cap: Rank } {
+  return { available: level >= 3 ? Math.floor((level - 1) / 2) : 0, cap: level >= 9 ? 'Master' : level >= 5 ? 'Adept' : 'Proficient' };
+}
+
 export interface SkillSlot {
   id: string;
   kind: 'hobby' | 'profession';
   rank: Rank;
+  /** The rank the slot starts at (its source's); `rank` may be raised above it. */
+  baseRank: Rank;
   source: string;
   /** Pre-filled suggestion (e.g. from a pre-made background). */
   suggested?: string;
@@ -181,6 +189,8 @@ export interface Derived {
   resources: { name: string; max: number; mode: 'pool' | 'limit' }[];
   trackers: string[];
   skillSlots: SkillSlot[];
+  /** Hobby/Profession rank increases (one at level 3 and every odd level after) and the rank cap. */
+  skillRanks: { available: number; used: number; cap: Rank };
   facets: ResolvedFacet[];
   choices: ResolvedChoice[];
   spellLists: ResolvedList[];
@@ -680,8 +690,11 @@ function deriveUncached(c: Character): Derived {
 
   // ---- hobbies & professions ----
   const skillSlots: SkillSlot[] = [];
-  const slot = (id: string, kind: SkillSlot['kind'], rank: Rank, source: string, extra: Partial<SkillSlot> = {}) =>
-    skillSlots.push({ id, kind, rank, source, name: c.skills[id] ?? '', ...extra });
+  const rankIdx = (r: Rank) => RANKS.indexOf(r);
+  const slot = (id: string, kind: SkillSlot['kind'], baseRank: Rank, source: string, extra: Partial<SkillSlot> = {}) => {
+    const rank = c.skillRanks[id] ?? baseRank;
+    skillSlots.push({ id, kind, rank, baseRank, source, name: c.skills[id] ?? '', ...extra });
+  };
   const bg = backgroundById.get(c.background.preset);
   slot('bg-prof-1', 'profession', 'Proficient', 'Background', { suggested: bg?.profession });
   slot('bg-hobby-1', 'hobby', 'Amateur', 'Background', { suggested: bg?.hobbies[0] });
@@ -700,6 +713,16 @@ function deriveUncached(c: Character): Derived {
   eff('profession').forEach((x, k) => {
     for (let i = 1; i <= x.e.count; i++) slot(`fx-${slugify(x.source)}-${k}-prof-${i}`, 'profession', x.e.rank, x.source, { suggested: x.e.name });
   });
+  for (let i = 1; i <= c.noviceHobbies; i++) slot(`lvl-hobby-${i}`, 'hobby', 'Novice', 'Level-up');
+  // Ranks & Leveling up: at level 3 and every odd level after, raise one rank a step or gain a
+  // Novice Hobby; the highest rank is capped by level. Ranks can be edited freely (a PM may grant
+  // more), so going over is shown, not blocked; only unspent increases are left to do.
+  const skillRanks = {
+    ...skillRankAllowance(level),
+    used: c.noviceHobbies + skillSlots.reduce((n, s) => n + Math.max(0, rankIdx(s.rank) - rankIdx(s.baseRank)), 0),
+  };
+  if (skillRanks.used < skillRanks.available)
+    need(`${skillRanks.available - skillRanks.used} Hobby/Profession rank increase(s) to spend: raise a rank, or gain a Novice Hobby.`, 'background', 'skill-ranks');
   const unnamed = skillSlots.filter((s) => !s.name.trim());
   if (unnamed.length) need(`${unnamed.length} Hobby/Profession slot(s) need a name.`, 'background', ...unnamed.map((s) => `skill:${s.id}`));
 
@@ -860,6 +883,7 @@ function deriveUncached(c: Character): Derived {
     resources,
     trackers: cls?.trackers ?? [],
     skillSlots,
+    skillRanks,
     facets,
     choices,
     spellLists,

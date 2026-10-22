@@ -534,7 +534,9 @@ legend {
   color: var(--ok);
 }
 .points-left.over,
-.count.over {
+.count.over,
+.skill-ranks .over,
+.skill-table .over {
   color: var(--danger);
 }
 .attr-grid {
@@ -598,6 +600,13 @@ th {
 }
 .skill-table input {
   width: 100%;
+}
+/* The name takes the room; rank and die fit their contents. */
+.skill-table td:first-child {
+  width: 100%;
+}
+.skill-table td:not(:first-child) {
+  white-space: nowrap;
 }
 .table-wrap {
   overflow-x: auto;
