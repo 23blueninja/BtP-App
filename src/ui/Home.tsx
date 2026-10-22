@@ -4,7 +4,7 @@ import { classById } from '../data/classes';
 import { newCharacter, newId } from '../engine/character';
 import { exportCharacter, importCharacter, store } from '../storage/storage';
 import { go } from './common';
-import { usePrefs } from './prefs';
+import { setPrefs, usePrefs } from './prefs';
 import { startTour, TOUR_DEMO_ID, tourActive } from './Tour';
 import logo from '../assets/icons/8VNXled.png';
 
@@ -15,11 +15,16 @@ export function Home() {
   const list = store.list().filter((s) => s.id !== TOUR_DEMO_ID);
   const refresh = () => setTick((t) => t + 1);
   const { tourSeen } = usePrefs();
-  // The tour starts by itself the first time the app opens with no characters.
-  const firstVisit = !tourSeen && list.length === 0;
+  // The tour starts by itself the first time the app opens with no characters: decided
+  // when the page opens (not when the last character is deleted), and anyone who has made
+  // a character counts as having seen it.
+  const [firstVisit] = useState(() => !tourSeen && list.length === 0);
   useEffect(() => {
     if (firstVisit && !tourActive()) startTour();
   }, [firstVisit]);
+  useEffect(() => {
+    if (!tourSeen && list.length > 0) setPrefs({ tourSeen: true });
+  }, [tourSeen, list.length]);
 
   return (
     <div className="home">
