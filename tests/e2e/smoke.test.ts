@@ -460,4 +460,40 @@ describe('guided tour', () => {
     await page.close();
     expect(open).toBe(0);
   });
+  it('does not start when the last character is deleted, then or after a reload', async () => {
+    const page = await browser.newPage({ viewport: { width: 1400, height: 1000 } });
+    page.on('dialog', (d) => d.accept());
+    await page.goto(base);
+    // Someone who made a character without ever taking the tour.
+    await page.evaluate((c) => (localStorage.clear(), localStorage.setItem('btp.characters.v1', JSON.stringify({ [c.id]: c }))), character('expert', 'investigator', 2, 'human', 'only-one'));
+    await page.reload();
+    await page.getByRole('button', { name: 'Delete' }).click();
+    await page.waitForTimeout(300);
+    const afterDelete = await page.locator('.tour').count();
+    await page.reload();
+    await page.getByRole('button', { name: /New character/ }).waitFor();
+    await page.waitForTimeout(300);
+    const afterReload = await page.locator('.tour').count();
+    await page.close();
+    expect(afterDelete).toBe(0);
+    expect(afterReload).toBe(0);
+  });
+  it('going back to the item creator step (from another tab) opens the creator again', async () => {
+    const { page, errors } = await fresh();
+    const card = page.locator('.tour-card');
+    await card.waitFor();
+    const title = () => card.locator('h3').textContent();
+    for (let i = 0; i < 30 && (await title()) !== 'The item creator'; i++) await card.getByRole('button', { name: 'Next' }).click();
+    await page.locator('.modal').waitFor();
+    await card.getByRole('button', { name: 'Next' }).click();
+    await page.waitForTimeout(300);
+    const onFacets = { title: await title(), modals: await page.locator('.modal').count() };
+    await page.keyboard.press('ArrowLeft');
+    await page.locator('.modal').waitFor({ timeout: 3000 }).catch(() => {});
+    const back = { title: await title(), modals: await page.locator('.modal').count() };
+    await page.close();
+    expect(errors).toEqual([]);
+    expect(onFacets).toEqual({ title: 'Facets', modals: 0 });
+    expect(back).toEqual({ title: 'The item creator', modals: 1 });
+  });
 });

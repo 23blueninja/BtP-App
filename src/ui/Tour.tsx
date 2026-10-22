@@ -173,7 +173,12 @@ export function Tour() {
         const tab = s.tab ?? 'Sheet';
         const tabButton = [...document.querySelectorAll<HTMLElement>('[role="tab"]')].find((b) => b.textContent === tab);
         if (!tabButton) return void (tries++ < 120 && (frame = requestAnimationFrame(find)));
-        if (tabButton.getAttribute('aria-selected') !== 'true') tabButton.click();
+        // Switch tabs first, and run the step's action once the tab is showing (going back
+        // to the item creator from another tab, its button isn't there until then).
+        if (tabButton.getAttribute('aria-selected') !== 'true') {
+          tabButton.click();
+          return void (tries++ < 120 && (frame = requestAnimationFrame(find)));
+        }
       }
       if (!entered) {
         entered = true;
