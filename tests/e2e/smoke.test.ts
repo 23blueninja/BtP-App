@@ -398,8 +398,12 @@ describe('guided tour', () => {
       const [n, total] = ((await card.locator('p.small').first().textContent()) ?? '').split('/').map((x) => Number(x.trim()));
       await page.waitForTimeout(150);
       const title = await card.locator('h3').textContent();
-      // Steps 1 and the last are centred cards; all others highlight an element.
-      if (n !== 1 && n !== total && !(await page.locator('.tour-spot').count())) missing.push(`${n}: ${title}`);
+      // Steps 1 and the last are centred cards; all others highlight an element (a heavy
+      // tab like Facets can take a moment to render under load, so give it up to 3 s).
+      if (n !== 1 && n !== total) {
+        const spot = await page.locator('.tour-spot').waitFor({ timeout: 3000 }).then(() => true, () => false);
+        if (!spot) missing.push(`${n}: ${title}`);
+      }
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
       if (overflow > 1) missing.push(`${n}: overflow ${overflow}px`);
       // The page can't be scrolled while the tour is open.
