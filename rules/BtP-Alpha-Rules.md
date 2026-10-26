@@ -1017,14 +1017,14 @@ Arcane Actions are available to those that manipulate Light with their own power
 **Cost** :: Reaction, 2 $[AP], Basic CAP; The non-$[AP] resources normally required for you to cast a spell of the same level.
 **Trigger** :: A creature you can sense within your $[PER] Radius casts an arcanum of opposing polarity to a leveled spell you know or have Prepared (defined below).
 }}
-You throw prisma of an opposing polarity at the caster in an attempt to cancel out their spell. Make a Spell Attack Check against a DC of 10 plus the level of the spell and the caster.
+You throw light of an opposing polarity at the caster in an attempt to cancel out their spell. Make a Spell Attack Check against a DC of 10 plus the level of the spell and the caster.
 
 :
 
 {{left
 
 **Success**          :: The spell is prevented, and the resources spent to cast it are wasted.
-**Complete Success** :: As a Success, and you regain half the non-$[AP] resources you spent, rounded down.
+**Deadly Success** :: As a Success, and you regain half the non-$[AP] resources you spent, rounded down.
 **Failure**          :: The level of the triggering spell is reduced by 1 (minimum level 1).
 **Complete Failure** :: Nothing.
 }}
@@ -1735,7 +1735,7 @@ You are paralyzed, and suffer the below effects.
 {{left
 **No Actions** :: You lose all your $[AP] and can’t regain $[AP].
 **Restrained** :: You are Restrained.
-**Vulnerable** :: Your $[AGI] and $[PER] Checks are automatically Complete Failures.
+**Vulnerable** :: Your $[AGI] and $[PER] Checks are automatically Complete or Deadly Failures.
 }}
 
 When you start your turn, your turn ends immediately, you don’t regain any $[AP], and the level of this Condition reduces by 1.
@@ -2630,7 +2630,7 @@ The first time you gain a Strong Alignment, whether at character creation or lat
 :
 ***Fast.*** Your *Movement* increases by 1 space.
 :
-***Powerful Build.*** The Bulk Rank of items you carry on your person (not in a backpack) is decreased by 1 (minimum 5). Both DV’s of your Unarmed Strikes also get a bonus equal to your $[VIG] points, including with your Charged Tusks.
+***Powerful Build.*** The Bulk Rank of items you carry on your person (not in a backpack) is decreased by 1 (minimum 5). Both DV’s of your Unarmed Strikes also get a bonus equal to your $[VIG] points, including with your Charged Horns.
 
 \column
 
@@ -3550,7 +3550,7 @@ You emit an aura of authority. Each Hostile creature within your Aura makes a $[
 :
 {{left
 **Failure** :: Prone, Immobilized until the end of the creature’s next turn.
-**Complete Failure** :: As a Failure, and the creature repeats its Save Check against this effect (you make a new DC Check).
+**Deadly Failure** :: As a Failure, and the creature repeats its Save Check against this effect at the start of your next turn (you make a new DC Check).
 **Success** :: Prone.
 **Complete Success** :: Nothing.
 }}
@@ -3590,7 +3590,7 @@ You briefly shroud yourself in darkness. Each Hostile creature within your Aura 
 
 {{left
 **Failure** :: Panicked 2.
-**Complete Failure** :: Panicked 3.
+**Deadly Failure** :: Panicked 3.
 **Success** :: Panicked 1.
 **Complete Success** :: Nothing.
 }}
@@ -5040,7 +5040,7 @@ Also, during your Avatar Form any hostile creature that starts its turn in the e
 **Failure**          :: Morphing 1.
 **Deadly Failure**   :: Morphing 2.
 **Success**          :: Nothing.
-**Complete Failure** :: Nothing, and the creature is Immune to this effect for 1 day.
+**Complete Success** :: Nothing, and the creature is Immune to this effect for 1 day.
 }}
 
 #### Bishop of the Cosmos < lvl 10 >
@@ -6697,7 +6697,7 @@ Choose a creature you can sense within range. Make a Tandem Skill Check with you
 :
 {{left
 **Success** :: You learn one of the creature's statistics in the table above.
-**Deadly Success** :: You learn two such statistics.
+**Complete Success** :: You learn two such statistics.
 **Failure** :: You learn one statistic of the PM's choice.
 **Complete Failure** :: Nothing.
 :
@@ -6842,7 +6842,7 @@ Your words inflame the ego of your target. Choose a creature you can sense that 
 :
 {{left
 **Success** :: Muddled 1 until the start of your turn, if the creature is Hostile it must make an Attack Check against you on its next turn.
-**Deadly Success** :: Muddled 2 until the start of your turn, if the creature is Hostile it must make an Attack Check against you on its next turn. Otherwise, it becomes Hostile toward you.
+**Complete Success** :: Muddled 2 until the start of your turn, if the creature is Hostile it must make an Attack Check against you on its next turn. Otherwise, it becomes Hostile toward you.
 **Failure** :: Nothing.
 **Complete Failure** :: The target recognizes your taunt and becomes suspicious of its circumstances.
 :
@@ -6887,7 +6887,7 @@ Your words instill mortal fear. Choose a creature you can sense that can hear yo
 :
 {{left
 **Success** :: Panicked $[SL].
-**Deadly Success** :: Panicked SL plus 1.
+**Complete Success** :: Panicked SL plus 1.
 **Failure** :: Panicked half $[SL], rounded down.
 **Complete Failure** :: Nothing.
 :
