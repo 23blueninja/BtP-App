@@ -47,6 +47,7 @@ import {
   type ResolvedFacet,
 } from './classInfo';
 import { formatDie, half, modDieFromPoints, parseDie, stepDie, triangular, type ModDie } from './dice';
+import { Stats, type StatKey, type StatValue } from './stat';
 
 export const POINT_BUY_POOL = 12;
 export const MAX_LEVEL = 2;
@@ -214,6 +215,8 @@ export interface Derived {
   todo: Todo[];
   /** "An Alignment of your choice" grants, with the key their Light is stored under. */
   alignmentChoices: { pickKey: string; source: string }[];
+  /** Every number above that is tallied, with where it comes from (by stat key). */
+  stats: Partial<Record<StatKey, StatValue>>;
 }
 
 interface Ctx {
@@ -347,7 +350,8 @@ function deriveUncached(c: Character): Derived {
   const maxLevel = cls ? Math.min(MAX_LEVEL, maxClassLevel(cls)) : MAX_LEVEL;
   const level = Math.max(1, Math.min(c.level, maxLevel));
   const row = cls ? classRow(cls, level) : undefined;
-  const classBonus = row?.bonus ?? 0;
+  const stats = new Stats();
+  const classBonus = stats.value('classBonus', row?.bonus ?? 0, cls ? `${cls.name} level ${level}` : undefined);
   const classDie = row?.die.replace(/^1/, '') ?? '';
 
   // ---- facets & choices -> effects ----
@@ -400,16 +404,16 @@ function deriveUncached(c: Character): Derived {
   for (const a of ATTRS) {
     const bonus = c.attributes.bonus.slice(0, bonusPoints).filter((b) => b === a).length;
     const age = c.ageUps.filter((x) => x === a).length;
-    points[a] = c.attributes.base[a] + bonus - age;
-    sources[a] = [`${c.attributes.base[a]} assigned`];
-    if (bonus) sources[a].push(`+${bonus} ${bonusSource}`);
-    if (age) sources[a].push(`−${age} age-up`);
+    const t = stats.start(`attr:${a}`, c.attributes.base[a], `${c.attributes.base[a]} assigned`);
+    if (bonus) t.add(bonus, `+${bonus} ${bonusSource}`);
+    if (age) t.add(-age, `−${age} age-up`);
     // Fixed points from items and effects; these don't count against the cap.
     for (const x of eff('attribute').filter((x) => x.e.attr === a)) {
       itemPoints[a] += x.e.amount;
-      sources[a].push(`${x.e.amount >= 0 ? '+' : '−'}${Math.abs(x.e.amount)} ${x.source}`);
+      t.add(x.e.amount, `${x.e.amount >= 0 ? '+' : '−'}${Math.abs(x.e.amount)} ${x.source}`);
     }
-    points[a] += itemPoints[a];
+    points[a] = stats.finish(t);
+    sources[a] = [...t.lines];
   }
   const attrs = Object.fromEntries(
     ATTRS.map((a) => {
@@ -428,14 +432,18 @@ function deriveUncached(c: Character): Derived {
 
   const ctx: Ctx = { level, classBonus, points };
   const sc = (v: Scaled) => resolveScaled(v, ctx);
-  const vitalityMax = 3 + Math.floor(Math.max(0, points.VIG) / 2) + eff('vitality').reduce((s, x) => s + sc(x.e.amount), 0);
+  const vit = stats.start('vitalityMax', 3, '3 base').add(Math.floor(Math.max(0, points.VIG) / 2), `+${Math.floor(Math.max(0, points.VIG) / 2)} from ${points.VIG} VIG`);
+  for (const x of eff('vitality')) vit.add(sc(x.e.amount), `+${sc(x.e.amount)} ${x.source}`);
+  const vitalityMax = stats.finish(vit);
   // Champion of Darkness (Endwalker): Darkness equals your missing Vitality.
   const darkness = eff('darkness').length && c.play.initialized ? Math.max(0, vitalityMax - c.play.vitality) : 0;
   ctx.darkness = darkness;
-  const damageReduction = eff('damageReduction')
+  const bestReduction = eff('damageReduction')
     .map((x) => ({ amount: sc(x.e.amount), source: x.source }))
     .filter((x) => x.amount > 0)
     .sort((a, b) => b.amount - a.amount)[0];
+  const reductionAmount = stats.value('damageReduction', bestReduction?.amount ?? 0, bestReduction?.source);
+  const damageReduction = reductionAmount > 0 ? { amount: reductionAmount, source: bestReduction?.source ?? '' } : undefined;
 
   // ---- equipment ----
   const armor = c.equipment.armor;
@@ -453,20 +461,17 @@ function deriveUncached(c: Character): Derived {
   }
 
   // ---- movement & senses ----
-  const movementBreakdown = [`3 base`];
-  if (points.AGI) movementBreakdown.push(`${triangular(points.AGI) > 0 ? '+' : ''}${triangular(points.AGI)} from ${points.AGI} AGI`);
-  for (const x of eff('movement')) movementBreakdown.push(`+${sc(x.e.amount)} ${x.source}`);
-  let movement = 3 + triangular(points.AGI) + eff('movement').reduce((s, x) => s + sc(x.e.amount), 0);
+  const move = stats.start('movement', 3, '3 base');
+  move.add(triangular(points.AGI), points.AGI ? `${triangular(points.AGI) > 0 ? '+' : ''}${triangular(points.AGI)} from ${points.AGI} AGI` : undefined);
+  for (const x of eff('movement')) move.add(sc(x.e.amount), `+${sc(x.e.amount)} ${x.source}`);
   if (armor?.type === 'Heavy') {
     const d = stepDie(attrs.AGI.die, -1);
     attrs.AGI = { ...attrs.AGI, die: d, label: formatDie(d), dieNote: `${attrs.AGI.label} → ${formatDie(d)} (Heavy armor)` };
-    movement -= 1;
-    movementBreakdown.push('−1 Heavy armor');
+    move.add(-1, '−1 Heavy armor');
     armorNotes.push('Heavy armor: Movement −1, AGI Mod Die one step smaller, Standing costs 2 AP.');
   }
   if (hasProp('Massive')) {
-    movement -= 2;
-    movementBreakdown.push('−2 Massive weapon');
+    move.add(-2, '−2 Massive weapon');
     armorNotes.push('Massive weapon: Movement −2.');
   }
   // ---- immunities ----
@@ -488,14 +493,10 @@ function deriveUncached(c: Character): Derived {
     [...condImm.keys()],
   );
   const cm = conditionFx.movementChange;
-  if (cm.zero) {
-    movement = 0;
-    movementBreakdown.push(`→ 0 (${cm.from.join(', ')})`);
-  } else if (cm.value) {
-    movement += cm.value;
-    movementBreakdown.push(`${cm.value > 0 ? '+' : '−'}${Math.abs(cm.value)} ${cm.from.join(', ')}`);
-  }
-  movement = Math.max(0, movement);
+  if (cm.zero) move.set(0, `→ 0 (${cm.from.join(', ')})`);
+  else if (cm.value) move.add(cm.value, `${cm.value > 0 ? '+' : '−'}${Math.abs(cm.value)} ${cm.from.join(', ')}`);
+  const movement = stats.finish(move.atLeast(0));
+  const movementBreakdown = stats.get('movement')!.breakdown;
   // One entry per type: the larger grant wins, and `ifAlready` effects add to an existing one.
   const moveMap = new Map<string, number>();
   const moveEffects = eff('movementType');
@@ -504,39 +505,32 @@ function deriveUncached(c: Character): Derived {
     const cur = moveMap.get(x.e.type);
     moveMap.set(x.e.type, cur === undefined ? value : x.e.ifAlready ? cur + x.e.ifAlready : Math.max(cur, value));
   }
-  const movementTypes = [...moveMap.entries()].map(([type, value]) => ({ type, value }));
-  const radius = 5 + triangular(points.PER);
+  const movementTypes = [...moveMap.entries()].map(([type, value]) => ({ type, value: stats.value(`movement:${type}`, value) }));
+  const radius = stats.value('radius', 5 + triangular(points.PER), `5 base, ${triangular(points.PER) >= 0 ? '+' : ''}${triangular(points.PER)} from ${points.PER} PER`);
   const senses = [...new Set(eff('sense').map((x) => x.e.name))];
 
   // ---- health & resources ----
-  const radianceMax = 1 + Math.floor(Math.max(0, points.PRS) / 2) + eff('radiance').reduce((s, x) => s + sc(x.e.amount), 0);
+  const rad = stats.start('radianceMax', 1, '1 base').add(Math.floor(Math.max(0, points.PRS) / 2), `+${Math.floor(Math.max(0, points.PRS) / 2)} from ${points.PRS} PRS`);
+  for (const x of eff('radiance')) rad.add(sc(x.e.amount), `+${sc(x.e.amount)} ${x.source}`);
+  const radianceMax = stats.finish(rad);
   const end = cls ? classEndurance(cls) : { start: 0, perLevel: 0 };
-  const enduranceMax = end.start + end.perLevel * (level - 1) + eff('endurance').reduce((s, x) => s + sc(x.e.amount), 0);
-  const longRestTempEndurance = Math.max(0, points.VIG) * classBonus;
+  const endT = stats.start('enduranceMax', end.start, cls ? `${end.start} ${cls.name}` : undefined);
+  if (level > 1) endT.add(end.perLevel * (level - 1), `+${end.perLevel * (level - 1)} from levels 2–${level}`);
+  for (const x of eff('endurance')) endT.add(sc(x.e.amount), `+${sc(x.e.amount)} ${x.source}`);
+  const enduranceMax = stats.finish(endT);
+  const longRestTempEndurance = stats.value('longRestTempEndurance', Math.max(0, points.VIG) * classBonus, `VIG × Class Bonus`);
 
   // ---- AC ----
-  const breakdown: string[] = [];
-  let ac = 0;
+  const acT = stats.start('ac');
   if (!armor) {
     const top = [...ATTRS].map((a) => points[a]).sort((x, y) => y - x).slice(0, 2);
-    ac = top[0] + top[1];
-    breakdown.push(`Two highest Attributes: ${top[0]} + ${top[1]}`);
-    if (cls?.armor.some((r) => r.kind === 'levelUnarmored')) {
-      ac += level;
-      breakdown.push(`${cls.name} level (unarmored): +${level}`);
-    }
-    for (const x of eff('acUnarmored')) {
-      ac += sc(x.e.amount);
-      breakdown.push(`${x.source}: +${sc(x.e.amount)}`);
-    }
+    acT.add(top[0] + top[1], `Two highest Attributes: ${top[0]} + ${top[1]}`);
+    if (cls?.armor.some((r) => r.kind === 'levelUnarmored')) acT.add(level, `${cls.name} level (unarmored): +${level}`);
+    for (const x of eff('acUnarmored')) acT.add(sc(x.e.amount), `${x.source}: +${sc(x.e.amount)}`);
   } else {
     const attr: Attr = armor.type === 'Light' ? 'AGI' : armor.type === 'Medium' ? 'PER' : 'VIG';
-    ac = armorAc + points[attr];
-    breakdown.push(`${armor.quality} ${armor.type} armor: ${armorAc}`, `${attr} Points: ${points[attr]}`);
-    if (cls?.armor.some((r) => r.kind === 'bonusWith' && r.armor.includes(armor.type))) {
-      ac += classBonus;
-      breakdown.push(`${cls.name} Bonus: +${classBonus}`);
-    }
+    acT.add(armorAc, `${armor.quality} ${armor.type} armor: ${armorAc}`).add(points[attr], `${attr} Points: ${points[attr]}`);
+    if (cls?.armor.some((r) => r.kind === 'bonusWith' && r.armor.includes(armor.type))) acT.add(classBonus, `${cls.name} Bonus: +${classBonus}`);
     const req = armorRequirements[armor.type] ?? 0;
     if (points.VIG < req) armorNotes.push(`You need ${req} VIG for ${armor.type} armor: your AGI Checks are Weakened.`);
     if (armor.type === 'Medium') armorNotes.push('Medium armor (Weighty): AGI Save Checks are Hindered 1.');
@@ -544,33 +538,27 @@ function deriveUncached(c: Character): Derived {
   const blocking = equippedWeapons.filter((w) => w.properties.includes('Blocking'));
   for (const w of blocking) {
     const b = w.properties.includes('Massive') ? 2 : w.properties.includes('Heavy') ? 1 : 0;
-    if (b) {
-      ac += b;
-      breakdown.push(`${w.name} (Blocking): +${b}`);
-    }
+    if (b) acT.add(b, `${w.name} (Blocking): +${b}`);
   }
-
-  for (const x of eff('ac')) {
-    ac += x.e.amount;
-    breakdown.push(`${x.source}: ${x.e.amount >= 0 ? '+' : ''}${x.e.amount}`);
-  }
-  if (conditionFx.acChange.value) {
-    ac += conditionFx.acChange.value;
-    breakdown.push(`${conditionFx.acChange.from.join(', ')}: ${conditionFx.acChange.value}`);
-  }
+  for (const x of eff('ac')) acT.add(x.e.amount, `${x.source}: ${x.e.amount >= 0 ? '+' : ''}${x.e.amount}`);
+  if (conditionFx.acChange.value) acT.add(conditionFx.acChange.value, `${conditionFx.acChange.from.join(', ')}: ${conditionFx.acChange.value}`);
+  const ac = stats.finish(acT);
 
   // ---- resistances ----
   // Resistances of the same type from different sources add together.
-  const resMap = new Map<string, number>();
-  const addRes = (type: string, v: number) => resMap.set(type, (resMap.get(type) ?? 0) + v);
-  for (const x of eff('resistance')) addRes(x.e.type, sc(x.e.amount));
-  for (const e of c.play.effects ?? []) for (const r of e.resistances ?? []) addRes(r.type, r.amount);
-  if (armor?.type === 'Medium') addRes('Slashing', half(armorAc));
+  const resMap = new Map<string, ReturnType<Stats['start']>>();
+  const addRes = (type: string, v: number, source: string) => {
+    if (!resMap.has(type)) resMap.set(type, stats.start(`resistance:${type}`));
+    resMap.get(type)!.add(v, `+${v} ${source}`);
+  };
+  for (const x of eff('resistance')) addRes(x.e.type, sc(x.e.amount), x.source);
+  for (const e of c.play.effects ?? []) for (const r of e.resistances ?? []) addRes(r.type, r.amount, e.name);
+  if (armor?.type === 'Medium') addRes('Slashing', half(armorAc), 'Medium armor');
   if (armor?.type === 'Heavy') {
-    addRes('Slashing', armorAc);
-    addRes('Piercing', half(armorAc));
+    addRes('Slashing', armorAc, 'Heavy armor');
+    addRes('Piercing', half(armorAc), 'Heavy armor');
   }
-  const resistances = [...resMap.entries()].filter(([, v]) => v > 0).map(([type, value]) => ({ type, value }));
+  const resistances = [...resMap.entries()].map(([type, t]) => ({ type, value: stats.finish(t) })).filter((r) => r.value > 0);
   const vuln = !armor && !eff('noSlashingVulnerability').length ? slashingVulnerability(vitalityMax) : '';
   const vulnerabilities = [
     ...(vuln ? [{ type: 'Slashing', dice: vuln, source: 'unarmored' }] : []),
@@ -747,7 +735,7 @@ function deriveUncached(c: Character): Derived {
       }
       const ids = def.mode === 'prepared' ? (c.play.prepared[def.id] ?? []) : (c.spells[def.id] ?? []);
       const selected = ids.map(getCastable).filter(Boolean) as Castable[];
-      const count = countOf(def.count, ctx, cls);
+      const count = stats.value(`spells:${def.id}`, countOf(def.count, ctx, cls), source);
       if (def.mode === 'known') {
         const want = count - granted.length;
         if (selected.length !== want) need(`${def.label}: ${selected.length} of ${want} chosen.`, 'spells', `spells:${def.id}`);
@@ -793,11 +781,11 @@ function deriveUncached(c: Character): Derived {
 
   const spellAttr = cls?.spellAttr === 'choice' ? (c.choices['spell-attr'] as Attr | undefined) : cls?.spellAttr;
   const resources = (cls?.resources ?? [])
-    .map((r) => ({ name: r.name, mode: r.mode, max: numeric(columnValue(cls!, level, r.column)) }))
+    .map((r) => ({ name: r.name, mode: r.mode, max: stats.value(`resource:${r.name}`, numeric(columnValue(cls!, level, r.column)), `${cls!.name} level ${level}`) }))
     .filter((r) => r.max > 0);
 
   // Bulk: each VIG point unlocks bonus rows (row n requires n VIG).
-  const bulkSlots = [1, 2, 3, 4, 5].map((rank) => ({ rank, slots: rank + (Math.max(0, points.VIG) >= rank ? rank : 0) }));
+  const bulkSlots = [1, 2, 3, 4, 5].map((rank) => ({ rank, slots: stats.value(`bulk:${rank}`, rank + (Math.max(0, points.VIG) >= rank ? rank : 0)) }));
 
   // ---- Unarmed Strikes ----
   // Your body: Close-Up, DV 0, Deadly DV equal to your VIG points, Crushing. Facets can change
@@ -830,9 +818,11 @@ function deriveUncached(c: Character): Derived {
   const powerful = eff('jump').some((x) => x.e.mode === 'powerful');
   const doubled = eff('jump').some((x) => x.e.mode === 'double');
   const jump = {
-    long: (powerful ? Math.max(2 + points.VIG, 2 * points.VIG) : 2 + points.VIG) * (doubled ? 2 : 1),
-    high: (powerful ? 1 + points.VIG : 1 + Math.floor(points.VIG / 2)) * (doubled ? 2 : 1),
+    long: stats.value('jumpLong', (powerful ? Math.max(2 + points.VIG, 2 * points.VIG) : 2 + points.VIG) * (doubled ? 2 : 1)),
+    high: stats.value('jumpHigh', (powerful ? 1 + points.VIG : 1 + Math.floor(points.VIG / 2)) * (doubled ? 2 : 1)),
   };
+  const restCharges = stats.value('restCharges', vitalityMax, 'equal to your Vitality maximum');
+  const bulkShift = stats.value('bulkShift', eff('bulkShift').reduce((sum, x) => sum + x.e.amount, 0));
 
   return {
     level,
@@ -857,9 +847,9 @@ function deriveUncached(c: Character): Derived {
     damageReduction,
     radianceMax,
     enduranceMax,
-    restCharges: vitalityMax,
+    restCharges,
     longRestTempEndurance,
-    ac: { value: ac, breakdown },
+    ac: { value: ac, breakdown: stats.get('ac')!.breakdown },
     jump,
     resistances,
     damageImmunities,
@@ -894,10 +884,11 @@ function deriveUncached(c: Character): Derived {
     homebrewNotes: eff('note').map((x) => ({ text: x.e.text, source: x.source })),
     weaponMods: eff('weapon').map((x) => ({ ...x.e, source: x.source.replace(/^.*: /, '') })),
     unarmed,
-    bulkShift: eff('bulkShift').reduce((sum, x) => sum + x.e.amount, 0),
+    bulkShift,
     issues,
     todo,
     alignmentChoices,
+    stats: stats.toRecord(),
   };
 }
 
