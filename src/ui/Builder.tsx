@@ -8,6 +8,7 @@ import { newId, type Character } from '../engine/character';
 import { classAlignment, classTable, subclassesOf } from '../engine/classInfo';
 import { derive, POINT_BUY_POOL, type Derived, type SkillSlot } from '../engine/derive';
 import { freshPlay } from '../engine/play';
+import { UNARMED, type WeaponRow } from '../engine/weapons';
 import { Collapsible, excerpt, FacetText, go, Html, Icon, Modal, RuleBlock, RuleLink, Stepper, TokenText } from './common';
 import { ChoicePicker, SpellListEditor } from './pickers';
 import { BulkPyramid } from './Inventory';
@@ -862,16 +863,7 @@ export function Equipment({ c, d, update }: StepProps) {
   );
 }
 
-/** The weapon-list entry for Unarmed Strikes: your body plus any natural weapons (claws, horns…). */
-export const UNARMED = 'Unarmed Strike';
-
-export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRemove?: (id: string) => void }) {
-  const unarmed = c.equipment.weapons.find((w) => w.name === UNARMED);
-  // Your weapons, plus homebrew items that are weapons (named, with the base weapon's stats).
-  const rows = [
-    ...c.equipment.weapons.filter((w) => w !== unarmed).map((w) => ({ id: w.id, name: w.name, base: w.name, homebrew: false })),
-    ...d.homebrew.filter((h) => h.entry.kind === 'item' && h.entry.baseWeapon).map((h) => ({ id: h.entry.id, name: h.entry.name, base: h.entry.baseWeapon!, homebrew: true })),
-  ];
+export function WeaponTable({ d, onRemove }: { c: Character; d: Derived; onRemove?: (id: string) => void }) {
   return (
     <div className="table-wrap">
       <table className="weapons">
@@ -886,27 +878,32 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
           </tr>
         </thead>
         <tbody>
-          {/* Unarmed Strike, when picked: your body, plus any natural weapons (you Unarmed Strike with them). */}
-          {(unarmed ? d.unarmed : []).map((u, i) => (
-            <tr key={u.name} className="unarmed-row">
+          {d.weapons.map((w) => (
+            <tr key={w.id} className={w.kind === 'unarmed' ? 'unarmed-row' : undefined}>
               <td className="w-name">
-                {u.name}
-                {u.sources.length > 0 && <div className="muted small">{u.sources.join(', ')}</div>}
+                {w.name}
+                {w.sources.length > 0 && <div className="muted small">{w.sources.join(', ')}</div>}
+                {w.base && <div className="muted small">{w.base}</div>}
+                {w.unmet && (
+                  <div className="warn small" title="You have Disadvantage on Weapon Attack Checks without meeting the requirements.">
+                    Needs {w.unmet}
+                  </div>
+                )}
               </td>
               <td className="w-die" data-label="Mod Die">
-                {u.classDie ? d.classDie : <WeaponDie name={u.name} props={u.properties} d={d} />}
+                {w.fixedDie ?? (w.dice.length ? <WeaponDie row={w} /> : '—')}
               </td>
               <td className="w-dv" data-label="DV">
-                {u.dv} / {u.deadlyDv}
+                {w.dv} / {w.deadlyDv}
               </td>
-              <td className="w-dmg">{u.damage}</td>
+              <td className="w-dmg">{w.damage}</td>
               <td className="w-props small">
-                <PropertyLinks props={u.properties} />
+                <PropertyLinks props={w.properties} />
               </td>
-              {onRemove && (
+              {onRemove && (w.kind === 'unarmed' || w.removeId) && (
                 <td className="w-remove">
-                  {i === 0 && (
-                    <button type="button" className="icon-btn" onClick={() => onRemove(unarmed!.id)} aria-label={`Remove ${UNARMED}`}>
+                  {w.removeId && (
+                    <button type="button" className="icon-btn" onClick={() => onRemove(w.removeId!)} aria-label={`Remove ${w.kind === 'unarmed' ? UNARMED : w.name}`}>
                       ✕
                     </button>
                   )}
@@ -914,53 +911,12 @@ export function WeaponTable({ c, d, onRemove }: { c: Character; d: Derived; onRe
               )}
             </tr>
           ))}
-          {rows.map((we) => {
-            const w = weapons.find((x) => x.name === we.base);
-            const unmet = w?.requirements
-              .split(',')
-              .map((r) => r.trim().split(' '))
-              .filter(([a, n]) => a && d.attrs[a as Attr] && d.attrs[a as Attr].points < Number(n));
-            return (
-              <tr key={we.id}>
-                <td className="w-name">
-                  {we.name}
-                  {we.homebrew && <div className="muted small">{we.base}</div>}
-                  {unmet && unmet.length > 0 && (
-                    <div className="warn small" title="You have Disadvantage on Weapon Attack Checks without meeting the requirements.">
-                      Needs {w!.requirements}
-                    </div>
-                  )}
-                </td>
-                <td className="w-die" data-label="Mod Die">
-                  {w ? <WeaponDie name={we.name} props={w.properties} d={d} /> : '—'}
-                </td>
-                <td className="w-dv" data-label="DV">
-                  {w?.dv} / {w?.deadlyDv}
-                </td>
-                <td className="w-dmg">{w?.damage}</td>
-                <td className="w-props small">
-                  <PropertyLinks props={w?.properties ?? []} />
-                </td>
-                {onRemove && !we.homebrew && (
-                  <td className="w-remove">
-                    <button type="button" className="icon-btn" onClick={() => onRemove(we.id)} aria-label={`Remove ${we.name}`}>
-                      ✕
-                    </button>
-                  </td>
-                )}
-              </tr>
-            );
-          })}
         </tbody>
       </table>
     </div>
   );
 }
 
-/**
- * Mod Die choices for a weapon's Attack Checks. The cell shows just the dice;
- * tapping it opens what each die is (and Combat Style Tandem/Bolstered/notes).
- */
 /** Weapon properties, each linked to its rules section. */
 function PropertyLinks({ props }: { props: string[] }) {
   return (
@@ -984,42 +940,13 @@ function PropertyLinks({ props }: { props: string[] }) {
   );
 }
 
-function WeaponDie({ name, props, d }: { name: string; props: string[]; d: Derived }): ReactNode {
+/**
+ * Mod Die choices for a weapon's Attack Checks. The cell shows just the dice;
+ * tapping it opens what each die is (and Combat Style Tandem/Bolstered/notes).
+ */
+function WeaponDie({ row }: { row: WeaponRow }): ReactNode {
   const [open, setOpen] = useState(false);
-  const has = (p: string) => props.some((x) => x.toLowerCase().startsWith(p.toLowerCase()));
-  const ranged = has('Ranged') || has('Drawn');
-  const attrOpt = (a: Attr) => ({ attr: a, dice: d.attrs[a].label, label: `${ATTR_NAMES[a]} Die` });
-  let opts: { attr?: Attr; dice: string; label: string }[] = [];
-  if (ranged) opts.push(attrOpt('PER'));
-  else {
-    opts.push(attrOpt('VIG'));
-    if (has('Deft')) opts.push(attrOpt('AGI'));
-    if (has('Precise')) opts.push(attrOpt('PER'));
-  }
-  const classOpt = d.cls?.id === 'gladiator' ? { dice: d.classDie, label: `${d.cls.dieName} Die` } : undefined;
-  if (classOpt) opts.push(classOpt);
-  // Combat Styles apply by property; a homebrew weapon's own effects only to that weapon.
-  const mods = d.weaponMods.filter((m) => (!m.weapon || m.weapon === name) && (!m.property || has(m.property)) && !(m.melee && ranged));
-  // A Combat Style Tandem rolls the Attribute Die with the Martial Die and keeps the
-  // higher, so it replaces rolling either of those dice alone.
-  const tandems = mods.filter((m) => m.tandem);
-  if (tandems.length && classOpt) {
-    opts = [
-      ...tandems.map((m) => ({ attr: m.tandem, dice: `${d.attrs[m.tandem!].label} / ${classOpt.dice}`, label: `${ATTR_NAMES[m.tandem!]} Die in Tandem with ${classOpt.label} (${m.source})` })),
-      ...opts.filter((o) => o !== classOpt && !tandems.some((m) => m.tandem === o.attr)),
-    ];
-  }
-  // Tandem with another die (a sentient item's): the property's Attribute (Precise → PER,
-  // Deft → AGI), or every Attribute option when no property is given.
-  const propAttr = (p?: string): Attr | undefined => (!p ? undefined : /precise|ranged|drawn/i.test(p) ? 'PER' : /deft/i.test(p) ? 'AGI' : 'VIG');
-  for (const m of mods.filter((m) => m.tandemDie)) {
-    opts = opts.map((o) =>
-      o.attr && (!m.property || propAttr(m.property) === o.attr) && !o.dice.includes('/')
-        ? { ...o, dice: `${o.dice} / ${m.tandemDie!.die}`, label: `${o.label} in Tandem with ${m.tandemDie!.name} Die${m.property ? ` (${m.property})` : ''}` }
-        : o,
-    );
-  }
-  const others = mods.filter((m) => !m.tandem && (m.bolster || m.note));
+  const { name, dice: opts, extras: others } = row;
   return (
     <>
       <button type="button" className="link die-link" onClick={() => setOpen(true)} title="What these dice are">

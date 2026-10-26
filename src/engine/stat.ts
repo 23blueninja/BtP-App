@@ -23,6 +23,8 @@ export type StatKey =
   | `resource:${string}`
   | `spells:${string}`
   | `bulk:${number}`
+  /** A weapon row's `:dv` or `:deadly`, by row id. */
+  | `weapon:${string}`
   | 'bulkShift';
 
 export interface StatValue {

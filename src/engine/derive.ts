@@ -48,6 +48,7 @@ import {
 } from './classInfo';
 import { formatDie, half, modDieFromPoints, parseDie, stepDie, triangular, type ModDie } from './dice';
 import { Stats, type StatKey, type StatValue } from './stat';
+import { weaponRows, type WeaponMod, type WeaponRow } from './weapons';
 
 export const POINT_BUY_POOL = 12;
 export const MAX_LEVEL = 2;
@@ -199,7 +200,9 @@ export interface Derived {
   /** Bulk Rank decrease for items on your person (Powerful Build). */
   bulkShift: number;
   /** Weapon Attack Check modifiers (Combat Styles). */
-  weaponMods: (Extract<Effect, { kind: 'weapon' }> & { source: string })[];
+  weaponMods: WeaponMod[];
+  /** The Weapons box: Unarmed Strikes (when picked), your weapons and homebrew weapons. */
+  weapons: WeaponRow[];
   /** Unarmed Strikes: your body, plus natural weapons (claws, horns…). */
   unarmed: UnarmedStrike[];
   /** Homebrew items and effects, resolved at their current tier. */
@@ -821,6 +824,8 @@ function deriveUncached(c: Character): Derived {
     long: stats.value('jumpLong', (powerful ? Math.max(2 + points.VIG, 2 * points.VIG) : 2 + points.VIG) * (doubled ? 2 : 1)),
     high: stats.value('jumpHigh', (powerful ? 1 + points.VIG : 1 + Math.floor(points.VIG / 2)) * (doubled ? 2 : 1)),
   };
+  const weaponMods = eff('weapon').map((x) => ({ ...x.e, source: x.source.replace(/^.*: /, '') }));
+  const weaponList = weaponRows(c, { cls, classDie, attrs, weaponMods, unarmed, homebrew: hb.cards }, stats);
   const restCharges = stats.value('restCharges', vitalityMax, 'equal to your Vitality maximum');
   const bulkShift = stats.value('bulkShift', eff('bulkShift').reduce((sum, x) => sum + x.e.amount, 0));
 
@@ -882,7 +887,8 @@ function deriveUncached(c: Character): Derived {
     homebrew: hb.cards,
     restRules: [...new Set(eff('restRule').map((x) => x.e.rule))],
     homebrewNotes: eff('note').map((x) => ({ text: x.e.text, source: x.source })),
-    weaponMods: eff('weapon').map((x) => ({ ...x.e, source: x.source.replace(/^.*: /, '') })),
+    weaponMods,
+    weapons: weaponList,
     unarmed,
     bulkShift,
     issues,
