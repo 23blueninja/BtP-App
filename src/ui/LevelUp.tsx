@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { getNode } from '../content';
 import type { Character } from '../engine/character';
-import { derive } from '../engine/derive';
+import { AUTO_LISTS, derive } from '../engine/derive';
 import { levelUp, type LevelUpSummary } from '../engine/play';
 import { FacetText, go, Html, Collapsible } from './common';
 import { ChoicePicker, SpellListEditor } from './pickers';
@@ -57,7 +57,7 @@ export function LevelUp({ c, update }: { c: Character; update: Update }) {
 
   // After levelling: show what changed and any new choices.
   const newChoices = d.choices.filter((ch) => ch.level === d.level);
-  const lists = d.spellLists.filter((l) => l.def.mode === 'known' && l.def.id !== 'granted');
+  const lists = d.spellLists.filter((l) => l.def.mode === 'known' && !AUTO_LISTS.includes(l.def.id));
   return (
     <div className="levelup">
       <h2>

@@ -6,7 +6,7 @@ import { classes } from '../data/classes';
 import { ATTRS, ATTR_NAMES, LIGHTS, RANK_DIE, RANKS, type Attr, type Light, type Rank } from '../data/types';
 import { newId, type Character } from '../engine/character';
 import { classAlignment, classTable, subclassesOf } from '../engine/classInfo';
-import { derive, POINT_BUY_POOL, type Derived, type SkillSlot } from '../engine/derive';
+import { AUTO_LISTS, derive, POINT_BUY_POOL, type Derived, type SkillSlot } from '../engine/derive';
 import { freshPlay } from '../engine/play';
 import { UNARMED, type WeaponRow } from '../engine/weapons';
 import { Collapsible, excerpt, FacetText, go, Html, Icon, Modal, RuleBlock, RuleLink, Stepper, TokenText } from './common';
@@ -652,7 +652,7 @@ export function ClassTableView({ c }: { c: Character }) {
 }
 
 function Spells({ c, d, update }: StepProps) {
-  const known = d.spellLists.filter((l) => l.def.mode === 'known' && l.def.id !== 'granted');
+  const known = d.spellLists.filter((l) => l.def.mode === 'known' && !AUTO_LISTS.includes(l.def.id));
   const granted = d.spellLists.find((l) => l.def.id === 'granted');
   if (!d.cls) return <p>Choose a class first.</p>;
   return (

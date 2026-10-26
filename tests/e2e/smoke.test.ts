@@ -180,6 +180,58 @@ describe.each(cases)('$cls / $sub · $ancestry · L$level', ({ cls, sub, ancestr
   });
 });
 
+describe('advanced edits (PM adjustments)', () => {
+  it.each([1400, 360, 320])('adjust a number and add a spell at %i px', async (width) => {
+    const cls = classes[0];
+    const sub = subclassesOf(cls)[0]?.id ?? '';
+    const { page, errors } = await open([character(cls.id, sub, 1, ancestries[0].id, 'adj')], { width, height: 900 });
+    await page.goto(`${base}#/c/adj`);
+    await page.reload();
+    await page.getByRole('tab', { name: 'Sheet', exact: true }).waitFor({ timeout: 10_000 });
+    // No panel until something is changed.
+    expect(await page.getByTestId('adjustments-panel').count()).toBe(0);
+    await page.getByRole('button', { name: '± Adjust' }).click();
+    const dialog = page.getByRole('dialog');
+    await dialog.getByLabel('Stat to adjust').selectOption('ac');
+    await dialog.getByLabel('Add or set').selectOption('set');
+    await dialog.getByLabel('Amount').fill('17');
+    await dialog.getByLabel('Note').fill('cursed armor');
+    await dialog.getByRole('button', { name: 'Apply' }).click();
+    await dialog.getByLabel('Search spells and maneuvers').fill('a');
+    const pick = dialog.getByLabel('Spell or maneuver');
+    const first = await pick.locator('option').nth(1).getAttribute('value');
+    const name = (await pick.locator('option').nth(1).textContent())!.replace(/ \(.*$/, '');
+    await pick.selectOption(first!);
+    await dialog.getByRole('button', { name: 'Add', exact: true }).click();
+    const modalOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    await page.keyboard.press('Escape');
+    // The AC box shows the adjusted number; the panel lists both changes.
+    await expect.poll(() => page.getByRole('button', { name: /^AC 17: details$/ }).count()).toBe(1);
+    const panel = page.getByTestId('adjustments-panel');
+    await panel.locator('summary').click();
+    const text = await panel.textContent();
+    expect(text).toContain('2 PM adjustments');
+    expect(text).toContain('AC:');
+    expect(text).toContain('→ 17');
+    expect(text).toContain('cursed armor');
+    expect(text).toContain(name);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    const abbr = await abbreviations(page, 'adjustments panel');
+    await tab(page, 'Spells & Maneuvers');
+    expect(await page.getByText('Added by your PM').count()).toBeGreaterThan(0);
+    // Saved with the character.
+    await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('btp.character.adj') ?? '{}').addedCastables?.length ?? 0)).toBe(1);
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('btp.character.adj') ?? '{}') as { adjustments: unknown[]; addedCastables: string[] });
+    await page.close();
+    expect(saved.adjustments).toHaveLength(1);
+    expect(saved.addedCastables).toEqual([first]);
+    expect(errors).toEqual([]);
+    expect(abbr).toEqual([]);
+    expect(modalOverflow).toBeLessThanOrEqual(1);
+    expect(overflow).toBeLessThanOrEqual(1);
+  });
+});
+
 describe('phone layout', () => {
   const phones = classes.flatMap((c) => [412, 360].map((width) => ({ cls: c.id, width })));
   it.each(phones)('$cls sheet on a $width px screen', async ({ cls, width }) => {

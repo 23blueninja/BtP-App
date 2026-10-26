@@ -47,7 +47,8 @@ import {
   type ResolvedFacet,
 } from './classInfo';
 import { formatDie, half, modDieFromPoints, parseDie, stepDie, triangular, type ModDie } from './dice';
-import { Stats, type StatKey, type StatValue } from './stat';
+import { Stats, type AppliedAdjustment, type StatKey, type StatValue } from './stat';
+import type { Adjustment } from './character';
 import { weaponRows, type WeaponMod, type WeaponRow } from './weapons';
 
 export const POINT_BUY_POOL = 12;
@@ -220,7 +221,12 @@ export interface Derived {
   alignmentChoices: { pickKey: string; source: string }[];
   /** Every number above that is tallied, with where it comes from (by stat key). */
   stats: Partial<Record<StatKey, StatValue>>;
+  /** The PM's adjustments as applied, and any whose stat the character doesn't have. */
+  adjustments: { applied: AppliedAdjustment[]; unapplied: Adjustment[] };
 }
+
+/** Lists derive makes itself (not chosen from in the builder). */
+export const AUTO_LISTS = ['granted', 'added'];
 
 interface Ctx {
   level: number;
@@ -353,9 +359,20 @@ function deriveUncached(c: Character): Derived {
   const maxLevel = cls ? Math.min(MAX_LEVEL, maxClassLevel(cls)) : MAX_LEVEL;
   const level = Math.max(1, Math.min(c.level, maxLevel));
   const row = cls ? classRow(cls, level) : undefined;
-  const stats = new Stats();
+  const stats = new Stats(c.adjustments ?? []);
+  // A PM's die adjustments: `set` takes the die's sides, `add` steps it.
+  const adjustDie = (key: string, die: ModDie): ModDie => {
+    let out = die;
+    for (const a of stats.for(key)) {
+      const before = formatDie(out);
+      out = a.op === 'set' ? parseDie(`d${a.value}`) : stepDie(out, a.value);
+      stats.record(a, before, formatDie(out));
+    }
+    return out;
+  };
   const classBonus = stats.value('classBonus', row?.bonus ?? 0, cls ? `${cls.name} level ${level}` : undefined);
-  const classDie = row?.die.replace(/^1/, '') ?? '';
+  const baseClassDie = row?.die.replace(/^1/, '') ?? '';
+  const classDie = stats.for('die:class').length ? formatDie(adjustDie('die:class', parseDie(baseClassDie || 'd0'))) : baseClassDie;
 
   // ---- facets & choices -> effects ----
   const facets = gatherFacets({ ...c, level }, cls);
@@ -420,7 +437,7 @@ function deriveUncached(c: Character): Derived {
   }
   const attrs = Object.fromEntries(
     ATTRS.map((a) => {
-      const die = modDieFromPoints(points[a]);
+      const die = adjustDie(`die:attr:${a}`, modDieFromPoints(points[a]));
       return [a, { points: points[a], die, label: formatDie(die), sources: sources[a] }];
     }),
   ) as Derived['attrs'];
@@ -430,7 +447,9 @@ function deriveUncached(c: Character): Derived {
   if (c.attributes.method !== 'manual') {
     if (spent !== c.attributes.pool) need(`Attribute Points: ${spent} of ${c.attributes.pool} spent.`, 'attributes', 'attr-points');
   }
-  for (const a of ATTRS) if (points[a] - itemPoints[a] > cap) need(`${a} is above the level ${level} Attribute cap of ${cap}.`, 'attributes', `attr:${a}`);
+  // Points from items, effects and the PM's adjustments don't count against the cap.
+  const adjusted = (a: Attr) => stats.applied.filter((x) => x.adjustment.stat === `attr:${a}`).reduce((n, x) => n + Number(x.after) - Number(x.before), 0);
+  for (const a of ATTRS) if (points[a] - itemPoints[a] - adjusted(a) > cap) need(`${a} is above the level ${level} Attribute cap of ${cap}.`, 'attributes', `attr:${a}`);
   if (c.attributes.bonus.length < bonusPoints) need(`Assign ${bonusPoints - c.attributes.bonus.length} bonus Attribute Point(s).`, 'attributes', 'attr-bonus');
 
   const ctx: Ctx = { level, classBonus, points };
@@ -508,6 +527,7 @@ function deriveUncached(c: Character): Derived {
     const cur = moveMap.get(x.e.type);
     moveMap.set(x.e.type, cur === undefined ? value : x.e.ifAlready ? cur + x.e.ifAlready : Math.max(cur, value));
   }
+  for (const a of c.adjustments ?? []) if (a.stat.startsWith('movement:') && !moveMap.has(a.stat.slice(9))) moveMap.set(a.stat.slice(9), 0);
   const movementTypes = [...moveMap.entries()].map(([type, value]) => ({ type, value: stats.value(`movement:${type}`, value) }));
   const radius = stats.value('radius', 5 + triangular(points.PER), `5 base, ${triangular(points.PER) >= 0 ? '+' : ''}${triangular(points.PER)} from ${points.PER} PER`);
   const senses = [...new Set(eff('sense').map((x) => x.e.name))];
@@ -555,6 +575,8 @@ function deriveUncached(c: Character): Derived {
     resMap.get(type)!.add(v, `+${v} ${source}`);
   };
   for (const x of eff('resistance')) addRes(x.e.type, sc(x.e.amount), x.source);
+  // A PM can give a Resistance the character has no other source of.
+  for (const a of c.adjustments ?? []) if (a.stat.startsWith('resistance:') && !resMap.has(a.stat.slice(11))) resMap.set(a.stat.slice(11), stats.start(a.stat as StatKey));
   for (const e of c.play.effects ?? []) for (const r of e.resistances ?? []) addRes(r.type, r.amount, e.name);
   if (armor?.type === 'Medium') addRes('Slashing', half(armorAc), 'Medium armor');
   if (armor?.type === 'Heavy') {
@@ -626,7 +648,9 @@ function deriveUncached(c: Character): Derived {
       (w) => w.startsWith(`${a} Save`),
       conditionFx.checks.filter((r) => r.attr === a),
     );
-    const shift = lv.shift;
+    const saveAdj = stats.for(`save:${a}`).reduce((n, x) => n + x.value, 0);
+    for (const x of stats.for(`save:${a}`)) stats.record(x, `Bolstered ${lv.shift}`, `Bolstered ${lv.shift + saveAdj}`);
+    const shift = lv.shift + saveAdj;
     const { die, second, D, S } = stepLarger(attrs[a].die, tandemDie, shift);
     const sep = (text: string): DiePart => ({ text });
     // Empowered: two Tandem dice that are both d4 or larger are added together; otherwise roll an
@@ -651,6 +675,7 @@ function deriveUncached(c: Character): Derived {
     const label = parts.map((p) => p.text).join('');
     const notes: string[] = [];
     if (lv.note) notes.push(lv.note);
+    if (saveAdj) notes.push(`${saveAdj > 0 ? 'Bolstered' : 'Hindered'} ${Math.abs(saveAdj)} (adjusted)`);
     if (useOther) notes.push(`Tandem with ${other!.e.die!.name} Die (${other!.source})`);
     for (const x of fromFacet) notes.push(`Empowered (${x.source})`);
     for (const r of conditionFx.checks) if (r.attr === a) notes.push(...describeCheck(r, false));
@@ -668,6 +693,10 @@ function deriveUncached(c: Character): Derived {
   // An Initiative Check is a PER Check: Initiative facets and anything on all PER Checks (not PER Saves) count.
   const perRows = conditionFx.checks.filter((r) => r.attr === 'PER' && !r.save);
   const initLevels = levelsOn((w) => w.startsWith('Initiative'), perRows);
+  const initAdj = stats.for('initiative').reduce((n, x) => n + x.value, 0);
+  for (const x of stats.for('initiative')) stats.record(x, `Bolstered ${initLevels.shift}`, `Bolstered ${initLevels.shift + initAdj}`);
+  initLevels.shift += initAdj;
+  if (initAdj) initLevels.note = [initLevels.note, `${initAdj > 0 ? 'Bolstered' : 'Hindered'} ${Math.abs(initAdj)} (adjusted)`].filter(Boolean).join('; ');
   const init = stepLarger(attrs.PER.die, initiativeTandem, initLevels.shift);
   const initiativeParts: DiePart[] = !init.S ? [init.D] : init.die === '—' ? [init.S] : [init.D, { text: ' / ' }, init.S];
   const initiativeNotes = [
@@ -738,6 +767,7 @@ function deriveUncached(c: Character): Derived {
       }
       const ids = def.mode === 'prepared' ? (c.play.prepared[def.id] ?? []) : (c.spells[def.id] ?? []);
       const selected = ids.map(getCastable).filter(Boolean) as Castable[];
+      stats.name(`spells:${def.id}`, `${def.label}: size`);
       const count = stats.value(`spells:${def.id}`, countOf(def.count, ctx, cls), source);
       if (def.mode === 'known') {
         const want = count - granted.length;
@@ -762,6 +792,19 @@ function deriveUncached(c: Character): Derived {
       count: grantedExtra.length,
       pool: [],
       granted: grantedExtra,
+      selected: [],
+    });
+  }
+
+  // Spells and maneuvers the PM added, outside the class's lists and limits.
+  const added = (c.addedCastables ?? []).map(getCastable).filter(Boolean) as Castable[];
+  if (added.length) {
+    spellLists.push({
+      def: { id: 'added', label: 'Added by your PM', mode: 'known', count: { base: added.length }, pool: { kind: 'spell' } },
+      source: 'PM',
+      count: added.length,
+      pool: [],
+      granted: added,
       selected: [],
     });
   }
@@ -895,6 +938,7 @@ function deriveUncached(c: Character): Derived {
     todo,
     alignmentChoices,
     stats: stats.toRecord(),
+    adjustments: { applied: stats.applied, unapplied: stats.unapplied() },
   };
 }
 

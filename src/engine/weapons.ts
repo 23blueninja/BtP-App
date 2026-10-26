@@ -91,7 +91,8 @@ function weaponDice(name: string, props: string[], x: WeaponCtx): { dice: Weapon
 }
 
 /** A DV from the weapons table, tallied when it's a number. */
-function dvStat(stats: Stats, key: `weapon:${string}`, v: string | number): string {
+function dvStat(stats: Stats, key: `weapon:${string}`, v: string | number, name: string): string {
+  stats.name(key, `${name} ${key.endsWith(':deadly') ? 'Deadly DV' : 'DV'}`);
   const n = typeof v === 'number' ? v : /^-?\d+$/.test(v.trim()) ? Number(v) : undefined;
   return n === undefined ? String(v) : String(stats.value(key, n));
 }
@@ -111,8 +112,8 @@ export function weaponRows(c: Character, x: WeaponCtx, stats: Stats): WeaponRow[
         sources: u.sources,
         fixedDie: u.classDie ? x.classDie : undefined,
         ...(u.classDie ? { dice: [], extras: [] } : weaponDice(u.name, u.properties, x)),
-        dv: dvStat(stats, `weapon:${id}:dv`, u.dv),
-        deadlyDv: dvStat(stats, `weapon:${id}:deadly`, u.deadlyDv),
+        dv: dvStat(stats, `weapon:${id}:dv`, u.dv, u.name),
+        deadlyDv: dvStat(stats, `weapon:${id}:deadly`, u.deadlyDv, u.name),
         damage: u.damage,
         properties: u.properties,
       });
@@ -137,8 +138,8 @@ export function weaponRows(c: Character, x: WeaponCtx, stats: Stats): WeaponRow[
       removeId: we.homebrew ? undefined : we.id,
       sources: [],
       ...(w ? weaponDice(we.name, w.properties, x) : { dice: [], extras: [] }),
-      dv: w ? dvStat(stats, `weapon:${we.id}:dv`, w.dv) : '',
-      deadlyDv: w ? dvStat(stats, `weapon:${we.id}:deadly`, w.deadlyDv) : '',
+      dv: w ? dvStat(stats, `weapon:${we.id}:dv`, w.dv, we.name) : '',
+      deadlyDv: w ? dvStat(stats, `weapon:${we.id}:deadly`, w.deadlyDv, we.name) : '',
       damage: w?.damage ?? '',
       properties: w?.properties ?? [],
       unmet: unmet && unmet.length > 0 ? w!.requirements : undefined,

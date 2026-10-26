@@ -12,7 +12,7 @@ describe('Tally', () => {
     const s = new Stats();
     const t = s.start('ac', 2, 'base 2').add(3, '+3 shield').add(0).note('just a note');
     expect(s.finish(t)).toBe(5);
-    expect(s.get('ac')).toEqual({ value: 5, breakdown: ['base 2', '+3 shield', 'just a note'] });
+    expect(s.toRecord().ac).toEqual({ label: 'AC', value: 5, breakdown: ['base 2', '+3 shield', 'just a note'] });
   });
 
   it('set replaces the value, atLeast clamps it', () => {
