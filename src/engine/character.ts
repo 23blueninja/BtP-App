@@ -161,6 +161,20 @@ export interface Experience {
   effect: string;
 }
 
+/**
+ * A PM's change to one number on the sheet (advanced edit mode): add to it or set it outright.
+ * `stat` is a stat key from the engine (`ac`, `attr:VIG`, `resistance:Arctic`…) or a die key
+ * (`die:class`, `die:attr:VIG`: `set` takes the die's sides, `add` steps it; `save:VIG` and
+ * `initiative`: `add` Bolsters).
+ */
+export interface Adjustment {
+  id: string;
+  stat: string;
+  op: 'add' | 'set';
+  value: number;
+  note?: string;
+}
+
 export interface SessionNote {
   id: string;
   title: string;
@@ -234,6 +248,10 @@ export interface Character {
   sessions: SessionNote[];
   /** Homebrew items and effects (boons, curses) from the PM. */
   homebrew: HomebrewEntry[];
+  /** PM changes to numbers on the sheet, applied in order. */
+  adjustments: Adjustment[];
+  /** Spells and maneuvers the PM granted outside the class's lists and limits (castable ids). */
+  addedCastables: string[];
 
   equipment: {
     armor: { type: 'Light' | 'Medium' | 'Heavy'; quality: string } | null;
@@ -296,6 +314,8 @@ export function newCharacter(): Character {
     experiences: [],
     sessions: [],
     homebrew: [],
+    adjustments: [],
+    addedCastables: [],
     equipment: { armor: null, weapons: [], inventory: [] },
     settings: { restRules: 'heroic' },
     play: emptyPlay(),
@@ -328,6 +348,8 @@ export function normalizeCharacter(raw: unknown): Character {
     // Experiences used to be plain names.
     experiences: ((c.experiences ?? []) as (Experience | string)[]).map((e) => (typeof e === 'string' ? { id: uid(), name: e, uses: 1, used: 0, effect: '' } : e)),
     homebrew: c.homebrew ?? [],
+    adjustments: c.adjustments ?? [],
+    addedCastables: c.addedCastables ?? [],
     sessions: c.sessions ?? (c.details?.notes ? [{ id: uid(), title: 'Earlier notes', date: (c.updatedAt ?? new Date().toISOString()).slice(0, 10), body: c.details.notes }] : []),
     version: CHARACTER_VERSION,
   };

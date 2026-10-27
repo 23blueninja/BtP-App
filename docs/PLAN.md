@@ -85,6 +85,14 @@ new spells/maneuvers.
 
 Phases 1–5 are implemented for levels 1–2. Rules updates: see README.
 
+**Advanced edit mode (PM adjustments).** The sheet's "± Adjust" button lets the PM
+change any number (add to it or set it, with a note) and add any spell or maneuver
+outside the class's lists. Stored on the character as `adjustments` and
+`addedCastables`. `derive` works out every number as a tally (`src/engine/stat.ts`),
+and an adjustment applies when its tally finishes, so everything worked out from that
+number follows. Changes are listed in a panel above the sheet's tabs, shown only when
+there are any.
+
 ## Rules questions found while building
 
 Answers (Oct 2026): the facet is **Barbarous Light** (rules heading to fix);

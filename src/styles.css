@@ -460,6 +460,43 @@ main {
   padding-left: 1.2rem;
   font-size: 0.9em;
 }
+.adjustments.banner {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  padding: 0.4rem 0.8rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.9em;
+}
+.adjustments summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+.adjustments ul {
+  margin: 0.4rem 0;
+}
+.adjustment-list li {
+  gap: 0.5rem;
+  padding: 0.15rem 0;
+}
+.adjust-form {
+  border: 1px solid var(--border);
+  padding: 0.6rem 0.8rem;
+  margin: 0.75rem 0 0;
+  min-width: 0;
+}
+.adjust-form select,
+.adjust-form input {
+  width: 100%;
+  min-width: 0;
+}
+.adjust-form .row > * {
+  flex: 1 1 7rem;
+  min-width: 0;
+}
+.adjust-form .row > button {
+  flex: 0 0 auto;
+}
 .issues.banner {
   background: color-mix(in srgb, var(--warn) 10%, var(--panel));
   border: 1px solid color-mix(in srgb, var(--warn) 40%, var(--border));

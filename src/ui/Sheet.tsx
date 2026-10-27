@@ -13,6 +13,7 @@ import { CastRow } from './Cast';
 import { alignmentGradient, LIGHT_TEXT } from './lightColors';
 import { PlayContext, UseButton } from './Activate';
 import { HomebrewBox } from './Homebrew';
+import { AdjustButton, AdjustmentsPanel } from './Adjustments';
 import { actionRequest, activationsFor, ACTIVATIONS } from '../engine/activations';
 import { parseCost } from '../engine/costs';
 import type { ActiveEffect } from '../engine/character';
@@ -51,6 +52,7 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
             <button type="button" data-tour="edit" onClick={() => go('c', c.id, 'build', 'basics')}>
               ✎ Edit
             </button>
+            <AdjustButton c={c} d={d} update={update} />
             {d.level < d.maxLevel && d.cls && (
               <button type="button" className="primary" onClick={() => go('c', c.id, 'levelup')}>
                 ⬆ Level Up
@@ -77,6 +79,7 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
             </ul>
           </details>
         )}
+        <AdjustmentsPanel c={c} d={d} update={update} />
         <div className="tabs" role="tablist" data-tour="tabs">
           {TABS.map((t) => (
             <button key={t} type="button" role="tab" aria-selected={tab === t} className={tab === t ? 'active' : ''} onClick={() => setTab(t)}>
@@ -1284,8 +1287,8 @@ function SpellsTab({ c, d, setPlay }: { c: Character; d: Derived; setPlay: (fn: 
   const known = d.spellLists.filter((l) => l.def.mode === 'known');
   const prepared = d.spellLists.filter((l) => l.def.mode === 'prepared');
   const [editing, setEditing] = useState<string | null>(null);
-  // Spells from the class itself spend class resources; others (e.g. ancestry gifts) don't.
-  const fromClass = (source: string) => source === d.cls?.name || source === d.subclassName || source === 'Facets';
+  // Spells from the class itself (and ones the PM added) spend class resources; others (e.g. ancestry gifts) don't.
+  const fromClass = (source: string) => source === d.cls?.name || source === d.subclassName || source === 'Facets' || source === 'PM';
   if (!known.length && !prepared.length && !d.resources.length) return <p className="muted">No spells or maneuvers.</p>;
   return (
     <div className="spells-tab" data-tour="spells">
