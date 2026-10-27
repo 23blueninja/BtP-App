@@ -115,7 +115,7 @@ async function exerciseSheet(page: Page, id: string): Promise<string[]> {
   const pick = page.locator('.condition-add select');
   await pick.selectOption({ index: 1 });
   await page.locator('.condition-add button', { hasText: 'Add' }).click();
-  for (const t of ['Facets', 'Spells & Maneuvers', 'Summons', 'Equipment', 'Notes', 'Sheet']) {
+  for (const t of ['Facets', 'Spells & Maneuvers', 'Equipment', 'Notes', 'Sheet']) {
     await tab(page, t);
     abbr.push(...(await abbreviations(page, t)));
   }
@@ -240,13 +240,20 @@ describe('summons', () => {
     await page.goto(`${base}#/c/sum`);
     await page.reload();
     await page.getByRole('tab', { name: 'Sheet', exact: true }).waitFor({ timeout: 10_000 });
-    await tab(page, 'Summons');
-    expect(await page.getByText('No summons.').count()).toBe(1);
+    // No Summons tab until something is summoned.
+    expect(await page.getByRole('tab', { name: 'Summons', exact: true }).count()).toBe(0);
     // Cast Summon Familiar at 1st level, then Bestial Communion summoning the Wolf.
     await tab(page, 'Spells & Maneuvers');
     const castIn = async (spell: string, creature?: string) => {
       const row = page.locator('.collapsible', { has: page.locator('.castable-title strong', { hasText: new RegExp(`^${spell}$`) }) }).first();
       await row.locator('.collapsible-head').click();
+      if (creature) {
+        // Import a (made-up) Beast from a Monster Maker export; it joins the options.
+        const boar = { name: 'Test Boar', type: 'Beast', level: 1, endurance: 30 };
+        await row.getByLabel('Monster Maker export').setInputFiles({ name: 'boar.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ monsters: [boar] })) });
+        await row.getByText('Imported Test Boar (Beast).').waitFor();
+        expect(await row.getByLabel('Speak or summon').locator('option', { hasText: 'Test Boar' }).count()).toBe(1);
+      }
       if (creature) await row.getByLabel('Speak or summon').selectOption({ label: creature });
       await row.getByRole('button', { name: /^Cast/ }).click();
       await page.locator('.toast button[aria-label="Dismiss"]').click();
@@ -282,6 +289,11 @@ describe('summons', () => {
     const abbr = await abbreviations(page, 'summons');
     // Saved with the character.
     await expect.poll(() => page.evaluate(() => (JSON.parse(localStorage.getItem('btp.character.sum') ?? '{}').play?.summons ?? []).map((s: { name: string }) => s.name).join(','))).toBe('Pip,');
+    // Dismissing the last summon hides the tab and returns to the Sheet.
+    await page.getByRole('region', { name: 'Pip' }).getByRole('button', { name: 'Dismiss', exact: true }).click();
+    await wolf.getByRole('button', { name: 'Dismiss', exact: true }).click();
+    await expect.poll(() => page.getByRole('tab', { name: 'Summons', exact: true }).count()).toBe(0);
+    expect(await page.getByRole('tab', { name: 'Sheet', exact: true }).getAttribute('aria-selected')).toBe('true');
     await page.close();
     expect(errors).toEqual([]);
     expect(abbr).toEqual([]);
@@ -297,7 +309,7 @@ describe('phone layout', () => {
     await exerciseSheet(page, 'phone');
     // Nothing wider than the screen, on any tab.
     const overflow: Record<string, number> = {};
-    for (const t of ['Sheet', 'Facets', 'Spells & Maneuvers', 'Summons', 'Equipment', 'Notes']) {
+    for (const t of ['Sheet', 'Facets', 'Spells & Maneuvers', 'Equipment', 'Notes']) {
       await tab(page, t);
       overflow[t] = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     }

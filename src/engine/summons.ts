@@ -96,8 +96,10 @@ export interface Summon {
   id: string;
   /** Castable id of the spell that summoned it. */
   spell: string;
-  /** Creature id (creatures.json) for spells that summon a chosen creature. */
+  /** Creature id (creatures.json, or an imported creature) for spells that summon a chosen creature. */
   creature?: string;
+  /** An imported creature's stat block, kept with the summon. */
+  creatureData?: Creature;
   /** Level the spell was cast at. */
   level: number;
   /** Your name for it ("Pip"); the stat block's name when empty. */
@@ -196,11 +198,72 @@ export const SUMMON_SPELLS: SummonSpell[] = [
 export const summonSpell = (spell: string) => SUMMON_SPELLS.find((s) => s.spell === spell);
 
 /** Creatures a Communion spell cast at `sl` can summon. */
-export function creatureChoices(spell: string, sl: number): Creature[] {
+export function creatureChoices(spell: string, sl: number, imported: Creature[] = []): Creature[] {
   const def = summonSpell(spell);
   if (!def?.creatureType) return [];
   const max = def.maxCreatureLevel?.(sl) ?? Infinity;
-  return creatures.filter((c) => c.type.split(/[\s,]+/).includes(def.creatureType!) && c.level <= max);
+  return [...creatures, ...imported].filter((c) => isType(c, def.creatureType!) && c.level <= max);
+}
+
+const isType = (c: Creature, type: string) => c.type.split(/[\s,]+/).includes(type);
+
+const IMPORT_TYPES = SUMMON_SPELLS.map((s) => s.creatureType).filter((t): t is string => !!t);
+const str = (v: unknown, d = '') => (typeof v === 'string' ? v : d);
+const int = (v: unknown, d = 0) => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v) : Number.isFinite(Number(v)) && v !== '' && v !== null ? Math.round(Number(v)) : d);
+const list = <T>(v: unknown, f: (x: Record<string, unknown>) => T): T[] => (Array.isArray(v) ? v.filter((x) => x && typeof x === 'object').map((x) => f(x as Record<string, unknown>)) : []);
+const strings = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
+
+/** One monster from a Monster Maker export, with missing fields filled in. */
+function readCreature(m: Record<string, unknown>): Creature {
+  const a = (m.attributes ?? {}) as Record<string, unknown>;
+  const rated = (x: Record<string, unknown>) => ({ name: str(x.name), ...(x.rating !== undefined ? { rating: str(x.rating, String(x.rating)) } : {}) });
+  const skill = (x: Record<string, unknown>) => ({ name: str(x.name), mod: int(x.mod) });
+  const name = str(m.name, 'Unnamed creature');
+  return {
+    id: `import:${str(m.id) || name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+    name,
+    size: str(m.size, 'Medium'),
+    alignment: str(m.alignment),
+    type: str(m.type),
+    level: int(m.level, 1),
+    armorClass: int(m.armorClass, 10),
+    ...(m.armor ? { armor: str(m.armor) } : {}),
+    endurance: int(m.endurance, 1),
+    movement: int(m.movement),
+    otherMovement: strings(m.otherMovement),
+    senses: strings(m.senses),
+    perRadius: int(m.perRadius),
+    attributes: { VIG: int(a.VIG), AGI: int(a.AGI), PER: int(a.PER), INT: int(a.INT), PRS: int(a.PRS) },
+    resistances: list(m.resistances, rated),
+    immunities: list(m.immunities, rated),
+    vulnerabilities: list(m.vulnerabilities, rated),
+    professions: list(m.professions, skill),
+    hobbies: list(m.hobbies, skill),
+    languages: strings(m.languages),
+    facets: list(m.facets, (x) => ({ name: str(x.name), text: str(x.text) })),
+    weapons: list(m.weapons, (x) => ({ name: str(x.name), dv: str(x.dv), deadly: str(x.deadly), damage: str(x.damage), details: str(x.details), ...(x.raw ? { raw: str(x.raw) } : {}) })),
+    actions: list(m.actions, (x) => ({
+      name: str(x.name),
+      reaction: !!x.reaction,
+      ...(x.ap ? { ap: str(x.ap, String(x.ap)) } : {}),
+      ...(x.uses ? { uses: str(x.uses, String(x.uses)) } : {}),
+      ...(x.rawCost ? { rawCost: str(x.rawCost) } : {}),
+      ...(x.trigger ? { trigger: str(x.trigger) } : {}),
+      text: str(x.text),
+      outcomes: list(x.outcomes, (o) => ({ label: str(o.label), text: str(o.text) })),
+    })),
+  };
+}
+
+/**
+ * Creatures from a Monster Maker export (a backup, a list or one monster). Only
+ * Beasts and Ethereals are kept, since only the Communion spells summon a chosen creature.
+ */
+export function importCreatures(data: unknown): { creatures: Creature[]; skipped: string[] } {
+  const raw = data && typeof data === 'object' && Array.isArray((data as { monsters?: unknown }).monsters) ? (data as { monsters: unknown[] }).monsters : Array.isArray(data) ? data : [data];
+  const all = raw.filter((m): m is Record<string, unknown> => !!m && typeof m === 'object' && typeof (m as { name?: unknown }).name === 'string').map(readCreature);
+  if (!all.length) throw new Error('No monsters in that file.');
+  return { creatures: all.filter((c) => IMPORT_TYPES.some((t) => isType(c, t))), skipped: all.filter((c) => !IMPORT_TYPES.some((t) => isType(c, t))).map((c) => `${c.name} (${c.type || 'no type'})`) };
 }
 
 /** "Arctic, Cosmic 3d6" -> [{Arctic}, {Cosmic, 3d6}]. */
@@ -299,11 +362,11 @@ function fromCreature(c: Creature, def: SummonSpell, sl: number): StatBlock {
 }
 
 /** The summon's stat block at the level it was cast (undefined if its spell or creature is unknown). */
-export function statBlock(s: Pick<Summon, 'spell' | 'creature' | 'level'>): StatBlock | undefined {
+export function statBlock(s: Pick<Summon, 'spell' | 'creature' | 'creatureData' | 'level'>): StatBlock | undefined {
   const def = summonSpell(s.spell);
   if (!def) return undefined;
   if (def.creatureType) {
-    const c = creatures.find((x) => x.id === s.creature);
+    const c = s.creatureData ?? creatures.find((x) => x.id === s.creature);
     return c ? fromCreature(c, def, s.level) : undefined;
   }
   const node = def.node ? getNode(def.node) : undefined;
@@ -315,8 +378,9 @@ export function statBlock(s: Pick<Summon, 'spell' | 'creature' | 'level'>): Stat
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 
 /** A freshly summoned creature at full Endurance. */
-export function newSummon(spell: string, level: number, creature?: string): Summon | undefined {
-  const s = { id: uid(), spell, creature, level, name: '', endurance: 0, tempEndurance: 0, conditions: [] as Condition[] };
+export function newSummon(spell: string, level: number, creature?: string, imported: Creature[] = []): Summon | undefined {
+  const data = imported.find((x) => x.id === creature);
+  const s = { id: uid(), spell, creature, ...(data ? { creatureData: data } : {}), level, name: '', endurance: 0, tempEndurance: 0, conditions: [] as Condition[] };
   const b = statBlock(s);
   return b ? { ...s, endurance: b.endurance } : undefined;
 }
@@ -325,11 +389,11 @@ export function newSummon(spell: string, level: number, creature?: string): Summ
  * Casting a summon spell: its earlier summons go (casting again replaces them,
  * or ends the spell early), and the new ones arrive.
  */
-export function castSummon(summons: Summon[], spell: string, level: number, creature?: string): { summons: Summon[]; log: string[] } {
+export function castSummon(summons: Summon[], spell: string, level: number, creature?: string, imported: Creature[] = []): { summons: Summon[]; log: string[] } {
   const def = summonSpell(spell);
   if (!def) return { summons, log: [] };
   const n = def.count?.(level) ?? 1;
-  const fresh = Array.from({ length: n }, () => newSummon(spell, level, creature)).filter((x): x is Summon => !!x);
+  const fresh = Array.from({ length: n }, () => newSummon(spell, level, creature, imported)).filter((x): x is Summon => !!x);
   if (!fresh.length) return { summons, log: [] };
   const gone = summons.filter((s) => s.spell === spell);
   const name = statBlock(fresh[0])!.name;

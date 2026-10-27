@@ -31,7 +31,10 @@ const TABS = ['Sheet', 'Facets', 'Spells & Maneuvers', 'Summons', 'Equipment', '
 type Tab = (typeof TABS)[number];
 
 export function Sheet({ c, update }: { c: Character; update: Update }) {
-  const [tab, setTab] = useState<Tab>('Sheet');
+  const [picked, setTab] = useState<Tab>('Sheet');
+  // The Summons tab only shows while you have a summon; dismissing the last one returns to the Sheet.
+  const tabs = TABS.filter((t) => t !== 'Summons' || (c.play.summons?.length ?? 0) > 0);
+  const tab = tabs.includes(picked) ? picked : 'Sheet';
   const [log, setLog] = useState<{ lines: string[]; undo?: PlayState } | null>(null);
   const d = derive(c);
   const setPlay = (fn: (p: PlayState) => PlayState) => update((x) => ({ ...x, play: clampPlay(fn(x.play), derive(x)) }));
@@ -82,7 +85,7 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
         )}
         <AdjustmentsPanel c={c} d={d} update={update} />
         <div className="tabs" role="tablist" data-tour="tabs">
-          {TABS.map((t) => (
+          {tabs.map((t) => (
             <button key={t} type="button" role="tab" aria-selected={tab === t} className={tab === t ? 'active' : ''} onClick={() => setTab(t)}>
               {t}
             </button>

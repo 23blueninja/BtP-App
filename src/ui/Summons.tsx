@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { conditions as conditionDefs, getCastable } from '../content';
 import { ATTRS, ATTR_NAMES } from '../data/types';
 import type { Character, PlayState } from '../engine/character';
@@ -6,11 +6,11 @@ import { addCondition } from '../engine/conditions';
 import { dieLabel } from '../engine/dice';
 import {
   SUMMON_AP_MAX,
-  SUMMON_SPELLS,
   damageSummon,
   endSummonTurn,
   fromPlay,
   healSummon,
+  importCreatures,
   startSummonTurn,
   statBlock,
   summonDefenses,
@@ -30,14 +30,8 @@ const rated = (xs: Rated[]) => xs.map((x) => (x.rating ? `${x.name} ${x.rating}`
 /** The Summons tab: each creature your spells summoned, with its stat block and its own Endurance, Conditions and AP. */
 export function SummonsTab({ c, setPlay }: { c: Character; setPlay: SetPlay }) {
   const summons = c.play.summons ?? [];
-  const known = SUMMON_SPELLS.map((s) => getCastable(s.spell)?.name).filter(Boolean);
   return (
     <div className="summons-tab">
-      {summons.length === 0 && (
-        <section className="box">
-          <p className="muted">No summons. Cast a summon spell on the Spells &amp; Maneuvers tab ({known.join(', ')}) and its creature appears here.</p>
-        </section>
-      )}
       {summons.map((s) => (
         <SummonCard key={s.id} s={s} setPlay={setPlay} />
       ))}
@@ -306,6 +300,61 @@ export function StatBlockView({ b }: { b: StatBlock }) {
           )}
         </div>
       ))}
+    </div>
+  );
+}
+
+/**
+ * Import Beasts and Ethereals for the Communion spells from a Monster Maker export
+ * (a backup or a single monster's JSON). They're saved with the character.
+ */
+export function CreatureImport({ type }: { type: string }) {
+  const api = useContext(PlayContext);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [note, setNote] = useState<{ text: string; warn?: boolean } | null>(null);
+  if (!api) return null;
+  const { c, update } = api;
+  const mine = c.creatures.filter((x) => x.type.split(/[\s,]+/).includes(type));
+  return (
+    <div className="creature-import">
+      <button type="button" onClick={() => fileRef.current?.click()}>
+        Import creature…
+      </button>
+      <input
+        ref={fileRef}
+        type="file"
+        accept=".json,application/json"
+        hidden
+        aria-label="Monster Maker export"
+        onChange={async (e) => {
+          const f = e.target.files?.[0];
+          e.target.value = '';
+          if (!f) return;
+          try {
+            const r = importCreatures(JSON.parse(await f.text()));
+            // Importing a creature again replaces the earlier copy.
+            update((x) => ({ ...x, creatures: [...x.creatures.filter((y) => !r.creatures.some((n) => n.id === y.id)), ...r.creatures] }));
+            const parts = [r.creatures.length ? `Imported ${r.creatures.map((x) => `${x.name} (${x.type})`).join(', ')}.` : 'Nothing imported.'];
+            if (r.skipped.length) parts.push(`Skipped ${r.skipped.join(', ')}: only Beasts and Ethereals can be summoned.`);
+            setNote({ text: parts.join(' '), warn: !r.creatures.length || r.skipped.length > 0 });
+          } catch {
+            setNote({ text: 'That file is not a Monster Maker export.', warn: true });
+          }
+        }}
+      />
+      {note && <span className={`small ${note.warn ? 'warn' : 'muted'}`}>{note.text}</span>}
+      {mine.length > 0 && (
+        <span className="creature-chips">
+          {mine.map((x) => (
+            <span key={x.id} className="chip">
+              {x.name}
+              <button type="button" className="icon-btn" aria-label={`Remove ${x.name}`} onClick={() => update((y) => ({ ...y, creatures: y.creatures.filter((z) => z.id !== x.id) }))}>
+                ✕
+              </button>
+            </span>
+          ))}
+        </span>
+      )}
     </div>
   );
 }

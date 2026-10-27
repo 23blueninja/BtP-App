@@ -3006,3 +3006,15 @@ html.tour-open body {
 .stat-block .outcome {
   display: block;
 }
+.creature-import {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  flex-basis: 100%;
+}
+.creature-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
