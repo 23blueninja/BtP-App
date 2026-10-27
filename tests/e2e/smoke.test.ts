@@ -115,7 +115,7 @@ async function exerciseSheet(page: Page, id: string): Promise<string[]> {
   const pick = page.locator('.condition-add select');
   await pick.selectOption({ index: 1 });
   await page.locator('.condition-add button', { hasText: 'Add' }).click();
-  for (const t of ['Facets', 'Spells & Maneuvers', 'Equipment', 'Notes', 'Sheet']) {
+  for (const t of ['Facets', 'Spells & Maneuvers', 'Summons', 'Equipment', 'Notes', 'Sheet']) {
     await tab(page, t);
     abbr.push(...(await abbreviations(page, t)));
   }
@@ -232,6 +232,63 @@ describe('advanced edits (PM adjustments)', () => {
   });
 });
 
+describe('summons', () => {
+  it.each([1400, 360, 320])('cast, track and read summons at %i px', async (width) => {
+    const base0 = character('arcanist', subclassesOf(classes.find((c) => c.id === 'arcanist')!)[0]?.id ?? '', 5, ancestries[0].id, 'sum');
+    const c = { ...base0, addedCastables: ['spells/arcana/mind/summon-familiar', 'spells/evocations/frost/bestial-communion'] };
+    const { page, errors } = await open([c], { width, height: 900 });
+    await page.goto(`${base}#/c/sum`);
+    await page.reload();
+    await page.getByRole('tab', { name: 'Sheet', exact: true }).waitFor({ timeout: 10_000 });
+    await tab(page, 'Summons');
+    expect(await page.getByText('No summons.').count()).toBe(1);
+    // Cast Summon Familiar at 1st level, then Bestial Communion summoning the Wolf.
+    await tab(page, 'Spells & Maneuvers');
+    const castIn = async (spell: string, creature?: string) => {
+      const row = page.locator('.collapsible', { has: page.locator('.castable-title strong', { hasText: new RegExp(`^${spell}$`) }) }).first();
+      await row.locator('.collapsible-head').click();
+      if (creature) await row.getByLabel('Speak or summon').selectOption({ label: creature });
+      await row.getByRole('button', { name: /^Cast/ }).click();
+      await page.locator('.toast button[aria-label="Dismiss"]').click();
+    };
+    await castIn('Summon Familiar');
+    await castIn('Bestial Communion', 'Summon: Wolf (level 1)');
+    await tab(page, 'Summons');
+    const fam = page.getByRole('region', { name: 'Familiar' });
+    const wolf = page.getByRole('region', { name: 'Wolf' });
+    await fam.waitFor();
+    await wolf.waitFor();
+    expect(await fam.locator('.end-current').getAttribute('aria-label')).toBe('Endurance 13 of 13');
+    expect(await wolf.textContent()).toContain('(Eidolon)');
+    // Damage, a Condition it's Immune to the damage of, and a turn.
+    await fam.locator('.end-amount').fill('3');
+    await fam.getByRole('button', { name: 'Damage' }).click();
+    await fam.getByLabel('Condition').selectOption('Burning');
+    await fam.locator('.condition-add button', { hasText: 'Add' }).click();
+    await expect.poll(() => fam.locator('.end-current').getAttribute('aria-label')).toBe('Endurance 10 of 13');
+    await fam.getByRole('button', { name: '▶ Start' }).click();
+    await fam.getByRole('button', { name: '■ End' }).click();
+    // The Wolf takes Burning damage (no Thermic Resistance): 3 when gained.
+    await wolf.getByLabel('Condition').selectOption('Burning');
+    await wolf.locator('.condition-add button', { hasText: 'Add' }).click();
+    await expect.poll(() => wolf.locator('.end-current').getAttribute('aria-label')).toBe('Endurance 19 of 22');
+    // Stat blocks.
+    await fam.getByRole('button', { name: 'Stat block' }).click();
+    await wolf.getByRole('button', { name: 'Stat block' }).click();
+    expect(await fam.textContent()).toContain('Psychic Blast');
+    expect(await wolf.textContent()).toContain('Pack Strike');
+    await fam.getByLabel('Summon name').fill('Pip');
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    const abbr = await abbreviations(page, 'summons');
+    // Saved with the character.
+    await expect.poll(() => page.evaluate(() => (JSON.parse(localStorage.getItem('btp.character.sum') ?? '{}').play?.summons ?? []).map((s: { name: string }) => s.name).join(','))).toBe('Pip,');
+    await page.close();
+    expect(errors).toEqual([]);
+    expect(abbr).toEqual([]);
+    expect(overflow).toBeLessThanOrEqual(1);
+  });
+});
+
 describe('phone layout', () => {
   const phones = classes.flatMap((c) => [412, 360].map((width) => ({ cls: c.id, width })));
   it.each(phones)('$cls sheet on a $width px screen', async ({ cls, width }) => {
@@ -240,7 +297,7 @@ describe('phone layout', () => {
     await exerciseSheet(page, 'phone');
     // Nothing wider than the screen, on any tab.
     const overflow: Record<string, number> = {};
-    for (const t of ['Sheet', 'Facets', 'Spells & Maneuvers', 'Equipment', 'Notes']) {
+    for (const t of ['Sheet', 'Facets', 'Spells & Maneuvers', 'Summons', 'Equipment', 'Notes']) {
       await tab(page, t);
       overflow[t] = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     }

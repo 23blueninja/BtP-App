@@ -10,6 +10,7 @@ import { ClassTableView, Equipment, WeaponTable } from './Builder';
 import { Collapsible, FacetText, go, Icon, Modal, RuleBlock, RuleLink, Stepper, TokenText } from './common';
 import { SpellListEditor } from './pickers';
 import { CastRow } from './Cast';
+import { SummonsTab } from './Summons';
 import { alignmentGradient, LIGHT_TEXT } from './lightColors';
 import { PlayContext, UseButton } from './Activate';
 import { HomebrewBox } from './Homebrew';
@@ -26,7 +27,7 @@ function headingStyle(d: Derived): React.CSSProperties | undefined {
   return g ? ({ '--heading-gradient': g, '--heading-color': LIGHT_TEXT[d.alignmentRanked[0].light] } as React.CSSProperties) : undefined;
 }
 
-const TABS = ['Sheet', 'Facets', 'Spells & Maneuvers', 'Equipment', 'Notes'] as const;
+const TABS = ['Sheet', 'Facets', 'Spells & Maneuvers', 'Summons', 'Equipment', 'Notes'] as const;
 type Tab = (typeof TABS)[number];
 
 export function Sheet({ c, update }: { c: Character; update: Update }) {
@@ -90,6 +91,7 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
         {tab === 'Sheet' && <MainSheet c={c} d={d} update={update} setPlay={setPlay} onRest={(lines) => setLog({ lines })} />}
         {tab === 'Facets' && <Facets c={c} d={d} setPlay={setPlay} update={update} />}
         {tab === 'Spells & Maneuvers' && <SpellsTab c={c} d={d} setPlay={setPlay} />}
+        {tab === 'Summons' && <SummonsTab c={c} setPlay={setPlay} />}
         {tab === 'Equipment' && <Equipment c={c} d={d} update={update} />}
         {tab === 'Notes' && <Notes c={c} update={update} />}
         {log && (
