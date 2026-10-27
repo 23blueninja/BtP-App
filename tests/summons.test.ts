@@ -15,6 +15,7 @@ import {
   endSummonTurn,
   fromPlay,
   healSummon,
+  importCreatures,
   newSummon,
   startSummonTurn,
   statBlock,
@@ -235,5 +236,50 @@ describe('a summon in play', () => {
     expect(r.summon.ap).toBe(3);
     expect(r.summon.turn?.active).toBe(false);
     expect(r.log.join(' ')).toMatch(/Regained AP \(3\)/);
+  });
+});
+
+describe('importing creatures from the Monster Maker', () => {
+  // Made-up test creatures in the Monster Maker's export format (not Bestiary content).
+  const boar = { schema: 1, id: 'b1', name: 'Test Boar', size: 'Medium', alignment: 'Soma', type: 'Beast', level: 3, armorClass: 12, endurance: 30, movement: 9, attributes: { VIG: 3, AGI: 1, PER: 0, INT: -4, PRS: 0 }, resistances: [{ name: 'Crushing', rating: '2' }] };
+  const wisp = { name: 'Test Wisp', type: 'Ethereal', level: 1, endurance: 8 };
+  const golem = { name: 'Test Golem', type: 'Construct', level: 2 };
+
+  it('reads a backup, keeping Beasts and Ethereals and filling in missing fields', () => {
+    const r = importCreatures({ kind: 'btp-monster-maker', version: 1, monsters: [boar, wisp, golem] });
+    expect(r.creatures.map((c) => c.name)).toEqual(['Test Boar', 'Test Wisp']);
+    expect(r.skipped).toEqual(['Test Golem (Construct)']);
+    const w = r.creatures[1];
+    expect(w).toMatchObject({ id: 'import:test-wisp', size: 'Medium', armorClass: 10, endurance: 8, attributes: { VIG: 0, AGI: 0, PER: 0, INT: 0, PRS: 0 }, weapons: [], actions: [] });
+  });
+
+  it('reads a single monster or a list', () => {
+    expect(importCreatures(boar).creatures[0].id).toBe('import:b1');
+    expect(importCreatures([boar, wisp]).creatures).toHaveLength(2);
+  });
+
+  it('rejects a file with no monsters', () => {
+    expect(() => importCreatures({ hello: 1 })).toThrow();
+    expect(() => importCreatures([])).toThrow();
+  });
+
+  it('imported creatures join the Communion choices, up to level 2{SL}', () => {
+    const imported = importCreatures([boar, wisp]).creatures;
+    expect(creatureChoices(BESTIAL, 1, imported).map((c) => c.name)).not.toContain('Test Boar');
+    expect(creatureChoices(BESTIAL, 2, imported).map((c) => c.name)).toContain('Test Boar');
+    expect(creatureChoices(SPIRITUAL, 1, imported).map((c) => c.name)).toEqual(['Test Wisp']);
+  });
+
+  it('a summoned imported creature keeps its stat block, even if the import is removed later', () => {
+    const imported = importCreatures([boar]).creatures;
+    const [s] = castSummon([], BESTIAL, 2, 'import:b1', imported).summons;
+    expect(s.creatureData?.name).toBe('Test Boar');
+    const b = statBlock({ spell: s.spell, level: s.level, creature: s.creature, creatureData: s.creatureData })!;
+    expect(b.endurance).toBe(30);
+    expect(b.resistances).toEqual([
+      { name: 'Crushing', rating: '2' },
+      { name: 'Somatic', rating: '4' },
+    ]);
+    expect(s.endurance).toBe(30);
   });
 });

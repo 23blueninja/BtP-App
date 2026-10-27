@@ -13,7 +13,10 @@ is `src/ui/Summons.tsx`, and summons live in `play.summons`. Creatures the
 Communion spells can summon are in `src/content/creatures.json`: Bestiary stat
 blocks exported from the BtP Monster Maker (in that repo, `npm run check-monster -- <file>
 --json`), in its Monster format. Add a creature by appending its export (Arch
-chose to publish them here).
+chose to publish them here). Players can also import Beasts and
+Ethereals from a Monster Maker JSON export in the Communion cast panel
+(`importCreatures`); they're saved on the character (`creatures`), and a summon
+keeps its imported stat block (`creatureData`).
 
 ## Tests
 

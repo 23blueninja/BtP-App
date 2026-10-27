@@ -1,5 +1,5 @@
 import type { Attr, Light, Rank, RestRule } from '../data/types';
-import type { Summon } from './summons';
+import type { Creature, Summon } from './summons';
 
 export const CHARACTER_VERSION = 1;
 
@@ -255,6 +255,8 @@ export interface Character {
   adjustments: Adjustment[];
   /** Spells and maneuvers the PM granted outside the class's lists and limits (castable ids). */
   addedCastables: string[];
+  /** Beasts and Ethereals imported from Monster Maker exports, for the Communion spells. */
+  creatures: Creature[];
 
   equipment: {
     armor: { type: 'Light' | 'Medium' | 'Heavy'; quality: string } | null;
@@ -319,6 +321,7 @@ export function newCharacter(): Character {
     homebrew: [],
     adjustments: [],
     addedCastables: [],
+    creatures: [],
     equipment: { armor: null, weapons: [], inventory: [] },
     settings: { restRules: 'heroic' },
     play: emptyPlay(),
@@ -353,6 +356,7 @@ export function normalizeCharacter(raw: unknown): Character {
     homebrew: c.homebrew ?? [],
     adjustments: c.adjustments ?? [],
     addedCastables: c.addedCastables ?? [],
+    creatures: c.creatures ?? [],
     sessions: c.sessions ?? (c.details?.notes ? [{ id: uid(), title: 'Earlier notes', date: (c.updatedAt ?? new Date().toISOString()).slice(0, 10), body: c.details.notes }] : []),
     version: CHARACTER_VERSION,
   };

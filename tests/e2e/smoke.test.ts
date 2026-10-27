@@ -247,6 +247,13 @@ describe('summons', () => {
     const castIn = async (spell: string, creature?: string) => {
       const row = page.locator('.collapsible', { has: page.locator('.castable-title strong', { hasText: new RegExp(`^${spell}$`) }) }).first();
       await row.locator('.collapsible-head').click();
+      if (creature) {
+        // Import a (made-up) Beast from a Monster Maker export; it joins the options.
+        const boar = { name: 'Test Boar', type: 'Beast', level: 1, endurance: 30 };
+        await row.getByLabel('Monster Maker export').setInputFiles({ name: 'boar.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ monsters: [boar] })) });
+        await row.getByText('Imported Test Boar (Beast).').waitFor();
+        expect(await row.getByLabel('Speak or summon').locator('option', { hasText: 'Test Boar' }).count()).toBe(1);
+      }
       if (creature) await row.getByLabel('Speak or summon').selectOption({ label: creature });
       await row.getByRole('button', { name: /^Cast/ }).click();
       await page.locator('.toast button[aria-label="Dismiss"]').click();
