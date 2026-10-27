@@ -5,6 +5,16 @@ document's Homebrewery source is `rules/BtP-Alpha-Rules.md`; `npm run
 parse-rules` turns it into `src/content/rules.json`, which the data
 (`src/data`) and engine (`src/engine`, pure `derive(c)`) build on.
 
+## Summons
+
+`src/engine/summons.ts` builds summon stat blocks (Summon Familiar, Snow
+Familiar, Bestial and Spiritual Communion) at the casting level; the Summons tab
+is `src/ui/Summons.tsx`, and summons live in `play.summons`. Creatures the
+Communion spells can summon are in `src/content/creatures.json`: Bestiary stat
+blocks exported from the BtP Monster Maker (in that repo, `npm run check-monster -- <file>
+--json`), in its Monster format. Add a creature by appending its export (Arch
+chose to publish them here).
+
 ## Tests
 
 | Command | What | When |

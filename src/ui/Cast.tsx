@@ -9,6 +9,7 @@ import { parseCost } from '../engine/costs';
 import { UseButton } from './Activate';
 import { Collapsible, TokenText } from './common';
 import { CastableDetails } from './pickers';
+import { castSummon, creatureChoices, summonSpell } from '../engine/summons';
 
 const ordinal = (n: number) => `${n}${n === 1 ? 'st' : n === 2 ? 'nd' : n === 3 ? 'rd' : 'th'}`;
 
@@ -58,6 +59,13 @@ export function CastRow({
   const burns = d.cls?.id === 'arcanist' && cs.kind === 'spell' && castLevel > 0;
   const debt = d.cls?.id === 'thaumaturge' && cs.kind === 'spell' && castLevel > 0;
   const raise = (t: Record<string, number>, name: string, to: number) => ({ ...t, [name]: Math.max(t[name] ?? 0, to) });
+  // Summon spells put their creature on the Summons tab; the Communion spells summon a creature you choose
+  // (or Speak instead, which summons nothing).
+  const summon = summonSpell(cs.id);
+  const choices = summon?.creatureType ? creatureChoices(cs.id, castLevel) : [];
+  const [creature, setCreature] = useState('');
+  const chosen = choices.find((x) => x.id === creature)?.id;
+  const summons = summon && (!summon.creatureType || chosen) ? castSummon(c.play.summons ?? [], cs.id, castLevel, chosen) : undefined;
   const req: UseRequest = {
     key: cs.id,
     name: cs.name,
@@ -70,6 +78,7 @@ export function CastRow({
         if (cost && res) next = { ...next, resources: { ...next.resources, [cost.resource]: (next.resources[cost.resource] ?? 0) + cost.amount } };
         if (burns) next = { ...next, trackers: raise(next.trackers, 'Prismaburn', castLevel) };
         if (debt) next = { ...next, trackers: raise(next.trackers, 'Indebted', 2 * castLevel) };
+        if (summons) next = { ...next, summons: castSummon(next.summons ?? [], cs.id, castLevel, chosen).summons };
         return next;
       },
       log: [
@@ -77,6 +86,7 @@ export function CastRow({
         ...(cost && res ? [`${res.mode === 'limit' ? 'Applied' : 'Spent'} ${cost.amount} ${cost.resource}.`] : []),
         ...(burns ? [`Prismaburned ${Math.max(c.play.trackers.Prismaburn ?? 0, castLevel)}.`] : []),
         ...(debt ? [`Indebted ${Math.max(c.play.trackers.Indebted ?? 0, 2 * castLevel)}.`] : []),
+        ...(summons?.log ?? []),
       ],
     },
   };
@@ -100,6 +110,20 @@ export function CastRow({
                 </option>
               ))}
             </select>
+          </label>
+        )}
+        {summon?.creatureType && (
+          <label className="inline">
+            Option
+            <select value={chosen ?? ''} onChange={(e) => setCreature(e.target.value)} aria-label="Speak or summon">
+              <option value="">Speak</option>
+              {choices.map((x) => (
+                <option key={x.id} value={x.id}>
+                  Summon: {x.name} (level {x.level})
+                </option>
+              ))}
+            </select>
+            {choices.length === 0 && <span className="muted small">No {summon.creatureType} stat blocks in the app yet</span>}
           </label>
         )}
         {modDie && (

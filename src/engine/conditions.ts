@@ -515,8 +515,8 @@ export function startTurn(p: PlayState, level: number, resistances: { type: stri
   return { play: { ...p, conditions, effects, trackers, tempEndurance, turn: { active: true, noApRegain } }, log, damage };
 }
 
-/** End of your turn: regain AP, temporary AP disappears, and Conditions that tick down do. */
-export function endTurn(p: PlayState, immuneConditions: string[] = []): TurnResult {
+/** End of your turn (`apMax`: a summon's is 3): regain AP, temporary AP disappears, and Conditions that tick down do. */
+export function endTurn(p: PlayState, immuneConditions: string[] = [], apMax = AP_MAX): TurnResult {
   let conditions = [...p.conditions];
   const log: string[] = [];
   const active = activeConditions(p, immuneConditions);
@@ -533,8 +533,8 @@ export function endTurn(p: PlayState, immuneConditions: string[] = []): TurnResu
     }
   }
   const blocked = p.turn?.noApRegain || active.some((c) => c.name === 'Paralyzed');
-  const ap = blocked ? (p.ap ?? 0) : AP_MAX;
-  log.push(blocked ? 'You don’t regain AP (Paralyzed).' : `Regained AP (${AP_MAX}).`);
+  const ap = blocked ? (p.ap ?? 0) : apMax;
+  log.push(blocked ? 'You don’t regain AP (Paralyzed).' : `Regained AP (${apMax}).`);
   if (p.tempAp) log.push('Temporary AP lost.');
   // Active effects: some end now; others restore temporary AP or a resource.
   const resources = { ...p.resources };

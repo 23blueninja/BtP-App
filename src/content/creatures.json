@@ -1,0 +1,99 @@
+{
+  "source": "Exported from the BtP Monster Maker (Bestiary). Add creatures by appending Monster Maker exports.",
+  "creatures": [
+    {
+      "schema": 1,
+      "id": "wolf",
+      "name": "Wolf",
+      "size": "Medium",
+      "alignment": "Frost",
+      "type": "Beast",
+      "level": 1,
+      "armorClass": 10,
+      "endurance": 22,
+      "movement": 15,
+      "otherMovement": [
+        "Swim 1"
+      ],
+      "senses": [
+        "Night Vision"
+      ],
+      "perRadius": 15,
+      "attributes": {
+        "VIG": 2,
+        "AGI": 4,
+        "PER": 2,
+        "INT": -3,
+        "PRS": 1
+      },
+      "resistances": [
+        {
+          "name": "Arctic",
+          "rating": "2"
+        },
+        {
+          "name": "Freezing",
+          "rating": "1"
+        }
+      ],
+      "immunities": [],
+      "vulnerabilities": [
+        {
+          "name": "Slashing",
+          "rating": "1d6"
+        }
+      ],
+      "professions": [
+        {
+          "name": "Hunting",
+          "mod": 5
+        }
+      ],
+      "hobbies": [
+        {
+          "name": "Hearing",
+          "mod": 4
+        },
+        {
+          "name": "Howling",
+          "mod": 4
+        },
+        {
+          "name": "Smelling",
+          "mod": 4
+        }
+      ],
+      "languages": [
+        "Canine"
+      ],
+      "facets": [],
+      "weapons": [
+        {
+          "name": "Bite",
+          "dv": "2",
+          "deadly": "4",
+          "damage": "Slashing",
+          "details": "Pulling, Seized by the wolf on a Deadly Success.",
+          "natural": true
+        }
+      ],
+      "actions": [
+        {
+          "name": "Howl",
+          "reaction": false,
+          "text": "The wolf howls, allowing every other wolf within 9 kilometers to Stride as a Reaction to hearing the howl.",
+          "outcomes": [],
+          "ap": "5"
+        },
+        {
+          "name": "Pack Strike",
+          "reaction": true,
+          "text": "The wolf Strikes the creature targeted by the Ally, and its Attack Check has Advantage.",
+          "outcomes": [],
+          "ap": "3",
+          "trigger": "An Ally Strikes a creature within 1 space of the wolf and no other Hostile creatures are within 1 space of the wolf"
+        }
+      ]
+    }
+  ]
+}

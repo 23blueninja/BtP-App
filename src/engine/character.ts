@@ -1,4 +1,5 @@
 import type { Attr, Light, Rank, RestRule } from '../data/types';
+import type { Summon } from './summons';
 
 export const CHARACTER_VERSION = 1;
 
@@ -74,6 +75,8 @@ export interface PlayState {
   /** Whether it is currently your turn. */
   turn?: { active: boolean; noApRegain?: boolean; uses?: Record<string, number> };
   effects?: ActiveEffect[];
+  /** Creatures your spells summoned (Summons tab). */
+  summons?: Summon[];
 }
 
 /** A value that may differ by Alignment tier: [none, Weak, Firm, Strong]. */
