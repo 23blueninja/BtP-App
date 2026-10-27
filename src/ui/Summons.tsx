@@ -6,7 +6,6 @@ import { addCondition } from '../engine/conditions';
 import { dieLabel } from '../engine/dice';
 import {
   SUMMON_AP_MAX,
-  SUMMON_SPELLS,
   damageSummon,
   endSummonTurn,
   fromPlay,
@@ -30,14 +29,8 @@ const rated = (xs: Rated[]) => xs.map((x) => (x.rating ? `${x.name} ${x.rating}`
 /** The Summons tab: each creature your spells summoned, with its stat block and its own Endurance, Conditions and AP. */
 export function SummonsTab({ c, setPlay }: { c: Character; setPlay: SetPlay }) {
   const summons = c.play.summons ?? [];
-  const known = SUMMON_SPELLS.map((s) => getCastable(s.spell)?.name).filter(Boolean);
   return (
     <div className="summons-tab">
-      {summons.length === 0 && (
-        <section className="box">
-          <p className="muted">No summons. Cast a summon spell on the Spells &amp; Maneuvers tab ({known.join(', ')}) and its creature appears here.</p>
-        </section>
-      )}
       {summons.map((s) => (
         <SummonCard key={s.id} s={s} setPlay={setPlay} />
       ))}
