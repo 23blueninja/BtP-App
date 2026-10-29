@@ -1675,6 +1675,13 @@ describe('normalizeCharacter', () => {
     const n = normalizeCharacter({ play: { conditions: [{ name: 'Defeaned' }, { name: 'Possesed', level: 2 }] } });
     expect(n.play.conditions).toEqual([{ name: 'Deafened' }, { name: 'Possessed', level: 2 }]);
   });
+  it('misspelled spell ids are renamed in known and prepared lists', () => {
+    const n = normalizeCharacter({ spells: { a: ['spells/arcana/ice/artic-ward', 'x'] }, play: { prepared: { b: ['spells/arcana/moon/arcane-tricekry'] } } } as never);
+    expect(n.spells).toEqual({ a: ['spells/arcana/ice/arctic-ward', 'x'] });
+    expect(n.play.prepared).toEqual({ b: ['spells/arcana/moon/arcane-trickery'] });
+    expect(getCastable('spells/arcana/ice/arctic-ward')?.name).toBe('Arctic Ward');
+    expect(getCastable('spells/arcana/moon/arcane-trickery')?.name).toBe('Arcane Trickery');
+  });
   it('old notes become one session dated from updatedAt; existing sessions are kept', () => {
     const n = normalizeCharacter({ updatedAt: '2025-03-04T10:00:00.000Z', details: { notes: 'We met a dragon.' } });
     expect(n.sessions).toEqual([{ id: expect.any(String), title: 'Earlier notes', date: '2025-03-04', body: 'We met a dragon.' }]);

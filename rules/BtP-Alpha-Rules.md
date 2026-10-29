@@ -6887,7 +6887,7 @@ Your words instill mortal fear. Choose a creature you can sense that can hear yo
 :
 {{left
 **Success** :: Panicked $[SL].
-**Complete Success** :: Panicked SL plus 1.
+**Complete Success** :: Panicked $[SL] plus 1.
 **Failure** :: Panicked half $[SL], rounded down.
 **Complete Failure** :: Nothing.
 :
@@ -6969,7 +6969,7 @@ You create a small flame emitting Low Brightness out to 5 spaces. The flame can 
 ##### Fire Shot
 Make an Attack Check against the $[AGI] of a creature within range. Add the value of your Mod Die to the Thermic damage dealt.
 
-You can use Fire Shot as part of Sustaining the Create Fire effect of this spell. If you do, it costs an 3 $[AP] to Sustain instead of 1 $[AP], and the spell ends after you make the Attack Check.
+You can use Fire Shot as part of Sustaining the Create Fire effect of this spell. If you do, it costs 3 $[AP] to Sustain instead of 1 $[AP], and the spell ends after you make the Attack Check.
 :
 {{left
 **Success** :: Your level plus 5 Thermic damage.
@@ -7230,7 +7230,7 @@ Choose a Large or smaller object you can sense within range. You affect the targ
 
 - You cool the object down to 70 degrees.
 
-#### Artic Ward
+#### Arctic Ward
 *Ice Cantrip*
 **Cast Time** :: 3 $[AP]
 **Range** :: Touch
@@ -7249,8 +7249,10 @@ You siphon Ice Prisma from your surroundings into a ward against cold. Touch a c
 **Duration** :: Instant
 
 Releasing the Powdered Aquamarine in a cloud around yourself, you expand the shattered gems into a suit of ice armor. You take 5$[SL] arctic damage and gain 25$[SL] *Temporary Endurance*.
-
-Exalted (4th) You gain 30$[SL] *Temporary Endurance*, instead of 25$[SL].
+:
+{{left
+**Exalted (4th)** :: You gain 30$[SL] *Temporary Endurance*, instead of 25$[SL].
+}}
 
 #### Ice Bolt
 *Ice Arcanum, 1st-level*
@@ -7300,7 +7302,7 @@ The ice melts naturally over time. It disappears if it or any creature in its ar
 Each creature on the ground in the circle when the ice appears makes an $[AGI] Save Check against your DC Check.
 :
 **Failure** :: Prone.
-**Deadly Failure** :: Freezing $[SL].
+**Deadly Failure** :: Prone, Freezing $[SL].
 **Success** :: Slowed 1 until the start of your turn.
 **Complete Success** :: Nothing.
 :
@@ -7471,7 +7473,9 @@ While casting this spell, you can choose to create up to 5$[SL] seconds of words
 
 Your incantation releases bolts of fast-moving Mind Prisma that seek their targets. For each $[AP] spent, target one creature you can sense within range. Each target takes 3$[SL] Psychic damage. You can target the same creature multiple times.
 :
-**Exalted (+2)** You can spend an additional 1 $[AP] when you cast this spell.
+{{left
+**Exalted (+2)** :: You can spend an additional 1 $[AP] when you cast this spell.
+}}
 
 #### Summon Familiar
 *Mind Arcanum, 1st-level*
@@ -7603,7 +7607,7 @@ Alternatively, you can spend 10 minutes channeling information into a 1g or larg
 **Components** :: Spoken, Two Hands
 **Duration** :: 1 minute
 
-You harness a minor amount of Bio Prisma for an adrenaline boost. Touch a creature you can sense. The target gains *Temporary Endurance* equal to your level plus 5 that lasts for the duration. While they have *Temporary Endurance* from this arcanum, they gain the benefits below.
+You harness a minor amount of Bio Prisma to grant an adrenaline boost to a creature you can touch. Roll your Spell Mod Die. The target gains *Temporary Endurance* equal to 5 plus the result and your level that lasts for the duration. While they have *Temporary Endurance* from this arcanum, they gain the benefits below.
 :
 * ***Speed.*** The creature’s *Movement* increases by half your Class Bonus.
 
@@ -7646,11 +7650,11 @@ You boost a creature’s speed with Bio Prisma from the Charged Tourmaline. Choo
 **Components** :: Spoken, One Hand
 **Duration** :: Instant
 
-You strengthen your body with Bio Prisma to make a fast and powerful strike with one of your limbs. Make an Attack Check against the $[PER] of a creature you can sense and touch. Add your Mod Die to the Crushing damage dealt.
+You strengthen your body with Bio Prisma to make a strike with one of your limbs that extends into the Fleshcage. Make an Attack Check against the $[PER] of a creature you can sense and touch. Add your Mod Die to the Somatic damage dealt.
 :
 {{left
-**Success** :: 8$[SL] plus 5 Crushing damage.
-**Deadly Success** :: 12$[SL] plus 8 Crushing damage, Buffeted $[SL].
+**Success** :: 4$[SL] Somatic damage, 4$[SL] plus 5 Crushing damage.
+**Deadly Success** :: 6$[SL] Somatic damage, 6$[SL] plus 8 Crushing damage, Buffeted $[SL].
 **Critical Success** :: As a Deadly Success, Bruised, Prone.
 **Failure** :: Half as much damage as a Success.
 **Complete Failure** :: Nothing.
@@ -7663,6 +7667,21 @@ You strengthen your body with Bio Prisma to make a fast and powerful strike with
 {{pageNumber,auto}}
 
 \page
+
+#### Heighten Instinct
+*Bio Arcanum, 1st-level*
+**Cast Time** :: 5 $[AP]
+**Range** :: Self, 1-space emanation
+**Components** :: Two Hands, 2$[SL]g Powdered Tourmaline
+**Duration** :: 8 hours
+
+You swirl the Powdered Tourmaline all around you, allowing creatures in a 1-space emanation to breath it in. For the duration, the $[PER] Save and Skill Checks of those creatures are Empowered (including Initiative), and their $[PER] Radius is doubled.
+:
+{{left
+**Exalted (3rd)** :: The spell's Duration becomes 24 hours.
+**Exalted (4th)** :: An affected creature's $[PER] Attack Checks are also Bolstered 1.
+**Exalted (5th)** :: The spell's Duration becomes 3 days. Affected creatures don't need to sleep and their $[VIG] Checks are also Empowered.
+}}
 
 #### Invigorate
 *Bio Arcanum, 1st-level*
@@ -7687,26 +7706,6 @@ You imbue a creature with Bio Prisma to enhance their strength. Touch a creature
 **Exalted (3rd)** :: You can target an additional creature you can touch.
 **Exalted (4th)** :: The spell’s Range becomes 5 spaces, and you can target three creatures within range.
 **Exalted (5th)** :: The spell’s Duration becomes Sustained, 1 hour.
-}}
-
-#### Wither
-*Bio Arcanum, 1st-level*
-{{left
-**Cast Time** :: 2 $[AP]
-**Range** :: 5 spaces
-**Components** :: Spoken, Two Hands, $[SL]g Powdered Tourmaline
-**Duration** :: Sustained, 1 minute
-}}
-
-Scattering the Powered Tourmaline into the air, you siphon a creature’s Bio Prisma into the dust to wither their body. When you cast this spell and each time you Sustain it, make an Attack Check against the $[VIG] of a creature you can sense within range. Add your Mod Die to the Somatic damage dealt.
-:
-{{left
-**Success** :: 6$[SL] plus 3 Somatic damage, Sickened $[SL] until the start of your turn.
-**Deadly Success** :: 9$[SL] plus 5 Somatic damage, Sickened $[SL] plus 1 until the start of your turn.
-**Failure** :: Half as much damage as a Success.
-**Complete Failure** :: Nothing.
-:
-**Exalted (3rd)** :: You can target $[SL] minus 1 creatures within range using the same Attack Check, instead of 1. A creature is Sickened 1 until the start of your next turn on a Failure.
 }}
 
 \column
@@ -7814,7 +7813,7 @@ Using your pain, you guide Scour Prisma back to the attacker to sear their flesh
 **Complete Failure** :: Dissolving $[SL].
 :
 **Exalted (4th)** :: You can target another Hostile creature within range, using the same Attack check.
-**Exalted (4th)** :: You can target a third Hostile creature.
+**Exalted (5th)** :: You can target a third Hostile creature.
 
 #### Whirlpool
 *Scour Arcanum, 1st-level*
@@ -7862,7 +7861,7 @@ You charge the air around you with Arc Prisma to create a sudden, sparking gale.
 :
 {{left
 **Failure** ::Galvanic damage equal to the value of your Mod Die for the DC Check, Move Actions don’t trigger Reactions from the creature until the start of your next turn.
-**Deadly Failure** :: As a Success, additional Galvanic damage equal to your Class Bonus, Slowed 1 until the start of your turn.
+**Deadly Failure** :: As a Failure, additional Galvanic damage equal to your Class Bonus, Slowed 1 until the start of your turn.
 **Success** :: Nothing.
 }}
 :
@@ -7953,7 +7952,7 @@ You release a thundering bolt of electricity. Make an Attack Check against the $
 You wrap Arc Prisma around yourself, connecting your body to two places at once. You Teleport to an unoccupied space you can sense within range.
 :
 {{left
-**Exalted (4th)** You can Teleport a creature you can touch to a unoccupied space adjacent to your chosen space. If the creature is unwilling, you must make a Successful Attack Check against their $[AGI].
+**Exalted (4th)** :: You can Teleport a creature you can touch to a unoccupied space adjacent to your chosen space. If the creature is unwilling, you must make a Successful Attack Check against their $[AGI].
 }}
 
 #### Updraft
@@ -8090,7 +8089,7 @@ Casting this option of the spell isn’t a Hostile Action, and isn’t noticeabl
 
 ### Moon
 
-#### Arcane Tricekry
+#### Arcane Trickery
 *Moon Cantrip*
 **Cast Time** :: 3 $[AP]
 **Range** :: Varies
@@ -8803,7 +8802,7 @@ You sing aloud the amplified noises of growing flesh and bone. Choose $[SL] crea
 #### Trial of Plague
 *Soma Evocation, 1st-level*
 **Cast Time** :: 3 $[AP]
-**Range** :: Self, 3-space cone
+**Range** :: Self, $[SL] plus 2-space cone
 **Components** :: Spoken, Two Hands
 **Duration** :: Instant
 
@@ -9004,8 +9003,8 @@ Like a raging storm, your weapon becomes imbued with lightning. You Strike, and 
 **Exalted (3rd)** :: The size of the cone increases to 8 spaces.
 **Exalted (4th)** :: The Attack Check of your Strike is Bolstered 1, and the results of the Save Check are now as follows.
 
-**Failure** :: 5$[SL] Galvanic Damage.
-**Deadly Failure** :: 8$[SL] Galvanic Damage.
+**Failure** :: 6$[SL] Galvanic Damage.
+**Deadly Failure** :: 9$[SL] Galvanic Damage.
 **Success** :: Half as much damage as a Failure.
 **Complete Success**::  Nothing.
 :
@@ -9299,7 +9298,7 @@ Each time you Sustain this spell, each creature in the emanation makes the Save 
 :
 {{left
 **Failure** :: The creature begins floating in their space and is Seized until the start of your turn.
-**Deadly Failure** :: As a Success, and the creature is Prone.
+**Deadly Failure** :: As a Failure, and the creature is Prone.
 **Success** :: The creature is Immobilized until the start of your turn.
 **Complete Success** :: Nothing.
 :
