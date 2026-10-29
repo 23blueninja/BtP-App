@@ -331,6 +331,14 @@ export function newCharacter(): Character {
 /** Conditions whose rulebook spelling was corrected. */
 const RENAMED_CONDITIONS: Record<string, string> = { Defeaned: 'Deafened', Possesed: 'Possessed' };
 
+/** Spells whose rulebook spelling was corrected, by section id. */
+const RENAMED_SPELLS: Record<string, string> = {
+  'spells/arcana/ice/artic-ward': 'spells/arcana/ice/arctic-ward',
+  'spells/arcana/moon/arcane-tricekry': 'spells/arcana/moon/arcane-trickery',
+};
+const renameSpells = (lists: Record<string, string[]> = {}) =>
+  Object.fromEntries(Object.entries(lists).map(([k, ids]) => [k, ids.map((id) => RENAMED_SPELLS[id] ?? id)]));
+
 /** Fills in fields missing from older saves or hand-edited imports. */
 export function normalizeCharacter(raw: unknown): Character {
   const base = newCharacter();
@@ -344,12 +352,17 @@ export function normalizeCharacter(raw: unknown): Character {
     details: { ...base.details, ...c.details },
     equipment: { ...base.equipment, ...c.equipment },
     settings: { ...base.settings, ...c.settings },
-    play: { ...emptyPlay(), ...c.play, conditions: (c.play?.conditions ?? []).map((x) => ({ ...x, name: RENAMED_CONDITIONS[x.name] ?? x.name })) },
+    play: {
+      ...emptyPlay(),
+      ...c.play,
+      conditions: (c.play?.conditions ?? []).map((x) => ({ ...x, name: RENAMED_CONDITIONS[x.name] ?? x.name })),
+      prepared: renameSpells(c.play?.prepared),
+    },
     skills: { ...c.skills },
     skillRanks: { ...c.skillRanks },
     noviceHobbies: c.noviceHobbies ?? 0,
     choices: { ...c.choices },
-    spells: { ...c.spells },
+    spells: renameSpells(c.spells),
     ageUps: c.ageUps ?? [],
     // Experiences used to be plain names.
     experiences: ((c.experiences ?? []) as (Experience | string)[]).map((e) => (typeof e === 'string' ? { id: uid(), name: e, uses: 1, used: 0, effect: '' } : e)),

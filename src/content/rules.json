@@ -8853,12 +8853,12 @@
          "titleHtml": "Frighten",
          "depth": 5,
          "id": "maneuvers/psychological/intimidate/frighten",
-         "html": "<dl class=\"defs\"><div><dt>Execution Time</dt><dd>3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd><span class=\"ic ic-PER\" role=\"img\" aria-label=\"PER\" title=\"PER\"></span> Radius</dd></div></dl>\n\n\n<p>Your words instill mortal fear. Choose a creature you can sense that can hear you. You make a Tandem Skill Check with your Maneuver Mod Die and your <span class=\"ic ic-PRS\" role=\"img\" aria-label=\"PRS\" title=\"PRS\"></span> Mod Die against the <span class=\"ic ic-PRS\" role=\"img\" aria-label=\"PRS\" title=\"PRS\"></span> of the creature. Your Skill Check is Empowered. If you target a Hostile creature, it also has Disadvantage.</p>\n<dl class=\"defs\"><div><dt>Success</dt><dd>Panicked <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Complete Success</dt><dd>Panicked SL plus 1.</dd></div><div><dt>Failure</dt><dd>Panicked half <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>, rounded down.</dd></div><div><dt>Complete Failure</dt><dd>Nothing.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (4th)</dt><dd>You Skill Check doesn&#39;t have Disadvantage against a Hostile creature.</dd></div><div><dt>Exalted (5th)</dt><dd>You execute this maneuver twice.</dd></div></dl>",
+         "html": "<dl class=\"defs\"><div><dt>Execution Time</dt><dd>3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd><span class=\"ic ic-PER\" role=\"img\" aria-label=\"PER\" title=\"PER\"></span> Radius</dd></div></dl>\n\n\n<p>Your words instill mortal fear. Choose a creature you can sense that can hear you. You make a Tandem Skill Check with your Maneuver Mod Die and your <span class=\"ic ic-PRS\" role=\"img\" aria-label=\"PRS\" title=\"PRS\"></span> Mod Die against the <span class=\"ic ic-PRS\" role=\"img\" aria-label=\"PRS\" title=\"PRS\"></span> of the creature. Your Skill Check is Empowered. If you target a Hostile creature, it also has Disadvantage.</p>\n<dl class=\"defs\"><div><dt>Success</dt><dd>Panicked <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Complete Success</dt><dd>Panicked <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 1.</dd></div><div><dt>Failure</dt><dd>Panicked half <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>, rounded down.</dd></div><div><dt>Complete Failure</dt><dd>Nothing.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (4th)</dt><dd>You Skill Check doesn&#39;t have Disadvantage against a Hostile creature.</dd></div><div><dt>Exalted (5th)</dt><dd>You execute this maneuver twice.</dd></div></dl>",
          "fields": {
           "Execution Time": "3 {AP}",
           "Range": "{PER} Radius",
           "Success": "Panicked {SL}.",
-          "Complete Success": "Panicked SL plus 1.",
+          "Complete Success": "Panicked {SL} plus 1.",
           "Failure": "Panicked half {SL}, rounded down.",
           "Complete Failure": "Nothing.",
           "Exalted (4th)": "You Skill Check doesn't have Disadvantage against a Hostile creature.",
@@ -8949,7 +8949,7 @@
            "titleHtml": "Fire Shot",
            "depth": 5,
            "id": "spells/arcana/fire/arcane-fire/fire-shot",
-           "html": "<p>Make an Attack Check against the <span class=\"ic ic-AGI\" role=\"img\" aria-label=\"AGI\" title=\"AGI\"></span> of a creature within range. Add the value of your Mod Die to the Thermic damage dealt.</p>\n<p>You can use Fire Shot as part of Sustaining the Create Fire effect of this spell. If you do, it costs an 3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span> to Sustain instead of 1 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span>, and the spell ends after you make the Attack Check.</p>\n<dl class=\"defs\"><div><dt>Success</dt><dd>Your level plus 5 Thermic damage.</dd></div><div><dt>Deadly Success</dt><dd>Additional Thermic damage equal to your Class Bonus.</dd></div><div><dt>Failure</dt><dd>Nothing.</dd></div></dl>",
+           "html": "<p>Make an Attack Check against the <span class=\"ic ic-AGI\" role=\"img\" aria-label=\"AGI\" title=\"AGI\"></span> of a creature within range. Add the value of your Mod Die to the Thermic damage dealt.</p>\n<p>You can use Fire Shot as part of Sustaining the Create Fire effect of this spell. If you do, it costs 3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span> to Sustain instead of 1 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span>, and the spell ends after you make the Attack Check.</p>\n<dl class=\"defs\"><div><dt>Success</dt><dd>Your level plus 5 Thermic damage.</dd></div><div><dt>Deadly Success</dt><dd>Additional Thermic damage equal to your Class Bonus.</dd></div><div><dt>Failure</dt><dd>Nothing.</dd></div></dl>",
            "fields": {
             "Success": "Your level plus 5 Thermic damage.",
             "Deadly Success": "Additional Thermic damage equal to your Class Bonus.",
@@ -9164,10 +9164,10 @@
          "subtitle": "Ice Cantrip"
         },
         {
-         "title": "Artic Ward",
-         "titleHtml": "Artic Ward",
+         "title": "Arctic Ward",
+         "titleHtml": "Arctic Ward",
          "depth": 4,
-         "id": "spells/arcana/ice/artic-ward",
+         "id": "spells/arcana/ice/arctic-ward",
          "html": "<p class=\"subtitle\"><em>Ice Cantrip</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>Touch</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>Sustained, 1 minute</dd></div></dl>\n\n\n<p>You siphon Ice Prisma from your surroundings into a ward against cold. Touch a creature you can sense. For the duration, that creature has Arctic Resistance equal to twice your Class Bonus. If the target would take Thermic damage during that time, it instead takes no damage and the spell ends.</p>",
          "fields": {
           "Cast Time": "3 {AP}",
@@ -9182,12 +9182,13 @@
          "titleHtml": "Ice Armor",
          "depth": 4,
          "id": "spells/arcana/ice/ice-armor",
-         "html": "<p class=\"subtitle\"><em>Ice Arcanum, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>1 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>Self</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands, 1<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>g Powdered Aquamarine</dd></div><div><dt>Duration</dt><dd>Instant</dd></div></dl>\n\n\n<p>Releasing the Powdered Aquamarine in a cloud around yourself, you expand the shattered gems into a suit of ice armor. You take 5<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> arctic damage and gain 25<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> <em>Temporary Endurance</em>.</p>\n<p>Exalted (4th) You gain 30<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> <em>Temporary Endurance</em>, instead of 25<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</p>",
+         "html": "<p class=\"subtitle\"><em>Ice Arcanum, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>1 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>Self</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands, 1<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>g Powdered Aquamarine</dd></div><div><dt>Duration</dt><dd>Instant</dd></div></dl>\n\n\n<p>Releasing the Powdered Aquamarine in a cloud around yourself, you expand the shattered gems into a suit of ice armor. You take 5<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> arctic damage and gain 25<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> <em>Temporary Endurance</em>.</p>\n<dl class=\"defs\"><div><dt>Exalted (4th)</dt><dd>You gain 30<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> <em>Temporary Endurance</em>, instead of 25<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div></dl>",
          "fields": {
           "Cast Time": "1 {AP}",
           "Range": "Self",
           "Components": "Spoken, Two Hands, 1{SL}g Powdered Aquamarine",
-          "Duration": "Instant"
+          "Duration": "Instant",
+          "Exalted (4th)": "You gain 30{SL} Temporary Endurance, instead of 25{SL}."
          },
          "subtitle": "Ice Arcanum, 1st-level"
         },
@@ -9217,14 +9218,14 @@
          "titleHtml": "Prismchill Sigil",
          "depth": 4,
          "id": "spells/arcana/ice/prismchill-sigil",
-         "html": "<p class=\"subtitle\"><em>Ice Arcanum, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>2 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>10 spaces, <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>-space circle</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>Instant</dd></div></dl>\n\n\n<p>You manipulate Ice Prisma into an arcane sigil at a space you can sense within range, covering the ground in a <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>-space circle centered on that space with ice.</p>\n<p>The ice is Treacherous Terrain, and creatures must Succeed on a DC 10 <span class=\"ic ic-AGI\" role=\"img\" aria-label=\"AGI\" title=\"AGI\"></span> Save Check each time they attempt to Stride on it or fall Prone, wasting the <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span> spent to do so.</p>\n<p>The ice melts naturally over time. It disappears if it or any creature in its area is dealt Thermic damage.</p>\n<p>Each creature on the ground in the circle when the ice appears makes an <span class=\"ic ic-AGI\" role=\"img\" aria-label=\"AGI\" title=\"AGI\"></span> Save Check against your DC Check.</p>\n<dl class=\"defs\"><div><dt>Failure</dt><dd>Prone.</dd></div><div><dt>Deadly Failure</dt><dd>Freezing <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Success</dt><dd>Slowed 1 until the start of your turn.</dd></div><div><dt>Complete Success</dt><dd>Nothing.</dd></div></dl>\n\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (4th)</dt><dd>A creature is Freezing half <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> on a Failure.</dd></div></dl>",
+         "html": "<p class=\"subtitle\"><em>Ice Arcanum, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>2 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>10 spaces, <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>-space circle</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>Instant</dd></div></dl>\n\n\n<p>You manipulate Ice Prisma into an arcane sigil at a space you can sense within range, covering the ground in a <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>-space circle centered on that space with ice.</p>\n<p>The ice is Treacherous Terrain, and creatures must Succeed on a DC 10 <span class=\"ic ic-AGI\" role=\"img\" aria-label=\"AGI\" title=\"AGI\"></span> Save Check each time they attempt to Stride on it or fall Prone, wasting the <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span> spent to do so.</p>\n<p>The ice melts naturally over time. It disappears if it or any creature in its area is dealt Thermic damage.</p>\n<p>Each creature on the ground in the circle when the ice appears makes an <span class=\"ic ic-AGI\" role=\"img\" aria-label=\"AGI\" title=\"AGI\"></span> Save Check against your DC Check.</p>\n<dl class=\"defs\"><div><dt>Failure</dt><dd>Prone.</dd></div><div><dt>Deadly Failure</dt><dd>Prone, Freezing <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Success</dt><dd>Slowed 1 until the start of your turn.</dd></div><div><dt>Complete Success</dt><dd>Nothing.</dd></div></dl>\n\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (4th)</dt><dd>A creature is Freezing half <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> on a Failure.</dd></div></dl>",
          "fields": {
           "Cast Time": "2 {AP}",
           "Range": "10 spaces, {SL}-space circle",
           "Components": "Spoken, Two Hands",
           "Duration": "Instant",
           "Failure": "Prone.",
-          "Deadly Failure": "Freezing {SL}.",
+          "Deadly Failure": "Prone, Freezing {SL}.",
           "Success": "Slowed 1 until the start of your turn.",
           "Complete Success": "Nothing.",
           "Exalted (4th)": "A creature is Freezing half {SL} on a Failure."
@@ -9400,12 +9401,13 @@
          "titleHtml": "Soul Seeker",
          "depth": 4,
          "id": "spells/arcana/mind/soul-seeker",
-         "html": "<p class=\"subtitle\"><em>Mind Arcanum, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>1 - 3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>20 spaces</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>Instant</dd></div></dl>\n\n\n<p>Your incantation releases bolts of fast-moving Mind Prisma that seek their targets. For each <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span> spent, target one creature you can sense within range. Each target takes 3<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> Psychic damage. You can target the same creature multiple times.</p>\n<p><strong>Exalted (+2)</strong> You can spend an additional 1 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span> when you cast this spell.</p>",
+         "html": "<p class=\"subtitle\"><em>Mind Arcanum, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>1 - 3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>20 spaces</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>Instant</dd></div></dl>\n\n\n<p>Your incantation releases bolts of fast-moving Mind Prisma that seek their targets. For each <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span> spent, target one creature you can sense within range. Each target takes 3<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> Psychic damage. You can target the same creature multiple times.</p>\n<dl class=\"defs\"><div><dt>Exalted (+2)</dt><dd>You can spend an additional 1 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span> when you cast this spell.</dd></div></dl>",
          "fields": {
           "Cast Time": "1 - 3 {AP}",
           "Range": "20 spaces",
           "Components": "Spoken, Two Hands",
-          "Duration": "Instant"
+          "Duration": "Instant",
+          "Exalted (+2)": "You can spend an additional 1 {AP} when you cast this spell."
          },
          "subtitle": "Mind Arcanum, 1st-level"
         },
@@ -9521,7 +9523,7 @@
          "titleHtml": "Adrenalize",
          "depth": 4,
          "id": "spells/arcana/bio/adrenalize",
-         "html": "<p class=\"subtitle\"><em>Bio Cantrip</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>Touch</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>1 minute</dd></div></dl>\n\n\n<p>You harness a minor amount of Bio Prisma for an adrenaline boost. Touch a creature you can sense. The target gains <em>Temporary Endurance</em> equal to your level plus 5 that lasts for the duration. While they have <em>Temporary Endurance</em> from this arcanum, they gain the benefits below.</p>\n<ul>\n<li><p><em><strong>Speed.</strong></em> The creature’s <em>Movement</em> increases by half your Class Bonus.</p>\n</li>\n<li><p><em><strong>Force.</strong></em> When the creature makes a Successful Weapon Attack Check, the <em>Temporary Endurance</em> is sacrificed and the target of their Attack Check takes additional damage of a type dealt by the weapon equal to the amount sacrificed.</p>\n</li>\n<li><p><em><strong>Overdrive.</strong></em> When the target makes a <span class=\"ic ic-VIG\" role=\"img\" aria-label=\"VIG\" title=\"VIG\"></span>, <span class=\"ic ic-AGI\" role=\"img\" aria-label=\"AGI\" title=\"AGI\"></span>, or <span class=\"ic ic-PER\" role=\"img\" aria-label=\"PER\" title=\"PER\"></span> Save or Skill Check, the Check is Bolstered 1. Any <em>Temporary Endurance</em> remaining after the Check resolves is sacrificed.</p>\n</li>\n</ul>",
+         "html": "<p class=\"subtitle\"><em>Bio Cantrip</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>Touch</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>1 minute</dd></div></dl>\n\n\n<p>You harness a minor amount of Bio Prisma to grant an adrenaline boost to a creature you can touch. Roll your Spell Mod Die. The target gains <em>Temporary Endurance</em> equal to 5 plus the result and your level that lasts for the duration. While they have <em>Temporary Endurance</em> from this arcanum, they gain the benefits below.</p>\n<ul>\n<li><p><em><strong>Speed.</strong></em> The creature’s <em>Movement</em> increases by half your Class Bonus.</p>\n</li>\n<li><p><em><strong>Force.</strong></em> When the creature makes a Successful Weapon Attack Check, the <em>Temporary Endurance</em> is sacrificed and the target of their Attack Check takes additional damage of a type dealt by the weapon equal to the amount sacrificed.</p>\n</li>\n<li><p><em><strong>Overdrive.</strong></em> When the target makes a <span class=\"ic ic-VIG\" role=\"img\" aria-label=\"VIG\" title=\"VIG\"></span>, <span class=\"ic ic-AGI\" role=\"img\" aria-label=\"AGI\" title=\"AGI\"></span>, or <span class=\"ic ic-PER\" role=\"img\" aria-label=\"PER\" title=\"PER\"></span> Save or Skill Check, the Check is Bolstered 1. Any <em>Temporary Endurance</em> remaining after the Check resolves is sacrificed.</p>\n</li>\n</ul>",
          "fields": {
           "Cast Time": "3 {AP}",
           "Range": "Touch",
@@ -9583,19 +9585,36 @@
          "titleHtml": "Enhanced Strike",
          "depth": 4,
          "id": "spells/arcana/bio/enhanced-strike",
-         "html": "<p class=\"subtitle\"><em>Bio Arcanum, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>2 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>Touch</dd></div><div><dt>Components</dt><dd>Spoken, One Hand</dd></div><div><dt>Duration</dt><dd>Instant</dd></div></dl>\n\n\n<p>You strengthen your body with Bio Prisma to make a fast and powerful strike with one of your limbs. Make an Attack Check against the <span class=\"ic ic-PER\" role=\"img\" aria-label=\"PER\" title=\"PER\"></span> of a creature you can sense and touch. Add your Mod Die to the Crushing damage dealt.</p>\n<dl class=\"defs\"><div><dt>Success</dt><dd>8<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 5 Crushing damage.</dd></div><div><dt>Deadly Success</dt><dd>12<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 8 Crushing damage, Buffeted <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Critical Success</dt><dd>As a Deadly Success, Bruised, Prone.</dd></div><div><dt>Failure</dt><dd>Half as much damage as a Success.</dd></div><div><dt>Complete Failure</dt><dd>Nothing.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (4th)</dt><dd>The creature is Buffeted <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> on a Success, or <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 1 on a Deadly Success.</dd></div><div><dt>Exalted (5th)</dt><dd>The creature is Numbed 1 on a Success, or Numbed 2 on a Deadly Success, until the start of your turn.</dd></div></dl>",
+         "html": "<p class=\"subtitle\"><em>Bio Arcanum, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>2 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>Touch</dd></div><div><dt>Components</dt><dd>Spoken, One Hand</dd></div><div><dt>Duration</dt><dd>Instant</dd></div></dl>\n\n\n<p>You strengthen your body with Bio Prisma to make a strike with one of your limbs that extends into the Fleshcage. Make an Attack Check against the <span class=\"ic ic-PER\" role=\"img\" aria-label=\"PER\" title=\"PER\"></span> of a creature you can sense and touch. Add your Mod Die to the Somatic damage dealt.</p>\n<dl class=\"defs\"><div><dt>Success</dt><dd>4<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> Somatic damage, 4<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 5 Crushing damage.</dd></div><div><dt>Deadly Success</dt><dd>6<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> Somatic damage, 6<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 8 Crushing damage, Buffeted <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Critical Success</dt><dd>As a Deadly Success, Bruised, Prone.</dd></div><div><dt>Failure</dt><dd>Half as much damage as a Success.</dd></div><div><dt>Complete Failure</dt><dd>Nothing.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (4th)</dt><dd>The creature is Buffeted <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> on a Success, or <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 1 on a Deadly Success.</dd></div><div><dt>Exalted (5th)</dt><dd>The creature is Numbed 1 on a Success, or Numbed 2 on a Deadly Success, until the start of your turn.</dd></div></dl>",
          "fields": {
           "Cast Time": "2 {AP}",
           "Range": "Touch",
           "Components": "Spoken, One Hand",
           "Duration": "Instant",
-          "Success": "8{SL} plus 5 Crushing damage.",
-          "Deadly Success": "12{SL} plus 8 Crushing damage, Buffeted {SL}.",
+          "Success": "4{SL} Somatic damage, 4{SL} plus 5 Crushing damage.",
+          "Deadly Success": "6{SL} Somatic damage, 6{SL} plus 8 Crushing damage, Buffeted {SL}.",
           "Critical Success": "As a Deadly Success, Bruised, Prone.",
           "Failure": "Half as much damage as a Success.",
           "Complete Failure": "Nothing.",
           "Exalted (4th)": "The creature is Buffeted {SL} on a Success, or {SL} plus 1 on a Deadly Success.",
           "Exalted (5th)": "The creature is Numbed 1 on a Success, or Numbed 2 on a Deadly Success, until the start of your turn."
+         },
+         "subtitle": "Bio Arcanum, 1st-level"
+        },
+        {
+         "title": "Heighten Instinct",
+         "titleHtml": "Heighten Instinct",
+         "depth": 4,
+         "id": "spells/arcana/bio/heighten-instinct",
+         "html": "<p class=\"subtitle\"><em>Bio Arcanum, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>5 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>Self, 1-space emanation</dd></div><div><dt>Components</dt><dd>Two Hands, 2<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>g Powdered Tourmaline</dd></div><div><dt>Duration</dt><dd>8 hours</dd></div></dl>\n\n\n<p>You swirl the Powdered Tourmaline all around you, allowing creatures in a 1-space emanation to breath it in. For the duration, the <span class=\"ic ic-PER\" role=\"img\" aria-label=\"PER\" title=\"PER\"></span> Save and Skill Checks of those creatures are Empowered (including Initiative), and their <span class=\"ic ic-PER\" role=\"img\" aria-label=\"PER\" title=\"PER\"></span> Radius is doubled.</p>\n<dl class=\"defs\"><div><dt>Exalted (3rd)</dt><dd>The spell&#39;s Duration becomes 24 hours.</dd></div><div><dt>Exalted (4th)</dt><dd>An affected creature&#39;s <span class=\"ic ic-PER\" role=\"img\" aria-label=\"PER\" title=\"PER\"></span> Attack Checks are also Bolstered 1.</dd></div><div><dt>Exalted (5th)</dt><dd>The spell&#39;s Duration becomes 3 days. Affected creatures don&#39;t need to sleep and their <span class=\"ic ic-VIG\" role=\"img\" aria-label=\"VIG\" title=\"VIG\"></span> Checks are also Empowered.</dd></div></dl>",
+         "fields": {
+          "Cast Time": "5 {AP}",
+          "Range": "Self, 1-space emanation",
+          "Components": "Two Hands, 2{SL}g Powdered Tourmaline",
+          "Duration": "8 hours",
+          "Exalted (3rd)": "The spell's Duration becomes 24 hours.",
+          "Exalted (4th)": "An affected creature's {PER} Attack Checks are also Bolstered 1.",
+          "Exalted (5th)": "The spell's Duration becomes 3 days. Affected creatures don't need to sleep and their {VIG} Checks are also Empowered."
          },
          "subtitle": "Bio Arcanum, 1st-level"
         },
@@ -9633,25 +9652,6 @@
            "text": "They gain 2{SL} Temporary Endurance at the start of their turn."
           }
          ]
-        },
-        {
-         "title": "Wither",
-         "titleHtml": "Wither",
-         "depth": 4,
-         "id": "spells/arcana/bio/wither",
-         "html": "<p class=\"subtitle\"><em>Bio Arcanum, 1st-level</em></p>\n\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>2 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>5 spaces</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands, <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>g Powdered Tourmaline</dd></div><div><dt>Duration</dt><dd>Sustained, 1 minute</dd></div></dl>\n\n\n\n<p>Scattering the Powered Tourmaline into the air, you siphon a creature’s Bio Prisma into the dust to wither their body. When you cast this spell and each time you Sustain it, make an Attack Check against the <span class=\"ic ic-VIG\" role=\"img\" aria-label=\"VIG\" title=\"VIG\"></span> of a creature you can sense within range. Add your Mod Die to the Somatic damage dealt.</p>\n<dl class=\"defs\"><div><dt>Success</dt><dd>6<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 3 Somatic damage, Sickened <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> until the start of your turn.</dd></div><div><dt>Deadly Success</dt><dd>9<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 5 Somatic damage, Sickened <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 1 until the start of your turn.</dd></div><div><dt>Failure</dt><dd>Half as much damage as a Success.</dd></div><div><dt>Complete Failure</dt><dd>Nothing.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (3rd)</dt><dd>You can target <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> minus 1 creatures within range using the same Attack Check, instead of 1. A creature is Sickened 1 until the start of your next turn on a Failure.</dd></div></dl>",
-         "fields": {
-          "Cast Time": "2 {AP}",
-          "Range": "5 spaces",
-          "Components": "Spoken, Two Hands, {SL}g Powdered Tourmaline",
-          "Duration": "Sustained, 1 minute",
-          "Success": "6{SL} plus 3 Somatic damage, Sickened {SL} until the start of your turn.",
-          "Deadly Success": "9{SL} plus 5 Somatic damage, Sickened {SL} plus 1 until the start of your turn.",
-          "Failure": "Half as much damage as a Success.",
-          "Complete Failure": "Nothing.",
-          "Exalted (3rd)": "You can target {SL} minus 1 creatures within range using the same Attack Check, instead of 1. A creature is Sickened 1 until the start of your next turn on a Failure."
-         },
-         "subtitle": "Bio Arcanum, 1st-level"
         }
        ],
        "id": "spells/arcana/bio"
@@ -9768,7 +9768,7 @@
          "titleHtml": "Biting Rebuke",
          "depth": 4,
          "id": "spells/arcana/scour/biting-rebuke",
-         "html": "<p class=\"subtitle\"><em>Scour Arcanum, 1st-level</em></p>\n\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>Reaction, 1 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>10 spaces</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>Instant</dd></div><div><dt>Trigger</dt><dd>You take damage from an Action of a creature you can sense within range.</dd></div></dl>\n\n\n\n<p>Using your pain, you guide Scour Prisma back to the attacker to sear their flesh. Make an Attack Check against the <span class=\"ic ic-PER\" role=\"img\" aria-label=\"PER\" title=\"PER\"></span> of the triggering creature. On any result other than a Complete Failure, the creature takes Caustic damage equal to the value of your Mod Die.</p>\n<dl class=\"defs\"><div><dt>Success</dt><dd>Dissolving 2<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Deadly Success</dt><dd>Dissolving 2<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 1.</dd></div><div><dt>Failure</dt><dd>Dissolving <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Complete Failure</dt><dd>Nothing.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (3rd)</dt><dd>The results of the Attack Check are now as follows.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Success</dt><dd>Dissolving 3<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Deadly Success</dt><dd>Dissolving 3<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 1.</dd></div><div><dt>Failure</dt><dd>Dissolving 2<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Complete Failure</dt><dd>Dissolving <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (4th)</dt><dd>You can target another Hostile creature within range, using the same Attack check.</dd></div><div><dt>Exalted (4th)</dt><dd>You can target a third Hostile creature.</dd></div></dl>",
+         "html": "<p class=\"subtitle\"><em>Scour Arcanum, 1st-level</em></p>\n\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>Reaction, 1 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>10 spaces</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>Instant</dd></div><div><dt>Trigger</dt><dd>You take damage from an Action of a creature you can sense within range.</dd></div></dl>\n\n\n\n<p>Using your pain, you guide Scour Prisma back to the attacker to sear their flesh. Make an Attack Check against the <span class=\"ic ic-PER\" role=\"img\" aria-label=\"PER\" title=\"PER\"></span> of the triggering creature. On any result other than a Complete Failure, the creature takes Caustic damage equal to the value of your Mod Die.</p>\n<dl class=\"defs\"><div><dt>Success</dt><dd>Dissolving 2<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Deadly Success</dt><dd>Dissolving 2<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 1.</dd></div><div><dt>Failure</dt><dd>Dissolving <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Complete Failure</dt><dd>Nothing.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (3rd)</dt><dd>The results of the Attack Check are now as follows.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Success</dt><dd>Dissolving 3<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Deadly Success</dt><dd>Dissolving 3<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 1.</dd></div><div><dt>Failure</dt><dd>Dissolving 2<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Complete Failure</dt><dd>Dissolving <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (4th)</dt><dd>You can target another Hostile creature within range, using the same Attack check.</dd></div><div><dt>Exalted (5th)</dt><dd>You can target a third Hostile creature.</dd></div></dl>",
          "fields": {
           "Cast Time": "Reaction, 1 {AP}",
           "Range": "10 spaces",
@@ -9780,7 +9780,8 @@
           "Failure": "Dissolving 2{SL}.",
           "Complete Failure": "Dissolving {SL}.",
           "Exalted (3rd)": "The results of the Attack Check are now as follows.",
-          "Exalted (4th)": "You can target a third Hostile creature."
+          "Exalted (4th)": "You can target another Hostile creature within range, using the same Attack check.",
+          "Exalted (5th)": "You can target a third Hostile creature."
          },
          "subtitle": "Scour Arcanum, 1st-level"
         },
@@ -9823,10 +9824,10 @@
            "titleHtml": "Ion Gale",
            "depth": 5,
            "id": "spells/arcana/arc/arc-wind/ion-gale",
-           "html": "<p>You charge the air around you with Arc Prisma to create a sudden, sparking gale. Each creature in a 1-space emanation makes a <span class=\"ic ic-PER\" role=\"img\" aria-label=\"PER\" title=\"PER\"></span> Save Check against your DC Check.</p>\n<dl class=\"defs\"><div><dt>Failure</dt><dd>Galvanic damage equal to the value of your Mod Die for the DC Check, Move Actions don’t trigger Reactions from the creature until the start of your next turn.</dd></div><div><dt>Deadly Failure</dt><dd>As a Success, additional Galvanic damage equal to your Class Bonus, Slowed 1 until the start of your turn.</dd></div><div><dt>Success</dt><dd>Nothing.</dd></div></dl>",
+           "html": "<p>You charge the air around you with Arc Prisma to create a sudden, sparking gale. Each creature in a 1-space emanation makes a <span class=\"ic ic-PER\" role=\"img\" aria-label=\"PER\" title=\"PER\"></span> Save Check against your DC Check.</p>\n<dl class=\"defs\"><div><dt>Failure</dt><dd>Galvanic damage equal to the value of your Mod Die for the DC Check, Move Actions don’t trigger Reactions from the creature until the start of your next turn.</dd></div><div><dt>Deadly Failure</dt><dd>As a Failure, additional Galvanic damage equal to your Class Bonus, Slowed 1 until the start of your turn.</dd></div><div><dt>Success</dt><dd>Nothing.</dd></div></dl>",
            "fields": {
             "Failure": "Galvanic damage equal to the value of your Mod Die for the DC Check, Move Actions don’t trigger Reactions from the creature until the start of your next turn.",
-            "Deadly Failure": "As a Success, additional Galvanic damage equal to your Class Bonus, Slowed 1 until the start of your turn.",
+            "Deadly Failure": "As a Failure, additional Galvanic damage equal to your Class Bonus, Slowed 1 until the start of your turn.",
             "Success": "Nothing."
            }
           },
@@ -9930,12 +9931,13 @@
          "titleHtml": "Flash Step",
          "depth": 4,
          "id": "spells/arcana/arc/flash-step",
-         "html": "<p class=\"subtitle\"><em>Arc Arcanum, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>1 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>3<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> spaces</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>Instant</dd></div></dl>\n\n\n<p>You wrap Arc Prisma around yourself, connecting your body to two places at once. You Teleport to an unoccupied space you can sense within range.</p>\n<p><strong>Exalted (4th)</strong> You can Teleport a creature you can touch to a unoccupied space adjacent to your chosen space. If the creature is unwilling, you must make a Successful Attack Check against their <span class=\"ic ic-AGI\" role=\"img\" aria-label=\"AGI\" title=\"AGI\"></span>.</p>",
+         "html": "<p class=\"subtitle\"><em>Arc Arcanum, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>1 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>3<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> spaces</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>Instant</dd></div></dl>\n\n\n<p>You wrap Arc Prisma around yourself, connecting your body to two places at once. You Teleport to an unoccupied space you can sense within range.</p>\n<dl class=\"defs\"><div><dt>Exalted (4th)</dt><dd>You can Teleport a creature you can touch to a unoccupied space adjacent to your chosen space. If the creature is unwilling, you must make a Successful Attack Check against their <span class=\"ic ic-AGI\" role=\"img\" aria-label=\"AGI\" title=\"AGI\"></span>.</dd></div></dl>",
          "fields": {
           "Cast Time": "1 {AP}",
           "Range": "3{SL} spaces",
           "Components": "Spoken, Two Hands",
-          "Duration": "Instant"
+          "Duration": "Instant",
+          "Exalted (4th)": "You can Teleport a creature you can touch to a unoccupied space adjacent to your chosen space. If the creature is unwilling, you must make a Successful Attack Check against their {AGI}."
          },
          "subtitle": "Arc Arcanum, 1st-level"
         },
@@ -10093,22 +10095,22 @@
        "depth": 3,
        "children": [
         {
-         "title": "Arcane Tricekry",
-         "titleHtml": "Arcane Tricekry",
+         "title": "Arcane Trickery",
+         "titleHtml": "Arcane Trickery",
          "depth": 4,
          "children": [
           {
            "title": "Ephemeral Illusion",
            "titleHtml": "Ephemeral Illusion",
            "depth": 5,
-           "id": "spells/arcana/moon/arcane-tricekry/ephemeral-illusion",
+           "id": "spells/arcana/moon/arcane-trickery/ephemeral-illusion",
            "html": "<p>Choose a space you can sense within 10 spaces of you. That space is filled with a number of smells or sounds up to half your Class Bonus that each last up to 5 seconds. The sound can be anything, including words. Either option can cause significant discomfort, but not cause damage.</p>\n<p>When you cast this option of the spell, the spoken requirement may be whispered, but you must be able to speak.</p>"
           },
           {
            "title": "Overwhelm Intellect",
            "titleHtml": "Overwhelm Intellect",
            "depth": 5,
-           "id": "spells/arcana/moon/arcane-tricekry/overwhelm-intellect",
+           "id": "spells/arcana/moon/arcane-trickery/overwhelm-intellect",
            "html": "<p>Make an Attack Check against the <span class=\"ic ic-INT\" role=\"img\" aria-label=\"INT\" title=\"INT\"></span> of a creature you can touch. Add the value of your Mod Die to the Cosmic damage dealt.</p>\n<dl class=\"defs\"><div><dt>Success</dt><dd>Cosmic damage equal to your level, Muddled 1 until the start of your turn.</dd></div><div><dt>Deadly Success</dt><dd>Additional Cosmic damage equal to your Class Bonus, Muddled 2 until the start of your turn.</dd></div><div><dt>Failure</dt><dd>Nothing.</dd></div></dl>",
            "fields": {
             "Success": "Cosmic damage equal to your level, Muddled 1 until the start of your turn.",
@@ -10120,11 +10122,11 @@
            "title": "Manipulate Moon Prisma",
            "titleHtml": "Manipulate Moon Prisma",
            "depth": 5,
-           "id": "spells/arcana/moon/arcane-tricekry/manipulate-moon-prisma",
+           "id": "spells/arcana/moon/arcane-trickery/manipulate-moon-prisma",
            "html": "<p>Touching the ground beneath you, you experience a sped up replay of the events that occurred within a 1-space emanation around you, up to a number of hours ago equal to your Class Bonus. While experiencing the events, you hear no sound, but can make out the faces of people that come into view. Once during the replay, you can slow it down to normal speed, hearing sounds that passed through the emanation.  This slowed perspective lasts for a number of minutes up to your level.</p>\n<p>If you use this option more than once before finishing a Rest, you become Muddled X until you finish a Rest, where X is the number of times you used this option since your last Rest.</p>"
           }
          ],
-         "id": "spells/arcana/moon/arcane-tricekry",
+         "id": "spells/arcana/moon/arcane-trickery",
          "html": "<p class=\"subtitle\"><em>Moon Cantrip</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>Varies</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>Instant</dd></div></dl>\n\n\n<p>Aligning yourself with ambient Moon Prisma, you manipulate a minor amount of it in one of the ways described below.</p>",
          "fields": {
           "Cast Time": "3 {AP}",
@@ -10981,10 +10983,10 @@
          "titleHtml": "Trial of Plague",
          "depth": 4,
          "id": "spells/evocations/soma/trial-of-plague",
-         "html": "<p class=\"subtitle\"><em>Soma Evocation, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>Self, 3-space cone</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>Instant</dd></div></dl>\n\n\n<p>Cursing the feeble-bodied, you invoke a trial of sickness upon the weak. Each creature in a <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 2-space cone makes a <span class=\"ic ic-VIG\" role=\"img\" aria-label=\"VIG\" title=\"VIG\"></span> Save Check against your DC Check.</p>\n<dl class=\"defs\"><div><dt>Failure</dt><dd>Poisoned 2.</dd></div><div><dt>Deadly Failure</dt><dd>Poisoned 3.</dd></div><div><dt>Success</dt><dd>Poisoned 1.</dd></div><div><dt>Complete Success</dt><dd>Nothing.</dd></div></dl>\n\n\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (4th)</dt><dd>The results of the Save Check are now as follows.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Failure</dt><dd>Poisoned <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Deadly Failure</dt><dd>Poisoned <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 1.</dd></div><div><dt>Success</dt><dd>Poisoned half <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Complete Success</dt><dd>Nothing.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (5th)</dt><dd>You can increase the spell’s Cast Time to 4 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span>. If you do, the spell affects all Hostile creatures in a 6-space emanation instead of a cone.</dd></div></dl>",
+         "html": "<p class=\"subtitle\"><em>Soma Evocation, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>Self, <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 2-space cone</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>Instant</dd></div></dl>\n\n\n<p>Cursing the feeble-bodied, you invoke a trial of sickness upon the weak. Each creature in a <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 2-space cone makes a <span class=\"ic ic-VIG\" role=\"img\" aria-label=\"VIG\" title=\"VIG\"></span> Save Check against your DC Check.</p>\n<dl class=\"defs\"><div><dt>Failure</dt><dd>Poisoned 2.</dd></div><div><dt>Deadly Failure</dt><dd>Poisoned 3.</dd></div><div><dt>Success</dt><dd>Poisoned 1.</dd></div><div><dt>Complete Success</dt><dd>Nothing.</dd></div></dl>\n\n\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (4th)</dt><dd>The results of the Save Check are now as follows.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Failure</dt><dd>Poisoned <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Deadly Failure</dt><dd>Poisoned <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 1.</dd></div><div><dt>Success</dt><dd>Poisoned half <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span>.</dd></div><div><dt>Complete Success</dt><dd>Nothing.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (5th)</dt><dd>You can increase the spell’s Cast Time to 4 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span>. If you do, the spell affects all Hostile creatures in a 6-space emanation instead of a cone.</dd></div></dl>",
          "fields": {
           "Cast Time": "3 {AP}",
-          "Range": "Self, 3-space cone",
+          "Range": "Self, {SL} plus 2-space cone",
           "Components": "Spoken, Two Hands",
           "Duration": "Instant",
           "Failure": "Poisoned {SL}.",
@@ -11165,14 +11167,14 @@
          "titleHtml": "Sparking Stormlash",
          "depth": 4,
          "id": "spells/evocations/velvet/sparking-stormlash",
-         "html": "<p class=\"subtitle\"><em>Velvet Evocation, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>Self, 6-space cone</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands, a weapon</dd></div><div><dt>Duration</dt><dd>Instant</dd></div></dl>\n\n\n<p>Like a raging storm, your weapon becomes imbued with lightning. You Strike, and each creature in a 6-space cone pointing in the direction of your target makes an <span class=\"ic ic-AGI\" role=\"img\" aria-label=\"AGI\" title=\"AGI\"></span> Save Check against a DC of 10 plus the value of your Mod Die for the Attack Check.</p>\n<dl class=\"defs\"><div><dt>Failure</dt><dd>5<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> Galvanic Damage.</dd></div><div><dt>Deadly Failure</dt><dd>8<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> Galvanic Damage.</dd></div><div><dt>Success</dt><dd>Half as much damage as a Failure.</dd></div><div><dt>Complete Success</dt><dd>Nothing.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (3rd)</dt><dd>The size of the cone increases to 8 spaces.</dd></div><div><dt>Exalted (4th)</dt><dd>The Attack Check of your Strike is Bolstered 1, and the results of the Save Check are now as follows.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Failure</dt><dd>5<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> Galvanic Damage.</dd></div><div><dt>Deadly Failure</dt><dd>8<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> Galvanic Damage.</dd></div><div><dt>Success</dt><dd>Half as much damage as a Failure.</dd></div><div><dt>Complete Success</dt><dd>Nothing.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (5th)</dt><dd>The Attack Check of your Strike is Bolstered 2, instead of 1.</dd></div></dl>",
+         "html": "<p class=\"subtitle\"><em>Velvet Evocation, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>Self, 6-space cone</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands, a weapon</dd></div><div><dt>Duration</dt><dd>Instant</dd></div></dl>\n\n\n<p>Like a raging storm, your weapon becomes imbued with lightning. You Strike, and each creature in a 6-space cone pointing in the direction of your target makes an <span class=\"ic ic-AGI\" role=\"img\" aria-label=\"AGI\" title=\"AGI\"></span> Save Check against a DC of 10 plus the value of your Mod Die for the Attack Check.</p>\n<dl class=\"defs\"><div><dt>Failure</dt><dd>5<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> Galvanic Damage.</dd></div><div><dt>Deadly Failure</dt><dd>8<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> Galvanic Damage.</dd></div><div><dt>Success</dt><dd>Half as much damage as a Failure.</dd></div><div><dt>Complete Success</dt><dd>Nothing.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (3rd)</dt><dd>The size of the cone increases to 8 spaces.</dd></div><div><dt>Exalted (4th)</dt><dd>The Attack Check of your Strike is Bolstered 1, and the results of the Save Check are now as follows.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Failure</dt><dd>6<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> Galvanic Damage.</dd></div><div><dt>Deadly Failure</dt><dd>9<span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> Galvanic Damage.</dd></div><div><dt>Success</dt><dd>Half as much damage as a Failure.</dd></div><div><dt>Complete Success</dt><dd>Nothing.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (5th)</dt><dd>The Attack Check of your Strike is Bolstered 2, instead of 1.</dd></div></dl>",
          "fields": {
           "Cast Time": "3 {AP}",
           "Range": "Self, 6-space cone",
           "Components": "Spoken, Two Hands, a weapon",
           "Duration": "Instant",
-          "Failure": "5{SL} Galvanic Damage.",
-          "Deadly Failure": "8{SL} Galvanic Damage.",
+          "Failure": "6{SL} Galvanic Damage.",
+          "Deadly Failure": "9{SL} Galvanic Damage.",
           "Success": "Half as much damage as a Failure.",
           "Complete Success": "Nothing.",
           "Exalted (3rd)": "The size of the cone increases to 8 spaces.",
@@ -11491,14 +11493,14 @@
          "titleHtml": "Apyxean Pull",
          "depth": 4,
          "id": "spells/evocations/platinum/apyxean-pull",
-         "html": "<p class=\"subtitle\"><em>Platinum Evocation, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>Self, <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 2-space emanation</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>Sustained, 1 minute</dd></div></dl>\n\n\n<p>Ignoring wholly all that surrounds you, a microcosmic ascension is manifest. Each Hostile creature in a <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 2-space emanation makes a <span class=\"ic ic-PRS\" role=\"img\" aria-label=\"PRS\" title=\"PRS\"></span> Save Check against your DC Check.</p>\n<p>Each time you Sustain this spell, each creature in the emanation makes the Save Check.</p>\n<dl class=\"defs\"><div><dt>Failure</dt><dd>The creature begins floating in their space and is Seized until the start of your turn.</dd></div><div><dt>Deadly Failure</dt><dd>As a Success, and the creature is Prone.</dd></div><div><dt>Success</dt><dd>The creature is Immobilized until the start of your turn.</dd></div><div><dt>Complete Success</dt><dd>Nothing.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (5th)</dt><dd>On a Deadly Failure, a creature is Restrained until the start of your turn.</dd></div></dl>",
+         "html": "<p class=\"subtitle\"><em>Platinum Evocation, 1st-level</em></p>\n\n\n<dl class=\"defs\"><div><dt>Cast Time</dt><dd>3 <span class=\"ic ic-AP\" role=\"img\" aria-label=\"AP\" title=\"AP\"></span></dd></div><div><dt>Range</dt><dd>Self, <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 2-space emanation</dd></div><div><dt>Components</dt><dd>Spoken, Two Hands</dd></div><div><dt>Duration</dt><dd>Sustained, 1 minute</dd></div></dl>\n\n\n<p>Ignoring wholly all that surrounds you, a microcosmic ascension is manifest. Each Hostile creature in a <span class=\"ic ic-SL\" role=\"img\" aria-label=\"SL\" title=\"SL\"></span> plus 2-space emanation makes a <span class=\"ic ic-PRS\" role=\"img\" aria-label=\"PRS\" title=\"PRS\"></span> Save Check against your DC Check.</p>\n<p>Each time you Sustain this spell, each creature in the emanation makes the Save Check.</p>\n<dl class=\"defs\"><div><dt>Failure</dt><dd>The creature begins floating in their space and is Seized until the start of your turn.</dd></div><div><dt>Deadly Failure</dt><dd>As a Failure, and the creature is Prone.</dd></div><div><dt>Success</dt><dd>The creature is Immobilized until the start of your turn.</dd></div><div><dt>Complete Success</dt><dd>Nothing.</dd></div></dl>\n\n\n\n<dl class=\"defs\"><div><dt>Exalted (5th)</dt><dd>On a Deadly Failure, a creature is Restrained until the start of your turn.</dd></div></dl>",
          "fields": {
           "Cast Time": "3 {AP}",
           "Range": "Self, {SL} plus 2-space emanation",
           "Components": "Spoken, Two Hands",
           "Duration": "Sustained, 1 minute",
           "Failure": "The creature begins floating in their space and is Seized until the start of your turn.",
-          "Deadly Failure": "As a Success, and the creature is Prone.",
+          "Deadly Failure": "As a Failure, and the creature is Prone.",
           "Success": "The creature is Immobilized until the start of your turn.",
           "Complete Success": "Nothing.",
           "Exalted (5th)": "On a Deadly Failure, a creature is Restrained until the start of your turn."

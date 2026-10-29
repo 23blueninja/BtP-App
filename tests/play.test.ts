@@ -1292,9 +1292,9 @@ describe('spells', () => {
     expect(other.play.effects ?? []).toEqual([]);
   });
 
-  it('Adrenalize: Temporary Endurance = your level + 5; Movement + half Class Bonus', () => {
-    const r = use('Adrenalize', { sl: 0, inputs: { self: true } });
-    expect(r.play.tempEndurance).toBe(r.d.level + 5);
+  it('Adrenalize: Temporary Endurance = 5 + Spell Mod Die roll + your level; Movement + half Class Bonus', () => {
+    const r = use('Adrenalize', { sl: 0, inputs: { self: true, mod: 3 } });
+    expect(r.play.tempEndurance).toBe(5 + 3 + r.d.level);
     expect(derive({ ...r.c, play: r.play }).movement).toBe(r.d.movement + Math.ceil(r.d.classBonus / 2));
   });
 

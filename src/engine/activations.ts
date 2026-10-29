@@ -216,8 +216,9 @@ export const ACTIVATIONS: ActivationDef[] = [
     id: 'spells/arcana/bio/adrenalize',
     label: 'Adrenalize',
     target: 'either',
+    inputs: { mod: 'Spell Mod Die roll' },
     effects: (x) => [
-      { kind: 'tempEndurance', amount: x.level + 5, ...T },
+      { kind: 'tempEndurance', amount: 5 + x.mod + x.level, ...T },
       {
         kind: 'effect',
         effect: { name: 'Adrenalize', ends: 'manual', movement: half(x.classBonus), notes: ['Lasts 1 minute, while you have its Temporary Endurance.', 'A Successful Weapon Attack Check sacrifices the Temporary Endurance as extra damage.'] },
