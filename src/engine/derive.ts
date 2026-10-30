@@ -834,11 +834,11 @@ function deriveUncached(c: Character): Derived {
   const bulkSlots = [1, 2, 3, 4, 5].map((rank) => ({ rank, slots: stats.value(`bulk:${rank}`, rank + (Math.max(0, points.VIG) >= rank ? rank : 0)) }));
 
   // ---- Unarmed Strikes ----
-  // Your body: Close-Up, DV 0, Deadly DV equal to your VIG points, Crushing. Facets can change
+  // Your body: Close-up, DV 0, Deadly DV equal to your VIG points, Crushing. Facets can change
   // that, Powerful Build adds to both DVs of every Unarmed Strike, and natural weapons add rows.
   const unarmedBonus = eff('unarmedBonus').reduce((n, x) => n + sc(x.e.amount), 0);
   const bonusSources = eff('unarmedBonus').map((x) => x.source);
-  const body: UnarmedStrike = { name: 'Unarmed Strike', dv: 0, deadlyDv: points.VIG, damage: 'Crushing', properties: ['Close-Up'], sources: [] };
+  const body: UnarmedStrike = { name: 'Unarmed Strike', dv: 0, deadlyDv: points.VIG, damage: 'Crushing', properties: ['Close-up'], sources: [] };
   for (const x of eff('unarmed')) {
     if (x.e.dv !== undefined) body.dv = sc(x.e.dv);
     if (x.e.deadly !== undefined) body.deadlyDv = x.e.deadly === 'twiceDv' ? 2 * body.dv : sc(x.e.deadly);
