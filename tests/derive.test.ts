@@ -1720,10 +1720,10 @@ describe('Unarmed Strikes', () => {
   const vig = (VIG: number) => ({ method: 'manual' as const, pool: 0, base: { VIG, AGI: 0, PER: 0, INT: 0, PRS: 0 }, bonus: [] as never[] });
   const body = (d: Derived) => d.unarmed.find((u) => u.name === 'Unarmed Strike')!;
 
-  it('your body: Close-Up, DV 0, Deadly DV equal to your VIG points, Crushing', () => {
-    expect(section(/^##### Unarmed Strikes/)).toMatch(/Close-Up property, a DV of 0, and a Deadly DV equal to your \$\[VIG\] Points/);
+  it('your body: Close-up, DV 0, Deadly DV equal to your VIG points, Crushing', () => {
+    expect(section(/^##### Unarmed Strikes/)).toMatch(/Close-up property, a DV of 0, and a Deadly DV equal to your \$\[VIG\] Points/);
     const d = built({ classId: 'expert', ancestry: 'human', attributes: vig(3) }).d;
-    expect(body(d)).toMatchObject({ dv: 0, deadlyDv: 3, damage: 'Crushing', properties: ['Close-Up'] });
+    expect(body(d)).toMatchObject({ dv: 0, deadlyDv: 3, damage: 'Crushing', properties: ['Close-up'] });
     expect(d.unarmed).toHaveLength(1);
   });
   it('Powerful Build adds your VIG points to both DVs (Corpug)', () => {
@@ -1744,7 +1744,7 @@ describe('Unarmed Strikes', () => {
   });
   it('Berserker Barbarous Light: Pushing, DV equal to VIG points, Deadly DV twice that', () => {
     const d = built({ classId: 'berserker', subclass: 'roaring-fervor', ancestry: 'human', attributes: vig(3) }).d;
-    expect(body(d)).toMatchObject({ dv: 3, deadlyDv: 6, properties: ['Close-Up', 'Pushing'] });
+    expect(body(d)).toMatchObject({ dv: 3, deadlyDv: 6, properties: ['Close-up', 'Pushing'] });
   });
   it('Incarnate Ferocious Strikes: an Unarmed Strike with the Primordial Die, DV half the Class Bonus, Deadly DV the Class Bonus', () => {
     const d = built({ classId: 'incarnate', subclass: 'the-king', ancestry: 'human' }).d;

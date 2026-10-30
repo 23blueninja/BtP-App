@@ -278,7 +278,7 @@ Attributes are measured in **Attribute Points**, each of which increases the siz
 
 {{background:darkblue,padding:1em,margin-bottom:0.5em
 #### Rolling d2s
-The simplest way to roll a d2 is by rolling your favorite die, counting an odd roll as a 1 and an even roll as a 2. Ie, you can roll 1d6, treating 1, 3, and 5 as 1, and 2, 4, and 6 as 2.
+The simplest way to roll a d2 is by rolling your favorite die, counting an odd roll as a 1 and an even roll as a 2. I.e., you can roll 1d6, treating 1, 3, and 5 as 1, and 2, 4, and 6 as 2.
 
 When you roll a d2 in Tandem with another Modifier Die, be sure to use a different sized die for the d2 so you don't get them confused.
 }}
@@ -423,7 +423,7 @@ Roll your d20 alongside any Mod Dice you have for the Check.
 #### Step 3: Calculate the Check Total
 Add the value of the d20 to the value of your Mod Die. The result is your **Check Total**. Rarely, you may have other modifiers to apply at this stage, such as excess Bolstered levels.
 
-#### Steps 4: Compare to the DC
+#### Step 4: Compare to the DC
 Announce your Check Total to the PM, who compares it against the **DC** (Difficulty Class) of the Check. The DC varies depending on what the Check is for. If your Check Total is equal to or greater than the DC, your character Succeeds. You might already be aware of the DC, or you may have to ask the PM if you Succeeded. DCs are often purposely hidden to elevate suspense at the table.
 
 #### Step 5: Measure your Success
@@ -489,7 +489,7 @@ Trained skill checks are only made when a PC attempts to perform an action that 
 
 \column
 
-Skill Checks involving your class are also considered Trainined Skill Checks, and use your Class Die in Tandem with an Attribute Die.
+Skill Checks involving your class are also considered Trained Skill Checks, and use your Class Die in Tandem with an Attribute Die.
 
 ### Critical Failure & Success
 
@@ -780,12 +780,12 @@ You drop to the ground, becoming Prone.
 **Cost** :: 2 $[AP], Basic CAP
 **Requirements** :: You are Immobilized, Restrained, or Seized
 }}
-Choose a single source imposing the Immobilized, Restrained, or Seized condition on you. Make a $[VIG] Check against a DC determined by the chosen source.
+Choose a single source imposing the Immobilized, Restrained, or Seized Condition on you. Make a $[VIG] Check against a DC determined by the chosen source.
 
 :
 
 {{left
-**Success** :: You end the Immobilized, Restrained, and Seized conditions imposed on you by the chosen source.
+**Success** :: You end the Immobilized, Restrained, and Seized Conditions imposed on you by the chosen source.
 **Complete Success** :: As a Success, and you can move 1 space if you are no longer Immobilized by anything.
 **Failure** :: Nothing.
 **Complete Failure** :: Escaping again before the end of your next turn costs an additional 2 $[AP].
@@ -870,7 +870,7 @@ You attempt to grab hold of a creature. Make a Tandem $[VIG] / $[AGI] Check agai
 
 {{left
 **Success** :: The target is Seized by you.
-**Complete Success** ::The target is Seized by you, and you may knock them Prone.
+**Complete Success** :: The target is Seized by you, and you may knock them Prone.
 **Failure** :: Nothing.
 **Complete Failure** :: You are Buffered 1.
 }}
@@ -916,7 +916,7 @@ When you Sprint, you can’t take non-Move Actions that turn, and if your AC is 
 {{left
 **Categories** :: Basic, Concentrate, Manipulate
 **Cost** :: 2 $[AP], Basic CAP
-**Requirements** :: You can touch a creature you can see with the Dying condition.
+**Requirements** :: You can touch a creature you can see with the Dying Condition.
 }}
 You attempt to stop a creature from dying. Make a Tandem $[PER] / $[INT] Check against a DC of 10 plus the creature’s Dying level. You may replace one of the Attribute Mod Dice with the Mod Die of a relevant Hobby or Profession if applicable.
 
@@ -990,7 +990,7 @@ You attack your target. If you’re using a Ranged weapon, make a $[PER] Attack 
 \page
 
 ##### Unarmed Strikes
-When you Strike without using a weapon, you make an Unarmed Strike using your body as a melee weapon, which has the Close-Up property, a DV of 0, and a Deadly DV equal to your $[VIG] Points.
+When you Strike without using a weapon, you make an Unarmed Strike using your body as a melee weapon, which has the Close-up property, a DV of 0, and a Deadly DV equal to your $[VIG] Points.
 
 #### Sustain
 {{left
@@ -1179,18 +1179,18 @@ You can perceive areas within your line of sight according to the brightness lev
 In Absolute Darkness, such as a sealed chamber with no light sources, all creatures that rely on sight to perceive their environment are Blinded.
 
 ### Visibility
-Sometimes other factors such as fog or intense rain may also impede your ability to see. There are three levels of visibility: **Clear Visibilty**, **Low Visibility**, and **Minimal Visibility**.
+Sometimes other factors such as fog or intense rain may also impede your ability to see. There are three levels of visibility: **Clear Visibility**, **Low Visibility**, and **Minimal Visibility**.
 
 #### Clear Visibility
 Clear Visibility means nothing is impacting visibility in your environment, and you can see as normal.
 
 #### Low Visibility
-Low Visibility is caused by things like heavy fog or rain. While in Low Visibility conditions, you cannot visually sense anything beyond twice your $[PER] Radius.
+Low Visibility is caused by things like heavy fog or rain. While in Low Visibility Conditions, you cannot visually sense anything beyond twice your $[PER] Radius.
 
 \column
 
 #### Minimal Visibility
-Minimal Visibility is caused by extreme conditions such as sandstorms, raging blizzards, or intense whipping rain. While in Minimal Visibility conditions, you cannot visually perceive anything beyond your $[PER] Radius, and within your $[PER] Radius, you can only see the silhouette of creatures and objects. Attack Checks against the $[PER] of creatures in areas of Minimal Visibility have Advantage, while $[PER] Attack and Save Checks made by those creatures have Disadvantage.
+Minimal Visibility is caused by extreme Conditions such as sandstorms, raging blizzards, or intense whipping rain. While in Minimal Visibility Conditions, you cannot visually perceive anything beyond your $[PER] Radius, and within your $[PER] Radius, you can only see the silhouette of creatures and objects. Attack Checks against the $[PER] of creatures in areas of Minimal Visibility have Advantage, while $[PER] Attack and Save Checks made by those creatures have Disadvantage.
 
 ### Objects
 
@@ -1215,7 +1215,7 @@ An object is any physical entity that is not a creature. They have stat blocks j
 
 **Resistances** :: Varies by Material
 **Vulnerabilities** :: Varies by Material
-**Immunities**  :: Cosmic, Cthonic, Psychic, Somatic
+**Immunities**  :: Cosmic, Chthonic, Psychic, Somatic
 
 }}
 
@@ -1300,7 +1300,7 @@ For example, if you attempt to cross a narrow ledge, or move through a knee deep
 ### Falling
 When you begin falling, you immediately fall 5 spaces. For every 1 $[AP] spent while falling, you fall another 5 spaces plus the last amount of spaces you fell after the Action or effect you spent $[AP] on resolves.
 
-For example, if you begin falling on another creatures turn, you will immediately fall 5 spaces. If you then spend 1 $[AP] to Interact with a piece of your equipment, you will fall 10 spaces once that Action is resolved. If you spend another 1 $[AP] to do anything else, you will fall 15 spaces. If you then spend 2 $[AP] on a single action, such as Interacting with something else, you will fall 20 spaces, then 25 spaces.
+For example, if you begin falling on another creature's turn, you will immediately fall 5 spaces. If you then spend 1 $[AP] to Interact with a piece of your equipment, you will fall 10 spaces once that Action is resolved. If you spend another 1 $[AP] to do anything else, you will fall 15 spaces. If you then spend 2 $[AP] on a single action, such as Interacting with something else, you will fall 20 spaces, then 25 spaces.
 
 The next time your turn ends, if you have fallen less than 100 spaces since the end of your last turn, you fall the remaining amount of spaces it would take to get you to 100. If you are still falling, you immediately fall another 5 spaces at the start of the next turn, and the cycle repeats. You can only fall a maximum of 100 spaces before the end of each of your turns.
 
@@ -1360,12 +1360,12 @@ Damage is often halved based on the result of a Check. Spells typically deal hal
 Damage is the most common thing to be halved, but in general, the default rule when halving anything in BtP is to **round up**. Any effect that needs to round down will say so specifically.
 
 #### Immunity
-Entities can have **Immunity** to one or more damage types. If something would take damage of a type it has Immunity to, it instead takes no damage. Entities can also have Immunity to Conditions. If you would gain a Condition you are immune to, you instead don't, though you can still be targeted by effects that cause the condition.
+Entities can have **Immunity** to one or more damage types. If something would take damage of a type it has Immunity to, it instead takes no damage. Entities can also have Immunity to Conditions. If you would gain a Condition you are immune to, you instead don't, though you can still be targeted by effects that cause the Condition.
 
 #### Resistance
 Most entities have Resistance to one or more damage types. Damage Resistances have a level, and each time something takes damage of a type it has Resistance to, the damage is reduced by that level. For example, if a creature with Thermic Resistance 3 takes 5 Thermic damage, it would be reduced by 3, and the creature would take 2 damage. Resistances to the same damage type from different sources add together.
 
-Entities can also have Resistance to Conditions, which work similarly and reduce the level of the received condition by the level of their Resistance to it.
+Entities can also have Resistance to Conditions, which work similarly and reduce the level of the received Condition by the level of their Resistance to it.
 
 ![](https://i.imgur.com/hd3lq4V.png){position:absolute,top:0,left:0,opacity:0.5,width:100%}
 ![](https://i.imgur.com/NQCPF0W.png){position:absolute,bottom:0.3%,left:0,width:100%}
@@ -1407,7 +1407,7 @@ Listed as "X-space cone", each creature between two straight lines, each X-space
 ::
 
 #### Cylinder
-Listed as "Cylinder (X-space radius, Y spaces high)", effects with this area behave as as an X-space circle, but creatures in the circle no more than Y spaces above the origin space are also affected.
+Listed as "Cylinder (X-space radius, Y spaces high)", effects with this area behave as an X-space circle, but creatures in the circle no more than Y spaces above the origin space are also affected.
 
 #### Emanation
 Listed as "X-space emanation", creatures within X spaces of the emanation's origin in any direction will be affected. Emanations are persistent and move with their origin.
@@ -1458,10 +1458,10 @@ When you take damage, reduce your *Temporary Endurance* first if you have any. *
 Your PC's physical body and how close they are to death is represented by your *Vitality*, which starts at 3. If your *Vitality* ever drops to 0, you die. *Vitality* is lost when you take damage while at 0 *Endurance*. The amount of damage doesn't matter, if you take damage with 0 *Endurance*, you lose 1 *Vitality*.
 
 ### Dying
-When you lose *Vitality*, you gain the **Dying** Condition with a level equal to the amount of *Vitality* you are missing. Dying forces you to make **Survival Saves**, described below. If your *Endurance* is above 0 while Dying, you also take Somatic damage equal to twice your Dying level at the start of your turn. Somatic Resistance cannot reduce this damage below 1. You can Stabilize yourself on your turn to attempt to reduce your Dying level. The Dying condition is also removed entirely when you regain any *Vitality*.
+When you lose *Vitality*, you gain the **Dying** Condition with a level equal to the amount of *Vitality* you are missing. Dying forces you to make **Survival Saves**, described below. If your *Endurance* is above 0 while Dying, you also take Somatic damage equal to twice your Dying level at the start of your turn. Somatic Resistance cannot reduce this damage below 1. You can Stabilize yourself on your turn to attempt to reduce your Dying level. The Dying Condition is also removed entirely when you regain any *Vitality*.
 
 ### Survival Saves
-When your *Endurance* hits 0, and when you start your turn with the Dying condition, you must make a special $[VIG] Save Check referred to as a Survival Save. The DC for a Survival Save equals 10 plus your Dying level.
+When your *Endurance* hits 0, and when you start your turn with the Dying Condition, you must make a special $[VIG] Save Check referred to as a Survival Save. The DC for a Survival Save equals 10 plus your Dying level.
 
 If you have any *Endurance* when you make a Survival Save, you do so at Advantage.
 
@@ -1472,7 +1472,7 @@ If you have any *Endurance* when you make a Survival Save, you do so at Advantag
 **Complete Success** :: Your Dying level reduces by 1, and you wake up if you are Unconscious, so long as another effect is not keeping you Unconscious.
 **Critical Success** :: As a Complete Success, and you regain 1 *Endurance* if you have none.
 **Failure** :: You fall Unconscious and your Dying level increases by 1.
-**Deadly Failure** :: You fall Unconscious and lose 1 *Vitality*. After gaining the Dying condition from losing your *Vitality*, your Dying level increases by 1.
+**Deadly Failure** :: You fall Unconscious and lose 1 *Vitality*. After gaining the Dying Condition from losing your *Vitality*, your Dying level increases by 1.
 **Critical Failure** :: As a Deadly Failure, but you lose 2 Vitality instead of 1.
 }}
 
@@ -1511,7 +1511,7 @@ When your PC finishes Long Rest, they gain the following benefits.
 
 - ***Vitality.*** They regain missing *Vitality* equal to 1 plus half their $[VIG] points.
 
-- ***Radiance.*** They regain spent spent *Radiance* equal to half their $[PRS] points.
+- ***Radiance.*** They regain spent *Radiance* equal to half their $[PRS] points.
 
 \column
 
@@ -1538,18 +1538,18 @@ BtP has fourteen damage types, categorized by rarity into ranks. Higher ranked d
 #### Crushing Piercing and Slashing (Rank 1)
 Crushing, Piercing, and Slashing together represent the ‘physical’ damage types. Most weapons deal one or more of these damage types, as do most physical hazards.
 
-**Crushing** damage is dealt by anything that inflicts blunt-force trauma. Falling from high place, getting hit with a hammer, and being squeezed by a giant snake are all examples of Crushing damage. Rarely, Crushing damage can inflict the Bruised condition.
+**Crushing** damage is dealt by anything that inflicts blunt-force trauma. Falling from high place, getting hit with a hammer, and being squeezed by a giant snake are all examples of Crushing damage. Rarely, Crushing damage can inflict the Bruised Condition.
 
 **Piercing** damage is dealt by anything that goes into its target. Arrows, rapiers, spike traps, and fangs all deal Piercing damage. Rarely, Piercing damage can cause a target to lose *Vitality*.
 
-**Slashing** damage is dealt by anything that cuts the target, such as a sword, claw, or other edged hazard. Rarely, Slashing damage can inflict the Bleeding condition.
+**Slashing** damage is dealt by anything that cuts the target, such as a sword, claw, or other edged hazard. Rarely, Slashing damage can inflict the Bleeding Condition.
 
 #### Arctic and Thermic (Rank 2)
 Arctic and Thermic damage represent damage dealt by the transfer of kinetic energy.
 
-**Arctic** damage is dealt by anything that rapidly removes heat, such as Ice or Frost spells. Environments of extreme cold will likely contain hazards that deal Arctic damage as well. Arctic damage often inflicts the Freezing condition.
+**Arctic** damage is dealt by anything that rapidly removes heat, such as Ice or Frost spells. Environments of extreme cold will likely contain hazards that deal Arctic damage as well. Arctic damage often inflicts the Freezing Condition.
 
-**Thermic** damage is dealt by anything that rapidly adds heat, like Fire or Flame spells. Hazards involving extreme heat, such as pools of lava, also deal Thermic damage. Thermic damage often inflicts the Burning condition.
+**Thermic** damage is dealt by anything that rapidly adds heat, like Fire or Flame spells. Hazards involving extreme heat, such as pools of lava, also deal Thermic damage. Thermic damage often inflicts the Burning Condition.
 
 #### Psychic and Somatic (Rank 3)
 Psychic and Somatic damage affect the soul and flesh of a creature, respectively. Anything that lacks a soul is immune to Psychic damage, while anything inorganic is immune to Somatic damage.
@@ -1563,14 +1563,14 @@ Psychic and Somatic damage affect the soul and flesh of a creature, respectively
 #### Caustic and Galvanic (Rank 4)
 Caustic and Galvanic damage represent the subtraction and addition of matter at a molecular level.
 
-**Caustic** damage is dealt by anything that physically dissolves material. Being drenched in acid or a highly basic solution would both deal caustic damage, usually with the Dissolving condition.
+**Caustic** damage is dealt by anything that physically dissolves material. Being drenched in acid or a highly basic solution would both deal caustic damage, usually with the Dissolving Condition.
 
-**Galvanic** damage is dealt when there is a massive transfer of electrons into the target, most often with lightning. Galvanic damage can rarely cause the Paralyzed condition.
+**Galvanic** damage is dealt when there is a massive transfer of electrons into the target, most often with lightning. Galvanic damage can rarely cause the Paralyzed Condition.
 
 #### Cosmic, Chthonic, and Sonic (Rank 5)
 Cosmic, Chthonic, and Sonic damage represent the philosophical concepts of all that is above, below, and about, respectively. They are expressions of the fundamental forces that make up the Prismos.
 
-**Cosmic** damage is dealt by exposure to unfathomable truths. Gaining forbidden knowledge, seeing the unseeable, and other eldritch events can induce this damage type. Cosmic damage often inflicts the Morphing condition.
+**Cosmic** damage is dealt by exposure to unfathomable truths. Gaining forbidden knowledge, seeing the unseeable, and other eldritch events can induce this damage type. Cosmic damage often inflicts the Morphing Condition.
 
 **Chthonic** damage is dealt by exposure to the chaotic presence of the underworld. Being supernaturally subjugated, defaulting on an underworld deal, and the general presence of Infernal Light all deal Chthonic damage, which can also inflict the Possessed Condition.
 
@@ -1595,7 +1595,7 @@ Divine and Profane damage are the rarest damage types, representing the enforcem
 Many effects will leave their target with a **Condition**, which is a temporary, negative effect. Conditions sometimes require their triggering effect to state a duration, and sometimes list how they end (or worsen) in their definition.
 
 ### Condition Level & Multiple Instances
-Some Conditions have a level (noted with an X by their name) which increases the potency of the condition. When a creature is afflicted with a Condition it already has, it takes the higher level between the two. Condition levels are never added together.
+Some Conditions have a level (noted with an X by their name) which increases the potency of the Condition. When a creature is afflicted with a Condition it already has, it takes the higher level between the two. Condition levels are never added together.
 
 For example, if a creature is Burning 3 and gets hit by a Fire spell that inflicts Burning 1, it is still only Burning 3. If the creature was Burning 1 and the spell inflicted Burning 3, it would become Burning 3.
 
@@ -1604,7 +1604,7 @@ For example, if a creature is Burning 3 and gets hit by a Fire spell that inflic
 #### Bleeding X
 You take Somatic damage at the start of each of your turns equal to your level times X. You can spend 5 $[AP] on your turn to reduce the level of this Condition by 1 if you have a bandage or other suitable item, as determined by the PM.
 
-Immunity to Slashing damage prevents this condition.
+Immunity to Slashing damage prevents this Condition.
 
 #### Blinded
 You can’t see, and suffer the effects below.
@@ -1621,10 +1621,10 @@ You can’t see, and suffer the effects below.
 #### Bruised
 Your flesh is bruised. Your $[VIG] and $[AGI] Checks are Weakened until you finish a Rest.
 
-Immunity to Crushing damage prevents this condition.
+Immunity to Crushing damage prevents this Condition.
 
 #### Buffeted X
-Your AC is reduced by X. This condition ends at the start of your turn.
+Your AC is reduced by X. This Condition ends at the start of your turn.
 
 \column
 
@@ -1676,7 +1676,7 @@ The level of this Condition reduces by 1 each time you finish a Long Rest.
 #### Freezing X
 You are extremely cold. You are Sluggish X and Slowed 2X. The level of this Condition reduces by 1 at the end of your turn. It also reduces by 1 each time you take Thermic damage.
 
-Immunity to Arctic damage prevents this condition.
+Immunity to Arctic damage prevents this Condition.
 
 #### Immobilized
 You can't move. Your $[AGI] Save Checks are Weakened, and all your *Movements* are 0. If you are Immobilized because of something physically holding you in place, anything that tries to move you by force must make a Check against a DC determined by what is Immobilizing you. The PM determines the Check and DC.
@@ -1721,8 +1721,8 @@ At the start of your turn you must make a $[PRS] Save with a DC of 10 plus X.
 
 
 {{left
-**Success** :: The level of this condition reduces by 2.
-**Complete Success** :: The level of this condition reduces by 3.
+**Success** :: The level of this Condition reduces by 2.
+**Complete Success** :: The level of this Condition reduces by 3.
 **Failure** :: You must Stride and use all of your *Movement* to flee from the source of your panic.
 **Deadly Failure** :: As a Failure, but you must Stride twice, and the level of this Condition increases by 1.
 }}
@@ -2034,7 +2034,7 @@ Blessed and loved child of Nixoria and Pneumax, often depicted as a voluptuous w
 Raging twin of the Wild Gods and Great Chiefmother of the corpug tribes. She is the matron of brute force, described as a giantess of rippling muscle clothed in animal pelts. She unlocks the primal potential of mortal flesh with blessings of Soma Light upon warriors who let nothing stop their victory.
 
 #### {{color:magenta Pneumax }}
-Guide to both the souls and thoughts of sapient creatures, and father of the cogitani. He was born of Asmodeus' jealous clash with Lunaeus, and brokered peace among the Prismatic Pantheon. His ethereal form permeates the the Soulscape, connecting people with rays of Pneuma Light.
+Guide to both the souls and thoughts of sapient creatures, and father of the cogitani. He was born of Asmodeus' jealous clash with Lunaeus, and brokered peace among the Prismatic Pantheon. His ethereal form permeates the Soulscape, connecting people with rays of Pneuma Light.
 
 #### {{color:darkorange Aurodeus }}
 The Daybringer, who forged humans in the ambition of his Flame Light. He grants resolve to the bold-hearted, and fuels the fires of civilization. Temporia visits him each year, bringing the Gold Season.
@@ -2757,7 +2757,7 @@ You work with your hands. Both DVs of melee weapons you wield that lack the Deft
 ### Chef
 You know your way around a pan. As part of a Short Rest, if you have the means to do so you can cook a meal that restores 1 spent *Radiance* if consumed immediately after. The meal can feed up to 6 creatures.
 
-Once you use this facet, you must finish a Long Rest before you can do so agian.
+Once you use this facet, you must finish a Long Rest before you can do so again.
 
 ### Climber
 You're an adept mountaineer, giving you the benefits below.
@@ -2782,7 +2782,7 @@ You're trained in crisis response, giving you the benefits below.
 
 :
 
-**Unhesitatant** Your Initiative Checks are Bolstered 1.
+**Unhesitant** Your Initiative Checks are Bolstered 1.
 
 ### Hardened
 You've lived horrors few would dream, giving you the benefits below.
@@ -2793,7 +2793,7 @@ You've lived horrors few would dream, giving you the benefits below.
 
 :
 
-**Unphased** You have Panicked Resistance 1.
+**Unfazed** You have Panicked Resistance 1.
 
 ### Speedster
 You're pretty fast. Your *Movement* increases by 3.
@@ -2835,7 +2835,7 @@ The increasing time spent at each level is meant to give narrative weight to the
 
 \page
 
-These timeframes also help enforce the kind of stories meant to be told at each level. Stories in Btp can be loosely split into three tiers: level 1-3, 4-6, and 7-9. Level 10 can either be used as a series climax, epilogue, or Bonus chapter, depending on the story.
+These timeframes also help enforce the kind of stories meant to be told at each level. Stories in BtP can be loosely split into three tiers: level 1-3, 4-6, and 7-9. Level 10 can either be used as a series climax, epilogue, or Bonus chapter, depending on the story.
 
 Below is a table that shows the scale of threat a monster (or PC) is meant to represent at each level.
 
@@ -2898,7 +2898,7 @@ When its time for your PC to level up, come back here and consult the Level Up C
 # Classes
 ## Arcanist
 
-Practioners of the mystic art known as Prismacasting, Arcanists manipulate the world through sheer knowledge.
+Practitioners of the mystic art known as Prismacasting, Arcanists manipulate the world through sheer knowledge.
 
 }}
 
@@ -2965,7 +2965,7 @@ Each Long Rest, you can **Prepare** a number of arcana from your Grimoire equal 
 #### Casting Spells
 Arcanists gather and spend Prisma to cast spells. The total amount of Prisma you can spend each Long Rest is listed in the Prisma Limit column on the Arcanist Class Table. Each time you finish a Short Rest, the amount of Prisma applied to your Prisma Limit is reduced by your Arcanist Bonus.
 
-You gather Prisma using the **Refract** Action, and you cast spells with the **Primacast** Action, each described below.
+You gather Prisma using the **Refract** Action, and you cast spells with the **Prismacast** Action, each described below.
 
 ##### Refract
 {{left
@@ -2981,14 +2981,14 @@ You gain 1 *Prisma*. Unspent *Prisma* you have gathered dissipates at the end of
 
 You cast one of your cantrips or Prepared spells at a level up to your Max Spell Level. You then become Prismaburned $[SL]. Each time you Sustain the spell, you regain that Prismaburned level.
 
-###### Surecasting
-If your Grimoire is open in front of you and you can read it, you can instead spend an additional 2$[AP] to Surecast any spell recorded in it, even if you don’t have it Prepared. Surecasting only requires one hand if the spell would require two. You can Interact with your Grimoire to open it while you have a free hand.
-
 ![](https://i.imgur.com/hd3lq4V.png){position:absolute,top:0,left:0,opacity:0.5,width:100%}
 ![](https://i.imgur.com/NQCPF0W.png){position:absolute,bottom:0.3%,left:0,width:100%}
 {{pageNumber,auto}}
 
 \page
+
+###### Surecasting
+If your Grimoire is open in front of you and you can read it, you can instead spend an additional 2 $[AP] to Surecast any spell recorded in it, even if you don’t have it Prepared. Surecasting only requires one hand if the spell would require two. You can Interact with your Grimoire to open it while you have a free hand.
 
 #### Prismaburn
 When you Prismacast or Sustain a Prismacast spell, you become Prismaburned $[SL]. The Condition is described below.
@@ -3074,8 +3074,6 @@ Additionally, you can take the Realign action twice per Long Rest.
 ### Paragon Facet  < lvl 10 >
 
 You gain one Paragon Facet for which you meet the prerequisites.-->
-
-\column
 
 ## Arcane Triumvirates
 
@@ -3236,7 +3234,7 @@ You regain expended *Stamina* equal to your $[VIG] points.
 #### Agility
 For the duration of your Rage, your *Movement* is doubled.
 #### Perception
-For the duration of your Rage, you your AC gains a bonus equal to your $[PER] points.
+For the duration of your Rage, your AC gains a bonus equal to your $[PER] points.
 
 \column
 
@@ -3566,8 +3564,8 @@ As a Champion of the Throne, you can learn **Martial** and **Psychological** Man
 Your Smite gains the Infernal type, and when you Smite, your Attack Check gains the additional effects below.
 :
 {{left
-**Success** :: 2 $[SL] Chthonic damage.
-**Deadly Success** :: 3 $[SL] Chthonic damage, Possessed $[SL].
+**Success** :: 2$[SL] Chthonic damage.
+**Deadly Success** :: 3$[SL] Chthonic damage, Possessed $[SL].
 **Failure** :: $[SL] Chthonic damage.
 **Complete Failure** :: Nothing.
 }}
@@ -3660,7 +3658,7 @@ Jack of all trades and master of several, Experts leverage their extensive exper
 
 {{classTable,wide
 ##### Expert Class Table
-|       | Expert    |                                            | Tactical |         | Manuevers | Max Manevuer |
+|       | Expert    |                                            | Tactical |         | Maneuvers | Max Maneuver |
 | Level | Bonus     | Facets                                     | Die     | Stamina | Known     | Level        |
 |:-----:|:---------:|:-------------------------------------------|:-------:|:-------:|:---------:|:------------:|
 |  1st  |    +2     | Expert Practice, Expert Maneuvers, Expertise  |   1d6   |    3    |     2     |      1st     |
@@ -3692,7 +3690,7 @@ You start with 20 *Endurance* and gain 10 per level.
 
 **Skill Checks** :: When you make a Basic Skill Check with your $[PER] and Tactical Die in Tandem, it is Empowered.
 
-**Weapons**      :: You can wield any Light, Close-Up, or Precise weapon.
+**Weapons**      :: You can wield any Light, Close-up, or Precise weapon.
 }}
 
 ### Expert Practice < lvl 1 >
@@ -3717,12 +3715,12 @@ You gain two additional Hobbies at Amateur Rank. You gain another Hobby at Amate
 #### Expert's Tools
 An Expert always has their tools on hand. Your **Expert’s Tools** allow you to make any Check involving one of your Hobbies or Professions that would normally require portable tools as if you had them.
 
-Choose one type of Light weapon, one type of Close-Up weapon, and one type of Precise weapon. The chosen weapons become part of your Expert’s Tools. When you Strike, you can use a weapon of any type on your person designated as part of your Expert’s Tools without having to Interact to draw it or stow a different weapon.
+Choose one type of Light weapon, one type of Close-up weapon, and one type of Precise weapon. The chosen weapons become part of your Expert’s Tools. When you Strike, you can use a weapon of any type on your person designated as part of your Expert’s Tools without having to Interact to draw it or stow a different weapon.
 
 You can change your chosen weapon types each time you gain a level.
 
 #### Adroit Strikes
-You can leverage your array of skills to attack with precision. Once per turn when you Strike a creature, you can replace the Mod Die of the Attack Check with your Tactical Die. To do so, one of the below conditions must be met.
+You can leverage your array of skills to attack with precision. Once per turn when you Strike a creature, you can replace the Mod Die of the Attack Check with your Tactical Die. To do so, one of the below Conditions must be met.
 :
 
 - ***Advantage.*** You have Advantage on the Attack Check.
@@ -3872,7 +3870,7 @@ Masters of weaponry in all forms and trained to fight until they drop, gladiator
 
 {{classTable,wide
 ##### Gladiator Class Table
-|       | Gladiator |                                                 | Martial |         | Manuevers | Max Manevuer |
+|       | Gladiator |                                                 | Martial |         | Maneuvers | Max Maneuver |
 | Level | Bonus     | Facets                                          | Die     | Stamina | Known     | Level        |
 |:-----:|:--:|:-------------------------------------------------------|:-------:|:-------:|:---------:|:------------:|
 |  1st  | +2 | Martial Training, Martial Maneuvers, Fighter's Light |  1d6    |    3    |     3     |      1st     |
@@ -4044,7 +4042,7 @@ Unwavering in the face of mortal danger, you gain a new Action you can take, **R
 **Categories** :: Martial, Concentrate
 **Cost** :: 2 $[AP], Basic CAP
 
-You regain 1 spent *Stamina*. The Exhausted condition increases the $[AP] required to take this Action by its level.
+You regain 1 spent *Stamina*. The Exhausted Condition increases the $[AP] required to take this Action by its level.
 
 ### Adaptive Strikes < lvl 6 >
 
@@ -4245,7 +4243,7 @@ Mortals that share a soul with one of the ancient Primordials. These fate-chosen
 
 {{classTable,wide
 ##### Incarnate Class Table
-|       | Incarnate |                                               | Primordial |         | Manuevers | Max Manevuer |
+|       | Incarnate |                                               | Primordial |         | Maneuvers | Max Maneuver |
 | Level | Bonus     | Facets                                        | Die     | Stamina | Known     | Level        |
 |:-----:|:--:|:-----------------------------------------------------|:-------:|:-------:|:---------:|:------------:|
 |  1st  | +2 | Primordial Soul, Incarnate Maneuvers, Primeval Light |  1d6    |    3    |     2     |      1st     |
@@ -4451,7 +4449,7 @@ You share the soul of the beast king, granting you the benefits below.
 \column
 
 #### Titanus Form < lvl 2 >
-When you Titan Morph, your body takes on the form of the Primordial King, a great amalgous beast. While in your Titanus Form, your body gains the Pushing property for Unarmed Strikes, and you can Channel the **Primordial Breath** spell, described below.
+When you Titan Morph, your body takes on the form of the Primordial King, a great chimeric beast. While in your Titanus Form, your body gains the Pushing property for Unarmed Strikes, and you can Channel the **Primordial Breath** spell, described below.
 
 :
 
@@ -4662,7 +4660,7 @@ Your inner flame grants you the benefits below.
 :
 - ***Flame Alignment.*** You gain a level of Flame Alignment.
 
-- ***Flame Manipulation.*** Sustaining a Fire cantrip costs 1 less $[AP] for you (minimum 0 $[AP]). You can also Interact with a creature and spend an additional 1 $[AP] to end the Burning condition on a creature you can touch.
+- ***Flame Manipulation.*** Sustaining a Fire cantrip costs 1 less $[AP] for you (minimum 0 $[AP]). You can also Interact with a creature and spend an additional 1 $[AP] to end the Burning Condition on a creature you can touch.
 
 - ***Ray Blast.*** Your Ray Blast targets $[PER] and deals Thermic damage. You can spend an additional 1 $[AP] and 1 *Light* when you Ray Blast to add Burning to the Success effects with a level equal to half your Luminary Bonus, or that level plus 1 on a Deadly Success.
 
@@ -4864,7 +4862,7 @@ Roll your Miracle Die and your $[PRS] Die, add the rolled values together, and c
 - ***Tandem Saves.*** Save Checks they make before your next turn are rolled in Tandem with your Miracle Die.
 :
 ###### Rebuke Oblux
-Each Obluminous creature in an emanation out to your $[PRS] points makes a $[PRS] Save against your Spell DC Check.
+Each Obluminous creature in an emanation out to your $[PRS] points makes a $[PRS] Save Check against your Spell DC Check.
 :
 {{left
 **Failure**            :: Divine damage equal to twice your Thaumaturge Level, Blinded until the start of your next turn, Stunned 4.
@@ -4906,7 +4904,7 @@ So great is your faith that in times of need, you can become a minor avatar of y
 **Requirements** :: Two hands or a holy symbol of your deity; You haven’t Prayed this turn; You haven’t Manifested Presence since your last Long Rest
 }}
 
-You enter your **Avatar Form**, which lasts for 10 minutes or until you reach your Light Limit. When you enter your Avatar Form, you lose the Indebted condition, and the amount of *Light* applied to your Light Limit is reduced by your Thaumaturge Bonus.
+You enter your **Avatar Form**, which lasts for 10 minutes or until you reach your Light Limit. When you enter your Avatar Form, you lose the Indebted Condition, and the amount of *Light* applied to your Light Limit is reduced by your Thaumaturge Bonus.
 
 During your Avatar Form, you can’t Pray, and you gain the benefits below.
 :
@@ -5044,7 +5042,7 @@ Also, during your Avatar Form any hostile creature that starts its turn in the e
 }}
 
 #### Bishop of the Cosmos < lvl 10 >
-When you inflict the Morphing condition on a creature, the level of that condition increases by 1, or 2 during your Avatar Form.
+When you inflict the Morphing Condition on a creature, the level of that Condition increases by 1, or 2 during your Avatar Form.
 
 When you roll to gain *Temporary Endurance* with your Cosmic Knowledge facet, you can replace the value rolled with your Thaumaturge Bonus if it is lower.
 
@@ -5168,7 +5166,7 @@ Also, during your Avatar Form any hostile creature that starts its turn in the e
 }}
 
 #### Bishop of the World Forge < lvl 10 >
-When you inflict the Burning condition on a creature, the level of that condition increases by 1, or 2 during your Avatar Form.
+When you inflict the Burning Condition on a creature, the level of that Condition increases by 1, or 2 during your Avatar Form.
 
 When you roll to gain *Temporary Endurance* with your Hammerheart facet, you can replace the value rolled with your Thaumaturge Bonus if it is lower.
 
@@ -5182,7 +5180,7 @@ Save Checks you made to avoid becoming Unconious, such as when you lose Vitality
 
 When a you or an ally you can see loses Vitality, you can take the Reactive Strike action.
 
-helps ease physical conditions
+helps ease physical Conditions
 
 Star
 Spring
@@ -5555,7 +5553,7 @@ Your form diffuses into a baleful mist. This form follows the rules below.
 
 * ***Formless.*** You can enter spaces occupied by other creatures and stop there. You can move through any opening air could pass through, though you can’t pass through water.
 
-* ***Immunity.*** You have Immunity against the Burning, Immobilized, Prone, Restrained, and Seized conditions.
+* ***Immunity.*** You have Immunity against the Burning, Immobilized, Prone, Restrained, and Seized Conditions.
 
 * ***Movement.*** Your *Movement* becomes 4 and can’t be changed.
 
@@ -5671,7 +5669,7 @@ Terrible and elusive, your form is evershifting. When you Metamorph, you can spe
 :
 * ***Bat Traits.*** This form has the traits of your Bat Metamorph.
 
-* ***Immunity.*** You have Immunity against the Immobilized, Paralyzed, Prone, Restrained, Seized and Stunned conditions.
+* ***Immunity.*** You have Immunity against the Immobilized, Paralyzed, Prone, Restrained, Seized and Stunned Conditions.
 
 * ***Quick Bite.*** Biting costs 1 less $[AP].
 
@@ -5684,7 +5682,7 @@ Terrible and elusive, your form is evershifting. When you Metamorph, you can spe
 ### Dark Tenacity < lvl 8 >
 When you drop to 0 *Endurance*, you can Metamorph into a Mist Cloud and Stride without spending any $[AP] or *Blood.* If you do, your Survival Save is automatically a Complete Success, and this Metamorph doesn’t end for being at 0 *Endurance*.
 
-If you are still at 0 *Endurance* when this Metamorph ends, but have not died, you are Unconscious and lose the Dying condition. Once you Metamorph this way, you must finish a Long Rest before you can do so again.
+If you are still at 0 *Endurance* when this Metamorph ends, but have not died, you are Unconscious and lose the Dying Condition. Once you Metamorph this way, you must finish a Long Rest before you can do so again.
 
 ![](https://i.imgur.com/hd3lq4V.png){position:absolute,top:0,left:0,opacity:0.5,width:100%}
 ![](https://i.imgur.com/NQCPF0W.png){position:absolute,bottom:0.3%,left:0,width:100%}
@@ -5895,8 +5893,8 @@ Listed in the table below are the details of all weapons available to PCs. Each 
 | Greatflail               |       3       |         12          |       Crushing       | VIG 3, AGI 2  | Massive, Two-Handed, Brutal, Deft |
 |{{font-size:1.3em,margin-top:0.3em,margin-bottom:0.3em,color:cyan **Gauntlets** }} ||||||
 | Claw Gauntlet            |       0       |          3          |  Piercing/Slashing   |     AGI 2     | Light, Close-up, Deft |
-| Hookclaw Gauntlet        |       0       |          3          |  Piercing/Slashing   |     AGI 2     | Close-Up, Deft, Pulling |
-| Boulder Gauntlets        |       3       |          6          |       Crushing       |     VIG 2     | Heavy, Close-Up, Two-Handed |
+| Hookclaw Gauntlet        |       0       |          3          |  Piercing/Slashing   |     AGI 2     | Close-up, Deft, Pulling |
+| Boulder Gauntlets        |       3       |          6          |       Crushing       |     VIG 2     | Heavy, Close-up, Two-Handed |
 |{{font-size:1.3em,margin-top:0.3em,margin-bottom:0.3em,color:cyan **Hammers** }} ||||||
 | Light Hammer             |       1       |          2          |  Crushing/Piercing   |       —       | Light, Bludgeoning |
 | War Hammer               |       1       |        1 (2)        |  Crushing/Piercing   |       —       | Versatile, Bludgeoning, Pulling |
@@ -6147,7 +6145,7 @@ Armor has an AC value based on its type and quality, which represents the skill 
 \page
 
 ### Slashing Vulnerability
-While unarmored, you have Slashing Vulerability based on your maximum *Vitality*, as shown in the table below.
+While unarmored, you have Slashing Vulnerability based on your maximum *Vitality*, as shown in the table below.
 
 ::
 ##### Unarmored Slashing Vulnerability
@@ -6209,7 +6207,7 @@ Each spell and maneuver has a type that determines whether your PC can learn it 
 The arcanum spell types are Fire, Ice, Mind, Bio, Scour, Arc, Blood, Moon, World, and Null. Creatures that draw light from within themselves are typically able to cast these spells.
 
 #### Evocation Spell Types
-The evocation spell types are Flame, Frost, Pneuma, Soma, Mordant, Velvet, Infernal, Lunar, Temporal, and Platinum. Creatures that wield light from external sources, such as dieties, are able to cast these spells.
+The evocation spell types are Flame, Frost, Pneuma, Soma, Mordant, Velvet, Infernal, Lunar, Temporal, and Platinum. Creatures that wield light from external sources, such as deities, are able to cast these spells.
 
 #### Maneuver Types
 The maneuver types are Feral, Martial, Instinctual, Tactical, and Psychological. Each of these types corresponds with an Attribute.
@@ -6226,9 +6224,9 @@ Reaction spells and maneuvers will list their trigger, which is the circumstance
 Range is the effective area of a spell or maneuver. Most will measure their range in spaces, meaning the target can be no more than the listed spaces away from the creature using it. Many spells and maneuvers will also list an area of effect (see the Areas of Effect section for more details). Some special ranges are listed below.
 {{left
 **Touch** :: means the user must be able to physically touch the target.
-**Self** :: will either only affect you, or will originiate from you if an area of effect is also listed.
+**Self** :: will either only affect you, or will originate from you if an area of effect is also listed.
 **Vocal** :: can target any creature that can hear you.
-**Strike Range** :: means within range of the weapon you are wielding.
+**Strike range** :: means within range of the weapon you are wielding.
 }}
 ### Components & requirements
 Most spells and maneuvers have one more components or requirements, some common ones are described below, but requirements can be many things.
@@ -6325,7 +6323,7 @@ You deliver a powerful overhead blow. You Strike, and your Attack Check is Bolst
 :
 {{left
 **Success** :: 4$[SL] Crushing damage.
-**Deadly Success** :: 6$[SL] Crushing damage, and the target must Succeed on a $[VIG] Save against your Check Total, or fall Prone.
+**Deadly Success** :: 6$[SL] Crushing damage, and the target must Succeed on a $[VIG] Save Check against your Check Total, or fall Prone.
 **Failure** :: Half as much damage as a Success.
 **Complete Failure** :: Nothing.
 }}
@@ -6335,13 +6333,13 @@ You deliver a powerful overhead blow. You Strike, and your Attack Check is Bolst
 {{left
 **Exalted (3rd)** :: The additional effects of the Attack Check are now as follows.
 :
-**Success** :: 6$[SL] Crushing damage, and the target must Succeed on a $[VIG] Save against your Check Total, or fall Prone.
+**Success** :: 6$[SL] Crushing damage, and the target must Succeed on a $[VIG] Save Check against your Check Total, or fall Prone.
 **Deadly Success** :: 9$[SL] Crushing damage, and the target has Disadvantage on their $[VIG] Save.
 **Failure** :: Half as much damage as a Success.
 **Complete Failure** :: Nothing.
 :
 **Exalted (4th)** :: You execute this maneuver twice.
-**Exalted (5th)** :: Your Attack Check Empowered.
+**Exalted (5th)** :: Your Attack Check is Empowered.
 }}
 
 #### Hurl
@@ -6360,7 +6358,7 @@ If what you throw is a weapon with the Thrown property, it deals that weapon's d
 If what you throw is a creature, it takes the same amount of damage as the target of your Strike, before Resistance.
 :
 {{left
-**Exalted (3rd)** :: You can use an object or creature your size as your weapon, which has a DV of 8 $[SL], a Deadly DV of 12 $[SL], and the Heavy and Thrown (5$[SL]/10$[SL]) properties.
+**Exalted (3rd)** :: You can use an object or creature your size as your weapon, which has a DV of 8$[SL], a Deadly DV of 12$[SL], and the Heavy and Thrown (5$[SL]/10$[SL]) properties.
 **Exalted (4th)** :: You can use an object or creature one size larger than you as your weapon, which has a DV of 9$[SL], a Deadly DV of 14$[SL], and the Massive, Pushing, and Thrown (3$[SL]/5$[SL]) properties.
 **Exalted (5th)** :: You can use an object or creature two sizes larger than you as your weapon, which has a DV of 11$[SL], a Deadly DV of 17$[SL], and the Massive, Bludgeoning, Pushing, and Thrown (2$[SL]/3$[SL]) properties.
 }}
@@ -6702,7 +6700,7 @@ Choose a creature you can sense within range. Make a Tandem Skill Check with you
 **Complete Failure** :: Nothing.
 :
 **Exalted (+1)** :: Your Skill Check is Bolstered 1 for each exalted level.
-**Exalted (4th)** :: You Skill Check doesn't have Disadvantage against a non-Hostile creature.
+**Exalted (4th)** :: Your Skill Check doesn't have Disadvantage against a non-Hostile creature.
 **Exalted (5th)** :: You execute this maneuver twice.
 }}
 
@@ -6714,7 +6712,7 @@ Choose a creature you can sense within range. Make a Tandem Skill Check with you
 
 ##### Analyzing Strike
 **Execution Time** :: Strike
-**Range** :: Strike Range
+**Range** :: Strike range
 
 You Strike with planned movement, aiming to learn about your target. Your Attack Check gains additional effects.
 :
@@ -6776,7 +6774,7 @@ You craft a lie that can’t be ignored. Choose a creature you can sense that ca
 **Complete Failure** :: The creature doesn’t believe your lie, and may become Hostile.
 :
 **Exalted (+1)** :: Your Skill Check is Bolstered 1 for each exalted level.
-**Exalted (4th)** :: You Skill Check doesn't have Disadvantage against a Hostile creature.
+**Exalted (4th)** :: Your Skill Check doesn't have Disadvantage against a Hostile creature.
 **Exalted (5th)** :: You execute this maneuver twice.
 }}
 
@@ -6847,7 +6845,7 @@ Your words inflame the ego of your target. Choose a creature you can sense that 
 **Complete Failure** :: The target recognizes your taunt and becomes suspicious of its circumstances.
 :
 **Exalted (+1)** :: Your Skill Check is Bolstered 1 for each exalted level.
-**Exalted (4th)** :: You Skill Check doesn't have Disadvantage against a non-Hostile creature.
+**Exalted (4th)** :: Your Skill Check doesn't have Disadvantage against a non-Hostile creature.
 **Exalted (5th)** :: You execute this maneuver twice.
 }}
 :
@@ -6891,13 +6889,13 @@ Your words instill mortal fear. Choose a creature you can sense that can hear yo
 **Failure** :: Panicked half $[SL], rounded down.
 **Complete Failure** :: Nothing.
 :
-**Exalted (4th)** :: You Skill Check doesn't have Disadvantage against a Hostile creature.
+**Exalted (4th)** :: Your Skill Check doesn't have Disadvantage against a Hostile creature.
 **Exalted (5th)** :: You execute this maneuver twice.
 }}
 :
 ##### Frightening Strike
 **Execution Time** :: Strike
-**Range** :: Strike Range
+**Range** :: Strike range
 
 You Strike, your movements laced with cruelty. Your Attack Check gains additional effects.
 :
@@ -6917,8 +6915,8 @@ You Strike, your movements laced with cruelty. Your Attack Check gains additiona
 **Exalted (3rd)** :: You execute this maneuver twice.
 **Exalted (4th)** :: The additional effects of the Attack Check are now as follows.
 :
-**Success** :: 2 $[SL] Psychic damage, Panicked SL.
-**Deadly Success** :: 3 $[SL] Psychic damage, Panicked $[SL] plus 1.
+**Success** :: 2$[SL] Psychic damage, Panicked $[SL].
+**Deadly Success** :: 3$[SL] Psychic damage, Panicked $[SL] plus 1.
 **Failure** :: $[SL] Psychic damage, Panicked half $[SL], rounded down.
 **Complete Failure** :: Nothing.
 :
@@ -7215,7 +7213,7 @@ Using your arcane knowledge of Ice Prisma, you manipulate a minor amount of it i
 You rapidly lower the temperature of a tiny object or single gallon of liquid in range to subfreezing temperatures. Liquids that freeze at the same temperature as water become ice. If you freeze a liquid this way, you can form the ice into crude shapes, but not into letters, accurate depictions of faces, or anything of similar detail. Objects and liquids affected by this spell warm up naturally over time.
 :
 ##### Silver Dust
-You release a frozen cloud in front of you. Choose two adjacent spaces within range. Creatures in those spaces make a $[VIG] Save against your DC Check. Add the value of your Mod Die to the Arctic damage dealt.
+You release a frozen cloud in front of you. Choose two adjacent spaces within range. Creatures in those spaces make a $[VIG] Save Check against your DC Check. Add the value of your Mod Die to the Arctic damage dealt.
 :
 {{left
 **Failure** :: Your level plus 1 Arctic damage, Slowed 1 until the start of your turn.
@@ -7316,7 +7314,7 @@ Each creature on the ground in the circle when the ice appears makes an $[AGI] S
 **Cast Time** :: 1 $[AP]
 **Range** :: Touch
 **Components** :: Spoken, Two Hands, 2$[SL]g Charged Aquamarine
-**Duration** :: Sustained (1$[AP]), 1 minute
+**Duration** :: Sustained (1 $[AP]), 1 minute
 }}
 
 You imbue a creature with Ice Prisma from the Charged Aquamarine. Touch a creature you can sense. That creature gains $[SL] temporary $[AP], which last for the duration and can only be used to Prepare or take a Reaction.
@@ -7461,7 +7459,7 @@ While casting this spell, you can choose to create up to 5$[SL] seconds of words
 :
 {{left
 **Exalted (3rd)** :: The spell’s Duration becomes 1 month.
-**Exalted (5th)** :: The spell’s Duration becomes 1 year, and you receive the alert if you are in the same facet of existance.
+**Exalted (5th)** :: The spell’s Duration becomes 1 year, and you receive the alert if you are in the same facet of existence.
 }}
 
 #### Soul Seeker
@@ -7743,7 +7741,7 @@ You fill a Medium or smaller object you can sense within range with brine. The o
 You summon a flash of salty rainfall in a cylinder 3 spaces high with a radius up to 3 spaces. The downpour douses mundane flames within the area and reduces the Dissolving level of creatures within it by 1.
 :
 ##### Stream
-You arc a stream of water through the air up to 15 spaces away. You may target a creature within that range. If it doesn't want to get wet it may make an $[AGI] Save against your DC Check. On a Failure, it is doused. The water reduces the Dissolving level of the creature by 2.
+You arc a stream of water through the air up to 15 spaces away. You may target a creature within that range. If it doesn't want to get wet it may make an $[AGI] Save Check against your DC Check. On a Failure, it is doused. The water reduces the Dissolving level of the creature by 2.
 
 ![](https://i.imgur.com/hd3lq4V.png){position:absolute,top:0,left:0,opacity:0.5,width:100%}
 ![](https://i.imgur.com/NQCPF0W.png){position:absolute,bottom:0.3%,left:0,width:100%}
@@ -7783,7 +7781,7 @@ Make an Attack Check against the $[AGI] of a creature you can sense within 5$[SL
 **Failure** :: Half as much damage as a Success, Dissolving $[SL].
 **Complete Failure** :: Nothing.
 :
-**Exalted (3rd)** :: The Dissolving level on a Success, Deadly Success, and Failure increase by 1.
+**Exalted (3rd)** :: The Dissolving level on a Success, Deadly Success, and Failure increases by 1.
 **Exalted (4th)** :: You can target an additional, different creature.
 **Exalted (5th)** :: A creature is Dissolving $[SL] on a Complete Failure, and the Dissolving level for every other result increases by 1.
 }}
@@ -8218,7 +8216,7 @@ You can use the arcane hand to Interact with objects within 1 space of it. $[VIG
 **Components** :: Spoken, Two Hands; a rock or rocky ground beneath you
 **Duration** :: Instant
 }}
-You overload a palm-sized stone with World Prisma and launch it. Make an Attack Check against the AGI of a creature you can sense within range. Add the value of your Mod Die to the Crushing damage dealt.
+You overload a palm-sized stone with World Prisma and launch it. Make an Attack Check against the $[AGI] of a creature you can sense within range. Add the value of your Mod Die to the Crushing damage dealt.
 :
 **Success** :: Crushing damage equal to your level.
 **Deadly Success** :: Crushing damage equal to your level, Sonic damage equal to your Class Bonus, Stunned 1.
@@ -8326,7 +8324,7 @@ You create a void between the spell and $[SL] creatures you can sense within ran
 \page
 
 ## Evocations
-Spells cast by invervention from extraplanar entities, or through the Primos' response to powerful emotion.
+Spells cast by intervention from extraplanar entities, or through the Primos' response to powerful emotion.
 
 ### Flame
 
@@ -9170,7 +9168,7 @@ The spoken requirement of this spell may be whispered, but you must be able to s
 **Components** :: Spoken, Two Hands
 **Duration** :: Instant
 
-Repeating an unanswerable question, you release a breath of exasperation that overflows with stardust. Each creature in a 3-space line makes an $[INT] Save against your DC Check.
+Repeating an unanswerable question, you release a breath of exasperation that overflows with stardust. Each creature in a 3-space line makes an $[INT] Save Check against your DC Check.
 :
 {{left
 **Failure** :: Cosmic damage equal to the value of your Mod Die for the DC Check.
@@ -9347,15 +9345,15 @@ Resources are *Capitalized and Italicized*.
 "You regain 5 *Endurance*."
 
 ### Glossary
-**AP** :: $[AP] (Stands for Action Point) Resource used to perform actions, regained at the end of a creatures turn.
+**AP** :: $[AP] (Stands for Action Point) Resource used to perform actions, regained at the end of a creature's turn.
 **Advantage** :: Modifies Checks by having the rolling entity roll an additional d20, taking the higher value between the d20s for the Check total.
 **AGI** :: $[AGI] (Stands for Agility) Measure of how fast a creature can move.
-**Ancestry** :: A PC's creature type chosen durning character creation.
-**Arcane** :: Descriptor of mystical effects created with intentby sapient effort.
+**Ancestry** :: A PC's creature type chosen during character creation.
+**Arcane** :: Descriptor of mystical effects created with intent by sapient effort.
 **Arcanum** :: Type of spell cast with personal talent.
 **Attack Check** :: Check made when a creature attempts to harm something in a way that requires accuracy.
 **Attribute** :: The measures of a creature's capability; Vigor, Agility, Perception, Intelligence, Presence.
-**Attribute Check** :: Skill Check made to do something simple; abberviated as -Attribute- Check (e.g. $[PER] Check).
+**Attribute Check** :: Skill Check made to do something simple; abbreviated as -Attribute- Check (e.g. $[PER] Check).
 **Attribute Points** :: Measure of the potency of a given creature's attribute; abbreviated as $[VIG] Points, $[AGI] Points, etc.
 **Basic Skill Check** :: Skill Check made to do something that requires basic knowledge of the task; always two Attributes rolled in Tandem. Abbreviated as "Tandem 'Attr.' / 'Attr.' Check", or simply "'Attr.' / 'Attr. Check'" (e.g. "Make a $[PER] / $[INT] Check").
 **Bolstered X** :: Modifies Checks by increasing the size of the largest Mod Die by one step for each level (e.g., from a d6 to a d8).
@@ -9367,14 +9365,14 @@ Resources are *Capitalized and Italicized*.
 **DC Check** :: Special Check made by rolling a Mod Die and adding 10.
 **Disadvantage** :: Modifies Checks by having the rolling entity roll an additional d20, taking the lower value between the d20s for the Check total.
 **Empowered** :: Modifies Checks by either having a Tandem check add both Mod Dice to the Check total, or adding 1d4 to the Check total if one of the Mod Dice is a d2 or smaller.
-**Endurance** :: Resource that represnts a creatures ability to function under high-stress situations. Damage is subtracted from Endurance.
+**Endurance** :: Resource that represents a creature's ability to function under high-stress situations. Damage is subtracted from Endurance.
 **Evocation** :: Type of spell cast by borrowing power.
 **Facet** :: A feature of a PC, comes from many sources.
 **Hindered X** :: Modifies Checks by reducing the size of the largest Mod Die by one step for each level (e.g., from a d4 to a d2).
 **Hobby** :: An activity a PC had experience in before they became an adventurer; allows a PC to make Trained Skill Checks related to them.
 **INT** :: $[INT] (Stands for Intelligence) Measure of how smart a creature is.
 **Maneuver** :: Technique requiring great physical or mental skill.
-**Mod Die** :: (Stands for Modifer Die) A die rolled with a d20 when making a Check; often shorthanded to -Attribute- Die (e.g., $[VIG] Die).
+**Mod Die** :: (Stands for Modifier Die) A die rolled with a d20 when making a Check; often shorthanded to -Attribute- Die (e.g., $[VIG] Die).
 **PER** :: $[PER] (Stands for Perception) Measure of how well a creature utilizes its senses.
 **PC** :: (Stands for Player Character) A creature controlled by one of the players during a session.
 **PM** :: (Stands for Prism Master) The game master; they control everything in the story apart from PCs.
@@ -9383,13 +9381,13 @@ Resources are *Capitalized and Italicized*.
 **Radiance** :: Resource that allows a creature to improve any Check they make by expending it.
 **Save Check** :: Check made when a creature attempts to avoid something harmful.
 **Skill Check** :: Check made when a creature tries to affect the world; often abbreviated as -Attribute(s)- Check (e.g. $[AGI] Check)
-**Spell** :: Arcane or Supernatural Action with fantasic results.
+**Spell** :: Arcane or Supernatural Action with fantastic results.
 **Supernatural** :: Descriptor of mystical effects created by extraplanar forces.
 **Tandem** :: Term meaning to roll two Mod Dice together but only take the higher value for the Check total (e.g., $[VIG] / $[AGI] Check); shorthanded as " / ". Negative Mod Dice still subtract from the Check total.
 **Trained Skill Check** :: Skill Check made to do something that requires specific training or knowledge; requires the appropriate Hobby or Profession. Abbreviated as "'Hobby or Profession' Check".
 **VIG** :: $[VIG] (Stands for Vigor) Measure of a creature's health and strength.
-**Vitality** :: Resource that represents a creautres physical wellbeing and how close they are to death; a creature that reaches 0 Vitality dies.
-**Weakend** :: subtracting 1d4 from the Check Total.
+**Vitality** :: Resource that represents a creautres physical well-being and how close they are to death; a creature that reaches 0 Vitality dies.
+**Weakened** :: Subtracts 1d4 from the Check Total.
 
 ![](https://i.imgur.com/hd3lq4V.png){position:absolute,top:0,left:0,opacity:0.5,width:100%}
 ![](https://i.imgur.com/NQCPF0W.png){position:absolute,bottom:0.3%,left:0,width:100%}

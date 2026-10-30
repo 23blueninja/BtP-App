@@ -221,7 +221,7 @@ export const classes: ClassDef[] = [
     actions: [],
     armor: [{ kind: 'bonusWith', armor: ['Light', 'Medium'] }],
     armorTraining: 'Light and Medium armor',
-    weaponTraining: 'Simple weapons; any Light, Close-Up, or Precise weapon',
+    weaponTraining: 'Simple weapons; any Light, Close-up, or Precise weapon',
     saveTandem: ['PER', 'INT'],
     basicSkillEmpowered: 'PER',
     maneuverDie: true,
@@ -312,7 +312,7 @@ export const classes: ClassDef[] = [
       'titanus-form': { uses: { count: 1, per: 'Long Rest' } },
       // Ferocious Strikes: Unarmed Strike with the Primordial Die; DV half your Class Bonus, Deadly DV your Class Bonus.
       'primeval-light': {
-        effects: [{ kind: 'naturalWeapon', name: 'Unarmed Strike (Primordial Die)', damage: 'Crushing', properties: ['Close-Up'], dv: 'halfClassBonus', deadly: 'classBonus', die: 'class' }],
+        effects: [{ kind: 'naturalWeapon', name: 'Unarmed Strike (Primordial Die)', damage: 'Crushing', properties: ['Close-up'], dv: 'halfClassBonus', deadly: 'classBonus', die: 'class' }],
       },
     },
     spellLists: [
