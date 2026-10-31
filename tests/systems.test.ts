@@ -1251,6 +1251,35 @@ describe('storage', () => {
     }
   });
 
+  it('a failed write (storage full) stays queued, is reported, and clears once a later flush succeeds', async () => {
+    const { LocalStore } = await load();
+    const s = new LocalStore();
+    const states: boolean[] = [];
+    s.onSaveState((f) => states.push(f));
+    const a = char('Ann', '2026-01-01T00:00:00.000Z');
+    const set = vi.spyOn(ls, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError');
+    });
+    s.save(a);
+    s.flush();
+    expect(ls.data.has(PREFIX + a.id)).toBe(false);
+    set.mockRestore();
+    s.flush(); // retried with nothing new saved
+    expect(JSON.parse(ls.data.get(PREFIX + a.id)!).name).toBe('Ann');
+    expect(states).toEqual([false, true, false]);
+  });
+
+  it('import rejects JSON that is not a character export', async () => {
+    const { importCharacter } = await load();
+    const file = (data: unknown) => new File([JSON.stringify(data)], 'x.json');
+    await expect(importCharacter(file({ kind: 'btp-monster-maker', monsters: [] }))).rejects.toThrow();
+    await expect(importCharacter(file({ schema: 1, name: 'Wolf' }))).rejects.toThrow();
+    await expect(importCharacter(file([1, 2]))).rejects.toThrow();
+    await expect(importCharacter(file('hello'))).rejects.toThrow();
+    const c = char('Ann', '2026-01-01T00:00:00.000Z');
+    expect((await importCharacter(file(c))).name).toBe('Ann');
+  });
+
   it('a corrupt character entry is skipped without losing the others', async () => {
     const a = char('Ann', '2026-01-01T00:00:00.000Z');
     ls.data.set(PREFIX + a.id, JSON.stringify(a));
@@ -1330,7 +1359,15 @@ describe('storage', () => {
       },
     });
     const c = makeCharacter({ name: 'Sir Robin: the Brave!', homebrew: [newHomebrew('item', 'h1')] });
-    exportCharacter(c);
+    vi.useFakeTimers();
+    try {
+      exportCharacter(c);
+      // The URL is revoked a moment later: revoking at once can cancel the download.
+      expect(revoke).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(1000);
+    } finally {
+      vi.useRealTimers();
+    }
     expect(anchors[0].download).toBe('Sir_Robin_the_Brave_.btp.json');
     expect(anchors[0].href).toBe('blob:fake');
     expect(anchors[0].click).toHaveBeenCalledOnce();
