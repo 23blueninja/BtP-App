@@ -164,6 +164,11 @@ button:focus-visible {
   gap: 0.5rem;
   align-items: center;
 }
+/* A select sizes to its longest option, which depends on the fonts installed; let it
+   shrink so a long weapon name can't push the Add button off a phone screen. */
+.row > select {
+  min-width: 0;
+}
 .row.wrap {
   flex-wrap: wrap;
 }
