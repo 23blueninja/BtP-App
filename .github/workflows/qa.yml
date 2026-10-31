@@ -23,7 +23,8 @@ jobs:
 
   full:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest is 26.04, which playwright-core 1.56 can't install Chromium on.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
