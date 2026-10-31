@@ -12,6 +12,8 @@
   --text: #e8eaf6;
   --muted: #9aa1c4;
   --accent: #7aa2ff;
+  /* Filled accent behind white text: 5.3:1, above the 4.5:1 WCAG minimum (#7aa2ff is 2.5:1). PM 2026-10-31. */
+  --accent-fill: #3a66cc;
   --accent-2: #c38bff;
   --ok: #5fd39a;
   --warn: #ffb35c;
@@ -79,8 +81,8 @@ button:disabled {
   cursor: not-allowed;
 }
 button.primary {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--accent-fill);
+  border-color: var(--accent-fill);
   color: #fff;
   font-weight: 600;
 }
@@ -270,6 +272,16 @@ ul.plain li {
 .topbar nav {
   display: flex;
   gap: 1rem;
+}
+/* Touch targets at least 24 px tall (WCAG 2.2), PM 2026-10-31. */
+.topbar nav button {
+  min-height: 24px;
+}
+input[type='radio'],
+input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent-fill);
 }
 main {
   flex: 1;
@@ -759,7 +771,7 @@ table.skills td:not(:first-child) {
   user-select: none;
 }
 .pill-btn.on {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #fff;
 }
 .pill-btn.disabled {
@@ -1436,8 +1448,9 @@ input.num {
   gap: 0.25rem;
 }
 .pip {
-  width: 1.05rem;
-  height: 1.05rem;
+  /* 24 px: the WCAG 2.2 minimum touch target. */
+  width: 24px;
+  height: 24px;
   padding: 0;
   border-radius: 50%;
   border: 2px solid var(--accent-2);
@@ -1779,7 +1792,7 @@ b.calc {
   color: var(--muted);
 }
 .view-toggle button.active {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #fff;
 }
 .ex-add {
@@ -2049,8 +2062,8 @@ textarea.full {
   padding-right: 0.6rem;
 }
 .turn-bar .pip {
-  width: 1.35rem;
-  height: 1.35rem;
+  width: 24px;
+  height: 24px;
 }
 .turn-count {
   font-variant-numeric: tabular-nums;
@@ -2677,8 +2690,9 @@ tr.needs input {
   gap: 0.2rem;
 }
 .turn-pips-v .pip {
-  width: 1.05rem;
-  height: 1.05rem;
+  /* 24 px: the WCAG 2.2 minimum touch target. */
+  width: 24px;
+  height: 24px;
 }
 .turn-box-controls {
   display: flex;
