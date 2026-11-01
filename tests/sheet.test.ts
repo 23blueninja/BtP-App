@@ -4,14 +4,14 @@
 // character itself, not from the export code.
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { PDFCheckBox, PDFDocument, PDFDropdown, PDFTextField } from 'pdf-lib';
+import { PDFCheckBox, PDFDocument, PDFDropdown, PDFTextField, StandardFonts } from 'pdf-lib';
 import { basicActions, conditions } from '../src/content';
 import { classes } from '../src/data/classes';
 import { ancestries } from '../src/data/ancestries';
 import { subclassesOf } from '../src/engine/classInfo';
 import { derive } from '../src/engine/derive';
 import { sheetValues, unfilled, wrapLines } from '../src/engine/sheetExport';
-import { fillSheet, printable } from '../src/engine/sheetPdf';
+import { fillSheet, fitSize, printable } from '../src/engine/sheetPdf';
 import { makeCharacter, sample } from './helpers';
 
 const DIR = 'src/assets/sheets';
@@ -151,6 +151,39 @@ describe('filling the PDF', () => {
     expect((form.getField('cond_blinded') as PDFCheckBox).isChecked()).toBe(false);
     if (version === 'printable') expect((form.getField('vitality_4') as PDFCheckBox).isChecked()).toBe(true);
     else expect((form.getField('ap') as PDFDropdown).getSelected()).toEqual(['3']);
+  });
+
+  it('printable: bubbles past the character\'s maximum are removed', async () => {
+    // Arch, 2026-11-01: remove the Vitality and Radiance bubbles a character doesn't have.
+    const cls = classes[0];
+    const c = character(cls.id, subclassesOf(cls)[0]?.id ?? '', ancestries[0].id);
+    const v = sheetValues(c, derive(c));
+    const out = await fillSheet(template('printable'), { ...v, vitality_max: '4', radiance_max: '2', rest_charges_max: '0' });
+    const names = new Set((await PDFDocument.load(out.bytes)).getForm().getFields().map((f) => f.getName()));
+    expect([1, 2, 3, 4, 5].map((i) => names.has(`vitality_${i}`))).toEqual([true, true, true, true, false]);
+    expect([1, 2, 3].map((i) => names.has(`radiance_${i}`))).toEqual([true, true, false]);
+    expect(names.has('rest_charge_1')).toBe(false);
+    // An empty maximum keeps every bubble.
+    const blank = await fillSheet(template('printable'), { ...v, vitality_max: '' });
+    expect((await PDFDocument.load(blank.bytes)).getForm().getFields().some((f) => f.getName() === 'vitality_8')).toBe(true);
+  });
+
+  it('one-line text too wide for its box is shrunk to fit', async () => {
+    // Arch, 2026-11-01: a Tandem Initiative "d4 / d6" was cut off at the sheet's 16pt.
+    const font = await (await PDFDocument.create()).embedFont(StandardFonts.HelveticaBold);
+    const da = '/HeBo 16 Tf 0 g';
+    expect(fitSize(da, '8', 42, font)).toBe(da);
+    const fitted = fitSize(da, 'd4 / d6', 42, font);
+    const size = Number(/([\d.]+) Tf/.exec(fitted)![1]);
+    expect(size).toBeLessThan(16);
+    expect(font.widthOfTextAtSize('d4 / d6', size)).toBeLessThanOrEqual(38);
+    const cls = classes[0];
+    const c = character(cls.id, subclassesOf(cls)[0]?.id ?? '', ancestries[0].id);
+    const out = await fillSheet(template('printable'), { ...sheetValues(c, derive(c)), initiative: 'd4 / d6' });
+    const field = (await PDFDocument.load(out.bytes)).getForm().getTextField('initiative');
+    const filled = Number(/([\d.]+) Tf/.exec(field.acroField.getDefaultAppearance() ?? '')![1]);
+    expect(filled).toBeLessThan(16);
+    expect(font.widthOfTextAtSize('d4 / d6', filled)).toBeLessThanOrEqual(field.acroField.getWidgets()[0].getRectangle().width - 4);
   });
 
   it('text the sheet font can\'t draw is swapped or left out, not an error', async () => {
