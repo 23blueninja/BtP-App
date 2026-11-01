@@ -11,7 +11,8 @@ import { Collapsible, FacetText, go, Icon, Modal, RuleBlock, RuleLink, Stepper, 
 import { SpellListEditor } from './pickers';
 import { CastRow } from './Cast';
 import { SummonsTab } from './Summons';
-import { alignmentGradient, LIGHT_TEXT } from './lightColors';
+import { alignmentGradient, LIGHT_TEXT, LIGHT_TEXT_ON_WHITE } from './lightColors';
+import { usePrefs } from './prefs';
 import { PlayContext, UseButton } from './Activate';
 import { HomebrewBox } from './Homebrew';
 import { AdjustButton, AdjustmentsPanel } from './Adjustments';
@@ -24,9 +25,14 @@ import type { ActiveEffect } from '../engine/character';
 type Update = (fn: (c: Character) => Character) => void;
 
 /** Heading gradient from the character's alignments (see lightColors.ts); solid colour (strongest Light) for Firefox. */
-function headingStyle(d: Derived): React.CSSProperties | undefined {
-  const g = alignmentGradient(d.alignmentRanked);
-  return g ? ({ '--heading-gradient': g, '--heading-color': LIGHT_TEXT[d.alignmentRanked[0].light] } as React.CSSProperties) : undefined;
+function headingStyle(d: Derived, palette: typeof LIGHT_TEXT): React.CSSProperties | undefined {
+  const g = alignmentGradient(d.alignmentRanked, palette);
+  return g ? ({ '--heading-gradient': g, '--heading-color': palette[d.alignmentRanked[0].light] } as React.CSSProperties) : undefined;
+}
+
+/** Light colours that read on the current theme's background. */
+function useLightText() {
+  return usePrefs().theme === 'light' ? LIGHT_TEXT_ON_WHITE : LIGHT_TEXT;
 }
 
 const TABS = ['Sheet', 'Facets', 'Spells & Maneuvers', 'Summons', 'Equipment', 'Notes'] as const;
@@ -39,13 +45,14 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
   const tab = tabs.includes(picked) ? picked : 'Sheet';
   const [log, setLog] = useState<{ lines: string[]; undo?: PlayState } | null>(null);
   const d = derive(c);
+  const lightText = useLightText();
   const setPlay = (fn: (p: PlayState) => PlayState) => update((x) => ({ ...x, play: clampPlay(fn(x.play), derive(x)) }));
   const anc = ancestryById.get(c.ancestry);
   const sub = anc?.subAncestries?.find((s) => s.id === c.subAncestry);
   const onLog = (lines: string[], undo?: PlayState) => setLog({ lines, undo });
   return (
     <PlayContext.Provider value={{ c, d, update, onLog }}>
-      <div className="sheet" style={headingStyle(d)}>
+      <div className="sheet" style={headingStyle(d, lightText)}>
         <header className="sheet-header">
           <div>
             <h1>{c.name || 'Unnamed character'}</h1>
@@ -381,8 +388,9 @@ const RESPONSE_LIGHT: Record<string, Light> = {
 
 function Response({ value }: { value: string }) {
   const light = RESPONSE_LIGHT[value];
+  const lightText = useLightText();
   return (
-    <strong style={light ? { color: LIGHT_TEXT[light] } : undefined} title={light}>
+    <strong style={light ? { color: lightText[light] } : undefined} title={light}>
       {value || '—'}
     </strong>
   );

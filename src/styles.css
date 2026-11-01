@@ -3049,3 +3049,77 @@ html.tour-open body {
   min-width: 7.5em;
   flex: none;
 }
+
+/* ---------- Light theme (Options → Theme) ----------
+   White, with the printed sheet's gradient (cyan, magenta, yellow, magenta; yellow
+   kept away from the left edge where titles start) in place of the rulebook's rainbow.
+   Text-coloured gradients use the sheet's deeper title stops so they read on white. */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #fff;
+  --bg-2: rgba(255, 255, 255, 0.88);
+  --panel: rgba(255, 255, 255, 0.86);
+  --panel-2: rgba(241, 243, 250, 0.92);
+  --border: #b9c0dd;
+  --box-border: #b9c0dd;
+  --text: #141833;
+  --muted: #5a6189;
+  --accent: #3a66cc;
+  --accent-fill: #3a66cc;
+  --accent-2: #8a2fc9;
+  --ok: #17824f;
+  --warn: #b35a00;
+  --danger: #c8203a;
+  --prism: linear-gradient(90deg, #00a8e0, #d600d6, #e0a800, #d600d6);
+  --prism-loop: linear-gradient(90deg, #00a8e0, #d600d6, #e0a800, #d600d6, #00a8e0);
+  --prism-field: repeating-linear-gradient(135deg, #00ffff 0px, #ff00ff 350px, #ffff00 700px, #ff00ff 1050px, #00ffff 1400px);
+  --prism-edge-strength: 0.9;
+  --prism-edge-boost: none;
+  --prism-glint: linear-gradient(transparent, transparent);
+  --shadow: 0 6px 24px rgba(20, 24, 51, 0.12);
+}
+:root[data-theme='light'] .prism-bg {
+  opacity: 0.4;
+}
+:root[data-theme='light'] .hero h1 {
+  background-image: linear-gradient(135deg, #00a8e0 0%, #d600d6 12.5%, #e0a800 25%, #d600d6 37.5%, #00a8e0 50%, #d600d6 62.5%, #e0a800 75%, #d600d6 87.5%, #00a8e0 100%);
+}
+:root[data-theme='light'] .modal-backdrop {
+  background: rgba(20, 24, 51, 0.35);
+}
+:root[data-theme='light'] .modal,
+:root[data-theme='light'] .hb-save {
+  background: #fff;
+}
+:root[data-theme='light'] .app.gecko :is(.box:not(.box .box), .builder-content, .summary, .ref-body, .ref-nav, .levelup, .char-card)::before,
+:root[data-theme='light'] .app.gecko .split-box::before {
+  border-image: repeating-linear-gradient(
+      135deg,
+      #00ffff calc(0px - var(--edge-o)),
+      #ff00ff calc(350px - var(--edge-o)),
+      #ffff00 calc(700px - var(--edge-o)),
+      #ff00ff calc(1050px - var(--edge-o)),
+      #00ffff calc(1400px - var(--edge-o))
+    )
+    1;
+}
+:root[data-theme='light'] .app.glass {
+  --glass-fill: linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.68) 45%, rgba(255, 255, 255, 0.76));
+  --glass-tint: rgba(241, 243, 250, 0.2);
+}
+:root[data-theme='light'] :is(.app.glass .box, .app.glass .builder-content, .app.glass .ref-body, .app.glass .ref-nav, .app.glass .levelup, .app.glass .summary, .app.glass .detail, .app.glass .char-card, .app.glass .attr-card, .app.glass .spell-list-editor, .app.glass .pick-card, .app.glass .hb-card, .app.glass .topbar, .app.glass .toast) {
+  border-color: rgba(20, 24, 51, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 8px 24px rgba(20, 24, 51, 0.1);
+}
+:root[data-theme='light'] :is(.app.glass .box .box, .app.glass .box .hb-card) {
+  background: rgba(20, 24, 51, 0.03);
+  box-shadow: none;
+}
+:root[data-theme='light'] .tour-shade {
+  background: rgba(20, 24, 51, 0.45);
+}
+:root[data-theme='light'] .tour-spot {
+  box-shadow: 0 0 0 200vmax rgba(20, 24, 51, 0.45);
+}

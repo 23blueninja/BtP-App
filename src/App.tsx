@@ -10,7 +10,7 @@ import { LevelUp } from './ui/LevelUp';
 import { Reference } from './ui/Reference';
 import { Sheet } from './ui/Sheet';
 import { Modal } from './ui/common';
-import { LOOKS, setPrefs, usePrefs, type Look, type Prefs } from './ui/prefs';
+import { LOOKS, setPrefs, usePrefs, type Look, type Prefs, type Theme } from './ui/prefs';
 import { removeDemo, startTour, Tour, tourActive } from './ui/Tour';
 import logo from './assets/icons/8VNXled.png';
 
@@ -42,6 +42,11 @@ type BoolPref = { [K in keyof Prefs]: Prefs[K] extends boolean ? K : never }[key
 type Toggle = { key: BoolPref; label: string; note?: string };
 
 /** Toggles a look sets; each look's dropdown customises them. */
+const THEMES: { id: Theme; name: string; description: string }[] = [
+  { id: 'dark', name: 'Dark', description: 'Black, with the rulebook\'s rainbow.' },
+  { id: 'light', name: 'Light', description: 'White, with the printed sheet\'s cyan, magenta and yellow.' },
+];
+
 const LOOK_TOGGLES: Toggle[] = [
   { key: 'cutCorners', label: 'Cut corners', note: 'Panel corners cut flat. Off: square corners.' },
   { key: 'glassPanels', label: 'Glass panels', note: 'Frosted-glass panel backgrounds. Turn off if scrolling feels slow on this device.' },
@@ -72,6 +77,18 @@ function OptionsMenu({ onClose, onTour }: { onClose: () => void; onTour: () => v
   return (
     <Modal title="Options" onClose={onClose}>
       <div className="options">
+        <fieldset className="looks">
+          <legend>Theme</legend>
+          {THEMES.map((t) => (
+            <label key={t.id} className="option-row">
+              <input type="radio" name="theme" checked={prefs.theme === t.id} onChange={() => setPrefs({ theme: t.id })} />
+              <span>
+                <strong>{t.name}</strong>
+                <span className="muted small"> {t.description}</span>
+              </span>
+            </label>
+          ))}
+        </fieldset>
         <fieldset className="looks">
           <legend>Look</legend>
           {(Object.keys(LOOKS) as Look[]).map((k) => (
