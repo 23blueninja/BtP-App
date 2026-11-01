@@ -1,0 +1,10231 @@
+[
+ {
+  "name": "name",
+  "type": "text",
+  "page": 1,
+  "label": "Character name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "age",
+  "type": "text",
+  "page": 1,
+  "label": "Age",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "devotion",
+  "type": "text",
+  "page": 1,
+  "label": "Devotion",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "player",
+  "type": "text",
+  "page": 1,
+  "label": "Player",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "level",
+  "type": "text",
+  "page": 1,
+  "label": "Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "background",
+  "type": "text",
+  "page": 1,
+  "label": "Background",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "ancestry",
+  "type": "text",
+  "page": 1,
+  "label": "Ancestry",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "class",
+  "type": "text",
+  "page": 1,
+  "label": "Class",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "subclass",
+  "type": "text",
+  "page": 1,
+  "label": "Subclass",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "class_bonus",
+  "type": "text",
+  "page": 1,
+  "label": "Class Bonus",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "class_die",
+  "type": "text",
+  "page": 1,
+  "label": "Class Die (e.g. d6)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "class_die_name",
+  "type": "text",
+  "page": 1,
+  "label": "Class Die name (e.g. Arcana)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "VIG_die",
+  "type": "text",
+  "page": 1,
+  "label": "Vigor Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "VIG_points",
+  "type": "text",
+  "page": 1,
+  "label": "Vigor points",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "AGI_die",
+  "type": "text",
+  "page": 1,
+  "label": "Agility Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "AGI_points",
+  "type": "text",
+  "page": 1,
+  "label": "Agility points",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "PER_die",
+  "type": "text",
+  "page": 1,
+  "label": "Perception Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "PER_points",
+  "type": "text",
+  "page": 1,
+  "label": "Perception points",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "INT_die",
+  "type": "text",
+  "page": 1,
+  "label": "Intelligence Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "INT_points",
+  "type": "text",
+  "page": 1,
+  "label": "Intelligence points",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "PRS_die",
+  "type": "text",
+  "page": 1,
+  "label": "Presence Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "PRS_points",
+  "type": "text",
+  "page": 1,
+  "label": "Presence points",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "ap",
+  "type": "choice",
+  "page": 1,
+  "label": "AP",
+  "versions": [
+   "screen"
+  ]
+ },
+ {
+  "name": "ap_temp",
+  "type": "text",
+  "page": 1,
+  "label": "Temporary AP",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "initiative",
+  "type": "text",
+  "page": 1,
+  "label": "Initiative",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "ac",
+  "type": "text",
+  "page": 1,
+  "label": "AC",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "ac_armor",
+  "type": "text",
+  "page": 1,
+  "label": "Armor (e.g. Basic Light)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "movement",
+  "type": "text",
+  "page": 1,
+  "label": "Movement",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "perception_radius",
+  "type": "text",
+  "page": 1,
+  "label": "PER Radius",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "endurance_temp",
+  "type": "text",
+  "page": 1,
+  "label": "Temporary Endurance",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "endurance",
+  "type": "text",
+  "page": 1,
+  "label": "Current Endurance",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "endurance_max",
+  "type": "text",
+  "page": 1,
+  "label": "Maximum Endurance",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "vitality",
+  "type": "choice",
+  "page": 1,
+  "label": "Vitality",
+  "versions": [
+   "screen"
+  ]
+ },
+ {
+  "name": "vitality_max",
+  "type": "text",
+  "page": 1,
+  "label": "Vitality maximum",
+  "versions": [
+   "screen"
+  ]
+ },
+ {
+  "name": "dying",
+  "type": "text",
+  "page": 1,
+  "label": "Dying level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "radiance",
+  "type": "choice",
+  "page": 1,
+  "label": "Radiance",
+  "versions": [
+   "screen"
+  ]
+ },
+ {
+  "name": "radiance_max",
+  "type": "text",
+  "page": 1,
+  "label": "Radiance maximum",
+  "versions": [
+   "screen"
+  ]
+ },
+ {
+  "name": "respond_situations",
+  "type": "text",
+  "page": 1,
+  "label": "I respond to new situations with (Action / Patience)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "respond_problems",
+  "type": "text",
+  "page": 1,
+  "label": "I respond to new problems with (Reason / Instinct)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "respond_people",
+  "type": "text",
+  "page": 1,
+  "label": "I respond to new people with (Apathy / Empathy)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "VIG_save",
+  "type": "text",
+  "page": 1,
+  "label": "Vigor Save Check dice",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "VIG_save_notes",
+  "type": "text",
+  "page": 1,
+  "label": "Vigor Save Check notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "AGI_save",
+  "type": "text",
+  "page": 1,
+  "label": "Agility Save Check dice",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "AGI_save_notes",
+  "type": "text",
+  "page": 1,
+  "label": "Agility Save Check notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "PER_save",
+  "type": "text",
+  "page": 1,
+  "label": "Perception Save Check dice",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "PER_save_notes",
+  "type": "text",
+  "page": 1,
+  "label": "Perception Save Check notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "INT_save",
+  "type": "text",
+  "page": 1,
+  "label": "Intelligence Save Check dice",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "INT_save_notes",
+  "type": "text",
+  "page": 1,
+  "label": "Intelligence Save Check notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "PRS_save",
+  "type": "text",
+  "page": 1,
+  "label": "Presence Save Check dice",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "PRS_save_notes",
+  "type": "text",
+  "page": 1,
+  "label": "Presence Save Check notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_1_name",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 1: Weapon",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_1_mod",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 1: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_1_dv",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 1: DV / Deadly DV",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_1_damage",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 1: Damage",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_1_properties",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 1: Properties",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_2_name",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 2: Weapon",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_2_mod",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 2: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_2_dv",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 2: DV / Deadly DV",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_2_damage",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 2: Damage",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_2_properties",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 2: Properties",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_3_name",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 3: Weapon",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_3_mod",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 3: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_3_dv",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 3: DV / Deadly DV",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_3_damage",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 3: Damage",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_3_properties",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 3: Properties",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_4_name",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 4: Weapon",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_4_mod",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 4: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_4_dv",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 4: DV / Deadly DV",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_4_damage",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 4: Damage",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_4_properties",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 4: Properties",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_5_name",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 5: Weapon",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_5_mod",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 5: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_5_dv",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 5: DV / Deadly DV",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_5_damage",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 5: Damage",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "weapon_5_properties",
+  "type": "text",
+  "page": 1,
+  "label": "Weapon 5: Properties",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_1_name",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 1: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_1_die",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 1: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_1_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 1: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_2_name",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 2: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_2_die",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 2: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_2_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 2: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_3_name",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 3: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_3_die",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 3: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_3_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 3: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_4_name",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 4: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_4_die",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 4: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_4_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 4: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_5_name",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 5: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_5_die",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 5: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_5_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 5: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_6_name",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 6: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_6_die",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 6: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "profession_6_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Profession 6: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_1_name",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 1: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_1_die",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 1: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_1_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 1: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_2_name",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 2: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_2_die",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 2: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_2_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 2: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_3_name",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 3: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_3_die",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 3: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_3_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 3: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_4_name",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 4: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_4_die",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 4: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_4_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 4: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_5_name",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 5: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_5_die",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 5: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_5_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 5: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_6_name",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 6: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_6_die",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 6: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_6_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 6: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_7_name",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 7: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_7_die",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 7: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_7_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 7: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_8_name",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 8: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_8_die",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 8: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_8_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 8: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_9_name",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 9: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_9_die",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 9: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_9_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 9: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_10_name",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 10: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_10_die",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 10: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_10_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 10: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_11_name",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 11: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_11_die",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 11: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_11_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 11: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_12_name",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 12: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_12_die",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 12: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_12_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 12: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_13_name",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 13: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_13_die",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 13: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_13_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 13: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_14_name",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 14: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_14_die",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 14: Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "hobby_14_rank",
+  "type": "text",
+  "page": 1,
+  "label": "Hobby 14: Rank",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "rest_charges",
+  "type": "choice",
+  "page": 1,
+  "label": "Rest Charges",
+  "versions": [
+   "screen"
+  ]
+ },
+ {
+  "name": "rest_charges_max",
+  "type": "text",
+  "page": 1,
+  "label": "Rest Charges maximum",
+  "versions": [
+   "screen"
+  ]
+ },
+ {
+  "name": "short_rest_1",
+  "type": "check",
+  "page": 1,
+  "label": "Short Rest 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "short_rest_2",
+  "type": "check",
+  "page": 1,
+  "label": "Short Rest 2",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "experience_1_name",
+  "type": "text",
+  "page": 1,
+  "label": "Experience 1: name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "experience_1_uses",
+  "type": "text",
+  "page": 1,
+  "label": "Experience 1: uses",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "experience_1_effect",
+  "type": "text",
+  "page": 1,
+  "label": "Experience 1: effect",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "experience_2_name",
+  "type": "text",
+  "page": 1,
+  "label": "Experience 2: name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "experience_2_uses",
+  "type": "text",
+  "page": 1,
+  "label": "Experience 2: uses",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "experience_2_effect",
+  "type": "text",
+  "page": 1,
+  "label": "Experience 2: effect",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "experience_3_name",
+  "type": "text",
+  "page": 1,
+  "label": "Experience 3: name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "experience_3_uses",
+  "type": "text",
+  "page": 1,
+  "label": "Experience 3: uses",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "experience_3_effect",
+  "type": "text",
+  "page": 1,
+  "label": "Experience 3: effect",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_bleeding",
+  "type": "check",
+  "page": 1,
+  "label": "Bleeding",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_bleeding_level",
+  "type": "text",
+  "page": 1,
+  "label": "Bleeding level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_blinded",
+  "type": "check",
+  "page": 1,
+  "label": "Blinded",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_bruised",
+  "type": "check",
+  "page": 1,
+  "label": "Bruised",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_buffeted",
+  "type": "check",
+  "page": 1,
+  "label": "Buffeted",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_buffeted_level",
+  "type": "text",
+  "page": 1,
+  "label": "Buffeted level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_burning",
+  "type": "check",
+  "page": 1,
+  "label": "Burning",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_burning_level",
+  "type": "text",
+  "page": 1,
+  "label": "Burning level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_deafened",
+  "type": "check",
+  "page": 1,
+  "label": "Deafened",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_dissolving",
+  "type": "check",
+  "page": 1,
+  "label": "Dissolving",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_dissolving_level",
+  "type": "text",
+  "page": 1,
+  "label": "Dissolving level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_dulled",
+  "type": "check",
+  "page": 1,
+  "label": "Dulled",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_dulled_level",
+  "type": "text",
+  "page": 1,
+  "label": "Dulled level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_dying",
+  "type": "check",
+  "page": 1,
+  "label": "Dying",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_dying_level",
+  "type": "text",
+  "page": 1,
+  "label": "Dying level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_exhausted",
+  "type": "check",
+  "page": 1,
+  "label": "Exhausted",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_exhausted_level",
+  "type": "text",
+  "page": 1,
+  "label": "Exhausted level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_freezing",
+  "type": "check",
+  "page": 1,
+  "label": "Freezing",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_freezing_level",
+  "type": "text",
+  "page": 1,
+  "label": "Freezing level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_immobilized",
+  "type": "check",
+  "page": 1,
+  "label": "Immobilized",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_morphing",
+  "type": "check",
+  "page": 1,
+  "label": "Morphing",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_morphing_level",
+  "type": "text",
+  "page": 1,
+  "label": "Morphing level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_muddled",
+  "type": "check",
+  "page": 1,
+  "label": "Muddled",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_muddled_level",
+  "type": "text",
+  "page": 1,
+  "label": "Muddled level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_numbed",
+  "type": "check",
+  "page": 1,
+  "label": "Numbed",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_numbed_level",
+  "type": "text",
+  "page": 1,
+  "label": "Numbed level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_pacified",
+  "type": "check",
+  "page": 1,
+  "label": "Pacified",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_pacified_level",
+  "type": "text",
+  "page": 1,
+  "label": "Pacified level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_panicked",
+  "type": "check",
+  "page": 1,
+  "label": "Panicked",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_panicked_level",
+  "type": "text",
+  "page": 1,
+  "label": "Panicked level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_paralyzed",
+  "type": "check",
+  "page": 1,
+  "label": "Paralyzed",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_paralyzed_level",
+  "type": "text",
+  "page": 1,
+  "label": "Paralyzed level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_poisoned",
+  "type": "check",
+  "page": 1,
+  "label": "Poisoned",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_poisoned_level",
+  "type": "text",
+  "page": 1,
+  "label": "Poisoned level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_possessed",
+  "type": "check",
+  "page": 1,
+  "label": "Possessed",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_possessed_level",
+  "type": "text",
+  "page": 1,
+  "label": "Possessed level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_prone",
+  "type": "check",
+  "page": 1,
+  "label": "Prone",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_restrained",
+  "type": "check",
+  "page": 1,
+  "label": "Restrained",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_seized",
+  "type": "check",
+  "page": 1,
+  "label": "Seized",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_sickened",
+  "type": "check",
+  "page": 1,
+  "label": "Sickened",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_sickened_level",
+  "type": "text",
+  "page": 1,
+  "label": "Sickened level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_slowed",
+  "type": "check",
+  "page": 1,
+  "label": "Slowed",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_slowed_level",
+  "type": "text",
+  "page": 1,
+  "label": "Slowed level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_sluggish",
+  "type": "check",
+  "page": 1,
+  "label": "Sluggish",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_sluggish_level",
+  "type": "text",
+  "page": 1,
+  "label": "Sluggish level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_stunned",
+  "type": "check",
+  "page": 1,
+  "label": "Stunned",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_stunned_level",
+  "type": "text",
+  "page": 1,
+  "label": "Stunned level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "cond_unconscious",
+  "type": "check",
+  "page": 1,
+  "label": "Unconscious",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "resistances",
+  "type": "text",
+  "page": 1,
+  "label": "Resistances (e.g. Psychic 2)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "immunities",
+  "type": "text",
+  "page": 1,
+  "label": "Immunities (e.g. Psychic 2)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "vulnerabilities",
+  "type": "text",
+  "page": 1,
+  "label": "Vulnerabilities (e.g. Psychic 2)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "movement_other",
+  "type": "text",
+  "page": 1,
+  "label": "Other Movement",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "jump_long",
+  "type": "text",
+  "page": 1,
+  "label": "Max Long Jump",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "jump_high",
+  "type": "text",
+  "page": 1,
+  "label": "Max High Jump",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "senses",
+  "type": "text",
+  "page": 1,
+  "label": "Senses",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "alignment_1_light",
+  "type": "text",
+  "page": 1,
+  "label": "Alignment 1: Light (Flame, Frost, Pneuma, Soma, Mordant, Velvet, Infernal, Lunar, Temporal, Platinum)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "alignment_1_level",
+  "type": "text",
+  "page": 1,
+  "label": "Alignment 1: level (Weak, Firm, Strong)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "alignment_2_light",
+  "type": "text",
+  "page": 1,
+  "label": "Alignment 2: Light (Flame, Frost, Pneuma, Soma, Mordant, Velvet, Infernal, Lunar, Temporal, Platinum)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "alignment_2_level",
+  "type": "text",
+  "page": 1,
+  "label": "Alignment 2: level (Weak, Firm, Strong)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "alignment_3_light",
+  "type": "text",
+  "page": 1,
+  "label": "Alignment 3: Light (Flame, Frost, Pneuma, Soma, Mordant, Velvet, Infernal, Lunar, Temporal, Platinum)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "alignment_3_level",
+  "type": "text",
+  "page": 1,
+  "label": "Alignment 3: level (Weak, Firm, Strong)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "alignment_4_light",
+  "type": "text",
+  "page": 1,
+  "label": "Alignment 4: Light (Flame, Frost, Pneuma, Soma, Mordant, Velvet, Infernal, Lunar, Temporal, Platinum)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "alignment_4_level",
+  "type": "text",
+  "page": 1,
+  "label": "Alignment 4: level (Weak, Firm, Strong)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "alignment_5_light",
+  "type": "text",
+  "page": 1,
+  "label": "Alignment 5: Light (Flame, Frost, Pneuma, Soma, Mordant, Velvet, Infernal, Lunar, Temporal, Platinum)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "alignment_5_level",
+  "type": "text",
+  "page": 1,
+  "label": "Alignment 5: level (Weak, Firm, Strong)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "alignment_6_light",
+  "type": "text",
+  "page": 1,
+  "label": "Alignment 6: Light (Flame, Frost, Pneuma, Soma, Mordant, Velvet, Infernal, Lunar, Temporal, Platinum)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "alignment_6_level",
+  "type": "text",
+  "page": 1,
+  "label": "Alignment 6: level (Weak, Firm, Strong)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "alignment_7_light",
+  "type": "text",
+  "page": 1,
+  "label": "Alignment 7: Light (Flame, Frost, Pneuma, Soma, Mordant, Velvet, Infernal, Lunar, Temporal, Platinum)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "alignment_7_level",
+  "type": "text",
+  "page": 1,
+  "label": "Alignment 7: level (Weak, Firm, Strong)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "p2_name",
+  "type": "text",
+  "page": 2,
+  "label": "Character name (repeated)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "training_armor",
+  "type": "text",
+  "page": 2,
+  "label": "Armor",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "training_weapons",
+  "type": "text",
+  "page": 2,
+  "label": "Weapons",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "training_saves",
+  "type": "text",
+  "page": 2,
+  "label": "Save Checks",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "languages",
+  "type": "text",
+  "page": 2,
+  "label": "Languages",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "maneuver_attr",
+  "type": "text",
+  "page": 2,
+  "label": "Maneuver Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_attr",
+  "type": "text",
+  "page": 2,
+  "label": "Spell Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_1_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 1: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_1_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 1: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_1_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 1: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_1_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 1: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_2_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 2: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_2_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 2: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_2_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 2: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_2_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 2: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_3_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 3: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_3_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 3: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_3_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 3: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_3_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 3: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_4_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 4: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_4_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 4: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_4_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 4: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_4_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 4: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_5_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 5: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_5_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 5: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_5_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 5: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_5_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 5: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_6_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 6: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_6_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 6: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_6_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 6: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_6_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 6: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_7_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 7: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_7_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 7: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_7_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 7: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_7_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 7: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_8_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 8: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_8_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 8: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_8_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 8: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_8_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 8: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_9_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 9: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_9_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 9: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_9_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 9: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_9_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 9: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_10_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 10: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_10_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 10: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_10_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 10: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_10_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 10: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_11_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 11: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_11_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 11: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_11_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 11: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_11_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 11: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_12_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 12: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_12_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 12: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_12_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 12: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_12_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 12: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_13_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 13: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_13_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 13: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_13_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 13: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_13_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 13: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_14_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 14: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_14_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 14: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_14_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 14: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_14_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 14: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_15_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 15: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_15_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 15: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_15_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 15: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_15_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 15: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_16_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 16: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_16_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 16: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_16_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 16: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_16_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 16: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_17_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 17: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_17_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 17: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_17_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 17: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_17_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 17: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_18_name",
+  "type": "text",
+  "page": 2,
+  "label": "Action 18: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_18_cost",
+  "type": "text",
+  "page": 2,
+  "label": "Action 18: Cost",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_18_categories",
+  "type": "text",
+  "page": 2,
+  "label": "Action 18: Categories",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "action_18_notes",
+  "type": "text",
+  "page": 2,
+  "label": "Action 18: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "facets",
+  "type": "text",
+  "page": 2,
+  "label": "Facets and active effects",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "p3_name",
+  "type": "text",
+  "page": 3,
+  "label": "Character name (repeated)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_mod_die",
+  "type": "text",
+  "page": 3,
+  "label": "Spell Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "maneuver_mod_die",
+  "type": "text",
+  "page": 3,
+  "label": "Maneuver Mod Die",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "resource_1_name",
+  "type": "text",
+  "page": 3,
+  "label": "Class resource 1 name (e.g. Prisma, Prismaburn)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "resource_1_value",
+  "type": "text",
+  "page": 3,
+  "label": "Resource 1: current / applied",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "resource_1_max",
+  "type": "text",
+  "page": 3,
+  "label": "Resource 1: limit / max",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "resource_2_name",
+  "type": "text",
+  "page": 3,
+  "label": "Class resource 2 name (e.g. Prisma, Prismaburn)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "resource_2_value",
+  "type": "text",
+  "page": 3,
+  "label": "Resource 2: current / applied",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "resource_2_max",
+  "type": "text",
+  "page": 3,
+  "label": "Resource 2: limit / max",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "resource_3_name",
+  "type": "text",
+  "page": 3,
+  "label": "Class resource 3 name (e.g. Prisma, Prismaburn)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "resource_3_value",
+  "type": "text",
+  "page": 3,
+  "label": "Resource 3: current / applied",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "resource_3_max",
+  "type": "text",
+  "page": 3,
+  "label": "Resource 3: limit / max",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_1_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 1: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_1_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 1: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_1_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 1: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_1_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 1: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_1_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 1: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_1_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 1: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_1_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 1: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_1_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 1: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_2_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 2: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_2_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 2: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_2_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 2: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_2_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 2: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_2_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 2: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_2_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 2: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_2_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 2: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_2_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 2: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_3_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 3: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_3_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 3: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_3_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 3: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_3_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 3: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_3_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 3: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_3_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 3: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_3_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 3: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_3_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 3: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_4_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 4: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_4_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 4: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_4_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 4: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_4_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 4: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_4_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 4: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_4_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 4: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_4_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 4: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_4_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 4: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_5_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 5: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_5_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 5: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_5_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 5: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_5_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 5: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_5_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 5: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_5_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 5: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_5_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 5: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_5_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 5: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_6_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 6: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_6_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 6: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_6_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 6: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_6_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 6: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_6_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 6: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_6_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 6: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_6_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 6: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_6_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 6: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_7_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 7: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_7_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 7: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_7_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 7: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_7_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 7: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_7_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 7: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_7_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 7: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_7_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 7: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_7_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 7: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_8_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 8: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_8_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 8: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_8_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 8: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_8_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 8: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_8_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 8: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_8_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 8: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_8_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 8: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_8_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 8: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_9_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 9: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_9_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 9: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_9_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 9: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_9_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 9: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_9_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 9: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_9_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 9: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_9_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 9: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_9_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 9: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_10_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 10: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_10_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 10: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_10_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 10: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_10_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 10: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_10_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 10: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_10_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 10: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_10_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 10: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_10_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 10: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_11_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 11: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_11_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 11: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_11_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 11: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_11_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 11: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_11_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 11: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_11_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 11: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_11_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 11: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_11_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 11: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_12_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 12: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_12_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 12: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_12_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 12: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_12_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 12: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_12_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 12: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_12_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 12: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_12_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 12: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_12_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 12: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_13_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 13: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_13_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 13: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_13_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 13: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_13_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 13: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_13_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 13: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_13_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 13: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_13_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 13: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_13_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 13: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_14_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 14: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_14_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 14: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_14_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 14: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_14_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 14: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_14_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 14: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_14_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 14: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_14_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 14: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_14_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 14: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_15_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 15: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_15_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 15: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_15_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 15: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_15_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 15: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_15_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 15: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_15_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 15: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_15_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 15: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_15_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 15: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_16_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 16: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_16_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 16: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_16_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 16: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_16_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 16: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_16_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 16: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_16_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 16: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_16_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 16: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_16_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 16: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_17_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 17: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_17_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 17: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_17_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 17: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_17_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 17: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_17_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 17: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_17_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 17: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_17_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 17: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_17_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 17: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_18_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 18: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_18_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 18: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_18_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 18: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_18_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 18: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_18_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 18: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_18_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 18: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_18_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 18: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_18_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 18: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_19_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 19: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_19_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 19: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_19_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 19: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_19_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 19: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_19_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 19: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_19_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 19: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_19_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 19: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_19_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 19: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_20_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 20: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_20_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 20: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_20_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 20: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_20_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 20: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_20_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 20: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_20_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 20: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_20_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 20: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_20_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 20: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_21_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 21: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_21_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 21: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_21_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 21: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_21_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 21: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_21_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 21: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_21_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 21: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_21_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 21: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_21_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 21: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_22_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 22: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_22_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 22: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_22_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 22: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_22_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 22: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_22_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 22: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_22_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 22: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_22_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 22: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_22_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 22: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_23_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 23: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_23_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 23: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_23_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 23: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_23_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 23: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_23_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 23: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_23_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 23: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_23_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 23: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_23_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 23: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_24_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 24: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_24_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 24: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_24_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 24: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_24_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 24: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_24_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 24: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_24_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 24: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_24_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 24: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_24_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 24: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_25_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 25: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_25_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 25: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_25_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 25: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_25_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 25: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_25_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 25: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_25_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 25: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_25_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 25: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_25_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 25: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_26_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 26: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_26_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 26: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_26_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 26: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_26_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 26: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_26_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 26: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_26_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 26: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_26_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 26: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_26_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 26: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_27_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 27: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_27_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 27: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_27_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 27: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_27_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 27: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_27_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 27: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_27_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 27: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_27_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 27: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_27_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 27: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_28_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 28: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_28_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 28: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_28_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 28: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_28_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 28: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_28_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 28: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_28_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 28: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_28_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 28: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_28_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 28: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_29_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 29: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_29_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 29: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_29_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 29: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_29_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 29: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_29_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 29: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_29_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 29: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_29_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 29: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_29_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 29: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_30_prepared",
+  "type": "check",
+  "page": 3,
+  "label": "Spell 30: Prepared",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_30_name",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 30: Name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_30_level",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 30: Level",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_30_cast_time",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 30: Cast / Exec. time",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_30_range",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 30: Range",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_30_duration",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 30: Duration",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_30_components",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 30: Components",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "spell_30_notes",
+  "type": "text",
+  "page": 3,
+  "label": "Spell 30: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "p4_name",
+  "type": "text",
+  "page": 4,
+  "label": "Character name (repeated)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "inv_1_1",
+  "type": "text",
+  "page": 4,
+  "label": "Inventory: Bulk 1 slot 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "inv_2_1",
+  "type": "text",
+  "page": 4,
+  "label": "Inventory: Bulk 2 slot 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "inv_2_2",
+  "type": "text",
+  "page": 4,
+  "label": "Inventory: Bulk 2 slot 2",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "inv_3_1",
+  "type": "text",
+  "page": 4,
+  "label": "Inventory: Bulk 3 slot 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "inv_3_2",
+  "type": "text",
+  "page": 4,
+  "label": "Inventory: Bulk 3 slot 2",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "inv_3_3",
+  "type": "text",
+  "page": 4,
+  "label": "Inventory: Bulk 3 slot 3",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "inv_4_1",
+  "type": "text",
+  "page": 4,
+  "label": "Inventory: Bulk 4 slot 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "inv_4_2",
+  "type": "text",
+  "page": 4,
+  "label": "Inventory: Bulk 4 slot 2",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "inv_4_3",
+  "type": "text",
+  "page": 4,
+  "label": "Inventory: Bulk 4 slot 3",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "inv_4_4",
+  "type": "text",
+  "page": 4,
+  "label": "Inventory: Bulk 4 slot 4",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "inv_5_1",
+  "type": "text",
+  "page": 4,
+  "label": "Inventory: Bulk 5 slot 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "inv_5_2",
+  "type": "text",
+  "page": 4,
+  "label": "Inventory: Bulk 5 slot 2",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "inv_5_3",
+  "type": "text",
+  "page": 4,
+  "label": "Inventory: Bulk 5 slot 3",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "inv_5_4",
+  "type": "text",
+  "page": 4,
+  "label": "Inventory: Bulk 5 slot 4",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "inv_5_5",
+  "type": "text",
+  "page": 4,
+  "label": "Inventory: Bulk 5 slot 5",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "bonus_inv_1_1",
+  "type": "text",
+  "page": 4,
+  "label": "Bonus Inventory (VIG): Bulk 1 slot 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "bonus_inv_2_1",
+  "type": "text",
+  "page": 4,
+  "label": "Bonus Inventory (VIG): Bulk 2 slot 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "bonus_inv_2_2",
+  "type": "text",
+  "page": 4,
+  "label": "Bonus Inventory (VIG): Bulk 2 slot 2",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "bonus_inv_3_1",
+  "type": "text",
+  "page": 4,
+  "label": "Bonus Inventory (VIG): Bulk 3 slot 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "bonus_inv_3_2",
+  "type": "text",
+  "page": 4,
+  "label": "Bonus Inventory (VIG): Bulk 3 slot 2",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "bonus_inv_3_3",
+  "type": "text",
+  "page": 4,
+  "label": "Bonus Inventory (VIG): Bulk 3 slot 3",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "bonus_inv_4_1",
+  "type": "text",
+  "page": 4,
+  "label": "Bonus Inventory (VIG): Bulk 4 slot 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "bonus_inv_4_2",
+  "type": "text",
+  "page": 4,
+  "label": "Bonus Inventory (VIG): Bulk 4 slot 2",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "bonus_inv_4_3",
+  "type": "text",
+  "page": 4,
+  "label": "Bonus Inventory (VIG): Bulk 4 slot 3",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "bonus_inv_4_4",
+  "type": "text",
+  "page": 4,
+  "label": "Bonus Inventory (VIG): Bulk 4 slot 4",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "bonus_inv_5_1",
+  "type": "text",
+  "page": 4,
+  "label": "Bonus Inventory (VIG): Bulk 5 slot 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "bonus_inv_5_2",
+  "type": "text",
+  "page": 4,
+  "label": "Bonus Inventory (VIG): Bulk 5 slot 2",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "bonus_inv_5_3",
+  "type": "text",
+  "page": 4,
+  "label": "Bonus Inventory (VIG): Bulk 5 slot 3",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "bonus_inv_5_4",
+  "type": "text",
+  "page": 4,
+  "label": "Bonus Inventory (VIG): Bulk 5 slot 4",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "bonus_inv_5_5",
+  "type": "text",
+  "page": 4,
+  "label": "Bonus Inventory (VIG): Bulk 5 slot 5",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_1_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 1: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_1_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 1: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_1_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 1: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_1_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 1: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_1_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 1: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_2_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 2: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_2_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 2: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_2_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 2: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_2_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 2: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_2_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 2: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_3_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 3: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_3_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 3: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_3_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 3: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_3_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 3: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_3_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 3: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_4_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 4: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_4_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 4: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_4_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 4: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_4_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 4: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_4_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 4: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_5_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 5: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_5_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 5: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_5_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 5: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_5_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 5: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_5_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 5: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_6_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 6: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_6_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 6: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_6_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 6: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_6_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 6: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_6_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 6: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_7_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 7: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_7_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 7: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_7_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 7: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_7_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 7: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_7_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 7: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_8_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 8: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_8_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 8: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_8_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 8: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_8_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 8: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_8_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 8: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_9_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 9: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_9_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 9: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_9_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 9: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_9_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 9: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_9_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 9: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_10_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 10: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_10_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 10: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_10_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 10: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_10_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 10: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_10_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 10: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_11_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 11: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_11_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 11: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_11_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 11: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_11_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 11: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_11_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 11: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_12_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 12: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_12_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 12: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_12_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 12: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_12_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 12: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_12_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 12: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_13_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 13: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_13_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 13: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_13_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 13: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_13_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 13: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_13_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 13: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_14_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 14: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_14_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 14: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_14_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 14: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_14_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 14: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_14_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 14: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_15_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 15: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_15_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 15: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_15_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 15: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_15_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 15: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_15_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 15: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_16_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 16: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_16_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 16: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_16_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 16: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_16_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 16: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_16_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 16: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_17_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 17: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_17_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 17: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_17_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 17: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_17_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 17: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_17_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 17: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_18_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 18: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_18_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 18: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_18_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 18: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_18_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 18: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_18_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 18: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_19_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 19: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_19_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 19: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_19_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 19: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_19_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 19: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_19_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 19: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_20_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 20: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_20_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 20: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_20_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 20: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_20_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 20: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_20_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 20: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_21_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 21: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_21_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 21: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_21_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 21: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_21_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 21: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_21_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 21: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_22_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 22: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_22_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 22: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_22_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 22: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_22_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 22: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_22_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 22: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_23_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 23: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_23_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 23: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_23_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 23: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_23_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 23: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_23_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 23: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_24_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 24: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_24_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 24: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_24_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 24: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_24_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 24: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_24_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 24: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_25_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 25: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_25_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 25: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_25_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 25: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_25_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 25: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_25_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 25: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_26_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 26: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_26_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 26: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_26_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 26: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_26_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 26: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_26_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 26: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_27_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 27: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_27_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 27: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_27_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 27: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_27_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 27: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_27_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 27: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_28_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 28: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_28_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 28: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_28_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 28: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_28_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 28: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_28_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 28: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_29_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 29: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_29_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 29: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_29_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 29: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_29_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 29: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_29_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 29: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_30_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 30: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_30_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 30: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_30_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 30: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_30_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 30: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_30_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 30: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_31_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 31: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_31_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 31: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_31_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 31: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_31_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 31: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_31_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 31: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_32_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 32: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_32_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 32: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_32_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 32: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_32_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 32: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_32_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 32: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_33_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 33: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_33_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 33: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_33_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 33: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_33_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 33: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_33_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 33: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_34_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 34: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_34_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 34: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_34_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 34: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_34_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 34: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_34_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 34: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_35_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 35: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_35_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 35: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_35_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 35: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_35_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 35: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_35_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 35: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_36_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 36: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_36_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 36: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_36_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 36: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_36_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 36: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_36_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 36: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_37_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 37: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_37_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 37: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_37_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 37: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_37_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 37: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_37_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 37: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_38_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 38: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_38_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 38: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_38_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 38: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_38_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 38: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_38_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 38: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_39_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 39: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_39_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 39: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_39_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 39: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_39_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 39: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_39_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 39: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_40_name",
+  "type": "text",
+  "page": 4,
+  "label": "Item 40: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_40_bulk",
+  "type": "text",
+  "page": 4,
+  "label": "Item 40: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_40_qty",
+  "type": "text",
+  "page": 4,
+  "label": "Item 40: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_40_stored",
+  "type": "text",
+  "page": 4,
+  "label": "Item 40: Stored in",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "item_40_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Item 40: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "armor_type",
+  "type": "text",
+  "page": 4,
+  "label": "Armor Type",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "armor_quality",
+  "type": "text",
+  "page": 4,
+  "label": "Armor Quality",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "armor_ac",
+  "type": "text",
+  "page": 4,
+  "label": "Armor AC from armor",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "armor_notes",
+  "type": "text",
+  "page": 4,
+  "label": "Armor notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "appearance",
+  "type": "text",
+  "page": 4,
+  "label": "Appearance",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "backstory",
+  "type": "text",
+  "page": 4,
+  "label": "Backstory",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "p5_name",
+  "type": "text",
+  "page": 5,
+  "label": "Character name (repeated)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_1",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_2",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 2",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_3",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 3",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_4",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 4",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_5",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 5",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_6",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 6",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_7",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 7",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_8",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 8",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_9",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 9",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_10",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 10",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_11",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 11",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_12",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 12",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_13",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 13",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_14",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 14",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_15",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 15",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_16",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 16",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_17",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 17",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_18",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 18",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_19",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 19",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_20",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 20",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_21",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 21",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_22",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 22",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_23",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 23",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_24",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 24",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_25",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 25",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_26",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 26",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_27",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 27",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_28",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 28",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_29",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 29",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_30",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 30",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_31",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 31",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_32",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 32",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_33",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 33",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_34",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 34",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_35",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 35",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_36",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 36",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_37",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 37",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_38",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 38",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_39",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 39",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_40",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 40",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_41",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 41",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_42",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 42",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_43",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 43",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_44",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 44",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_45",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 45",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_46",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 46",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "session_notes_47",
+  "type": "text",
+  "page": 5,
+  "label": "Session notes line 47",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "p6_name",
+  "type": "text",
+  "page": 6,
+  "label": "Character name (repeated)",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container name",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container its bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_inv_1_1",
+  "type": "text",
+  "page": 6,
+  "label": "Container: Bulk 1 slot 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_inv_2_1",
+  "type": "text",
+  "page": 6,
+  "label": "Container: Bulk 2 slot 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_inv_2_2",
+  "type": "text",
+  "page": 6,
+  "label": "Container: Bulk 2 slot 2",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_inv_3_1",
+  "type": "text",
+  "page": 6,
+  "label": "Container: Bulk 3 slot 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_inv_3_2",
+  "type": "text",
+  "page": 6,
+  "label": "Container: Bulk 3 slot 2",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_inv_3_3",
+  "type": "text",
+  "page": 6,
+  "label": "Container: Bulk 3 slot 3",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_inv_4_1",
+  "type": "text",
+  "page": 6,
+  "label": "Container: Bulk 4 slot 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_inv_4_2",
+  "type": "text",
+  "page": 6,
+  "label": "Container: Bulk 4 slot 2",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_inv_4_3",
+  "type": "text",
+  "page": 6,
+  "label": "Container: Bulk 4 slot 3",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_inv_4_4",
+  "type": "text",
+  "page": 6,
+  "label": "Container: Bulk 4 slot 4",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_inv_5_1",
+  "type": "text",
+  "page": 6,
+  "label": "Container: Bulk 5 slot 1",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_inv_5_2",
+  "type": "text",
+  "page": 6,
+  "label": "Container: Bulk 5 slot 2",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_inv_5_3",
+  "type": "text",
+  "page": 6,
+  "label": "Container: Bulk 5 slot 3",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_inv_5_4",
+  "type": "text",
+  "page": 6,
+  "label": "Container: Bulk 5 slot 4",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_inv_5_5",
+  "type": "text",
+  "page": 6,
+  "label": "Container: Bulk 5 slot 5",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_1_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 1: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_1_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 1: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_1_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 1: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_1_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 1: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_2_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 2: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_2_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 2: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_2_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 2: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_2_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 2: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_3_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 3: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_3_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 3: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_3_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 3: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_3_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 3: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_4_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 4: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_4_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 4: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_4_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 4: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_4_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 4: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_5_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 5: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_5_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 5: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_5_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 5: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_5_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 5: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_6_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 6: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_6_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 6: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_6_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 6: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_6_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 6: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_7_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 7: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_7_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 7: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_7_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 7: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_7_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 7: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_8_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 8: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_8_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 8: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_8_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 8: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_8_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 8: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_9_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 9: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_9_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 9: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_9_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 9: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_9_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 9: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_10_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 10: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_10_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 10: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_10_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 10: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_10_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 10: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_11_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 11: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_11_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 11: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_11_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 11: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_11_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 11: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_12_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 12: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_12_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 12: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_12_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 12: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_12_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 12: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_13_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 13: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_13_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 13: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_13_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 13: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_13_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 13: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_14_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 14: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_14_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 14: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_14_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 14: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_14_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 14: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_15_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 15: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_15_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 15: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_15_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 15: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_15_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 15: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_16_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 16: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_16_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 16: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_16_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 16: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_16_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 16: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_17_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 17: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_17_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 17: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_17_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 17: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_17_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 17: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_18_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 18: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_18_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 18: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_18_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 18: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_18_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 18: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_19_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 19: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_19_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 19: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_19_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 19: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_19_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 19: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_20_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 20: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_20_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 20: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_20_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 20: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_20_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 20: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_21_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 21: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_21_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 21: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_21_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 21: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_21_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 21: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_22_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 22: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_22_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 22: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_22_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 22: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_22_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 22: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_23_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 23: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_23_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 23: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_23_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 23: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_23_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 23: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_24_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 24: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_24_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 24: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_24_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 24: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_24_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 24: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_25_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 25: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_25_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 25: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_25_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 25: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_25_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 25: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_26_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 26: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_26_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 26: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_26_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 26: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_26_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 26: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_27_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 27: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_27_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 27: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_27_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 27: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_27_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 27: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_28_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 28: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_28_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 28: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_28_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 28: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_28_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 28: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_29_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 29: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_29_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 29: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_29_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 29: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_29_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 29: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_30_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 30: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_30_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 30: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_30_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 30: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_30_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 30: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_31_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 31: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_31_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 31: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_31_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 31: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_31_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 31: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_32_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 32: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_32_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 32: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_32_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 32: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_32_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 32: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_33_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 33: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_33_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 33: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_33_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 33: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_33_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 33: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_34_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 34: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_34_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 34: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_34_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 34: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_34_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 34: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_35_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 35: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_35_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 35: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_35_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 35: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_35_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 35: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_36_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 36: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_36_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 36: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_36_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 36: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_36_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 36: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_37_name",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 37: Item",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_37_bulk",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 37: Bulk",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_37_qty",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 37: #",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "container_item_37_notes",
+  "type": "text",
+  "page": 6,
+  "label": "Container_Item 37: Notes",
+  "versions": [
+   "screen",
+   "printable"
+  ]
+ },
+ {
+  "name": "vitality_1",
+  "type": "check",
+  "page": 1,
+  "label": "Vitality 1",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "vitality_2",
+  "type": "check",
+  "page": 1,
+  "label": "Vitality 2",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "vitality_3",
+  "type": "check",
+  "page": 1,
+  "label": "Vitality 3",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "vitality_4",
+  "type": "check",
+  "page": 1,
+  "label": "Vitality 4",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "vitality_5",
+  "type": "check",
+  "page": 1,
+  "label": "Vitality 5",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "vitality_6",
+  "type": "check",
+  "page": 1,
+  "label": "Vitality 6",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "vitality_7",
+  "type": "check",
+  "page": 1,
+  "label": "Vitality 7",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "vitality_8",
+  "type": "check",
+  "page": 1,
+  "label": "Vitality 8",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "radiance_1",
+  "type": "check",
+  "page": 1,
+  "label": "Radiance 1",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "radiance_2",
+  "type": "check",
+  "page": 1,
+  "label": "Radiance 2",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "radiance_3",
+  "type": "check",
+  "page": 1,
+  "label": "Radiance 3",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "radiance_4",
+  "type": "check",
+  "page": 1,
+  "label": "Radiance 4",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "radiance_5",
+  "type": "check",
+  "page": 1,
+  "label": "Radiance 5",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "radiance_6",
+  "type": "check",
+  "page": 1,
+  "label": "Radiance 6",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "radiance_7",
+  "type": "check",
+  "page": 1,
+  "label": "Radiance 7",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "radiance_8",
+  "type": "check",
+  "page": 1,
+  "label": "Radiance 8",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "rest_charge_1",
+  "type": "check",
+  "page": 1,
+  "label": "Rest Charge 1",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "rest_charge_2",
+  "type": "check",
+  "page": 1,
+  "label": "Rest Charge 2",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "rest_charge_3",
+  "type": "check",
+  "page": 1,
+  "label": "Rest Charge 3",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "rest_charge_4",
+  "type": "check",
+  "page": 1,
+  "label": "Rest Charge 4",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "rest_charge_5",
+  "type": "check",
+  "page": 1,
+  "label": "Rest Charge 5",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "rest_charge_6",
+  "type": "check",
+  "page": 1,
+  "label": "Rest Charge 6",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "rest_charge_7",
+  "type": "check",
+  "page": 1,
+  "label": "Rest Charge 7",
+  "versions": [
+   "printable"
+  ]
+ },
+ {
+  "name": "rest_charge_8",
+  "type": "check",
+  "page": 1,
+  "label": "Rest Charge 8",
+  "versions": [
+   "printable"
+  ]
+ }
+]

@@ -3037,3 +3037,15 @@ html.tour-open body {
   flex-wrap: wrap;
   gap: 0.3rem;
 }
+
+/* Export PDF: one row per sheet version, its button then what it's for. */
+.export-pdf li {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  margin: 0.5em 0;
+}
+.export-pdf button {
+  min-width: 7.5em;
+  flex: none;
+}
