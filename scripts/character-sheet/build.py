@@ -41,8 +41,9 @@ PRISM_TEXT = ['#ff5f6d', '#ffb35c', '#ffe066', '#5fd39a', '#4fd1ff', '#7aa2ff', 
 PRISM_FIELD = ['#1fb84a', '#15b3b3', '#1f5bff', '#1a1aa8', '#8a1fd6', '#d61fa3', '#e0262e', '#e88a1a', '#1fb84a']
 # Light versions: a bright cyan / magenta / yellow gradient (Arch, 2026-11-01). Titles use
 # deeper stops of the same hues so they stay readable on white.
-CMY = ['#ffff00', '#00ffff', '#ff00ff']
-CMY_TITLE = ['#e0a800', '#00a8e0', '#d600d6']
+# Yellow sits two-thirds of the way along, away from the left edge where titles start.
+CMY = ['#00ffff', '#ff00ff', '#ffff00', '#ff00ff']
+CMY_TITLE = ['#00a8e0', '#d600d6', '#e0a800', '#d600d6']
 LIGHT = dict(bg='#ffffff', panel='#ffffff', panel2='#f1f3fa', border='#b9c0dd', text='#141833', muted='#5a6189', accent='#3a66cc', fill='#3a66cc',
              pip='#b000c8', line='#aab2d4', edge_alpha=1.0, title=CMY_TITLE, edge=CMY, top=CMY, grid=False, cmyk=False, ap_d6=False, ruled=True)
 THEMES = {
