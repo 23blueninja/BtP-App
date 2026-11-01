@@ -11,7 +11,7 @@ import { ancestries } from '../src/data/ancestries';
 import { subclassesOf } from '../src/engine/classInfo';
 import { derive } from '../src/engine/derive';
 import { sheetValues, unfilled, wrapLines } from '../src/engine/sheetExport';
-import { fillSheet } from '../src/engine/sheetPdf';
+import { fillSheet, printable } from '../src/engine/sheetPdf';
 import { makeCharacter, sample } from './helpers';
 
 const DIR = 'src/assets/sheets';
@@ -151,5 +151,18 @@ describe('filling the PDF', () => {
     expect((form.getField('cond_blinded') as PDFCheckBox).isChecked()).toBe(false);
     if (version === 'printable') expect((form.getField('vitality_4') as PDFCheckBox).isChecked()).toBe(true);
     else expect((form.getField('ap') as PDFDropdown).getSelected()).toEqual(['3']);
+  });
+
+  it('text the sheet font can\'t draw is swapped or left out, not an error', async () => {
+    // Bug report (Arch, 2026-11-01): "WinAnsi cannot encode "−" (0x2212)" from text the app writes, e.g. "Success −2".
+    const cls = classes[0];
+    const c = { ...character(cls.id, subclassesOf(cls)[0]?.id ?? '', ancestries[0].id), name: 'Zoë Ōkami ✨', player: '名前' };
+    const v = { ...sheetValues(c, derive(c)), facets: 'Success −2 → 3½ ≥ 1' };
+    const out = await fillSheet(template('light'), v);
+    const form = (await PDFDocument.load(out.bytes)).getForm();
+    expect((form.getField('name') as PDFTextField).getText()).toBe('Zoë Okami ');
+    expect((form.getField('player') as PDFTextField).getText() ?? '').toBe('');
+    expect((form.getField('facets') as PDFTextField).getText()).toBe('Success -2 -> 3½ >= 1');
+    expect(printable('a\nb', () => true)).toBe('a\nb');
   });
 });

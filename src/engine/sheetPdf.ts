@@ -9,14 +9,37 @@ export interface FilledSheet {
   unfilled: string[];
 }
 
+/** Stand-ins for characters the sheet's Helvetica (WinAnsi) can't draw. */
+const SUBSTITUTES: Record<string, string> = { '\u2212': '-', '\u2010': '-', '\u2011': '-', '\u2192': '->', '\u2190': '<-', '\u2194': '<->', '\u2264': '<=', '\u2265': '>=', '\u2248': '~', '\u00d7': 'x', '\u2153': '1/3', '\u2154': '2/3', '\u2715': 'x', '\u2713': 'v', '\u00a0': ' ', '\u2009': ' ', '\u202f': ' ' };
+
+/** Text the font can draw: known stand-ins swapped in, anything else left out. */
+export function printable(text: string, canDraw: (code: number) => boolean): string {
+  let out = '';
+  for (const ch of text.normalize('NFC')) {
+    const code = ch.codePointAt(0)!;
+    if (ch === '\n' || canDraw(code)) out += ch;
+    else if (SUBSTITUTES[ch]) out += SUBSTITUTES[ch];
+    else {
+      // Accented letters the font lacks keep their base letter (ā → a).
+      const base = ch.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      if (base && [...base].every((c) => canDraw(c.codePointAt(0)!))) out += base;
+    }
+  }
+  return out;
+}
+
 export async function fillSheet(template: ArrayBuffer | Uint8Array, values: SheetValues, title?: string): Promise<FilledSheet> {
   const doc = await PDFDocument.load(template);
   const form = doc.getForm();
   const fields = new Map(form.getFields().map((f) => [f.getName(), f]));
   const regular = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
-  for (const [name, value] of Object.entries(values)) {
+  // Helvetica and Helvetica-Bold share WinAnsi's character set.
+  const charset = new Set(regular.getCharacterSet());
+  const canDraw = (code: number) => charset.has(code);
+  for (const [name, raw] of Object.entries(values)) {
     const f = fields.get(name);
+    const value = typeof raw === 'string' ? printable(raw, canDraw) : raw;
     if (f instanceof PDFCheckBox) {
       if (value === true) f.check();
       else f.uncheck();
