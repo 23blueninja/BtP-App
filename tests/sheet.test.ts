@@ -149,7 +149,8 @@ describe('filling the PDF', () => {
     expect((form.getField('name') as PDFTextField).getText()).toBe('Seren Vale');
     expect((form.getField('cond_bleeding') as PDFCheckBox).isChecked()).toBe(true);
     expect((form.getField('cond_blinded') as PDFCheckBox).isChecked()).toBe(false);
-    if (version === 'printable') expect((form.getField('vitality_4') as PDFCheckBox).isChecked()).toBe(true);
+    // Printed bubbles are left empty, to fill in by hand (Arch, 2026-11-01).
+    if (version === 'printable') expect((form.getField('vitality_4') as PDFCheckBox).isChecked()).toBe(false);
     else expect((form.getField('ap') as PDFDropdown).getSelected()).toEqual(['3']);
   });
 

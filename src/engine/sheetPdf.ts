@@ -31,6 +31,8 @@ export function printable(text: string, canDraw: (code: number) => boolean): str
 /** Printed bubble rows and the field that holds their maximum. */
 const BUBBLE_MAX: Record<string, string> = { vitality: 'vitality_max', radiance: 'radiance_max', rest_charge: 'rest_charges_max' };
 
+const BUBBLE = new RegExp(`^(${Object.keys(BUBBLE_MAX).join('|')})_\\d+$`);
+
 /** The default appearance with its font size lowered, if needed, so `text` fits `width`. */
 export function fitSize(da: string, text: string, width: number, font: { widthOfTextAtSize(t: string, s: number): number }): string {
   const m = /([\d.]+) Tf/.exec(da);
@@ -57,7 +59,8 @@ export async function fillSheet(template: ArrayBuffer | Uint8Array, values: Shee
     const f = fields.get(name);
     const value = typeof raw === 'string' ? printable(raw, canDraw) : raw;
     if (f instanceof PDFCheckBox) {
-      if (value === true) f.check();
+      // Printed bubbles stay empty, to fill in by hand (Arch).
+      if (value === true && !BUBBLE.test(name)) f.check();
       else f.uncheck();
       continue;
     }
