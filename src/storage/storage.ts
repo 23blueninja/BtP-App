@@ -19,6 +19,8 @@ export interface CharacterStore {
   remove(id: string): void;
   /** Writes any saves still waiting (they're batched while you edit). */
   flush(): void;
+  /** Hears whether saving is failing (storage full or blocked); returns an unsubscribe. */
+  onSaveState(listener: (failing: boolean) => void): () => void;
 }
 
 /** One key per character, so a save only serialises that character. */
@@ -73,6 +75,8 @@ export class LocalStore implements CharacterStore {
   private memory: Record<string, Character> | null = null;
   private pending = new Set<string>();
   private timer: ReturnType<typeof setTimeout> | undefined;
+  private failing = false;
+  private listeners = new Set<(failing: boolean) => void>();
 
   constructor() {
     // Write batched saves before the page goes away (closing a tab, switching apps on a phone).
@@ -119,8 +123,22 @@ export class LocalStore implements CharacterStore {
     clearTimeout(this.timer);
     this.timer = undefined;
     const all = this.all();
-    for (const id of this.pending) if (all[id]) write(all[id]);
-    this.pending.clear();
+    let failed = false;
+    for (const id of [...this.pending]) {
+      // A failed write stays queued and is retried on the next save or flush.
+      if (!all[id] || write(all[id])) this.pending.delete(id);
+      else failed = true;
+    }
+    if (failed !== this.failing) {
+      this.failing = failed;
+      this.listeners.forEach((l) => l(failed));
+    }
+  }
+
+  onSaveState(listener: (failing: boolean) => void): () => void {
+    this.listeners.add(listener);
+    listener(this.failing);
+    return () => this.listeners.delete(listener);
   }
 }
 
@@ -133,10 +151,16 @@ export function exportCharacter(c: Character): void {
   a.href = url;
   a.download = `${(c.name || 'character').replace(/[^\w-]+/g, '_')}.btp.json`;
   a.click();
-  URL.revokeObjectURL(url);
+  // Revoking at once can cancel the download in some browsers.
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export async function importCharacter(file: File): Promise<Character> {
   const text = await file.text();
-  return normalizeCharacter(JSON.parse(text));
+  const data: unknown = JSON.parse(text);
+  // Anything else would import as a blank character: an array, a string, a Monster Maker backup or monster.
+  if (!data || typeof data !== 'object' || Array.isArray(data) || 'monsters' in data || 'schema' in data) {
+    throw new Error('Not a character export');
+  }
+  return normalizeCharacter(data);
 }

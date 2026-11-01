@@ -112,6 +112,8 @@ export function App() {
   const route = useHashRoute();
   const prefs = usePrefs();
   const [options, setOptions] = useState(false);
+  const [saveFailing, setSaveFailing] = useState(false);
+  useEffect(() => store.onSaveState(setSaveFailing), []);
   const [section, id, view, step] = route;
   const [c, update] = useCharacter(section === 'c' ? id : undefined);
 
@@ -200,6 +202,11 @@ export function App() {
       </header>
       {options && <OptionsMenu onClose={() => setOptions(false)} onTour={() => (setOptions(false), startTour())} />}
       <Tour />
+      {saveFailing && (
+        <p className="warn" role="alert">
+          Changes aren't being saved: this browser's storage is full or blocked. Export your character to keep a copy.
+        </p>
+      )}
       <main>{body}</main>
       <footer className="footer muted small">Beyond the Prism © 2026 23BLUENINJA. Characters are saved in this browser.</footer>
     </div>
