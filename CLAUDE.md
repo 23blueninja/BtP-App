@@ -18,6 +18,20 @@ Ethereals from a Monster Maker JSON export in the Communion cast panel
 (`importCreatures`); they're saved on the character (`creatures`), and a summon
 keeps its imported stat block (`creatureData`).
 
+## PDF character sheet
+
+`npm run build-sheets` (Python 3 with reportlab, pypdf and Pillow) runs
+`scripts/character-sheet/build.py`, which draws the fillable sheet in the app's
+look and writes three versions to `src/assets/sheets/` (Dark and Light for
+screens, with dropdowns for AP, Vitality, Radiance and Rest Charges; Printable in
+CMYK with bubbles and AP tracked with a d6) plus `fields.json`, the field names.
+Basic actions and Conditions are printed from `rules.json`: re-run it after
+`npm run parse-rules` (`tests/sheet.test.ts` checks the Conditions). The Sheet
+tab's ⇩ PDF button fills a version with `sheetValues(c, d)`
+(`src/engine/sheetExport.ts`) via pdf-lib (`src/engine/sheetPdf.ts`, loaded on
+export) and lists anything that didn't fit. Layout decisions are Arch's
+(US Letter, page order, panel contents): ask before moving things.
+
 ## Tests
 
 | Command | What | When |

@@ -1,5 +1,5 @@
 import { memo, useEffect, useRef, useState } from 'react';
-import { basicActions, conditions as conditionDefs, getNode, getCastable, type RuleNode } from '../content';
+import { basicActions, conditions as conditionDefs, getNode, getCastable } from '../content';
 import { ancestryById, ancestryName, CUSTOM_ANCESTRY, CUSTOM_ANCESTRY_NOTE } from '../data/ancestries';
 import { ATTRS, ATTR_NAMES, RANK_DIE, type Light } from '../data/types';
 import { newId, type Character, type Experience, type PlayState, type SessionNote } from '../engine/character';
@@ -15,6 +15,8 @@ import { alignmentGradient, LIGHT_TEXT } from './lightColors';
 import { PlayContext, UseButton } from './Activate';
 import { HomebrewBox } from './Homebrew';
 import { AdjustButton, AdjustmentsPanel } from './Adjustments';
+import { ExportPdfButton } from './ExportPdf';
+import { facetActions } from '../engine/sheetExport';
 import { actionRequest, activationsFor, ACTIVATIONS } from '../engine/activations';
 import { parseCost } from '../engine/costs';
 import type { ActiveEffect } from '../engine/character';
@@ -57,6 +59,7 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
               ✎ Edit
             </button>
             <AdjustButton c={c} d={d} update={update} />
+            <ExportPdfButton c={c} d={d} />
             {d.level < d.maxLevel && d.cls && (
               <button type="button" className="primary" onClick={() => go('c', c.id, 'levelup')}>
                 ⬆ Level Up
@@ -1037,20 +1040,6 @@ function Experiences({ c, update }: { c: Character; update: Update }) {
       </div>
     </div>
   );
-}
-
-/** Actions defined inside the character's facets (e.g. Refract, Reignite). */
-function facetActions(d: Derived): RuleNode[] {
-  const out: RuleNode[] = [];
-  const walk = (n: RuleNode) => {
-    if (n.fields?.Categories && n.fields?.Cost) out.push(n);
-    n.children?.forEach(walk);
-  };
-  for (const f of d.facets) {
-    const n = f.contentId && !f.item ? getNode(f.contentId) : undefined;
-    if (n) walk(n);
-  }
-  return out;
 }
 
 function ActionsList({ d }: { c: Character; d: Derived }) {

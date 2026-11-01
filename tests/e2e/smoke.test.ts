@@ -7,7 +7,9 @@
 // Needs a Chromium for playwright-core: `npx playwright-core install chromium`
 // (cloud sessions have one pre-installed).
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { chromium, type Browser, type Page } from 'playwright-core';
+import { PDFDocument } from 'pdf-lib';
 import { preview, type PreviewServer } from 'vite';
 import { classes } from '../../src/data/classes';
 import { ancestries } from '../../src/data/ancestries';
@@ -229,6 +231,38 @@ describe('advanced edits (PM adjustments)', () => {
     expect(abbr).toEqual([]);
     expect(modalOverflow).toBeLessThanOrEqual(1);
     expect(overflow).toBeLessThanOrEqual(1);
+  });
+});
+
+describe('PDF character sheet', () => {
+  it.each([1400, 360, 320])('exports each version at %i px', async (width) => {
+    const cls = classes[0];
+    const c = character(cls.id, subclassesOf(cls)[0]?.id ?? '', 2, ancestries[0].id, 'pdf');
+    const { page, errors } = await open([{ ...c, name: 'Seren Vale', play: { ...c.play, conditions: [{ name: 'Bleeding', level: 2 }] } }], { width, height: 900 });
+    await page.goto(`${base}#/c/pdf`);
+    await page.reload();
+    await page.getByRole('tab', { name: 'Sheet', exact: true }).waitFor({ timeout: 10_000 });
+    const headerOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    await page.getByRole('button', { name: '⇩ PDF' }).click();
+    const dialog = page.getByRole('dialog');
+    const modalOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    const files: { name: string; text: string; bleeding: boolean; pages: number }[] = [];
+    for (const label of ['Dark', 'Light', 'Printable']) {
+      const [download] = await Promise.all([page.waitForEvent('download'), dialog.getByRole('button', { name: label, exact: true }).click()]);
+      const bytes = readFileSync((await download.path())!);
+      const doc = await PDFDocument.load(bytes);
+      const form = doc.getForm();
+      files.push({ name: download.suggestedFilename(), text: form.getTextField('name').getText() ?? '', bleeding: form.getCheckBox('cond_bleeding').isChecked(), pages: doc.getPageCount() });
+      await dialog.getByRole('status').waitFor();
+    }
+    const status = await dialog.getByRole('status').textContent();
+    await page.close();
+    expect(files.map((f) => f.name)).toEqual(['Seren_Vale-dark.pdf', 'Seren_Vale-light.pdf', 'Seren_Vale-printable.pdf']);
+    for (const f of files) expect(f).toMatchObject({ text: 'Seren Vale', bleeding: true, pages: 6 });
+    expect(status).toBe('Downloaded.');
+    expect(errors).toEqual([]);
+    expect(headerOverflow).toBeLessThanOrEqual(1);
+    expect(modalOverflow).toBeLessThanOrEqual(1);
   });
 });
 
