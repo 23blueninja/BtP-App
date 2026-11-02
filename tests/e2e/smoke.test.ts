@@ -718,3 +718,50 @@ describe('Light theme', () => {
     await page.close();
   });
 });
+
+describe('Compact layout', () => {
+  it.each([1600, 360])('centres the page and opens Actions from the top bar at %i px', async (width) => {
+    const cls = classes[0];
+    const c = character(cls.id, subclassesOf(cls)[0]?.id ?? '', 3, ancestries[0].id, 'cp');
+    const { page, errors } = await open([{ ...c, name: 'Seren Vale' }], { width, height: 900 });
+    await page.goto(`${base}#/c/cp`);
+    await page.reload();
+    await page.getByRole('tab', { name: 'Sheet', exact: true }).waitFor();
+    const actionsBtn = page.locator('.topbar').getByRole('button', { name: 'Actions', exact: true });
+    // Off by default: no top-bar button, Actions in the sheet.
+    expect(await actionsBtn.count()).toBe(0);
+    await page.getByRole('button', { name: 'Options' }).click();
+    await page.getByRole('checkbox', { name: /Compact layout/ }).check();
+    await page.getByRole('button', { name: 'Close' }).click();
+    const layout = () =>
+      page.evaluate(() => {
+        const main = document.querySelector('main')!.getBoundingClientRect();
+        return { left: Math.round(main.left), right: Math.round(innerWidth - main.right), width: Math.round(main.width), column: getComputedStyle(document.querySelector('.sheet-actions-col')!).display };
+      });
+    const l = await layout();
+    if (width >= 1100) {
+      // A centred 1280 px column; Actions open from the top bar instead of a column.
+      expect(l).toEqual({ left: (width - 1280) / 2, right: (width - 1280) / 2, width: 1280, column: 'none' });
+      await actionsBtn.click();
+      const modal = page.locator('.modal');
+      await expect.poll(() => modal.locator('.modal-head h2').textContent()).toBe('Actions');
+      expect(await modal.getByRole('heading', { name: 'Basic actions' }).count()).toBe(1);
+      // Use buttons need the sheet's play state, so they only render when it reaches the modal.
+      expect(await modal.locator('.use-btn').count()).toBeGreaterThan(0);
+      if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/compact-${width}-actions.png` });
+      await page.keyboard.press('Escape');
+      expect(await modal.count()).toBe(0);
+    } else {
+      // Phones are unchanged: Actions stay below the sheet, with no top-bar button.
+      expect(l.column).not.toBe('none');
+      expect(await actionsBtn.isVisible()).toBe(false);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+    if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/compact-${width}-sheet.png` });
+    // Leaving the sheet hides the button.
+    await page.getByRole('button', { name: 'Rules', exact: true }).click();
+    await expect.poll(() => actionsBtn.count()).toBe(0);
+    expect(errors).toEqual([]);
+    await page.close();
+  });
+});

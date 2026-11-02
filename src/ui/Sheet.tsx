@@ -38,7 +38,7 @@ function useLightText() {
 const TABS = ['Sheet', 'Facets', 'Spells & Maneuvers', 'Summons', 'Equipment', 'Notes'] as const;
 type Tab = (typeof TABS)[number];
 
-export function Sheet({ c, update }: { c: Character; update: Update }) {
+export function Sheet({ c, update, actionsOpen, onCloseActions }: { c: Character; update: Update; /** Compact layout: the Actions list in a modal, opened from the top bar. */ actionsOpen?: boolean; onCloseActions?: () => void }) {
   const [picked, setTab] = useState<Tab>('Sheet');
   // The Summons tab only shows while you have a summon; dismissing the last one returns to the Sheet.
   const tabs = TABS.filter((t) => t !== 'Summons' || (c.play.summons?.length ?? 0) > 0);
@@ -52,6 +52,11 @@ export function Sheet({ c, update }: { c: Character; update: Update }) {
   const onLog = (lines: string[], undo?: PlayState) => setLog({ lines, undo });
   return (
     <PlayContext.Provider value={{ c, d, update, onLog }}>
+      {actionsOpen && onCloseActions && (
+        <Modal title="Actions" onClose={onCloseActions} wide>
+          <ActionsList c={c} d={d} />
+        </Modal>
+      )}
       <div className="sheet" style={headingStyle(d, lightText)}>
         <header className="sheet-header">
           <div>

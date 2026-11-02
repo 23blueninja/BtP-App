@@ -14,6 +14,8 @@ export interface Prefs {
   glassPanels: boolean;
   /** Panels with corners cut flat (bevelled); off: square corners. */
   cutCorners: boolean;
+  /** Wide screens: content in a centred column, with Actions opened from the top bar. */
+  compact: boolean;
   /** The chosen look; choosing one applies its LOOKS settings, which can then be customised. */
   look: Look;
   /** Dark (like the rulebook) or Light (white, with the printed sheet's cyan, magenta and yellow gradient). */
@@ -40,7 +42,7 @@ export const LOOKS: Record<Look, { name: string; description: string; settings: 
 };
 
 const KEY = 'btp.prefs.v1';
-const DEFAULTS: Prefs = { pinStatBar: true, animateGradients: true, animateBackground: true, animateEdges: true, glassPanels: true, cutCorners: true, look: 'faceted', theme: 'dark', tourSeen: false };
+const DEFAULTS: Prefs = { pinStatBar: true, animateGradients: true, animateBackground: true, animateEdges: true, glassPanels: true, cutCorners: true, look: 'faceted', theme: 'dark', compact: false, tourSeen: false };
 
 function read(): Prefs {
   try {
