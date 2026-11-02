@@ -3123,3 +3123,11 @@ html.tour-open body {
 :root[data-theme='light'] .tour-spot {
   box-shadow: 0 0 0 200vmax rgba(20, 24, 51, 0.45);
 }
+/* The logo inverted: its white turns black and its red, green and blue turn cyan,
+   magenta and yellow, like the Dark logo on black. */
+:root[data-theme='light'] .brand-logo {
+  filter: invert(1);
+}
+:root[data-theme='light'] .hero-logo {
+  filter: invert(1) drop-shadow(0 0 18px rgba(214, 0, 214, 0.25));
+}

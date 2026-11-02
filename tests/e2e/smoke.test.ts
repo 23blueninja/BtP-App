@@ -699,6 +699,8 @@ describe('Light theme', () => {
         meta: document.querySelector('meta[name="theme-color"]')?.getAttribute('content'),
       }));
     expect(await theme()).toEqual({ theme: 'light', bg: 'rgb(255, 255, 255)', text: 'rgb(20, 24, 51)', meta: '#ffffff' });
+    // The logo is inverted on white.
+    expect(await page.evaluate(() => getComputedStyle(document.querySelector('.brand-logo')!).filter)).toBe('invert(1)');
     // The choice is saved and applied on the next visit.
     await page.goto(`${base}#/c/lt`);
     await page.reload();
