@@ -16,11 +16,14 @@ export interface Prefs {
   cutCorners: boolean;
   /** The chosen look; choosing one applies its LOOKS settings, which can then be customised. */
   look: Look;
+  /** Dark (like the rulebook) or Light (white, with the printed sheet's cyan, magenta and yellow gradient). */
+  theme: Theme;
   /** The guided tour has been finished or skipped (it starts by itself only before that). */
   tourSeen: boolean;
 }
 
 export type Look = 'faceted' | 'polished';
+export type Theme = 'dark' | 'light';
 
 /** What each look turns on or off. */
 export const LOOKS: Record<Look, { name: string; description: string; settings: Pick<Prefs, 'cutCorners' | 'glassPanels' | 'animateEdges'> }> = {
@@ -37,7 +40,7 @@ export const LOOKS: Record<Look, { name: string; description: string; settings: 
 };
 
 const KEY = 'btp.prefs.v1';
-const DEFAULTS: Prefs = { pinStatBar: true, animateGradients: true, animateBackground: true, animateEdges: true, glassPanels: true, cutCorners: true, look: 'faceted', tourSeen: false };
+const DEFAULTS: Prefs = { pinStatBar: true, animateGradients: true, animateBackground: true, animateEdges: true, glassPanels: true, cutCorners: true, look: 'faceted', theme: 'dark', tourSeen: false };
 
 function read(): Prefs {
   try {
@@ -47,11 +50,20 @@ function read(): Prefs {
   }
 }
 
+/** The theme is set on <html> so the colour variables (and the page behind the app) follow it. */
+function applyTheme(theme: Theme) {
+  if (typeof document === 'undefined') return;
+  document.documentElement.dataset.theme = theme;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#ffffff' : '#000000');
+}
+
 let current = read();
+applyTheme(current.theme);
 const listeners = new Set<() => void>();
 
 export function setPrefs(p: Partial<Prefs>) {
   current = { ...current, ...p };
+  applyTheme(current.theme);
   try {
     localStorage.setItem(KEY, JSON.stringify(current));
   } catch {

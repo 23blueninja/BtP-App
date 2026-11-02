@@ -680,3 +680,41 @@ describe('guided tour', () => {
     expect(back).toEqual({ title: 'The item creator', modals: 1 });
   });
 });
+
+describe('Light theme', () => {
+  it.each([1400, 360])('switches from Options and styles every sheet tab at %i px', async (width) => {
+    const cls = classes[0];
+    const c = character(cls.id, subclassesOf(cls)[0]?.id ?? '', 3, ancestries[0].id, 'lt');
+    const { page, errors } = await open([{ ...c, name: 'Seren Vale' }], { width, height: 900 });
+    await page.reload();
+    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('dark');
+    await page.getByRole('button', { name: 'Options' }).click();
+    await page.getByRole('radio', { name: /^Light/ }).check();
+    await page.getByRole('button', { name: 'Close' }).click();
+    const theme = () =>
+      page.evaluate(() => ({
+        theme: document.documentElement.dataset.theme,
+        bg: getComputedStyle(document.body).backgroundColor,
+        text: getComputedStyle(document.body).color,
+        meta: document.querySelector('meta[name="theme-color"]')?.getAttribute('content'),
+      }));
+    expect(await theme()).toEqual({ theme: 'light', bg: 'rgb(255, 255, 255)', text: 'rgb(20, 24, 51)', meta: '#ffffff' });
+    // The logo is inverted on white.
+    expect(await page.evaluate(() => getComputedStyle(document.querySelector('.brand-logo')!).filter)).toBe('invert(1)');
+    // The choice is saved and applied on the next visit.
+    await page.goto(`${base}#/c/lt`);
+    await page.reload();
+    expect((await theme()).theme).toBe('light');
+    for (const name of ['Sheet', 'Facets', 'Spells & Maneuvers', 'Equipment', 'Notes']) {
+      await tab(page, name);
+      if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/light-${width}-${name.replace(/\W+/g, '')}.png`, fullPage: true });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), name).toBeLessThanOrEqual(0);
+    }
+    await page.goto(`${base}#/rules`);
+    if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/light-${width}-rules.png` });
+    await page.goto(base);
+    if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/light-${width}-home.png` });
+    expect(errors).toEqual([]);
+    await page.close();
+  });
+});

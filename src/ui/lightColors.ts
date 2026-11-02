@@ -14,6 +14,20 @@ export const LIGHT_TEXT: Record<Light, string> = {
   Platinum: '#e3e6ef',
 };
 
+/** Deeper tints of each Light's colour, readable on the Light theme's white. */
+export const LIGHT_TEXT_ON_WHITE: Record<Light, string> = {
+  Flame: '#d4590c',
+  Frost: '#0088a8',
+  Pneuma: '#b81ca8',
+  Soma: '#0b8f73',
+  Mordant: '#9a7e00',
+  Velvet: '#7448d0',
+  Infernal: '#cc2238',
+  Lunar: '#3555d8',
+  Temporal: '#2a8f38',
+  Platinum: '#646a82',
+};
+
 /** Copies of the band cycle in the gradient; the animation scrolls through one of them. */
 export const GRADIENT_CYCLES = 4;
 
@@ -27,17 +41,17 @@ export const GRADIENT_CYCLES = 4;
  * one cycle and sliding the background by one cycle loops seamlessly (the
  * last band blends into the first band of the next copy).
  */
-export function alignmentGradient(ranked: { light: Light; level: number }[]): string | undefined {
+export function alignmentGradient(ranked: { light: Light; level: number }[], palette: Record<Light, string> = LIGHT_TEXT): string | undefined {
   const total = ranked.reduce((s, a) => s + a.level, 0);
   if (!total) return undefined;
-  if (ranked.length === 1) return `linear-gradient(to bottom right, ${LIGHT_TEXT[ranked[0].light]}, ${LIGHT_TEXT[ranked[0].light]})`;
+  if (ranked.length === 1) return `linear-gradient(to bottom right, ${palette[ranked[0].light]}, ${palette[ranked[0].light]})`;
   const stops: string[] = [];
   const pct = (cycle: number, f: number) => `${(((cycle + f) / GRADIENT_CYCLES) * 100).toFixed(2)}%`;
   for (let cycle = 0; cycle < GRADIENT_CYCLES; cycle++) {
     let start = 0;
     for (const a of ranked) {
       const width = a.level / total;
-      const c = LIGHT_TEXT[a.light];
+      const c = palette[a.light];
       stops.push(`${c} ${pct(cycle, start + width * 0.25)}`, `${c} ${pct(cycle, start + width * 0.75)}`);
       start += width;
     }
