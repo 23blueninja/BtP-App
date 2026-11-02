@@ -56,6 +56,7 @@ const LOOK_TOGGLES: Toggle[] = [
 const OTHER_TOGGLES: Toggle[] = [
   { key: 'animateGradients', label: 'Animate alignment gradients', note: 'Headings and attribute symbols.' },
   { key: 'animateBackground', label: 'Animate the background', note: 'The rainbow and the moving triangle grid.' },
+  { key: 'compact', label: 'Compact layout', note: 'Wide screens: the page sits in a centred column, and Actions open from the top bar.' },
   { key: 'pinStatBar', label: 'Pin the top bar while scrolling', note: 'Class Bonus, Attributes and AP stay at the top of the sheet (wide screens).' },
 ];
 
@@ -129,6 +130,7 @@ export function App() {
   const route = useHashRoute();
   const prefs = usePrefs();
   const [options, setOptions] = useState(false);
+  const [actions, setActions] = useState(false);
   const [saveFailing, setSaveFailing] = useState(false);
   useEffect(() => store.onSaveState(setSaveFailing), []);
   const [section, id, view, step] = route;
@@ -150,8 +152,14 @@ export function App() {
   else if (section === 'c' && !c) body = <p className="muted">Character not found.</p>;
   else if (section === 'c' && c && view === 'build') body = <Builder c={c} update={update} step={step ?? 'basics'} />;
   else if (section === 'c' && c && view === 'levelup') body = <LevelUp c={c} update={update} />;
-  else if (section === 'c' && c) body = <Sheet c={c} update={update} />;
+  else if (section === 'c' && c) body = <Sheet c={c} update={update} actionsOpen={actions} onCloseActions={() => setActions(false)} />;
   else body = <Home />;
+
+  const onSheet = section === 'c' && !!c && !view;
+  // Leaving the sheet closes its Actions.
+  useEffect(() => {
+    if (!onSheet) setActions(false);
+  }, [onSheet]);
 
   // A tour's demo character left behind (the page closed mid-tour) is removed.
   useEffect(() => {
@@ -190,7 +198,7 @@ export function App() {
   }, []);
 
   return (
-    <div className={['app', prefs.pinStatBar && 'pin-stats', !prefs.animateGradients && 'still-gradients', !prefs.animateBackground && 'still-bg', !prefs.animateEdges && 'still-edges', prefs.glassPanels && 'glass', !prefs.cutCorners && 'square-corners', GECKO && 'gecko'].filter(Boolean).join(' ')}>
+    <div className={['app', prefs.pinStatBar && 'pin-stats', prefs.compact && 'compact', !prefs.animateGradients && 'still-gradients', !prefs.animateBackground && 'still-bg', !prefs.animateEdges && 'still-edges', prefs.glassPanels && 'glass', !prefs.cutCorners && 'square-corners', GECKO && 'gecko'].filter(Boolean).join(' ')}>
       <div className="prism-bg" aria-hidden>
         <div className="prism-grid">
           <div className="prism-counter" />
@@ -207,6 +215,12 @@ export function App() {
           {c && section === 'c' && (
             <button type="button" className="link" onClick={() => go('c', c.id)}>
               Sheet
+            </button>
+          )}
+          {/* Compact layout (wide screens): the sheet's Actions column opens from here instead. */}
+          {prefs.compact && onSheet && (
+            <button type="button" className="link actions-btn" onClick={() => setActions(true)}>
+              Actions
             </button>
           )}
           <button type="button" className="link" onClick={() => go('rules')}>
