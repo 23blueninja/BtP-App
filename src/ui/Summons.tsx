@@ -325,7 +325,7 @@ export function CreatureImport({ type }: { type: string }) {
         type="file"
         accept=".json,application/json"
         hidden
-        aria-label="Monster Maker export"
+        aria-label="Creature file"
         onChange={async (e) => {
           const f = e.target.files?.[0];
           e.target.value = '';
@@ -338,7 +338,7 @@ export function CreatureImport({ type }: { type: string }) {
             if (r.skipped.length) parts.push(`Skipped ${r.skipped.join(', ')}: only Beasts and Ethereals can be summoned.`);
             setNote({ text: parts.join(' '), warn: !r.creatures.length || r.skipped.length > 0 });
           } catch {
-            setNote({ text: 'That file is not a Monster Maker export.', warn: true });
+            setNote({ text: 'That file is not a creature file.', warn: true });
           }
         }}
       />
