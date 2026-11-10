@@ -21,7 +21,7 @@
 ![](https://i.imgur.com/oh4WnVu.png){height:1.25em,margin-bottom:-0.3em,filter:invert(100%)}
 
 ![](https://i.imgur.com/hd3lq4V.png){position:absolute,top:0,left:0,opacity:0.3,width:100%}
-![](https://i.imgur.com/8VNXled.png){position:absolute,top:16.7%,left:35%,width:33%}
+![Beyond the Prism logo by 23BLUENINJA](https://i.imgur.com/8VNXled.png){position:absolute,top:16.7%,left:35%,width:33%}
 
 <!--
 {{wide,text-align:center,font-size:5em
@@ -29,7 +29,7 @@
 {{color:red B}}{{color:orange E}}{{color:yellow Y}}{{color:lightgreen O}}{{color:cyan N}}{{color:aquamarine D}} {{color:royalblue T}}{{color:indigo H}}{{color:magenta E}} {{color:red P}}{{color:orange R}}{{color:yellow I}}{{color:lightgreen S}}{{color:cyan M}}
 }}-->
 
-![Bird with autumn foliage by L. Prang & Co.](https://i.imgur.com/JnUlH26.png) {position:absolute,bottom:0%,left:5%,width:90%}
+![](https://i.imgur.com/JnUlH26.png) {position:absolute,bottom:0%,left:5%,width:90%}
 
 \page
 
