@@ -24,11 +24,14 @@ keeps its imported stat block (`creatureData`).
 and zoomed, drawn as SVG with no 3D library; it doesn't touch characters. The
 maths is `src/engine/world.ts`: the sun is fixed and the prism tumbles and spins
 under it. The motion is Arch's, read from the keyframes of Arch's Blender model
-(`World Prism.blend`, 2026-11-15) into the one `WORLD_PRISM` value; time is
-counted in turns (one tumble), and `hoursPerTurn` is unset until Arch rules on
-it. A calendar tracker is planned on top of this: keep the motion and time in
-that model, and ask Arch before adding lore numbers. `tests/world.test.ts`
-checks the engine against the keyframes.
+(`World Prism.blend`, 2026-11-15) into the one `WORLD_PRISM` value. One turn
+(tumble) is a 24-hour day, the week has nine named days, the three painted
+sides are the Infernal, Temporal and Lunar Facets, and the edges between them
+are the Storm, Spring and Heart Spines (day while either Facet has it), all
+Arch's. Arch's table of each Facet's and Spine's days is in `DAY_KINDS` and in
+`tests/world.test.ts`, which checks the engine against the keyframes and the
+table. A calendar tracker is planned on top of this: keep the motion and time
+in that model, and ask Arch before adding lore numbers.
 
 ## PDF character sheet
 

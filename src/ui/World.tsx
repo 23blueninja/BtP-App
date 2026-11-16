@@ -2,7 +2,7 @@
 // put and the prism moves under it, as in the PM's Blender model. Drawn as SVG
 // from src/engine/world.ts (no 3D library).
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
-import { daylightShare, faceLights, FACES, nextEvent, normalize, rotate, scale, sunEvents, turnDirection, turnOfCycle, turnPoint, VERTICES, WORLD_PRISM, type Vec3, type WorldModel } from '../engine/world';
+import { DAY_KINDS, daylightOn, faceLights, FACES, formatHour, hourOfDay, isDay, nextEvent, normalize, rotate, scale, SPINES, sunEvents, turnDirection, turnOfCycle, turnOfWeek, turnPoint, VERTICES, weekday, WORLD_PRISM, type Place, type Vec3, type WorldModel } from '../engine/world';
 
 /** How far from the pivot the sun is drawn (the pyramid's corners are 1 from its centre). Drawing only. */
 const SUN_DISTANCE = 2.1;
@@ -13,7 +13,7 @@ const ZOOM_MAX = 3;
 const START_VIEW = { yaw: 0.6, pitch: 0.3, zoom: 1 };
 /** Turns per second while playing. */
 const PLAY_SPEED = 0.2;
-/** Slider steps per turn (the Blender model has 48 frames to a turn). */
+/** Slider steps per day: half hours (the Blender model has 48 frames to a turn). */
 const STEPS = 48;
 
 const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n));
@@ -34,14 +34,12 @@ function screen(p: Vec3): [number, number] {
   return [p[0] * k, -p[1] * k];
 }
 const fmt = (n: number) => n.toFixed(3);
-/** "1.25 turns"; hours instead once the model has them. */
-function span(model: WorldModel, turns: number): string {
-  return model.hoursPerTurn ? `${(turns * model.hoursPerTurn).toFixed(1)} h` : `${turns.toFixed(2)} ${Math.abs(turns - 1) < 0.005 ? 'turn' : 'turns'}`;
-}
+/** "5.2 h" for a stretch of turns. */
+const span = (model: WorldModel, turns: number): string => `${(turns * model.hoursPerTurn).toFixed(1)} h`;
 
 export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
   const [view, setView] = useState<View>(START_VIEW);
-  // Turns since the model's start; the calendar will count from this too.
+  // Days (turns) since the first Asmoday; the calendar will count from this too.
   const [turns, setTurns] = useState(0);
   const [playing, setPlaying] = useState(false);
   const svg = useRef<SVGSVGElement>(null);
@@ -110,9 +108,20 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
   };
 
   const lights = faceLights(model, turns);
-  const events = useMemo(() => FACES.map((f) => sunEvents(model, f.id)), [model]);
-  const shares = useMemo(() => FACES.map((f) => daylightShare(model, f.id)), [model]);
-  const at = turnOfCycle(model, turns);
+  // Every place the table lists: the faces, then the Spines between the Facets.
+  const places = useMemo(
+    () =>
+      [
+        ...FACES.map((f) => ({ id: f.id, name: f.name, note: '', place: f.id as Place })),
+        ...SPINES.map((sp) => ({ id: sp.id, name: sp.name, note: sp.faces.map((id) => FACES.find((f) => f.id === id)?.name.replace(/ Facet$/, '')).join(' and '), place: sp.faces as Place })),
+      ].map((p) => ({ ...p, events: sunEvents(model, p.place) })),
+    [model],
+  );
+  const days = model.weekdays.length;
+  const at = turnOfWeek(model, turns);
+  const dayName = weekday(model, turns);
+  const hour = hourOfDay(model, turns);
+  const dayOfCycle = Math.floor(turnOfCycle(model, turns) + 1e-9) % model.turnsPerCycle;
 
   // The line the prism tumbles about, through the pivot.
   const axis = normalize(model.tumbleAxis);
@@ -141,7 +150,7 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
   return (
     <div className="world">
       <h1>The World Prism</h1>
-      <p className="muted world-intro">The sun stays where it is. The World Prism tumbles beneath it, spinning as it goes, and each face has day while it is turned toward the sun.</p>
+      <p className="muted world-intro">The sun stays where it is. The World Prism tumbles beneath it once a day, spinning as it goes, and each Facet has day while it is turned toward the sun.</p>
       <div className="world-layout">
         <section className="box world-stage">
           <svg
@@ -150,7 +159,7 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
             viewBox={`${fmt(-size / 2)} ${fmt(-size / 2)} ${fmt(size)} ${fmt(size)}`}
             role="img"
             tabIndex={0}
-            aria-label={`Model of the World Prism, ${span(model, at)} into its cycle. ${summary}. Drag or use the arrow keys to turn it; pinch, scroll or press plus and minus to zoom.`}
+            aria-label={`Model of the World Prism on ${dayName} at ${formatHour(hour)}. ${summary}. Drag or use the arrow keys to turn it; pinch, scroll or press plus and minus to zoom.`}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
@@ -166,10 +175,10 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
                   <polygon
                     className="world-face"
                     points={f.face.corners.map((i) => screen(corners[i]).map(fmt).join(',')).join(' ')}
-                    style={{ fill: `color-mix(in srgb, var(--world-day) ${Math.round(f.light * 100)}%, var(--world-night))` }}
+                    style={{ fill: `color-mix(in srgb, ${f.face.color} ${Math.round(30 + 70 * f.light)}%, var(--world-night))` }}
                   />
-                  <text className={`world-label ${f.light > 0.45 ? 'on-day' : ''}`} x={lx} y={ly} textAnchor="middle" dominantBaseline="central">
-                    {f.face.name.replace(/^Face /, '')}
+                  <text className="world-label" x={lx} y={ly} textAnchor="middle" dominantBaseline="central">
+                    {f.face.name.replace(/ Facet$/, '')}
                   </text>
                 </g>
               );
@@ -193,44 +202,64 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
           <h2 className="box-title">Time</h2>
           <label className="world-hour">
             <span>
-              Turn <strong data-testid="world-turn">{at.toFixed(2)}</strong> <span className="muted">of {model.turnsPerCycle}</span>
+              <strong data-testid="world-day">{dayName}</strong>, <strong data-testid="world-hour">{formatHour(hour)}</strong> <span className="muted">of {model.hoursPerTurn} hours</span>
             </span>
-            <input type="range" min={0} max={model.turnsPerCycle * STEPS - 1} step={1} value={Math.min(Math.round(at * STEPS), model.turnsPerCycle * STEPS - 1)} onChange={(e) => setTurns(Number(e.target.value) / STEPS)} />
+            <input type="range" aria-label="Time in the week" min={0} max={days * STEPS - 1} step={1} value={Math.min(Math.round(at * STEPS), days * STEPS - 1)} onChange={(e) => setTurns(Number(e.target.value) / STEPS)} />
           </label>
-          <div className="row">
+          <div className="row wrap">
             <button type="button" className={playing ? '' : 'primary'} onClick={() => setPlaying((p) => !p)}>
               {playing ? 'Pause' : 'Play'}
             </button>
+            <label className="row world-day-pick">
+              <span className="muted small">Day</span>
+              <select value={dayName} onChange={(e) => setTurns(model.weekdays.indexOf(e.target.value) + hour / model.hoursPerTurn)}>
+                {model.weekdays.map((d) => (
+                  <option key={d}>{d}</option>
+                ))}
+              </select>
+            </label>
           </div>
           <table className="world-faces">
             <thead>
               <tr>
-                <th>Face</th>
+                <th>Place</th>
                 <th>Now</th>
                 <th>Next</th>
-                <th>Daylight</th>
+                <th>Today</th>
               </tr>
             </thead>
             <tbody>
-              {lights.map((l, i) => {
-                const next = nextEvent(model, events[i], turns);
+              {places.map((p) => {
+                const next = nextEvent(model, p.events, turns);
+                const light = lights.find((l) => l.face.id === p.id);
+                const day = isDay(model, p.place, turns);
+                const kind = DAY_KINDS[p.id]?.[dayOfCycle];
                 return (
-                  <tr key={l.face.id} data-face-row={l.face.id}>
-                    <th scope="row">{l.face.name}</th>
+                  <tr key={p.id} data-place={p.id}>
+                    <th scope="row">
+                      {p.name}
+                      {p.note && <span className="muted small world-between"> {p.note}</span>}
+                    </th>
                     <td>
-                      {l.day ? 'Day' : 'Night'}
-                      {l.day && <span className="muted small"> sun {Math.round(l.sunHeight)}° up</span>}
+                      {day ? 'Day' : 'Night'}
+                      {day && light && <span className="muted small"> sun {Math.round(light.sunHeight)}° up</span>}
                     </td>
                     <td>{next ? `${next.type === 'sunrise' ? 'Sunrise' : 'Sunset'} in ${span(model, next.in)}` : '–'}</td>
-                    <td>{Math.round(shares[i] * 100)}%</td>
+                    <td>
+                      {kind && <span className="world-kind">{kind} </span>}
+                      <span className={`world-hours ${kind ? 'muted small' : ''}`}>
+                        {daylightOn(model, p.events, dayOfCycle)
+                          .map((d) => `${Math.round(d.night)} N / ${Math.round(d.day)} D`)
+                          .join(', ')}
+                      </span>
+                    </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
           <p className="muted small">
-            One turn is one full tumble of the prism; after {model.turnsPerCycle} it is back where it began. A face is flat, so the sun rises over all of it at the same moment.
-            {!model.hoursPerTurn && ' Hours are not set yet.'}
+            Today: hours of night (N), then hours of the day (D) that follows, for the sunrise that falls on this day. A Spine has day while either of its Facets does. A Facet is flat, so the sun rises over all of it at the same moment.
           </p>
         </section>
       </div>

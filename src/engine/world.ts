@@ -39,10 +39,11 @@ export const VERTICES: readonly Vec3[] = [
 ];
 
 export interface Face {
-  /** Stable id, used as the key when the PM names the faces. */
   id: string;
-  /** Neutral working name until the PM names the faces. */
+  /** The PM's name for it; the fourth face has none yet. */
   name: string;
+  /** Its colour in the PM's Blender model, softened a little for the screen. */
+  color: string;
   /** Indices into VERTICES, anticlockwise seen from outside. */
   corners: readonly [number, number, number];
   /** Unit vector pointing straight out of the face. */
@@ -50,7 +51,7 @@ export interface Face {
   centre: Vec3;
 }
 
-function face(id: string, name: string, corners: readonly [number, number, number]): Face {
+function face(id: string, name: string, color: string, corners: readonly [number, number, number]): Face {
   const [a, b, c] = corners.map((i) => VERTICES[i]);
   const centre = scale(add(add(a, b), c), 1 / 3);
   let normal = normalize(cross(sub(b, a), sub(c, a)));
@@ -60,15 +61,52 @@ function face(id: string, name: string, corners: readonly [number, number, numbe
     normal = scale(normal, -1);
     order = [corners[0], corners[2], corners[1]];
   }
-  return { id, name, corners: order, normal, centre };
+  return { id, name, color, corners: order, normal, centre };
 }
 
-/** The three sides, then the base (the face opposite the apex). */
-export const FACES: readonly Face[] = [face('a', 'Face A', [0, 1, 2]), face('b', 'Face B', [0, 2, 3]), face('c', 'Face C', [0, 3, 1]), face('d', 'Face D', [1, 2, 3])];
+/**
+ * The three Facets, then the base (the face opposite the apex). Which is which
+ * comes from the colours painted on the Blender model (PM 2026-11-15): red is
+ * the Infernal Facet (the side facing Blender's +Y at rest), green the Temporal
+ * Facet (the side at 330°), blue the Lunar Facet (210°); the base is yellow.
+ */
+export const FACES: readonly Face[] = [
+  face('infernal', 'Infernal Facet', '#ff3355', [0, 2, 3]),
+  face('temporal', 'Temporal Facet', '#35d435', [0, 1, 2]),
+  face('lunar', 'Lunar Facet', '#4a5cff', [0, 3, 1]),
+  face('base', 'Base', '#ffe14a', [1, 2, 3]),
+];
+
+/** An edge between two Facets. It has day while either of its Facets does. */
+export interface Spine {
+  id: string;
+  name: string;
+  /** Ids of the two faces it joins. */
+  faces: readonly [string, string];
+}
+
+/**
+ * The PM's Spines (2026-11-15). The PM's note put the Heart Spine between Lunar
+ * and Temporal, which is the Spring Spine; the PM's table of its days and nights
+ * fits Lunar and Infernal, the one pair left.
+ */
+export const SPINES: readonly Spine[] = [
+  { id: 'storm', name: 'Storm Spine', faces: ['infernal', 'temporal'] },
+  { id: 'spring', name: 'Spring Spine', faces: ['temporal', 'lunar'] },
+  { id: 'heart', name: 'Heart Spine', faces: ['lunar', 'infernal'] },
+];
+
+/** What the PM's table calls each Facet's day, by day of the three-day cycle (the first is Asmoday). */
+export type DayKind = 'Sunrise' | 'Long Night' | 'Short Day';
+export const DAY_KINDS: Readonly<Record<string, readonly DayKind[]>> = {
+  infernal: ['Sunrise', 'Long Night', 'Short Day'],
+  temporal: ['Long Night', 'Short Day', 'Sunrise'],
+  lunar: ['Short Day', 'Sunrise', 'Long Night'],
+};
 
 /**
  * How the world moves. Time is counted in turns: one turn is one full tumble of
- * the prism. Angles are in degrees.
+ * the prism, which is one day. Angles are in degrees.
  */
 export interface WorldModel {
   /** Unit vector from the world toward the sun, which never moves. */
@@ -88,8 +126,10 @@ export interface WorldModel {
   tumbleSense: 1 | -1;
   /** Turns until the prism is back exactly where it began. */
   turnsPerCycle: number;
-  /** Hours in one turn, once the PM sets it (the Blender model has no clock). */
-  hoursPerTurn?: number;
+  /** Hours in one turn. One turn is one day. */
+  hoursPerTurn: number;
+  /** The days of the week, in order; turn 0 begins the first. */
+  weekdays: readonly string[];
 }
 
 /**
@@ -112,6 +152,9 @@ export const WORLD_PRISM: WorldModel = {
   spinPerTurn: -120,
   tumbleSense: -1,
   turnsPerCycle: 3,
+  // PM 2026-11-15: 24 hours in a day, and a nine-day week (three cycles).
+  hoursPerTurn: 24,
+  weekdays: ['Asmoday', 'Tempoday', 'Lunaday', 'Morday', 'Veleday', 'Pneumaday', 'Somaday', 'Auroday', 'Nixaday'],
 };
 
 const rad = (deg: number) => (deg * Math.PI) / 180;
@@ -129,6 +172,28 @@ export const turnPoint = (model: WorldModel, turns: number, p: Vec3): Vec3 => tu
 export function turnOfCycle(model: WorldModel, turns: number): number {
   const t = turns % model.turnsPerCycle;
   return t < 0 ? t + model.turnsPerCycle : t;
+}
+
+/** Position within the week, in turns: 0 ≤ result < weekdays.length. */
+export function turnOfWeek(model: WorldModel, turns: number): number {
+  const n = model.weekdays.length;
+  const t = turns % n;
+  return t < 0 ? t + n : t;
+}
+
+/** The weekday at `turns`. */
+export const weekday = (model: WorldModel, turns: number): string => model.weekdays[Math.floor(turnOfWeek(model, turns) + 1e-9) % model.weekdays.length];
+
+/** Hours since the day began: 0 ≤ result < hoursPerTurn. */
+export function hourOfDay(model: WorldModel, turns: number): number {
+  const t = turnOfWeek(model, turns);
+  return (t - Math.floor(t + 1e-9)) * model.hoursPerTurn;
+}
+
+/** "6:30" for 6.5 hours. */
+export function formatHour(hours: number): string {
+  const minutes = Math.max(0, Math.round(hours * 60));
+  return `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, '0')}`;
 }
 
 /** Whole cycles gone by at `turns` (negative before the start). */
@@ -163,17 +228,23 @@ export interface SunEvent {
   at: number;
 }
 
-/** Every sunrise and sunset on a face over one cycle, in order, found by stepping through it. */
-export function sunEvents(model: WorldModel, faceId: string, stepsPerTurn = 1440): SunEvent[] {
-  const f = FACES.find((x) => x.id === faceId);
-  if (!f) return [];
+/** A face id, or several: a place that has day while any of those faces does (a Spine's two). */
+export type Place = string | readonly string[];
+const facesOf = (place: Place): Face[] => (typeof place === 'string' ? [place] : place).map((id) => FACES.find((f) => f.id === id)).filter((f): f is Face => !!f);
+/** Height of the sun over a place: over whichever of its faces it stands highest. */
+const sunOverPlace = (model: WorldModel, faces: readonly Face[], turns: number) => Math.max(...faces.map((f) => sunOver(model, f, turns)));
+
+/** Every sunrise and sunset at a place over one cycle, in order, found by stepping through it. */
+export function sunEvents(model: WorldModel, place: Place, stepsPerTurn = 1440): SunEvent[] {
+  const faces = facesOf(place);
+  if (!faces.length) return [];
   const out: SunEvent[] = [];
   const steps = stepsPerTurn * model.turnsPerCycle;
-  let a = sunOver(model, f, 0);
+  let a = sunOverPlace(model, faces, 0);
   for (let i = 0; i < steps; i++) {
     const t0 = i / stepsPerTurn;
     const t1 = (i + 1) / stepsPerTurn;
-    const b = sunOver(model, f, t1);
+    const b = sunOverPlace(model, faces, t1);
     if (a > EPS !== b > EPS) {
       // The crossing, by straight-line interpolation within the step.
       out.push({ type: b > EPS ? 'sunrise' : 'sunset', at: turnOfCycle(model, t0 + ((t1 - t0) * (EPS - a)) / (b - a)) });
@@ -181,6 +252,36 @@ export function sunEvents(model: WorldModel, faceId: string, stepsPerTurn = 1440
     a = b;
   }
   return out.sort((x, y) => x.at - y.at);
+}
+
+/** Whether a place has day at `turns`. */
+export const isDay = (model: WorldModel, place: Place, turns: number): boolean => sunOverPlace(model, facesOf(place), turns) > EPS;
+
+export interface Daylight {
+  /** Hour of the day the sun comes up. */
+  sunrise: number;
+  /** Hours of night before that sunrise. */
+  night: number;
+  /** Hours of day after it. */
+  day: number;
+}
+
+/**
+ * The daylight that begins on a day of the cycle (0 is the first), from one
+ * cycle's `events`: each sunrise that day, with the night before it and the day
+ * after it, which may run past midnight either way. This is how the PM's table
+ * counts a Spine's day ("10 N / 22 D").
+ */
+export function daylightOn(model: WorldModel, events: readonly SunEvent[], day: number): Daylight[] {
+  const d = ((day % model.turnsPerCycle) + model.turnsPerCycle) % model.turnsPerCycle;
+  const out: Daylight[] = [];
+  events.forEach((e, i) => {
+    if (e.type !== 'sunrise' || Math.floor(e.at) !== d) return;
+    const before = events[(i - 1 + events.length) % events.length];
+    const after = events[(i + 1) % events.length];
+    out.push({ sunrise: (e.at - d) * model.hoursPerTurn, night: turnOfCycle(model, e.at - before.at) * model.hoursPerTurn, day: turnOfCycle(model, after.at - e.at) * model.hoursPerTurn });
+  });
+  return out;
 }
 
 /** The next sunrise or sunset after `turns` among `events` (one cycle's worth), and how many turns away it is. */
@@ -191,12 +292,12 @@ export function nextEvent(model: WorldModel, events: readonly SunEvent[], turns:
   return { ...e, in: turnOfCycle(model, e.at - now) };
 }
 
-/** Share of the cycle (0 to 1) a face spends in daylight. */
-export function daylightShare(model: WorldModel, faceId: string, stepsPerTurn = 480): number {
-  const f = FACES.find((x) => x.id === faceId);
-  if (!f) return 0;
+/** Share of the cycle (0 to 1) a place spends in daylight. */
+export function daylightShare(model: WorldModel, place: Place, stepsPerTurn = 480): number {
+  const faces = facesOf(place);
+  if (!faces.length) return 0;
   const steps = stepsPerTurn * model.turnsPerCycle;
   let lit = 0;
-  for (let i = 0; i < steps; i++) if (sunOver(model, f, (i + 0.5) / stepsPerTurn) > EPS) lit++;
+  for (let i = 0; i < steps; i++) if (sunOverPlace(model, faces, (i + 0.5) / stepsPerTurn) > EPS) lit++;
   return lit / steps;
 }

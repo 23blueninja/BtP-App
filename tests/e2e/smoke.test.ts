@@ -693,12 +693,14 @@ describe('World tab', () => {
     const view = page.locator('.world-view');
     const shape = () => view.locator('polygon').evaluateAll((list) => list.map((p) => p.getAttribute('points')).join('|'));
     const sun = () => page.getByTestId('world-sun').evaluate((g) => `${g.getAttribute('data-x')},${g.getAttribute('data-y')}`);
-    const now = (face: string) => page.locator(`[data-face-row="${face}"] td`).first().innerText();
+    const cell = (place: string, n: number) => page.locator(`[data-place="${place}"] td`).nth(n).innerText();
+    const now = (place: string) => cell(place, 0);
     // A pyramid shows one to three of its four faces from any side.
     const faces = await view.locator('polygon').count();
     expect(faces).toBeGreaterThanOrEqual(1);
     expect(faces).toBeLessThanOrEqual(3);
-    expect(await page.locator('.world-faces tbody tr').count()).toBe(4);
+    // Three Facets, the base and three Spines.
+    expect(await page.locator('.world-faces tbody th').allInnerTexts()).toEqual(['Infernal Facet', 'Temporal Facet', 'Lunar Facet', 'Base', expect.stringMatching(/^Storm Spine\s+Infernal and Temporal$/), expect.stringMatching(/^Spring Spine\s+Temporal and Lunar$/), expect.stringMatching(/^Heart Spine\s+Lunar and Infernal$/)]);
     // Dragging turns it.
     const box = (await view.boundingBox())!;
     const before = await shape();
@@ -724,36 +726,61 @@ describe('World tab', () => {
     await expect.poll(viewBox).toBe(start);
     await expect.poll(shape).toBe(before);
 
-    // Moving the time tumbles the prism under a sun that stays put: the base starts
-    // facing the sun and is in night half a turn later.
+    // The week starts on Asmoday with the base facing the sun and the Facets in night.
+    // Today's column is the PM's table: Infernal has a Sunrise day, Temporal a Long Night,
+    // Lunar a Short Day; the Storm Spine has about 10 hours of night, then 22 of day.
     const slider = page.getByRole('slider');
-    const turn = () => page.getByTestId('world-turn').innerText();
+    const clock = async () => `${await page.getByTestId('world-day').innerText()} ${await page.getByTestId('world-hour').innerText()}`;
     const sunAt = await sun();
-    expect(await turn()).toBe('0.00');
-    expect(await now('d')).toMatch(/^Day\s+sun 90° up/);
+    expect(await clock()).toBe('Asmoday 0:00');
+    expect(await now('base')).toMatch(/^Day\s+sun 90° up/);
+    for (const f of ['infernal', 'temporal', 'lunar']) expect(await now(f)).toBe('Night');
+    expect(await cell('infernal', 2)).toMatch(/^Sunrise\s+10 N \/ 12 D$/);
+    expect(await cell('temporal', 2)).toMatch(/^Long Night\s+21 N \/ 12 D$/);
+    expect(await cell('lunar', 2)).toMatch(/^Short Day\s+10 N \/ 7 D$/);
+    expect(await cell('base', 2)).toBe('12 N / 12 D');
+    expect(await cell('storm', 2)).toBe('10 N / 21 D');
+    expect(await cell('spring', 2)).toBe('10 N / 14 D');
+    expect(await cell('heart', 2)).toBe('3 N / 14 D');
+    expect(await cell('infernal', 1)).toBe('Sunrise in 1.4 h');
+
+    // Moving the time tumbles the prism under a sun that stays put: half a day on, the apex
+    // points at the sun, the Facets have day and the base has night.
     const upright = await shape();
     await slider.fill('24');
-    await expect.poll(turn).toBe('0.50');
-    await expect.poll(() => now('d')).toMatch(/^Night/);
-    for (const f of ['a', 'b', 'c']) expect(await now(f)).toMatch(/^Day\s+sun 19° up/);
+    await expect.poll(clock).toBe('Asmoday 12:00');
+    await expect.poll(() => now('base')).toBe('Night');
+    for (const f of ['infernal', 'temporal', 'lunar']) expect(await now(f)).toMatch(/^Day\s+sun 19° up/);
+    for (const sp of ['storm', 'spring', 'heart']) expect(await now(sp)).toBe('Day');
     expect(await shape()).not.toBe(upright);
     expect(await sun()).toBe(sunAt);
-    expect(await page.locator('[data-face-row="d"] td').nth(1).innerText()).toBe('Sunrise in 0.25 turns');
-    expect(await page.locator('[data-face-row="d"] td').nth(2).innerText()).toBe('50%');
-    // The slider's last stop is just short of the end of the three-turn cycle.
-    await slider.fill('143');
-    await expect.poll(turn).toBe('2.98');
+    expect(await cell('base', 1)).toBe('Sunrise in 6.0 h');
 
-    // Play moves time on (wrapping to the start of the cycle); Pause stops it.
+    // Picking a day keeps the hour; the pattern moves one Facet along each day and repeats after three.
+    await page.getByRole('combobox').selectOption('Tempoday');
+    await expect.poll(clock).toBe('Tempoday 12:00');
+    expect(await cell('infernal', 2)).toMatch(/^Long Night/);
+    expect(await cell('temporal', 2)).toMatch(/^Short Day/);
+    expect(await cell('lunar', 2)).toMatch(/^Sunrise/);
+    expect(await cell('storm', 2)).toBe('10 N / 14 D');
+    await page.getByRole('combobox').selectOption('Morday');
+    await expect.poll(clock).toBe('Morday 12:00');
+    expect(await cell('infernal', 2)).toMatch(/^Sunrise/);
+    // The slider's last stop is the last half hour of the nine-day week.
+    await slider.fill('431');
+    await expect.poll(clock).toBe('Nixaday 23:30');
+    expect(await cell('lunar', 2)).toMatch(/^Long Night/);
+
+    // Play moves time on (wrapping to the start of the week); Pause stops it.
     await page.getByRole('button', { name: 'Play', exact: true }).click();
-    await expect.poll(turn, { timeout: 10_000 }).not.toBe('2.98');
+    await expect.poll(clock, { timeout: 10_000 }).not.toBe('Nixaday 23:30');
     await page.getByRole('button', { name: 'Pause' }).click();
-    const stopped = await turn();
+    const stopped = await clock();
     await page.waitForTimeout(400);
-    expect(await turn()).toBe(stopped);
+    expect(await clock()).toBe(stopped);
 
     // Controls are big enough to tap, and nothing is wider than the screen.
-    const small = await page.locator('.world button, .world input').evaluateAll((list) => list.map((el) => el.getBoundingClientRect()).filter((r) => r.height < 24 || r.width < 24).length);
+    const small = await page.locator('.world button, .world input, .world select').evaluateAll((list) => list.map((el) => el.getBoundingClientRect()).filter((r) => r.height < 24 || r.width < 24).length);
     expect(small).toBe(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
     if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/world-${width}-dark.png`, fullPage: true });
