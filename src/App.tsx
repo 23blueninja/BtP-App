@@ -9,6 +9,7 @@ import { Home } from './ui/Home';
 import { LevelUp } from './ui/LevelUp';
 import { Reference } from './ui/Reference';
 import { Sheet } from './ui/Sheet';
+import { World } from './ui/World';
 import { Modal } from './ui/common';
 import { LOOKS, setPrefs, usePrefs, type Look, type Prefs, type Theme } from './ui/prefs';
 import { removeDemo, startTour, Tour, tourActive } from './ui/Tour';
@@ -149,6 +150,7 @@ export function App() {
 
   let body;
   if (section === 'rules') body = <Reference id={route.slice(1).join('/') || undefined} />;
+  else if (section === 'world') body = <World />;
   else if (section === 'c' && !c) body = <p className="muted">Character not found.</p>;
   else if (section === 'c' && c && view === 'build') body = <Builder c={c} update={update} step={step ?? 'basics'} />;
   else if (section === 'c' && c && view === 'levelup') body = <LevelUp c={c} update={update} />;
@@ -223,6 +225,9 @@ export function App() {
               Actions
             </button>
           )}
+          <button type="button" className="link" onClick={() => go('world')}>
+            World
+          </button>
           <button type="button" className="link" onClick={() => go('rules')}>
             Rules
           </button>

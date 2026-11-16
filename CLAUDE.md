@@ -18,6 +18,18 @@ Ethereals from a Monster Maker JSON export in the Communion cast panel
 (`importCreatures`); they're saved on the character (`creatures`), and a summon
 keeps its imported stat block (`creatureData`).
 
+## World tab
+
+`#/world` (`src/ui/World.tsx`) is a model of the World Prism that can be turned
+and zoomed, drawn as SVG with no 3D library; it doesn't touch characters. The
+maths is `src/engine/world.ts`: the sun is fixed and the prism tumbles and spins
+under it. The motion is Arch's, read from the keyframes of Arch's Blender model
+(`World Prism.blend`, 2026-11-15) into the one `WORLD_PRISM` value; time is
+counted in turns (one tumble), and `hoursPerTurn` is unset until Arch rules on
+it. A calendar tracker is planned on top of this: keep the motion and time in
+that model, and ask Arch before adding lore numbers. `tests/world.test.ts`
+checks the engine against the keyframes.
+
 ## PDF character sheet
 
 `npm run build-sheets` (Python 3 with reportlab, pypdf and Pillow) runs

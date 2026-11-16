@@ -681,6 +681,98 @@ describe('guided tour', () => {
   });
 });
 
+describe('World tab', () => {
+  it.each([1400, 412, 360, 320])('the World Prism turns, zooms and tumbles under the sun at %i px', async (width) => {
+    const c = character(classes[0].id, subclassesOf(classes[0])[0]?.id ?? '', 3, ancestries[0].id, 'w');
+    const { page, errors } = await open([c], { width, height: 900 });
+    // From a sheet (the top bar is at its fullest there), the World link opens the model.
+    await page.goto(`${base}#/c/w`);
+    await page.reload();
+    await page.getByRole('button', { name: 'World', exact: true }).click();
+    await page.getByRole('heading', { name: 'The World Prism' }).waitFor();
+    const view = page.locator('.world-view');
+    const shape = () => view.locator('polygon').evaluateAll((list) => list.map((p) => p.getAttribute('points')).join('|'));
+    const sun = () => page.getByTestId('world-sun').evaluate((g) => `${g.getAttribute('data-x')},${g.getAttribute('data-y')}`);
+    const now = (face: string) => page.locator(`[data-face-row="${face}"] td`).first().innerText();
+    // A pyramid shows one to three of its four faces from any side.
+    const faces = await view.locator('polygon').count();
+    expect(faces).toBeGreaterThanOrEqual(1);
+    expect(faces).toBeLessThanOrEqual(3);
+    expect(await page.locator('.world-faces tbody tr').count()).toBe(4);
+    // Dragging turns it.
+    const box = (await view.boundingBox())!;
+    const before = await shape();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width / 2 + 60, box.y + box.height / 2 + 25, { steps: 4 });
+    await page.mouse.up();
+    await expect.poll(shape).not.toBe(before);
+    // Arrow keys turn it too.
+    const dragged = await shape();
+    await view.focus();
+    await page.keyboard.press('ArrowLeft');
+    await expect.poll(shape).not.toBe(dragged);
+
+    // Zoom buttons change how much of the scene is in view, up to a limit; Reset view undoes it all.
+    const viewBox = () => view.getAttribute('viewBox');
+    const start = await viewBox();
+    await page.getByRole('button', { name: 'Zoom in' }).click();
+    await expect.poll(viewBox).not.toBe(start);
+    for (let i = 0; i < 6; i++) if (await page.getByRole('button', { name: 'Zoom in' }).isEnabled()) await page.getByRole('button', { name: 'Zoom in' }).click();
+    expect(await page.getByRole('button', { name: 'Zoom in' }).isDisabled()).toBe(true);
+    await page.getByRole('button', { name: 'Reset view' }).click();
+    await expect.poll(viewBox).toBe(start);
+    await expect.poll(shape).toBe(before);
+
+    // Moving the time tumbles the prism under a sun that stays put: the base starts
+    // facing the sun and is in night half a turn later.
+    const slider = page.getByRole('slider');
+    const turn = () => page.getByTestId('world-turn').innerText();
+    const sunAt = await sun();
+    expect(await turn()).toBe('0.00');
+    expect(await now('d')).toMatch(/^Day\s+sun 90° up/);
+    const upright = await shape();
+    await slider.fill('24');
+    await expect.poll(turn).toBe('0.50');
+    await expect.poll(() => now('d')).toMatch(/^Night/);
+    for (const f of ['a', 'b', 'c']) expect(await now(f)).toMatch(/^Day\s+sun 19° up/);
+    expect(await shape()).not.toBe(upright);
+    expect(await sun()).toBe(sunAt);
+    expect(await page.locator('[data-face-row="d"] td').nth(1).innerText()).toBe('Sunrise in 0.25 turns');
+    expect(await page.locator('[data-face-row="d"] td').nth(2).innerText()).toBe('50%');
+    // The slider's last stop is just short of the end of the three-turn cycle.
+    await slider.fill('143');
+    await expect.poll(turn).toBe('2.98');
+
+    // Play moves time on (wrapping to the start of the cycle); Pause stops it.
+    await page.getByRole('button', { name: 'Play', exact: true }).click();
+    await expect.poll(turn, { timeout: 10_000 }).not.toBe('2.98');
+    await page.getByRole('button', { name: 'Pause' }).click();
+    const stopped = await turn();
+    await page.waitForTimeout(400);
+    expect(await turn()).toBe(stopped);
+
+    // Controls are big enough to tap, and nothing is wider than the screen.
+    const small = await page.locator('.world button, .world input').evaluateAll((list) => list.map((el) => el.getBoundingClientRect()).filter((r) => r.height < 24 || r.width < 24).length);
+    expect(small).toBe(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+    if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/world-${width}-dark.png`, fullPage: true });
+
+    // Light theme: the model keeps to the screen and stays readable.
+    await page.getByRole('button', { name: 'Options' }).click();
+    await page.getByRole('radio', { name: /^Light/ }).check();
+    await page.getByRole('button', { name: 'Close' }).click();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+    if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/world-${width}-light.png`, fullPage: true });
+
+    // The sheet is as it was.
+    await page.goBack();
+    await page.getByRole('tab', { name: 'Sheet', exact: true }).waitFor();
+    await page.close();
+    expect(errors).toEqual([]);
+  });
+});
+
 describe('Light theme', () => {
   it.each([1400, 360])('switches from Options and styles every sheet tab at %i px', async (width) => {
     const cls = classes[0];
