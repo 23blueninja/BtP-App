@@ -3165,6 +3165,9 @@ html.tour-open body {
   --world-edge: #8f9ad0;
   --world-sun: #ffd23f;
   --world-sun-edge: #fff3c4;
+  --world-moon-dark: #23273d;
+  --world-moon-light: #e9eeff;
+  --world-moon-edge: #aab3e6;
 }
 :root[data-theme='light'] {
   --world-day: #ffe89a;
@@ -3172,6 +3175,9 @@ html.tour-open body {
   --world-edge: #141833;
   --world-sun: #f5b800;
   --world-sun-edge: #8a5a00;
+  --world-moon-dark: #2b3050;
+  --world-moon-light: #f4f6ff;
+  --world-moon-edge: #141833;
 }
 .world h1 {
   margin: 0 0 0.5rem;
@@ -3292,4 +3298,35 @@ html.tour-open body {
   .world-hours {
     white-space: nowrap;
   }
+}
+.world-moon-disc {
+  fill: var(--world-moon-dark);
+  stroke: var(--world-moon-edge);
+  stroke-width: 0.02;
+}
+.world-moon-pupil {
+  fill: var(--world-moon-light);
+}
+.world-date {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  align-items: center;
+}
+.world-moon-now {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.world-moon-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.world-moon-icon .world-moon-disc {
+  stroke-width: 0.08;
+}
+.world-year {
+  width: 5.5rem;
+  min-height: 2.25rem;
 }

@@ -763,7 +763,7 @@ describe('World tab', () => {
     expect(await cell('base', 1)).toBe('Sunrise in 6.0 h');
 
     // Picking a day keeps the hour; the pattern moves one Facet along each day and repeats after three.
-    await page.getByRole('combobox').selectOption('Tempoday');
+    await page.getByLabel('Day', { exact: true }).selectOption('Tempoday');
     await expect.poll(clock).toBe('Tempoday 12:00');
     // Another day, another path across the sky.
     expect(await page.getByTestId('world-path').getAttribute('d')).not.toBe(pathToday);
@@ -771,7 +771,7 @@ describe('World tab', () => {
     expect(await cell('temporal', 2)).toMatch(/^Short Day/);
     expect(await cell('lunar', 2)).toMatch(/^Sunrise/);
     expect(await cell('storm', 2)).toBe('10 N / 14 D');
-    await page.getByRole('combobox').selectOption('Morday');
+    await page.getByLabel('Day', { exact: true }).selectOption('Morday');
     await expect.poll(clock).toBe('Morday 12:00');
     expect(await cell('infernal', 2)).toMatch(/^Sunrise/);
     // The slider's last stop is the last half hour of the nine-day week.
@@ -779,13 +779,46 @@ describe('World tab', () => {
     await expect.poll(clock).toBe('Nixaday 23:30');
     expect(await cell('lunar', 2)).toMatch(/^Long Night/);
 
-    // Play moves time on (wrapping to the start of the week); Pause stops it.
+    // Play moves time on (into the next week); Pause stops it.
     await page.getByRole('button', { name: 'Play', exact: true }).click();
     await expect.poll(clock, { timeout: 10_000 }).not.toBe('Nixaday 23:30');
     await page.getByRole('button', { name: 'Pause' }).click();
     const stopped = await clock();
     await page.waitForTimeout(400);
     expect(await clock()).toBe(stopped);
+
+    // The moon and the year (PM's Moon Cycle table for 3732 OI). The moon is drawn opposite the sun.
+    const date = () => page.getByTestId('world-date').innerText();
+    const moonPhase = () => page.getByTestId('world-moon-phase').innerText();
+    await page.getByLabel('Week', { exact: true }).selectOption('0');
+    await page.getByLabel('Day', { exact: true }).selectOption('Asmoday');
+    await expect.poll(date).toBe('Week 1, Golden Greeting, 3732 OI');
+    expect(await moonPhase()).toBe('Smiling');
+    expect(await page.getByTestId('world-moon').getAttribute('data-phase')).toBe('Smiling');
+    const moonAt = await page.getByTestId('world-moon').evaluate((g) => `${g.getAttribute('data-x')},${g.getAttribute('data-y')}`);
+    expect(moonAt).not.toBe(await sun());
+    await page.getByLabel('Day', { exact: true }).selectOption('Morday');
+    await expect.poll(moonPhase).toBe('Sleepy');
+    // Week 2 opens on a Closed moon (no pupil drawn); week 6 on an Open one, in the next month.
+    await page.getByLabel('Week', { exact: true }).selectOption('1');
+    await page.getByLabel('Day', { exact: true }).selectOption('Asmoday');
+    await expect.poll(moonPhase).toBe('Closed');
+    expect(await page.locator('.world-view .world-moon-pupil').count()).toBe(0);
+    await page.getByLabel('Week', { exact: true }).selectOption('5');
+    await expect.poll(date).toBe('Week 6, Golden Embrace, 3732 OI');
+    expect(await moonPhase()).toBe('Open');
+    expect(await page.locator('.world-view .world-moon-pupil').count()).toBe(1);
+    // The last week of the year, then the year after: the week and day are kept.
+    await page.getByLabel('Week', { exact: true }).selectOption('26');
+    await expect.poll(date).toBe('Week 27, Silver Repose, 3732 OI');
+    expect(await moonPhase()).toBe('Hunting');
+    await page.getByLabel('Year', { exact: true }).fill('3733');
+    await expect.poll(date).toBe('Week 27, Silver Repose, 3733 OI');
+    expect(await clock()).toMatch(/^Asmoday /);
+    await page.getByLabel('Year', { exact: true }).fill('3732');
+    await expect.poll(date).toBe('Week 27, Silver Repose, 3732 OI');
+    // The table of days is the same in every week.
+    expect(await cell('infernal', 2)).toMatch(/^Sunrise/);
 
     // Controls are big enough to tap, and nothing is wider than the screen.
     const small = await page.locator('.world button, .world input, .world select').evaluateAll((list) => list.map((el) => el.getBoundingClientRect()).filter((r) => r.height < 24 || r.width < 24).length);

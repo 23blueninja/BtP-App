@@ -3,7 +3,7 @@
 // (PM 2026-11-16; in the PM's Blender model it is the prism that moves). Drawn as SVG
 // from src/engine/world.ts (no 3D library).
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
-import { DAY_KINDS, daylightOn, faceLights, FACES, formatHour, hourName, hourOfDay, isDay, nextEvent, rotate, scale, SPINES, sunEvents, sunSeenFromWorld, turnOfCycle, turnOfWeek, VERTICES, weekday, WORLD_PRISM, type Place, type Vec3, type WorldModel } from '../engine/world';
+import { dateOf, daysPerYear, moonPhase, moonSeenFromWorld, type MoonPhase, DAY_KINDS, daylightOn, faceLights, FACES, formatHour, hourName, hourOfDay, isDay, nextEvent, rotate, scale, SPINES, sunEvents, sunSeenFromWorld, turnOfCycle, turnOfWeek, VERTICES, weekday, WORLD_PRISM, type Place, type Vec3, type WorldModel } from '../engine/world';
 
 /** How far from the prism's centre the sun is drawn (the pyramid's corners are 1 from its centre). Drawing only. */
 const SUN_DISTANCE = 2.1;
@@ -38,9 +38,19 @@ const fmt = (n: number) => n.toFixed(3);
 /** "5.2 h" for a stretch of turns. */
 const span = (model: WorldModel, turns: number): string => `${(turns * model.hoursPerTurn).toFixed(1)} h`;
 
+/** The moon as a cat's eye: a dark disc with a bright pupil, round when open and a vertical slit as it closes. */
+function MoonEye({ cx, cy, r, phase }: { cx: number; cy: number; r: number; phase: MoonPhase }) {
+  return (
+    <>
+      <circle className="world-moon-disc" cx={cx} cy={cy} r={r} />
+      {phase.open > 0 && <ellipse className="world-moon-pupil" cx={cx} cy={cy} rx={r * 0.88 * phase.open} ry={r * 0.88} />}
+    </>
+  );
+}
+
 export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
   const [view, setView] = useState<View>(START_VIEW);
-  // Days (turns) since the first Asmoday; the calendar will count from this too.
+  // Days (turns) since the first midnight of the model's start year; the calendar will count from this too.
   const [turns, setTurns] = useState(0);
   const [playing, setPlaying] = useState(false);
   const svg = useRef<SVGSVGElement>(null);
@@ -125,6 +135,10 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
   const dayOfCycle = Math.floor(turnOfCycle(model, turns) + 1e-9) % model.turnsPerCycle;
 
   const named = hourName(model, turns);
+  const date = dateOf(model, turns);
+  const phase = moonPhase(model, turns);
+  const weekStart = Math.floor((turns + 1e-9) / days) * days;
+  const weeks = model.months.length * model.weeksPerMonth;
 
   // The sun's path around the prism over the whole cycle, today's stretch drawn
   // boldly; each is split into the part behind the prism's centre and the part in front.
@@ -145,6 +159,13 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
   const sun = turned(scale(sunSeenFromWorld(model, turns), SUN_DISTANCE), view);
   const [sunX, sunY] = screen(sun);
   const sunSize = 0.2 * (CAMERA / (CAMERA - sun[2]));
+  const moon = turned(scale(moonSeenFromWorld(model, turns), SUN_DISTANCE), view);
+  const [moonX, moonY] = screen(moon);
+  const moonShape = (
+    <g className="world-moon" data-testid="world-moon" data-phase={phase.name} data-x={fmt(moonX)} data-y={fmt(moonY)}>
+      <MoonEye cx={moonX} cy={moonY} r={0.2 * (CAMERA / (CAMERA - moon[2]))} phase={phase} />
+    </g>
+  );
   const sunShape = (
     <g className="world-sun" data-testid="world-sun" data-x={fmt(sunX)} data-y={fmt(sunY)}>
       <circle className="world-sun-glow" cx={sunX} cy={sunY} r={sunSize * 2} />
@@ -173,7 +194,7 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
             viewBox={`${fmt(-size / 2)} ${fmt(-size / 2)} ${fmt(size)} ${fmt(size)}`}
             role="img"
             tabIndex={0}
-            aria-label={`Model of the World Prism on ${dayName} at ${formatHour(hour)}${named ? ` (${named})` : ''}. ${summary}. Drag or use the arrow keys to turn it; pinch, scroll or press plus and minus to zoom.`}
+            aria-label={`Model of the World Prism on ${dayName} at ${formatHour(hour)}${named ? ` (${named})` : ''}. ${summary}. The moon, opposite the sun, is ${phase.name}. Drag or use the arrow keys to turn it; pinch, scroll or press plus and minus to zoom.`}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
@@ -183,6 +204,7 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
             <path className="world-path rest back" d={lines.restBack} />
             <path className="world-path back" data-testid="world-path" d={lines.todayBack} />
             {sun[2] < 0 && sunShape}
+            {moon[2] < 0 && moonShape}
             {shown.map((f) => {
               const [lx, ly] = screen(f.centre);
               return (
@@ -204,6 +226,7 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
             <path className="world-path rest" d={lines.restFront} />
             <path className="world-path" d={lines.todayFront} />
             {sun[2] >= 0 && sunShape}
+            {moon[2] >= 0 && moonShape}
           </svg>
           <div className="row wrap world-view-controls">
             <button type="button" onClick={() => zoomBy(1 / 1.25)} disabled={view.zoom <= ZOOM_MIN} aria-label="Zoom out">
@@ -225,19 +248,53 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
               <strong data-testid="world-day">{dayName}</strong>, <strong data-testid="world-hour">{formatHour(hour)}</strong>
               {named && <span data-testid="world-hour-name"> ({named})</span>} <span className="muted">of {model.hoursPerTurn} hours</span>
             </span>
-            <input type="range" aria-label="Time in the week" min={0} max={days * STEPS - 1} step={1} value={Math.min(Math.round(at * STEPS), days * STEPS - 1)} onChange={(e) => setTurns(Number(e.target.value) / STEPS)} />
+            <input type="range" aria-label="Time in the week" min={0} max={days * STEPS - 1} step={1} value={Math.min(Math.round(at * STEPS), days * STEPS - 1)} onChange={(e) => setTurns(weekStart + Number(e.target.value) / STEPS)} />
           </label>
+          <p className="world-date">
+            <span data-testid="world-date">
+              Week {date.week + 1}, {date.month}, {date.year} {model.era}
+            </span>
+            <span className="world-moon-now">
+              <svg className="world-moon-icon" viewBox="-1.1 -1.1 2.2 2.2" aria-hidden>
+                <MoonEye cx={0} cy={0} r={1} phase={phase} />
+              </svg>
+              Moon: <strong data-testid="world-moon-phase">{phase.name}</strong>
+            </span>
+          </p>
           <div className="row wrap">
             <button type="button" className={playing ? '' : 'primary'} onClick={() => setPlaying((p) => !p)}>
               {playing ? 'Pause' : 'Play'}
             </button>
             <label className="row world-day-pick">
               <span className="muted small">Day</span>
-              <select value={dayName} onChange={(e) => setTurns(model.weekdays.indexOf(e.target.value) + hour / model.hoursPerTurn)}>
+              <select aria-label="Day" value={dayName} onChange={(e) => setTurns(weekStart + model.weekdays.indexOf(e.target.value) + hour / model.hoursPerTurn)}>
                 {model.weekdays.map((d) => (
                   <option key={d}>{d}</option>
                 ))}
               </select>
+            </label>
+            <label className="row world-day-pick">
+              <span className="muted small">Week</span>
+              <select aria-label="Week" value={date.week} onChange={(e) => setTurns((t) => t + (Number(e.target.value) - date.week) * days)}>
+                {Array.from({ length: weeks }, (_, w) => (
+                  <option key={w} value={w}>
+                    {w + 1}: {model.months[Math.floor(w / model.weeksPerMonth)]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="row world-day-pick">
+              <span className="muted small">Year</span>
+              <input
+                type="number"
+                aria-label="Year"
+                className="world-year"
+                value={date.year}
+                onChange={(e) => {
+                  const year = Math.round(Number(e.target.value));
+                  if (e.target.value !== '' && Number.isFinite(year) && Math.abs(year) < 100000) setTurns((t) => t + (year - date.year) * daysPerYear(model));
+                }}
+              />
             </label>
           </div>
           <table className="world-faces">
@@ -280,7 +337,7 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
             </tbody>
           </table>
           <p className="muted small">
-            The bold line is the sun's path today; the faint ones are the other days of the three-day cycle. Today: hours of night (N), then hours of the day (D) that follows, for the sunrise that falls on this day. A Spine has day while either of its Facets does. A Facet is flat, so the sun rises over all of it at the same moment.
+            The moon sits exactly opposite the sun, and opens and closes like a cat's eye. The bold line is the sun's path today; the faint ones are the other days of the three-day cycle. Today: hours of night (N), then hours of the day (D) that follows, for the sunrise that falls on this day. A Spine has day while either of its Facets does. A Facet is flat, so the sun rises over all of it at the same moment.
           </p>
         </section>
       </div>

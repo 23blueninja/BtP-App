@@ -32,7 +32,10 @@ sides are the Infernal, Temporal and Lunar Facets, and the edges between them
 are the Storm, Spring and Heart Spines (day while either Facet has it), all
 Arch's. Arch's table of each Facet's and Spine's days is in `DAY_KINDS` and in
 `tests/world.test.ts`, which checks the engine against the keyframes and the
-table. A calendar tracker is planned on top of this: keep the motion and time
+table. The moon sits opposite the sun and has a phase every three days; the
+phases, the nine three-week months and the start year 3732 OI come from
+Arch's Moon Cycle table, which `tests/world.test.ts` holds in full. A
+calendar tracker is planned on top of this: keep the motion and time
 in that model, and ask Arch before adding lore numbers.
 
 ## PDF character sheet
