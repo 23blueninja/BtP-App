@@ -107,6 +107,20 @@ export const DAY_KINDS: Readonly<Record<string, readonly DayKind[]>> = {
   lunar: ['Short Day', 'Sunrise', 'Long Night'],
 };
 
+export interface MoonPhase {
+  name: string;
+  /** How far open the moon is, from 0 (closed, dark) to 1 (fully round, bright). For drawing. */
+  open: number;
+}
+
+/** The moon sits exactly opposite the sun, as far away, and opens and closes like a cat's pupil. */
+export interface Moon {
+  /** Its phases in order, starting with the one at turn 0. */
+  phases: readonly MoonPhase[];
+  /** Days each phase lasts. */
+  daysPerPhase: number;
+}
+
 /**
  * How the world moves. Time is counted in turns: one turn is one full tumble of
  * the prism, which is one day. Angles are in degrees.
@@ -135,6 +149,13 @@ export interface WorldModel {
   weekdays: readonly string[];
   /** Hours of the day that have a name. */
   hourNames: Readonly<Record<number, string>>;
+  /** The months of the year, in order; each is `weeksPerMonth` weeks long. */
+  months: readonly string[];
+  weeksPerMonth: number;
+  /** The year that begins at turn 0, and the name of the era years are counted in. */
+  startYear: number;
+  era: string;
+  moon: Moon;
 }
 
 /**
@@ -162,6 +183,27 @@ export const WORLD_PRISM: WorldModel = {
   weekdays: ['Asmoday', 'Tempoday', 'Lunaday', 'Morday', 'Veleday', 'Pneumaday', 'Somaday', 'Auroday', 'Nixaday'],
   // PM 2026-11-16: 0:00 is midnight; 12:00 is Apex, when the sun is straight above the prism's apex.
   hourNames: { 0: 'Midnight', 12: 'Apex' },
+  // PM's Moon Cycle table (2026-11-16) for the canon year 3732 OI (Ordinis Iridini):
+  // 27 weeks in nine months of three, and a moon phase every three days, starting
+  // the year on Smiling. From Open the moon narrows to Closed and widens back;
+  // the table has no sizes, so `open` steps evenly between the two (drawing only).
+  months: ['Golden Greeting', 'Golden Embrace', 'Golden Farewell', 'Drowning Approach', 'Drowning Stare', 'Drowning Quiet', 'Silver Glimpse', 'Silver Hunt', 'Silver Repose'],
+  weeksPerMonth: 3,
+  startYear: 3732,
+  era: 'OI',
+  moon: {
+    daysPerPhase: 3,
+    phases: [
+      { name: 'Smiling', open: 0.75 },
+      { name: 'Sleepy', open: 0.5 },
+      { name: 'Squinting', open: 0.25 },
+      { name: 'Closed', open: 0 },
+      { name: 'Peeking', open: 0.25 },
+      { name: 'Waking', open: 0.5 },
+      { name: 'Hunting', open: 0.75 },
+      { name: 'Open', open: 1 },
+    ],
+  },
 };
 
 const rad = (deg: number) => (deg * Math.PI) / 180;
@@ -181,6 +223,43 @@ export function turnDirection(model: WorldModel, turns: number, v: Vec3): Vec3 {
 export function sunSeenFromWorld(model: WorldModel, turns: number): Vec3 {
   const untumbled = rotate(normalize(model.sun), normalize(model.tumbleAxis), -rad(model.tumbleStart + model.tumbleSense * 360 * turns));
   return rotate(untumbled, normalize(model.spinAxis), -rad(model.spinStart + model.spinPerTurn * turns));
+}
+
+/** Where the moon stands as someone on the World Prism sees it: exactly opposite the sun. */
+export const moonSeenFromWorld = (model: WorldModel, turns: number): Vec3 => scale(sunSeenFromWorld(model, turns), -1);
+
+/** Days in a year: every month's weeks of weekdays. */
+export const daysPerYear = (model: WorldModel): number => model.months.length * model.weeksPerMonth * model.weekdays.length;
+
+export interface WorldDate {
+  year: number;
+  /** Day of the year, week of the year and week of the month, all counted from 0. */
+  dayOfYear: number;
+  week: number;
+  weekOfMonth: number;
+  month: string;
+  weekday: string;
+}
+
+/** The date at `turns` (turn 0 is the first midnight of `startYear`). */
+export function dateOf(model: WorldModel, turns: number): WorldDate {
+  const perYear = daysPerYear(model);
+  const day = Math.floor(turns + 1e-9);
+  const years = Math.floor(day / perYear);
+  const dayOfYear = day - years * perYear;
+  const week = Math.floor(dayOfYear / model.weekdays.length);
+  return { year: model.startYear + years, dayOfYear, week, weekOfMonth: week % model.weeksPerMonth, month: model.months[Math.floor(week / model.weeksPerMonth)], weekday: model.weekdays[dayOfYear % model.weekdays.length] };
+}
+
+/**
+ * The moon's phase at `turns`. The cycle is counted straight on from turn 0, so
+ * where a year is not a whole number of cycles the phases start the next year
+ * shifted along.
+ */
+export function moonPhase(model: WorldModel, turns: number): MoonPhase {
+  const n = model.moon.phases.length;
+  const i = Math.floor(Math.floor(turns + 1e-9) / model.moon.daysPerPhase) % n;
+  return model.moon.phases[i < 0 ? i + n : i];
 }
 
 /** The name of the hour at `turns`, if it has one (to the minute). */

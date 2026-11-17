@@ -2,7 +2,7 @@
 // of a regular triangular pyramid and the motion keyed in the PM's Blender model
 // (World Prism.blend), worked out by hand here, not read from the engine.
 import { describe, expect, it } from 'vitest';
-import { cycleNumber, hourName, sunSeenFromWorld, DAY_KINDS, daylightOn, daylightShare, dot, faceLights, FACES, formatHour, hourOfDay, isDay, length, nextEvent, SPINES, sunEvents, turnDirection, turnOfCycle, turnOfWeek, turnPoint, VERTICES, weekday, WORLD_PRISM, type WorldModel } from '../src/engine/world';
+import { dateOf, daysPerYear, moonPhase, moonSeenFromWorld, cycleNumber, hourName, sunSeenFromWorld, DAY_KINDS, daylightOn, daylightShare, dot, faceLights, FACES, formatHour, hourOfDay, isDay, length, nextEvent, SPINES, sunEvents, turnDirection, turnOfCycle, turnOfWeek, turnPoint, VERTICES, weekday, WORLD_PRISM, type WorldModel } from '../src/engine/world';
 
 const M = WORLD_PRISM;
 
@@ -324,5 +324,88 @@ describe('the sun as seen from the world', () => {
 
   it('the base is the ocean', () => {
     expect(FACES.find((f) => f.id === 'base')!.note).toBe('Ocean');
+  });
+});
+
+// PM's Moon Cycle table for 3732 OI (2026-11-16): week, month, then the phase on each weekday.
+const MOON_CYCLE = `
+1|Golden Greeting|Smiling|Smiling|Smiling|Sleepy|Sleepy|Sleepy|Squinting|Squinting|Squinting
+2|Golden Greeting|Closed|Closed|Closed|Peeking|Peeking|Peeking|Waking|Waking|Waking
+3|Golden Greeting|Hunting|Hunting|Hunting|Open|Open|Open|Smiling|Smiling|Smiling
+4|Golden Embrace|Sleepy|Sleepy|Sleepy|Squinting|Squinting|Squinting|Closed|Closed|Closed
+5|Golden Embrace|Peeking|Peeking|Peeking|Waking|Waking|Waking|Hunting|Hunting|Hunting
+6|Golden Embrace|Open|Open|Open|Smiling|Smiling|Smiling|Sleepy|Sleepy|Sleepy
+7|Golden Farewell|Squinting|Squinting|Squinting|Closed|Closed|Closed|Peeking|Peeking|Peeking
+8|Golden Farewell|Waking|Waking|Waking|Hunting|Hunting|Hunting|Open|Open|Open
+9|Golden Farewell|Smiling|Smiling|Smiling|Sleepy|Sleepy|Sleepy|Squinting|Squinting|Squinting
+10|Drowning Approach|Closed|Closed|Closed|Peeking|Peeking|Peeking|Waking|Waking|Waking
+11|Drowning Approach|Hunting|Hunting|Hunting|Open|Open|Open|Smiling|Smiling|Smiling
+12|Drowning Approach|Sleepy|Sleepy|Sleepy|Squinting|Squinting|Squinting|Closed|Closed|Closed
+13|Drowning Stare|Peeking|Peeking|Peeking|Waking|Waking|Waking|Hunting|Hunting|Hunting
+14|Drowning Stare|Open|Open|Open|Smiling|Smiling|Smiling|Sleepy|Sleepy|Sleepy
+15|Drowning Stare|Squinting|Squinting|Squinting|Closed|Closed|Closed|Peeking|Peeking|Peeking
+16|Drowning Quiet|Waking|Waking|Waking|Hunting|Hunting|Hunting|Open|Open|Open
+17|Drowning Quiet|Smiling|Smiling|Smiling|Sleepy|Sleepy|Sleepy|Squinting|Squinting|Squinting
+18|Drowning Quiet|Closed|Closed|Closed|Peeking|Peeking|Peeking|Waking|Waking|Waking
+19|Silver Glimpse|Hunting|Hunting|Hunting|Open|Open|Open|Smiling|Smiling|Smiling
+20|Silver Glimpse|Sleepy|Sleepy|Sleepy|Squinting|Squinting|Squinting|Closed|Closed|Closed
+21|Silver Glimpse|Peeking|Peeking|Peeking|Waking|Waking|Waking|Hunting|Hunting|Hunting
+22|Silver Hunt|Open|Open|Open|Smiling|Smiling|Smiling|Sleepy|Sleepy|Sleepy
+23|Silver Hunt|Squinting|Squinting|Squinting|Closed|Closed|Closed|Peeking|Peeking|Peeking
+24|Silver Hunt|Waking|Waking|Waking|Hunting|Hunting|Hunting|Open|Open|Open
+25|Silver Repose|Smiling|Smiling|Smiling|Sleepy|Sleepy|Sleepy|Squinting|Squinting|Squinting
+26|Silver Repose|Closed|Closed|Closed|Peeking|Peeking|Peeking|Waking|Waking|Waking
+27|Silver Repose|Hunting|Hunting|Hunting|Open|Open|Open|Smiling|Smiling|Smiling`
+  .trim()
+  .split('\n')
+  .map((row) => row.split('|'));
+
+describe('the moon and the year', () => {
+  it("every day of 3732 OI has the phase, month and weekday in the PM's table", () => {
+    expect(MOON_CYCLE).toHaveLength(27);
+    expect(daysPerYear(M)).toBe(243);
+    MOON_CYCLE.forEach(([week, month, ...phases], w) => {
+      expect(Number(week)).toBe(w + 1);
+      phases.forEach((phase, d) => {
+        // Any hour of the day.
+        for (const hour of [0, 0.5, 0.99]) {
+          const t = w * 9 + d + hour;
+          expect(moonPhase(M, t).name, `week ${week} day ${d}`).toBe(phase);
+          expect(dateOf(M, t)).toEqual({ year: 3732, dayOfYear: w * 9 + d, week: w, weekOfMonth: w % 3, month, weekday: M.weekdays[d] });
+        }
+      });
+    });
+    expect(M.era).toBe('OI');
+  });
+
+  it('the moon opens and closes like a pupil: Open is fully open, Closed is shut, and it narrows then widens between', () => {
+    const open = Object.fromEntries(M.moon.phases.map((p) => [p.name, p.open]));
+    expect(open.Open).toBe(1);
+    expect(open.Closed).toBe(0);
+    // In the table's order after Open: narrowing to Closed, then widening back.
+    const order = ['Open', 'Smiling', 'Sleepy', 'Squinting', 'Closed', 'Peeking', 'Waking', 'Hunting', 'Open'].map((n) => open[n]);
+    for (let i = 0; i < 4; i++) expect(order[i + 1]).toBeLessThan(order[i]);
+    for (let i = 4; i < 8; i++) expect(order[i + 1]).toBeGreaterThan(order[i]);
+  });
+
+  it('the moon is always exactly opposite the sun', () => {
+    for (const t of [0, 0.3, 1.7, 40.25]) {
+      const sun = sunSeenFromWorld(M, t);
+      const moon = moonSeenFromWorld(M, t);
+      moon.forEach((n, i) => expect(n).toBeCloseTo(-sun[i], 12));
+      // So a face has the moon over it exactly when the sun is under it.
+      for (const f of FACES) expect(dot(f.normal, moon)).toBeCloseTo(-dot(f.normal, sun), 12);
+    }
+  });
+
+  it('counts years either side of 3732, with the phases running straight on', () => {
+    expect(dateOf(M, 243)).toMatchObject({ year: 3733, dayOfYear: 0, week: 0, month: 'Golden Greeting', weekday: 'Asmoday' });
+    expect(dateOf(M, -1)).toMatchObject({ year: 3731, dayOfYear: 242, week: 26, month: 'Silver Repose', weekday: 'Nixaday' });
+    // 243 days is ten 24-day cycles and three days: the next year starts one phase on,
+    // and the last three days before 3732 are the phase before Smiling.
+    expect(moonPhase(M, 243).name).toBe('Sleepy');
+    expect(moonPhase(M, -1).name).toBe('Open');
+    expect(moonPhase(M, -3).name).toBe('Open');
+    expect(moonPhase(M, -4).name).toBe('Hunting');
   });
 });
