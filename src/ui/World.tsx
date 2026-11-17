@@ -3,7 +3,7 @@
 // (PM 2026-11-16; in the PM's Blender model it is the prism that moves). Drawn as SVG
 // from src/engine/world.ts (no 3D library).
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
-import { dateOf, daysPerYear, moonPhase, moonSeenFromWorld, type MoonPhase, DAY_KINDS, daylightOn, faceLights, FACES, formatHour, hourName, hourOfDay, isDay, nextEvent, rotate, scale, SPINES, sunEvents, sunSeenFromWorld, turnOfCycle, turnOfWeek, VERTICES, weekday, WORLD_PRISM, type Place, type Vec3, type WorldModel } from '../engine/world';
+import { moonOpen, dateOf, daysPerYear, moonPhase, moonSeenFromWorld, DAY_KINDS, daylightOn, faceLights, FACES, formatHour, hourName, hourOfDay, isDay, nextEvent, rotate, scale, SPINES, sunEvents, sunSeenFromWorld, turnOfCycle, turnOfWeek, VERTICES, weekday, WORLD_PRISM, type Place, type Vec3, type WorldModel } from '../engine/world';
 
 /** How far from the prism's centre the sun is drawn (the pyramid's corners are 1 from its centre). Drawing only. */
 const SUN_DISTANCE = 2.1;
@@ -38,12 +38,12 @@ const fmt = (n: number) => n.toFixed(3);
 /** "5.2 h" for a stretch of turns. */
 const span = (model: WorldModel, turns: number): string => `${(turns * model.hoursPerTurn).toFixed(1)} h`;
 
-/** The moon as a cat's eye: a dark disc with a bright pupil, round when open and a vertical slit as it closes. */
-function MoonEye({ cx, cy, r, phase }: { cx: number; cy: number; r: number; phase: MoonPhase }) {
+/** The moon as a cat's eye: a dark disc with a bright pupil, round when open (1) and a vertical slit as it closes (0). */
+function MoonEye({ cx, cy, r, open }: { cx: number; cy: number; r: number; open: number }) {
   return (
     <>
       <circle className="world-moon-disc" cx={cx} cy={cy} r={r} />
-      {phase.open > 0 && <ellipse className="world-moon-pupil" cx={cx} cy={cy} rx={r * 0.88 * phase.open} ry={r * 0.88} />}
+      {open > 0.005 && <ellipse className="world-moon-pupil" cx={cx} cy={cy} rx={r * 0.88 * open} ry={r * 0.88} />}
     </>
   );
 }
@@ -137,6 +137,7 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
   const named = hourName(model, turns);
   const date = dateOf(model, turns);
   const phase = moonPhase(model, turns);
+  const open = moonOpen(model, turns);
   const weekStart = Math.floor((turns + 1e-9) / days) * days;
   const weeks = model.months.length * model.weeksPerMonth;
 
@@ -162,8 +163,8 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
   const moon = turned(scale(moonSeenFromWorld(model, turns), SUN_DISTANCE), view);
   const [moonX, moonY] = screen(moon);
   const moonShape = (
-    <g className="world-moon" data-testid="world-moon" data-phase={phase.name} data-x={fmt(moonX)} data-y={fmt(moonY)}>
-      <MoonEye cx={moonX} cy={moonY} r={0.2 * (CAMERA / (CAMERA - moon[2]))} phase={phase} />
+    <g className="world-moon" data-testid="world-moon" data-phase={phase.name} data-open={open.toFixed(3)} data-x={fmt(moonX)} data-y={fmt(moonY)}>
+      <MoonEye cx={moonX} cy={moonY} r={0.2 * (CAMERA / (CAMERA - moon[2]))} open={open} />
     </g>
   );
   const sunShape = (
@@ -229,11 +230,16 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
             {moon[2] >= 0 && moonShape}
           </svg>
           <div className="row wrap world-view-controls">
-            <button type="button" onClick={() => zoomBy(1 / 1.25)} disabled={view.zoom <= ZOOM_MIN} aria-label="Zoom out">
-              −
+            {/* Drawn signs: a font's minus and plus sit where its digits do, not in the middle of a button. */}
+            <button type="button" className="world-zoom" onClick={() => zoomBy(1 / 1.25)} disabled={view.zoom <= ZOOM_MIN} aria-label="Zoom out">
+              <svg viewBox="0 0 16 16" aria-hidden>
+                <path d="M3 8h10" />
+              </svg>
             </button>
-            <button type="button" onClick={() => zoomBy(1.25)} disabled={view.zoom >= ZOOM_MAX} aria-label="Zoom in">
-              +
+            <button type="button" className="world-zoom" onClick={() => zoomBy(1.25)} disabled={view.zoom >= ZOOM_MAX} aria-label="Zoom in">
+              <svg viewBox="0 0 16 16" aria-hidden>
+                <path d="M3 8h10M8 3v10" />
+              </svg>
             </button>
             <button type="button" onClick={() => setView(START_VIEW)}>
               Reset view
@@ -254,9 +260,12 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
             <span data-testid="world-date">
               Week {date.week + 1}, {date.month}, {date.year} {model.era}
             </span>
+            <span className="muted" data-testid="world-day-of-year">
+              Day {date.dayOfYear + 1} of {daysPerYear(model)}
+            </span>
             <span className="world-moon-now">
               <svg className="world-moon-icon" viewBox="-1.1 -1.1 2.2 2.2" aria-hidden>
-                <MoonEye cx={0} cy={0} r={1} phase={phase} />
+                <MoonEye cx={0} cy={0} r={1} open={open} />
               </svg>
               Moon: <strong data-testid="world-moon-phase">{phase.name}</strong>
             </span>
