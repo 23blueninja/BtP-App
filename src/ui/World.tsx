@@ -12,8 +12,15 @@ const CAMERA = 9;
 const ZOOM_MIN = 0.6;
 const ZOOM_MAX = 3;
 const START_VIEW = { yaw: 0.2, pitch: 0.3, zoom: 1 };
-/** Turns per second while playing. */
-const PLAY_SPEED = 0.2;
+/** Play speeds, in hours of world time a second; the dial picks one (it starts on 4). */
+const SPEEDS = [1, 2, 4, 6, 12, 24, 48, 72, 216];
+const START_SPEED = 2;
+/** "4 hours", "1 day", "9 days" for a play speed. */
+function speedLabel(model: WorldModel, hours: number): string {
+  if (hours < model.hoursPerTurn) return `${hours} hour${hours === 1 ? '' : 's'}`;
+  const d = hours / model.hoursPerTurn;
+  return `${d} day${d === 1 ? '' : 's'}${d === model.weekdays.length ? ' (a week)' : ''}`;
+}
 /** Slider steps per day: half hours (the Blender model has 48 frames to a turn). */
 const STEPS = 48;
 
@@ -53,6 +60,9 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
   // Days (turns) since the first midnight of the model's start year; the calendar will count from this too.
   const [turns, setTurns] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState(START_SPEED);
+  const speedRef = useRef(SPEEDS[START_SPEED]);
+  speedRef.current = SPEEDS[speed];
   const svg = useRef<SVGSVGElement>(null);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
 
@@ -63,12 +73,12 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
     const tick = (now: number) => {
       const dt = Math.min(0.1, (now - last) / 1000);
       last = now;
-      setTurns((t) => t + dt * PLAY_SPEED);
+      setTurns((t) => t + (dt * speedRef.current) / model.hoursPerTurn);
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [playing]);
+  }, [playing, model]);
 
   // The wheel zooms the model instead of scrolling the page (needs a non-passive listener).
   useEffect(() => {
@@ -140,6 +150,19 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
   const open = moonOpen(model, turns);
   const weekStart = Math.floor((turns + 1e-9) / days) * days;
   const weeks = model.months.length * model.weeksPerMonth;
+  const today = Math.floor(turns + 1e-9);
+  const yearStart = today - date.dayOfYear;
+  // The year's moon, day by day (at Apex), in the layout of the PM's Moon Cycle table.
+  const moonYear = useMemo(
+    () =>
+      Array.from({ length: weeks }, (_, w) =>
+        Array.from({ length: days }, (_, d) => {
+          const t = yearStart + w * days + d + 0.5;
+          return { phase: moonPhase(model, t).name, open: moonOpen(model, t) };
+        }),
+      ),
+    [model, yearStart, weeks, days],
+  );
 
   // The sun's path around the prism over the whole cycle, today's stretch drawn
   // boldly; each is split into the part behind the prism's centre and the part in front.
@@ -306,6 +329,11 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
               />
             </label>
           </div>
+          <label className="row world-speed">
+            <span className="muted small">Speed</span>
+            <input type="range" aria-label="Speed" min={0} max={SPEEDS.length - 1} step={1} value={speed} onChange={(e) => setSpeed(Number(e.target.value))} />
+            <output data-testid="world-speed">{speedLabel(model, SPEEDS[speed])} a second</output>
+          </label>
           <table className="world-faces">
             <thead>
               <tr>
@@ -350,6 +378,48 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
           </p>
         </section>
       </div>
+      <section className="box world-moon-calendar">
+        <h2 className="box-title">
+          Moon calendar, {date.year} {model.era}
+        </h2>
+        <p className="muted small">Each phase lasts three days, and the cycle runs on from year to year, so each year starts one phase later. Pick a day to go to it.</p>
+        <div className="world-cal-scroll" role="region" aria-label="Moon calendar" tabIndex={0}>
+          <table className="world-cal">
+            <thead>
+              <tr>
+                <th scope="col">Week</th>
+                <th scope="col">Month</th>
+                {model.weekdays.map((d) => (
+                  <th scope="col" key={d}>
+                    {d}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {moonYear.map((week, w) => (
+                <tr key={w} className={w % model.weeksPerMonth === 0 ? 'world-cal-month' : undefined}>
+                  <th scope="row">{w + 1}</th>
+                  <td className="world-cal-month-name">{model.months[Math.floor(w / model.weeksPerMonth)]}</td>
+                  {week.map((m, d) => {
+                    const isToday = w * days + d === date.dayOfYear;
+                    return (
+                      <td key={d} aria-current={isToday ? 'date' : undefined} className={isToday ? 'today' : undefined}>
+                        <button type="button" className="world-cal-day" aria-label={`Week ${w + 1}, ${model.weekdays[d]}: ${m.phase}`} onClick={() => setTurns(yearStart + w * days + d + hour / model.hoursPerTurn)}>
+                          <svg className="world-moon-icon" viewBox="-1.1 -1.1 2.2 2.2" aria-hidden>
+                            <MoonEye cx={0} cy={0} r={1} open={m.open} />
+                          </svg>
+                          <span>{m.phase}</span>
+                        </button>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 }
