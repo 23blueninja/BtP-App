@@ -2184,6 +2184,8 @@ input.pyr-input {
   color: var(--text);
   font: inherit;
   font-size: 0.7rem;
+  line-height: normal; /* font: inherit brings back the page's; see "button, input, select" */
+  padding: calc(2px - var(--cap-shift)) 3px calc(2px + var(--cap-shift));
   text-align: center;
   cursor: text;
 }
