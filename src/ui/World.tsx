@@ -1,16 +1,17 @@
-// The World tab: a model of the World Prism you can turn and zoom. The sun stays
-// put and the prism moves under it, as in the PM's Blender model. Drawn as SVG
+// The World tab: a model of the World Prism you can turn and zoom. It shows what
+// someone in the world sees: the prism holds still and the sun travels around it
+// (PM 2026-11-16; in the PM's Blender model it is the prism that moves). Drawn as SVG
 // from src/engine/world.ts (no 3D library).
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
-import { DAY_KINDS, daylightOn, faceLights, FACES, formatHour, hourOfDay, isDay, nextEvent, normalize, rotate, scale, SPINES, sunEvents, turnDirection, turnOfCycle, turnOfWeek, turnPoint, VERTICES, weekday, WORLD_PRISM, type Place, type Vec3, type WorldModel } from '../engine/world';
+import { DAY_KINDS, daylightOn, faceLights, FACES, formatHour, hourName, hourOfDay, isDay, nextEvent, rotate, scale, SPINES, sunEvents, sunSeenFromWorld, turnOfCycle, turnOfWeek, VERTICES, weekday, WORLD_PRISM, type Place, type Vec3, type WorldModel } from '../engine/world';
 
-/** How far from the pivot the sun is drawn (the pyramid's corners are 1 from its centre). Drawing only. */
+/** How far from the prism's centre the sun is drawn (the pyramid's corners are 1 from its centre). Drawing only. */
 const SUN_DISTANCE = 2.1;
 /** The viewer's distance, for a slight perspective. */
 const CAMERA = 9;
 const ZOOM_MIN = 0.6;
 const ZOOM_MAX = 3;
-const START_VIEW = { yaw: 0.6, pitch: 0.3, zoom: 1 };
+const START_VIEW = { yaw: 0.2, pitch: 0.3, zoom: 1 };
 /** Turns per second while playing. */
 const PLAY_SPEED = 0.2;
 /** Slider steps per day: half hours (the Blender model has 48 frames to a turn). */
@@ -112,7 +113,7 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
   const places = useMemo(
     () =>
       [
-        ...FACES.map((f) => ({ id: f.id, name: f.name, note: '', place: f.id as Place })),
+        ...FACES.map((f) => ({ id: f.id, name: f.name, note: f.note ?? '', place: f.id as Place })),
         ...SPINES.map((sp) => ({ id: sp.id, name: sp.name, note: sp.faces.map((id) => FACES.find((f) => f.id === id)?.name.replace(/ Facet$/, '')).join(' and '), place: sp.faces as Place })),
       ].map((p) => ({ ...p, events: sunEvents(model, p.place) })),
     [model],
@@ -123,12 +124,25 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
   const hour = hourOfDay(model, turns);
   const dayOfCycle = Math.floor(turnOfCycle(model, turns) + 1e-9) % model.turnsPerCycle;
 
-  // The line the prism tumbles about, through the pivot.
-  const axis = normalize(model.tumbleAxis);
-  const [ax1, ay1] = screen(turned(scale(axis, -1.9), view));
-  const [ax2, ay2] = screen(turned(scale(axis, 1.9), view));
+  const named = hourName(model, turns);
 
-  const sun = turned(scale(normalize(model.sun), SUN_DISTANCE), view);
+  // The sun's path around the prism over the whole cycle, today's stretch drawn
+  // boldly; each is split into the part behind the prism's centre and the part in front.
+  const path = useMemo(() => {
+    const perDay = 96;
+    return Array.from({ length: model.turnsPerCycle * perDay + 1 }, (_, i) => ({ day: Math.min(Math.floor(i / perDay), model.turnsPerCycle - 1), p: scale(sunSeenFromWorld(model, i / perDay), SUN_DISTANCE) }));
+  }, [model]);
+  const lines = { todayBack: '', todayFront: '', restBack: '', restFront: '' };
+  for (let i = 0; i + 1 < path.length; i++) {
+    const a = turned(path[i].p, view);
+    const b = turned(path[i + 1].p, view);
+    const [x1, y1] = screen(a);
+    const [x2, y2] = screen(b);
+    const key = `${path[i].day === dayOfCycle ? 'today' : 'rest'}${a[2] + b[2] < 0 ? 'Back' : 'Front'}` as keyof typeof lines;
+    lines[key] += `M${fmt(x1)} ${fmt(y1)}L${fmt(x2)} ${fmt(y2)}`;
+  }
+
+  const sun = turned(scale(sunSeenFromWorld(model, turns), SUN_DISTANCE), view);
   const [sunX, sunY] = screen(sun);
   const sunSize = 0.2 * (CAMERA / (CAMERA - sun[2]));
   const sunShape = (
@@ -138,10 +152,10 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
     </g>
   );
 
-  const corners = VERTICES.map((p) => turned(turnPoint(model, turns, p), view));
+  const corners = VERTICES.map((p) => turned(p, view));
   // Faces turned toward the viewer (the pyramid is convex, so those are all that show).
   const shown = lights
-    .map((l) => ({ ...l, normal: turned(turnDirection(model, turns, l.face.normal), view), centre: turned(turnPoint(model, turns, l.face.centre), view) }))
+    .map((l) => ({ ...l, normal: turned(l.face.normal, view), centre: turned(l.face.centre, view) }))
     .filter((f) => f.normal[0] * -f.centre[0] + f.normal[1] * -f.centre[1] + f.normal[2] * (CAMERA - f.centre[2]) > 0);
 
   const size = 5.2 / view.zoom;
@@ -150,7 +164,7 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
   return (
     <div className="world">
       <h1>The World Prism</h1>
-      <p className="muted world-intro">The sun stays where it is. The World Prism tumbles beneath it once a day, spinning as it goes, and each Facet has day while it is turned toward the sun.</p>
+      <p className="muted world-intro">Seen from the world, the sun circles the World Prism once a day, rising over one Facet and setting on the next. At Apex (12:00) it stands straight above the prism's point; at midnight it is under the ocean base.</p>
       <div className="world-layout">
         <section className="box world-stage">
           <svg
@@ -159,14 +173,15 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
             viewBox={`${fmt(-size / 2)} ${fmt(-size / 2)} ${fmt(size)} ${fmt(size)}`}
             role="img"
             tabIndex={0}
-            aria-label={`Model of the World Prism on ${dayName} at ${formatHour(hour)}. ${summary}. Drag or use the arrow keys to turn it; pinch, scroll or press plus and minus to zoom.`}
+            aria-label={`Model of the World Prism on ${dayName} at ${formatHour(hour)}${named ? ` (${named})` : ''}. ${summary}. Drag or use the arrow keys to turn it; pinch, scroll or press plus and minus to zoom.`}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerCancel={onPointerUp}
             onKeyDown={onKeyDown}
           >
-            <line className="world-axis" x1={ax1} y1={ay1} x2={ax2} y2={ay2} />
+            <path className="world-path rest back" d={lines.restBack} />
+            <path className="world-path back" data-testid="world-path" d={lines.todayBack} />
             {sun[2] < 0 && sunShape}
             {shown.map((f) => {
               const [lx, ly] = screen(f.centre);
@@ -177,12 +192,17 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
                     points={f.face.corners.map((i) => screen(corners[i]).map(fmt).join(',')).join(' ')}
                     style={{ fill: `color-mix(in srgb, ${f.face.color} ${Math.round(30 + 70 * f.light)}%, var(--world-night))` }}
                   />
-                  <text className="world-label" x={lx} y={ly} textAnchor="middle" dominantBaseline="central">
-                    {f.face.name.replace(/ Facet$/, '')}
-                  </text>
+                  {/* A face seen nearly edge-on is too thin a sliver to hold its name. */}
+                  {f.normal[2] > 0.5 && (
+                    <text className="world-label" x={lx} y={ly} textAnchor="middle" dominantBaseline="central">
+                      {f.face.name.replace(/ Facet$/, '')}
+                    </text>
+                  )}
                 </g>
               );
             })}
+            <path className="world-path rest" d={lines.restFront} />
+            <path className="world-path" d={lines.todayFront} />
             {sun[2] >= 0 && sunShape}
           </svg>
           <div className="row wrap world-view-controls">
@@ -202,7 +222,8 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
           <h2 className="box-title">Time</h2>
           <label className="world-hour">
             <span>
-              <strong data-testid="world-day">{dayName}</strong>, <strong data-testid="world-hour">{formatHour(hour)}</strong> <span className="muted">of {model.hoursPerTurn} hours</span>
+              <strong data-testid="world-day">{dayName}</strong>, <strong data-testid="world-hour">{formatHour(hour)}</strong>
+              {named && <span data-testid="world-hour-name"> ({named})</span>} <span className="muted">of {model.hoursPerTurn} hours</span>
             </span>
             <input type="range" aria-label="Time in the week" min={0} max={days * STEPS - 1} step={1} value={Math.min(Math.round(at * STEPS), days * STEPS - 1)} onChange={(e) => setTurns(Number(e.target.value) / STEPS)} />
           </label>
@@ -259,7 +280,7 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
             </tbody>
           </table>
           <p className="muted small">
-            Today: hours of night (N), then hours of the day (D) that follows, for the sunrise that falls on this day. A Spine has day while either of its Facets does. A Facet is flat, so the sun rises over all of it at the same moment.
+            The bold line is the sun's path today; the faint ones are the other days of the three-day cycle. Today: hours of night (N), then hours of the day (D) that follows, for the sunrise that falls on this day. A Spine has day while either of its Facets does. A Facet is flat, so the sun rises over all of it at the same moment.
           </p>
         </section>
       </div>

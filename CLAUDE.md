@@ -23,7 +23,9 @@ keeps its imported stat block (`creatureData`).
 `#/world` (`src/ui/World.tsx`) is a model of the World Prism that can be turned
 and zoomed, drawn as SVG with no 3D library; it doesn't touch characters. The
 maths is `src/engine/world.ts`: the sun is fixed and the prism tumbles and spins
-under it. The motion is Arch's, read from the keyframes of Arch's Blender model
+under it, but the tab draws it the way someone in the world sees it, with the
+prism still and the sun travelling around it (`sunSeenFromWorld`; Arch
+2026-11-16). The motion is Arch's, read from the keyframes of Arch's Blender model
 (`World Prism.blend`, 2026-11-15) into the one `WORLD_PRISM` value. One turn
 (tumble) is a 24-hour day, the week has nine named days, the three painted
 sides are the Infernal, Temporal and Lunar Facets, and the edges between them

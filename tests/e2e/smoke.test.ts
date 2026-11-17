@@ -682,7 +682,7 @@ describe('guided tour', () => {
 });
 
 describe('World tab', () => {
-  it.each([1400, 412, 360, 320])('the World Prism turns, zooms and tumbles under the sun at %i px', async (width) => {
+  it.each([1400, 412, 360, 320])('the World Prism turns and zooms while the sun travels around it at %i px', async (width) => {
     const c = character(classes[0].id, subclassesOf(classes[0])[0]?.id ?? '', 3, ancestries[0].id, 'w');
     const { page, errors } = await open([c], { width, height: 900 });
     // From a sheet (the top bar is at its fullest there), the World link opens the model.
@@ -700,7 +700,7 @@ describe('World tab', () => {
     expect(faces).toBeGreaterThanOrEqual(1);
     expect(faces).toBeLessThanOrEqual(3);
     // Three Facets, the base and three Spines.
-    expect(await page.locator('.world-faces tbody th').allInnerTexts()).toEqual(['Infernal Facet', 'Temporal Facet', 'Lunar Facet', 'Base', expect.stringMatching(/^Storm Spine\s+Infernal and Temporal$/), expect.stringMatching(/^Spring Spine\s+Temporal and Lunar$/), expect.stringMatching(/^Heart Spine\s+Lunar and Infernal$/)]);
+    expect(await page.locator('.world-faces tbody th').allInnerTexts()).toEqual(['Infernal Facet', 'Temporal Facet', 'Lunar Facet', expect.stringMatching(/^Base\s+Ocean$/), expect.stringMatching(/^Storm Spine\s+Infernal and Temporal$/), expect.stringMatching(/^Spring Spine\s+Temporal and Lunar$/), expect.stringMatching(/^Heart Spine\s+Lunar and Infernal$/)]);
     // Dragging turns it.
     const box = (await view.boundingBox())!;
     const before = await shape();
@@ -726,13 +726,15 @@ describe('World tab', () => {
     await expect.poll(viewBox).toBe(start);
     await expect.poll(shape).toBe(before);
 
-    // The week starts on Asmoday with the base facing the sun and the Facets in night.
+    // The week starts at midnight on Asmoday with the sun under the ocean base and the Facets in night.
     // Today's column is the PM's table: Infernal has a Sunrise day, Temporal a Long Night,
     // Lunar a Short Day; the Storm Spine has about 10 hours of night, then 22 of day.
     const slider = page.getByRole('slider');
     const clock = async () => `${await page.getByTestId('world-day').innerText()} ${await page.getByTestId('world-hour').innerText()}`;
     const sunAt = await sun();
     expect(await clock()).toBe('Asmoday 0:00');
+    expect(await page.getByTestId('world-hour-name').innerText()).toBe(' (Midnight)');
+    const pathToday = await page.getByTestId('world-path').getAttribute('d');
     expect(await now('base')).toMatch(/^Day\s+sun 90° up/);
     for (const f of ['infernal', 'temporal', 'lunar']) expect(await now(f)).toBe('Night');
     expect(await cell('infernal', 2)).toMatch(/^Sunrise\s+10 N \/ 12 D$/);
@@ -744,21 +746,27 @@ describe('World tab', () => {
     expect(await cell('heart', 2)).toBe('3 N / 14 D');
     expect(await cell('infernal', 1)).toBe('Sunrise in 1.4 h');
 
-    // Moving the time tumbles the prism under a sun that stays put: half a day on, the apex
-    // points at the sun, the Facets have day and the base has night.
+    // Moving the time moves the sun around a prism that holds still: half a day on it is Apex,
+    // with the sun over the prism's point, the Facets in day and the base in night.
     const upright = await shape();
     await slider.fill('24');
     await expect.poll(clock).toBe('Asmoday 12:00');
+    expect(await page.getByTestId('world-hour-name').innerText()).toBe(' (Apex)');
     await expect.poll(() => now('base')).toBe('Night');
     for (const f of ['infernal', 'temporal', 'lunar']) expect(await now(f)).toMatch(/^Day\s+sun 19° up/);
     for (const sp of ['storm', 'spring', 'heart']) expect(await now(sp)).toBe('Day');
-    expect(await shape()).not.toBe(upright);
-    expect(await sun()).toBe(sunAt);
+    expect(await shape()).toBe(upright);
+    expect(await sun()).not.toBe(sunAt);
+    // Today's path is drawn, and stays the same through the day.
+    expect(pathToday).toMatch(/^M/);
+    expect(await page.getByTestId('world-path').getAttribute('d')).toBe(pathToday);
     expect(await cell('base', 1)).toBe('Sunrise in 6.0 h');
 
     // Picking a day keeps the hour; the pattern moves one Facet along each day and repeats after three.
     await page.getByRole('combobox').selectOption('Tempoday');
     await expect.poll(clock).toBe('Tempoday 12:00');
+    // Another day, another path across the sky.
+    expect(await page.getByTestId('world-path').getAttribute('d')).not.toBe(pathToday);
     expect(await cell('infernal', 2)).toMatch(/^Long Night/);
     expect(await cell('temporal', 2)).toMatch(/^Short Day/);
     expect(await cell('lunar', 2)).toMatch(/^Sunrise/);

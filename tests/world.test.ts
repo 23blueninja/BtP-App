@@ -2,7 +2,7 @@
 // of a regular triangular pyramid and the motion keyed in the PM's Blender model
 // (World Prism.blend), worked out by hand here, not read from the engine.
 import { describe, expect, it } from 'vitest';
-import { cycleNumber, DAY_KINDS, daylightOn, daylightShare, dot, faceLights, FACES, formatHour, hourOfDay, isDay, length, nextEvent, SPINES, sunEvents, turnDirection, turnOfCycle, turnOfWeek, turnPoint, VERTICES, weekday, WORLD_PRISM, type WorldModel } from '../src/engine/world';
+import { cycleNumber, hourName, sunSeenFromWorld, DAY_KINDS, daylightOn, daylightShare, dot, faceLights, FACES, formatHour, hourOfDay, isDay, length, nextEvent, SPINES, sunEvents, turnDirection, turnOfCycle, turnOfWeek, turnPoint, VERTICES, weekday, WORLD_PRISM, type WorldModel } from '../src/engine/world';
 
 const M = WORLD_PRISM;
 
@@ -285,5 +285,44 @@ describe('Facets, Spines and the week', () => {
   it('a Spine has day exactly while either of its Facets does', () => {
     for (let t = 0; t < 3; t += 0.013)
       for (const spine of SPINES) expect(isDay(M, spine.faces, t), `${spine.id} at ${t}`).toBe(isDay(M, spine.faces[0], t) || isDay(M, spine.faces[1], t));
+  });
+});
+
+// PM 2026-11-16: the World tab shows the sun moving around a still prism, as someone in the world sees it.
+describe('the sun as seen from the world', () => {
+  it('stands over each face exactly as the keyframes put that face under the sun', () => {
+    for (let t = 0; t < 3; t += 0.037) {
+      const sun = sunSeenFromWorld(M, t);
+      expect(length(sun)).toBeCloseTo(1, 12);
+      // Height of the fixed sun over the turned face = Blender z of its turned normal.
+      for (const f of FACES) expect(dot(f.normal, sun), `${f.id} at ${t}`).toBeCloseTo(blender(toBlender(f.normal), t)[2], 9);
+    }
+  });
+
+  it('is straight above the apex at Apex (12:00) and straight below the base at midnight, every day', () => {
+    for (const day of [0, 1, 2, 5]) {
+      const noon = sunSeenFromWorld(M, day + 0.5);
+      const midnight = sunSeenFromWorld(M, day);
+      VERTICES[0].forEach((n, i) => expect(noon[i]).toBeCloseTo(n, 9));
+      VERTICES[0].forEach((n, i) => expect(midnight[i]).toBeCloseTo(-n, 9));
+    }
+  });
+
+  it('names midnight and Apex, and no other hour', () => {
+    expect(hourName(M, 0)).toBe('Midnight');
+    expect(hourName(M, 3)).toBe('Midnight');
+    expect(hourName(M, 4.5)).toBe('Apex');
+    expect(hourName(M, 4.5 + 0.5 / 24)).toBeUndefined();
+    expect(hourName(M, 0.25)).toBeUndefined();
+  });
+
+  it('comes back to the same place in the sky after three days, not after one', () => {
+    const a = sunSeenFromWorld(M, 0.3);
+    sunSeenFromWorld(M, 3.3).forEach((n, i) => expect(n).toBeCloseTo(a[i], 9));
+    expect(Math.hypot(...sunSeenFromWorld(M, 1.3).map((n, i) => n - a[i]))).toBeGreaterThan(0.5);
+  });
+
+  it('the base is the ocean', () => {
+    expect(FACES.find((f) => f.id === 'base')!.note).toBe('Ocean');
   });
 });

@@ -44,6 +44,8 @@ export interface Face {
   name: string;
   /** Its colour in the PM's Blender model, softened a little for the screen. */
   color: string;
+  /** What it is, where that needs saying. */
+  note?: string;
   /** Indices into VERTICES, anticlockwise seen from outside. */
   corners: readonly [number, number, number];
   /** Unit vector pointing straight out of the face. */
@@ -51,7 +53,7 @@ export interface Face {
   centre: Vec3;
 }
 
-function face(id: string, name: string, color: string, corners: readonly [number, number, number]): Face {
+function face(id: string, name: string, color: string, corners: readonly [number, number, number], note?: string): Face {
   const [a, b, c] = corners.map((i) => VERTICES[i]);
   const centre = scale(add(add(a, b), c), 1 / 3);
   let normal = normalize(cross(sub(b, a), sub(c, a)));
@@ -61,7 +63,7 @@ function face(id: string, name: string, color: string, corners: readonly [number
     normal = scale(normal, -1);
     order = [corners[0], corners[2], corners[1]];
   }
-  return { id, name, color, corners: order, normal, centre };
+  return { id, name, color, corners: order, normal, centre, ...(note ? { note } : {}) };
 }
 
 /**
@@ -74,7 +76,8 @@ export const FACES: readonly Face[] = [
   face('infernal', 'Infernal Facet', '#ff3355', [0, 2, 3]),
   face('temporal', 'Temporal Facet', '#35d435', [0, 1, 2]),
   face('lunar', 'Lunar Facet', '#4a5cff', [0, 3, 1]),
-  face('base', 'Base', '#ffe14a', [1, 2, 3]),
+  // PM 2026-11-16: the base is all ocean, and the oceans are yellow.
+  face('base', 'Base', '#ffe14a', [1, 2, 3], 'Ocean'),
 ];
 
 /** An edge between two Facets. It has day while either of its Facets does. */
@@ -88,7 +91,7 @@ export interface Spine {
 /**
  * The PM's Spines (2026-11-15). The PM's note put the Heart Spine between Lunar
  * and Temporal, which is the Spring Spine; the PM's table of its days and nights
- * fits Lunar and Infernal, the one pair left.
+ * fits Lunar and Infernal, the one pair left, and the PM confirmed it (2026-11-16).
  */
 export const SPINES: readonly Spine[] = [
   { id: 'storm', name: 'Storm Spine', faces: ['infernal', 'temporal'] },
@@ -130,6 +133,8 @@ export interface WorldModel {
   hoursPerTurn: number;
   /** The days of the week, in order; turn 0 begins the first. */
   weekdays: readonly string[];
+  /** Hours of the day that have a name. */
+  hourNames: Readonly<Record<number, string>>;
 }
 
 /**
@@ -155,6 +160,8 @@ export const WORLD_PRISM: WorldModel = {
   // PM 2026-11-15: 24 hours in a day, and a nine-day week (three cycles).
   hoursPerTurn: 24,
   weekdays: ['Asmoday', 'Tempoday', 'Lunaday', 'Morday', 'Veleday', 'Pneumaday', 'Somaday', 'Auroday', 'Nixaday'],
+  // PM 2026-11-16: 0:00 is midnight; 12:00 is Apex, when the sun is straight above the prism's apex.
+  hourNames: { 0: 'Midnight', 12: 'Apex' },
 };
 
 const rad = (deg: number) => (deg * Math.PI) / 180;
@@ -163,6 +170,23 @@ const rad = (deg: number) => (deg * Math.PI) / 180;
 export function turnDirection(model: WorldModel, turns: number, v: Vec3): Vec3 {
   const spun = rotate(v, normalize(model.spinAxis), rad(model.spinStart + model.spinPerTurn * turns));
   return rotate(spun, normalize(model.tumbleAxis), rad(model.tumbleStart + model.tumbleSense * 360 * turns));
+}
+
+/**
+ * Where the sun stands at `turns` as someone on the World Prism sees it: a unit
+ * vector in the prism's own resting coordinates. The prism's turning undone, so
+ * the prism holds still and the sun goes around it; the light on every face is
+ * the same either way.
+ */
+export function sunSeenFromWorld(model: WorldModel, turns: number): Vec3 {
+  const untumbled = rotate(normalize(model.sun), normalize(model.tumbleAxis), -rad(model.tumbleStart + model.tumbleSense * 360 * turns));
+  return rotate(untumbled, normalize(model.spinAxis), -rad(model.spinStart + model.spinPerTurn * turns));
+}
+
+/** The name of the hour at `turns`, if it has one (to the minute). */
+export function hourName(model: WorldModel, turns: number): string | undefined {
+  const minutes = Math.round(hourOfDay(model, turns) * 60) % Math.round(model.hoursPerTurn * 60);
+  return minutes % 60 === 0 ? model.hourNames[minutes / 60] : undefined;
 }
 
 /** Where a point of the resting prism is at `turns`, measured from the pivot. */
