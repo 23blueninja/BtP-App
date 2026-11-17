@@ -3376,3 +3376,86 @@ html.tour-open body {
   stroke-width: 1.75;
   stroke-linecap: round;
 }
+.world-speed input {
+  flex: 1 1 8rem;
+  min-width: 0;
+  min-height: 24px;
+  accent-color: var(--accent-fill);
+}
+.world-speed {
+  flex-wrap: wrap;
+}
+.world-speed output {
+  white-space: nowrap;
+}
+/* The year's moon, laid out like the PM's Moon Cycle table; scrolls sideways on a phone. */
+.world-moon-calendar {
+  margin-top: 1rem;
+  min-width: 0;
+  max-width: 100%;
+}
+.world-cal-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+}
+.world-cal {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.8rem;
+}
+.world-cal th,
+.world-cal td {
+  padding: 0.1rem;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.world-cal thead th {
+  font-weight: 600;
+  color: var(--muted);
+  padding: 0.25rem 0.2rem;
+}
+.world-cal .world-cal-month-name {
+  text-align: left;
+  color: var(--muted);
+  padding-right: 0.5rem;
+}
+.world-cal tr.world-cal-month > * {
+  border-top: 1px solid var(--border);
+}
+.world .world-cal-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  width: 100%;
+  min-height: 0;
+  min-width: 3.6rem;
+  padding: 0.2rem 0.15rem;
+  background: none;
+  border: 1px solid transparent;
+  font-size: inherit;
+}
+.world-cal-day .world-moon-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+.world-cal td.today .world-cal-day {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  font-weight: 600;
+}
+/* On a phone the days scroll under the week number and month, which stay put. */
+.world-cal .world-cal-month-name {
+  white-space: normal;
+  min-width: 4.5rem;
+}
+@media (max-width: 640px) {
+  .world-cal tbody th,
+  .world-cal thead th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--bg-2);
+  }
+}

@@ -36,7 +36,8 @@ table. The moon sits opposite the sun and has a phase every three days; the
 phases, the nine three-week months and the start year 3732 OI come from
 Arch's Moon Cycle table, which `tests/world.test.ts` holds in full. The
 moon is shut all through Closed, fully open all through Open, and opens or
-closes steadily in between (Arch). A calendar tracker is planned on top of this: keep the motion and time
+closes steadily in between (Arch). Below the model, a moon calendar lays out the shown year like
+Arch's table (tap a day to go there), and a Speed dial sets how fast Play runs. A calendar tracker is planned on top of this: keep the motion and time
 in that model, and ask Arch before adding lore numbers.
 
 ## Button and field labels

@@ -871,7 +871,7 @@ describe('World tab', () => {
     // The week starts at midnight on Asmoday with the sun under the ocean base and the Facets in night.
     // Today's column is the PM's table: Infernal has a Sunrise day, Temporal a Long Night,
     // Lunar a Short Day; the Storm Spine has about 10 hours of night, then 22 of day.
-    const slider = page.getByRole('slider');
+    const slider = page.getByRole('slider', { name: 'Time in the week' });
     const clock = async () => `${await page.getByTestId('world-day').innerText()} ${await page.getByTestId('world-hour').innerText()}`;
     const sunAt = await sun();
     expect(await clock()).toBe('Asmoday 0:00');
@@ -975,6 +975,47 @@ describe('World tab', () => {
     // The table of days is the same in every week.
     expect(await cell('infernal', 2)).toMatch(/^Sunrise/);
 
+    // The moon calendar: the year laid out like Arch's Moon Cycle table, today marked.
+    const calendar = page.getByRole('region', { name: 'Moon calendar' });
+    expect(await page.getByRole('heading', { name: 'Moon calendar, 3732 OI' }).count()).toBe(1);
+    expect(await calendar.locator('tbody tr').count()).toBe(27);
+    expect(await calendar.locator('.world-cal-day').count()).toBe(243);
+    const calDay = (week: number, day: string) => calendar.getByRole('button', { name: new RegExp(`^Week ${week}, ${day}: `) });
+    expect(await calDay(1, 'Asmoday').getAttribute('aria-label')).toBe('Week 1, Asmoday: Smiling');
+    expect(await calDay(2, 'Asmoday').innerText()).toBe('Closed');
+    expect(await calDay(14, 'Morday').innerText()).toBe('Smiling');
+    expect(await calDay(27, 'Nixaday').innerText()).toBe('Smiling');
+    expect(await calendar.locator('[aria-current="date"]').innerText()).toBe('Hunting');
+    expect(await calendar.locator('[aria-current="date"] button').getAttribute('aria-label')).toBe('Week 27, Asmoday: Hunting');
+    // Picking a day goes to it, keeping the hour.
+    const hourBefore = await page.getByTestId('world-hour').innerText();
+    await calDay(6, 'Lunaday').click();
+    await expect.poll(date).toBe('Week 6, Golden Embrace, 3732 OI');
+    expect(await page.getByTestId('world-day').innerText()).toBe('Lunaday');
+    expect(await page.getByTestId('world-hour').innerText()).toBe(hourBefore);
+    expect(await moonPhase()).toBe('Open');
+    expect(await calendar.locator('[aria-current="date"] button').getAttribute('aria-label')).toBe('Week 6, Lunaday: Open');
+    // Next year starts a phase later.
+    await page.getByLabel('Year', { exact: true }).fill('3733');
+    await expect.poll(() => page.getByRole('heading', { name: /^Moon calendar/ }).textContent()).toBe('Moon calendar, 3733 OI');
+    expect(await calDay(1, 'Asmoday').innerText()).toBe('Sleepy');
+    await page.getByLabel('Year', { exact: true }).fill('3732');
+    await expect.poll(date).toBe('Week 6, Golden Embrace, 3732 OI');
+
+    // The speed dial sets how fast Play runs.
+    const speed = page.getByRole('slider', { name: 'Speed' });
+    expect(await page.getByTestId('world-speed').innerText()).toBe('4 hours a second');
+    await speed.fill('0');
+    expect(await page.getByTestId('world-speed').innerText()).toBe('1 hour a second');
+    await speed.fill('8');
+    expect(await page.getByTestId('world-speed').innerText()).toBe('9 days (a week) a second');
+    await page.getByRole('button', { name: 'Play' }).click();
+    // A week a second: a few days pass in well under a second.
+    await expect.poll(async () => (await page.getByTestId('world-day-of-year').innerText()) !== 'Day 48 of 243', { timeout: 2000 }).toBe(true);
+    await page.getByRole('button', { name: 'Pause' }).click();
+    await speed.fill('2');
+    await page.getByLabel('Year', { exact: true }).fill('3732');
+
     // Controls are big enough to tap, and nothing is wider than the screen (label centring has its own test).
     const small = await page.locator('.world button, .world input, .world select').evaluateAll((list) => list.map((el) => el.getBoundingClientRect()).filter((r) => r.height < 24 || r.width < 24).length);
     expect(small).toBe(0);
@@ -984,7 +1025,7 @@ describe('World tab', () => {
     // Light theme: the model keeps to the screen and stays readable.
     await page.getByRole('button', { name: 'Options' }).click();
     await page.getByRole('radio', { name: /^Light/ }).check();
-    await page.getByRole('button', { name: 'Close' }).click();
+    await page.getByRole('button', { name: 'Close', exact: true }).click();
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
     if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/world-${width}-light.png`, fullPage: true });
 
@@ -1005,7 +1046,7 @@ describe('Light theme', () => {
     expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('dark');
     await page.getByRole('button', { name: 'Options' }).click();
     await page.getByRole('radio', { name: /^Light/ }).check();
-    await page.getByRole('button', { name: 'Close' }).click();
+    await page.getByRole('button', { name: 'Close', exact: true }).click();
     const theme = () =>
       page.evaluate(() => ({
         theme: document.documentElement.dataset.theme,
@@ -1047,7 +1088,7 @@ describe('Compact layout', () => {
     expect(await actionsBtn.count()).toBe(0);
     await page.getByRole('button', { name: 'Options' }).click();
     await page.getByRole('checkbox', { name: /Compact layout/ }).check();
-    await page.getByRole('button', { name: 'Close' }).click();
+    await page.getByRole('button', { name: 'Close', exact: true }).click();
     const layout = () =>
       page.evaluate(() => {
         const main = document.querySelector('main')!.getBoundingClientRect();
