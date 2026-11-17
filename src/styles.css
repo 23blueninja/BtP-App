@@ -3161,14 +3161,14 @@ html.tour-open body {
 /* ---------- World tab (the World Prism model) ---------- */
 :root {
   --world-day: #ffe7a0;
-  --world-night: #1a2147;
+  --world-night: #0d1026;
   --world-edge: #8f9ad0;
   --world-sun: #ffd23f;
   --world-sun-edge: #fff3c4;
 }
 :root[data-theme='light'] {
   --world-day: #ffe89a;
-  --world-night: #39416f;
+  --world-night: #1f2444;
   --world-edge: #141833;
   --world-sun: #f5b800;
   --world-sun-edge: #8a5a00;
@@ -3206,19 +3206,31 @@ html.tour-open body {
   stroke-linejoin: round;
 }
 .world-label {
-  font-size: 0.26px;
+  font-size: 0.17px;
   font-weight: 700;
-  fill: #e8eaf6;
+  fill: #fff;
+  /* A dark outline keeps the name readable on a lit face and a dark one. */
+  stroke: #0b0d1c;
+  stroke-width: 0.035px;
+  paint-order: stroke;
   pointer-events: none;
 }
-.world-label.on-day {
-  fill: #141833;
+.world-path {
+  fill: none;
+  stroke: var(--world-sun);
+  stroke-width: 0.03;
+  stroke-linecap: round;
 }
-.world-axis {
-  stroke: var(--world-edge);
-  stroke-width: 0.015;
-  stroke-dasharray: 0.06 0.06;
-  opacity: 0.6;
+.world-path.back {
+  opacity: 0.5;
+  stroke-dasharray: 0.07 0.07;
+}
+.world-path.rest {
+  stroke-width: 0.012;
+  opacity: 0.45;
+}
+.world-path.rest.back {
+  opacity: 0.25;
 }
 .world-sun-disc {
   fill: var(--world-sun);
@@ -3256,6 +3268,13 @@ html.tour-open body {
   width: 100%;
   border-collapse: collapse;
 }
+.world-day-pick select {
+  min-height: 2.25rem;
+}
+.world-between,
+.world-kind {
+  display: block;
+}
 .world-faces th,
 .world-faces td {
   text-align: left;
@@ -3266,5 +3285,11 @@ html.tour-open body {
   }
   .world-view {
     max-height: 55vh;
+  }
+}
+/* "10 N / 12 D" stays on one line where the screen has room (not at 320 px). */
+@media (min-width: 360px) {
+  .world-hours {
+    white-space: nowrap;
   }
 }

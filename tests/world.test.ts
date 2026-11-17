@@ -2,7 +2,7 @@
 // of a regular triangular pyramid and the motion keyed in the PM's Blender model
 // (World Prism.blend), worked out by hand here, not read from the engine.
 import { describe, expect, it } from 'vitest';
-import { cycleNumber, daylightShare, dot, faceLights, FACES, length, nextEvent, sunEvents, turnDirection, turnOfCycle, turnPoint, VERTICES, WORLD_PRISM, type WorldModel } from '../src/engine/world';
+import { cycleNumber, hourName, sunSeenFromWorld, DAY_KINDS, daylightOn, daylightShare, dot, faceLights, FACES, formatHour, hourOfDay, isDay, length, nextEvent, SPINES, sunEvents, turnDirection, turnOfCycle, turnOfWeek, turnPoint, VERTICES, weekday, WORLD_PRISM, type WorldModel } from '../src/engine/world';
 
 const M = WORLD_PRISM;
 
@@ -16,7 +16,7 @@ describe('the pyramid', () => {
   });
 
   it('has four faces whose normals point outward and cancel out', () => {
-    expect(FACES.map((f) => f.id)).toEqual(['a', 'b', 'c', 'd']);
+    expect(FACES.map((f) => f.id)).toEqual(['infernal', 'temporal', 'lunar', 'base']);
     const sum = [0, 0, 0];
     for (const f of FACES) {
       expect(length(f.normal)).toBeCloseTo(1, 12);
@@ -76,8 +76,8 @@ describe('the motion in the Blender model', () => {
   it('starts apex-down with the base facing the sun, and has the apex toward the sun half a turn later', () => {
     const light = (t: number) => Object.fromEntries(faceLights(M, t).map((l) => [l.face.id, Math.round(l.sunHeight * 10) / 10]));
     // Sides stand asin(1/3) = 19.5° off the apex line.
-    expect(light(0)).toEqual({ a: -19.5, b: -19.5, c: -19.5, d: 90 });
-    expect(light(0.5)).toEqual({ a: 19.5, b: 19.5, c: 19.5, d: -90 });
+    expect(light(0)).toEqual({ infernal: -19.5, temporal: -19.5, lunar: -19.5, base: 90 });
+    expect(light(0.5)).toEqual({ infernal: 19.5, temporal: 19.5, lunar: 19.5, base: -90 });
     expect(turnPoint(M, 0, VERTICES[0])[1]).toBeLessThan(0);
     expect(turnPoint(M, 0.5, VERTICES[0])[1]).toBeGreaterThan(0);
   });
@@ -146,14 +146,14 @@ describe('light on the faces', () => {
   it('the base has an even day: sun height follows cos(turn), up for half of every turn', () => {
     // Base normal is -Z in Blender; Ry(-180° - 360°t) puts its z at cos(360°t).
     for (const t of TIMES) expect(faceLights(M, t)[3].light).toBeCloseTo(Math.max(0, Math.cos(2 * Math.PI * t)), 9);
-    const events = sunEvents(M, 'd');
+    const events = sunEvents(M, 'base');
     expect(events.map((e) => e.type)).toEqual(['sunset', 'sunrise', 'sunset', 'sunrise', 'sunset', 'sunrise']);
     [0.25, 0.75, 1.25, 1.75, 2.25, 2.75].forEach((at, i) => expect(events[i].at).toBeCloseTo(at, 5));
-    expect(daylightShare(M, 'd')).toBeCloseTo(0.5, 3);
+    expect(daylightShare(M, 'base')).toBeCloseTo(0.5, 3);
   });
 
   it('each side has three sunrises and sunsets a cycle, the same pattern one turn apart', () => {
-    const [a, b, c] = ['a', 'b', 'c'].map((id) => sunEvents(M, id));
+    const [a, b, c] = ['temporal', 'infernal', 'lunar'].map((id) => sunEvents(M, id));
     for (const e of [a, b, c]) {
       expect(e).toHaveLength(6);
       expect(e.filter((x) => x.type === 'sunrise')).toHaveLength(3);
@@ -165,7 +165,7 @@ describe('light on the faces', () => {
     expect(shifted).toContain(key(c, 0).join());
     expect(key(a, 0).join()).not.toBe(key(c, 0).join());
     // Sides share the daylight equally, and get less than the base.
-    const shares = ['a', 'b', 'c'].map((id) => daylightShare(M, id));
+    const shares = ['temporal', 'infernal', 'lunar'].map((id) => daylightShare(M, id));
     expect(shares[1]).toBeCloseTo(shares[0], 3);
     expect(shares[2]).toBeCloseTo(shares[0], 3);
     expect(shares[0]).toBeLessThan(0.5);
@@ -181,7 +181,7 @@ describe('light on the faces', () => {
   });
 
   it('finds the next sunrise or sunset, wrapping past the end of the cycle', () => {
-    const events = sunEvents(M, 'd');
+    const events = sunEvents(M, 'base');
     const n = nextEvent(M, events, 0.5)!;
     expect(n.type).toBe('sunrise');
     expect(n.at).toBeCloseTo(0.75, 5);
@@ -195,5 +195,134 @@ describe('light on the faces', () => {
   it('follows a different model: no spin leaves every turn alike', () => {
     const still: WorldModel = { ...M, spinPerTurn: 0, turnsPerCycle: 1 };
     for (const t of TIMES) faceLights(still, t + 1).forEach((l, i) => expect(l.light).toBeCloseTo(faceLights(still, t)[i].light, 9));
+  });
+});
+
+// The PM's names, clock and table of the week (2026-11-15).
+describe('Facets, Spines and the week', () => {
+  it('the Facets are the sides painted red, green and blue in the Blender model; the base is the fourth face', () => {
+    // Mesh faces by corner (base corners at 30°, 150°, 270°): red spans 150° and 30°, so it
+    // faces 90°; green spans 30° and 270° (330°); blue spans 270° and 150° (210°).
+    const facing = (id: string) => {
+      const n = toBlender(FACES.find((f) => f.id === id)!.normal);
+      return Math.round((Math.atan2(n[1], n[0]) * 180) / Math.PI + 360) % 360;
+    };
+    expect(facing('infernal')).toBe(90);
+    expect(facing('temporal')).toBe(330);
+    expect(facing('lunar')).toBe(210);
+    expect(toBlender(FACES.find((f) => f.id === 'base')!.normal)[2]).toBeCloseTo(-1, 12);
+    expect(FACES.map((f) => f.name)).toEqual(['Infernal Facet', 'Temporal Facet', 'Lunar Facet', 'Base']);
+  });
+
+  it('each Spine joins two different Facets, and the three cover every pair', () => {
+    expect(SPINES.map((s) => `${s.name}: ${s.faces.join('+')}`)).toEqual(['Storm Spine: infernal+temporal', 'Spring Spine: temporal+lunar', 'Heart Spine: lunar+infernal']);
+  });
+
+  it('a day is one turn of 24 hours, and the week has nine days starting on Asmoday', () => {
+    expect(M.hoursPerTurn).toBe(24);
+    expect(M.weekdays).toEqual(['Asmoday', 'Tempoday', 'Lunaday', 'Morday', 'Veleday', 'Pneumaday', 'Somaday', 'Auroday', 'Nixaday']);
+    expect(weekday(M, 0)).toBe('Asmoday');
+    expect(weekday(M, 0.99)).toBe('Asmoday');
+    expect(weekday(M, 1)).toBe('Tempoday');
+    expect(weekday(M, 8.5)).toBe('Nixaday');
+    expect(weekday(M, 9)).toBe('Asmoday');
+    expect(weekday(M, -0.5)).toBe('Nixaday');
+    expect(hourOfDay(M, 4.25)).toBeCloseTo(6, 9);
+    expect(turnOfWeek(M, 10.5)).toBeCloseTo(1.5, 9);
+    expect(formatHour(6.5)).toBe('6:30');
+    expect(formatHour(0)).toBe('0:00');
+    // The week is a whole number of cycles, so every week is alike.
+    expect(M.weekdays.length % M.turnsPerCycle).toBe(0);
+  });
+
+  it("each Facet's days are what the PM's table calls them", () => {
+    // PM's table, Asmoday to Lunaday (it repeats through the week).
+    const table: Record<string, string[]> = {
+      infernal: ['Sunrise', 'Long Night', 'Short Day'],
+      temporal: ['Long Night', 'Short Day', 'Sunrise'],
+      lunar: ['Short Day', 'Sunrise', 'Long Night'],
+    };
+    expect(DAY_KINDS).toEqual(table);
+    for (const [id, kinds] of Object.entries(table)) {
+      const events = sunEvents(M, id);
+      kinds.forEach((kind, day) => {
+        const light = daylightOn(M, events, day);
+        // One sunrise a day on every Facet.
+        expect(light, `${id} day ${day}`).toHaveLength(1);
+        const { sunrise, night, day: hours } = light[0];
+        // A Short Day is by far the shortest daylight; a Long Night day is the one whose
+        // sunrise ends a night of most of a day; a Sunrise day has the sun up soon after it starts.
+        expect(hours < 8, `${id} day ${day} short`).toBe(kind === 'Short Day');
+        expect(night > 20, `${id} day ${day} long night`).toBe(kind === 'Long Night');
+        expect(sunrise < 3, `${id} day ${day} early`).toBe(kind === 'Sunrise');
+      });
+    }
+  });
+
+  it("each Spine's nights and days are the hours in the PM's table, to the hour", () => {
+    // "N / D": hours of night, then of the day that follows, for the daylight starting each day.
+    const table: Record<string, [number, number][]> = {
+      storm: [[10, 22], [9, 14], [3, 14]],
+      spring: [[9, 14], [3, 14], [10, 22]],
+      heart: [[3, 14], [10, 22], [9, 14]],
+    };
+    for (const spine of SPINES) {
+      const events = sunEvents(M, spine.faces);
+      let total = 0;
+      table[spine.id].forEach(([night, day], i) => {
+        const light = daylightOn(M, events, i);
+        expect(light, `${spine.id} day ${i}`).toHaveLength(1);
+        // The table's hours are rounded by hand; the model is within about an hour of each.
+        expect(Math.abs(light[0].night - night), `${spine.id} day ${i} night`).toBeLessThan(1.1);
+        expect(Math.abs(light[0].day - day), `${spine.id} day ${i} day`).toBeLessThan(1.1);
+        total += light[0].night + light[0].day;
+      });
+      // Three days in all, as the table's hours are (72).
+      expect(total).toBeCloseTo(72, 3);
+    }
+  });
+
+  it('a Spine has day exactly while either of its Facets does', () => {
+    for (let t = 0; t < 3; t += 0.013)
+      for (const spine of SPINES) expect(isDay(M, spine.faces, t), `${spine.id} at ${t}`).toBe(isDay(M, spine.faces[0], t) || isDay(M, spine.faces[1], t));
+  });
+});
+
+// PM 2026-11-16: the World tab shows the sun moving around a still prism, as someone in the world sees it.
+describe('the sun as seen from the world', () => {
+  it('stands over each face exactly as the keyframes put that face under the sun', () => {
+    for (let t = 0; t < 3; t += 0.037) {
+      const sun = sunSeenFromWorld(M, t);
+      expect(length(sun)).toBeCloseTo(1, 12);
+      // Height of the fixed sun over the turned face = Blender z of its turned normal.
+      for (const f of FACES) expect(dot(f.normal, sun), `${f.id} at ${t}`).toBeCloseTo(blender(toBlender(f.normal), t)[2], 9);
+    }
+  });
+
+  it('is straight above the apex at Apex (12:00) and straight below the base at midnight, every day', () => {
+    for (const day of [0, 1, 2, 5]) {
+      const noon = sunSeenFromWorld(M, day + 0.5);
+      const midnight = sunSeenFromWorld(M, day);
+      VERTICES[0].forEach((n, i) => expect(noon[i]).toBeCloseTo(n, 9));
+      VERTICES[0].forEach((n, i) => expect(midnight[i]).toBeCloseTo(-n, 9));
+    }
+  });
+
+  it('names midnight and Apex, and no other hour', () => {
+    expect(hourName(M, 0)).toBe('Midnight');
+    expect(hourName(M, 3)).toBe('Midnight');
+    expect(hourName(M, 4.5)).toBe('Apex');
+    expect(hourName(M, 4.5 + 0.5 / 24)).toBeUndefined();
+    expect(hourName(M, 0.25)).toBeUndefined();
+  });
+
+  it('comes back to the same place in the sky after three days, not after one', () => {
+    const a = sunSeenFromWorld(M, 0.3);
+    sunSeenFromWorld(M, 3.3).forEach((n, i) => expect(n).toBeCloseTo(a[i], 9));
+    expect(Math.hypot(...sunSeenFromWorld(M, 1.3).map((n, i) => n - a[i]))).toBeGreaterThan(0.5);
+  });
+
+  it('the base is the ocean', () => {
+    expect(FACES.find((f) => f.id === 'base')!.note).toBe('Ocean');
   });
 });
