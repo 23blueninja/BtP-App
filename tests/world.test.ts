@@ -2,7 +2,7 @@
 // of a regular triangular pyramid and the motion keyed in the PM's Blender model
 // (World Prism.blend), worked out by hand here, not read from the engine.
 import { describe, expect, it } from 'vitest';
-import { dateOf, daysPerYear, moonPhase, moonSeenFromWorld, cycleNumber, hourName, sunSeenFromWorld, DAY_KINDS, daylightOn, daylightShare, dot, faceLights, FACES, formatHour, hourOfDay, isDay, length, nextEvent, SPINES, sunEvents, turnDirection, turnOfCycle, turnOfWeek, turnPoint, VERTICES, weekday, WORLD_PRISM, type WorldModel } from '../src/engine/world';
+import { moonOpen, dateOf, daysPerYear, moonPhase, moonSeenFromWorld, cycleNumber, hourName, sunSeenFromWorld, DAY_KINDS, daylightOn, daylightShare, dot, faceLights, FACES, formatHour, hourOfDay, isDay, length, nextEvent, SPINES, sunEvents, turnDirection, turnOfCycle, turnOfWeek, turnPoint, VERTICES, weekday, WORLD_PRISM, type WorldModel } from '../src/engine/world';
 
 const M = WORLD_PRISM;
 
@@ -386,6 +386,24 @@ describe('the moon and the year', () => {
     const order = ['Open', 'Smiling', 'Sleepy', 'Squinting', 'Closed', 'Peeking', 'Waking', 'Hunting', 'Open'].map((n) => open[n]);
     for (let i = 0; i < 4; i++) expect(order[i + 1]).toBeLessThan(order[i]);
     for (let i = 4; i < 8; i++) expect(order[i + 1]).toBeGreaterThan(order[i]);
+  });
+
+  it('the moon opens and closes steadily, not in jumps', () => {
+    // Middle of each phase (3 days each, from Smiling at day 0): its own width.
+    M.moon.phases.forEach((p, i) => expect(moonOpen(M, i * 3 + 1.5), p.name).toBeCloseTo(p.open, 12));
+    // Fully open in the middle of Open (days 21 to 24) and shut in the middle of Closed (days 9 to 12), 12 days apart.
+    expect(moonOpen(M, 22.5)).toBeCloseTo(1, 12);
+    expect(moonOpen(M, 10.5)).toBeCloseTo(0, 12);
+    // Between them it moves by a twelfth a day, either way, hour by hour.
+    for (let t = 10.5; t < 22.5; t += 1 / 24) expect(moonOpen(M, t + 1 / 24) - moonOpen(M, t)).toBeCloseTo(1 / 288, 9);
+    for (let t = 22.5; t < 34.5; t += 1 / 24) expect(moonOpen(M, t + 1 / 24) - moonOpen(M, t)).toBeCloseTo(-1 / 288, 9);
+    // It carries on across the year's end and before the start.
+    expect(moonOpen(M, 243)).toBeCloseTo(moonOpen(M, 243 - 240), 12);
+    expect(moonOpen(M, -1.5)).toBeCloseTo(1, 12);
+    for (const t of [-7.3, 0, 99.9, 500.2]) {
+      expect(moonOpen(M, t)).toBeGreaterThanOrEqual(0);
+      expect(moonOpen(M, t)).toBeLessThanOrEqual(1);
+    }
   });
 
   it('the moon is always exactly opposite the sun', () => {

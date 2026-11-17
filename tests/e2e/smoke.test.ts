@@ -803,11 +803,24 @@ describe('World tab', () => {
     await page.getByLabel('Week', { exact: true }).selectOption('1');
     await page.getByLabel('Day', { exact: true }).selectOption('Asmoday');
     await expect.poll(moonPhase).toBe('Closed');
-    expect(await page.locator('.world-view .world-moon-pupil').count()).toBe(0);
+    const pupil = async () => Number((await page.locator('.world-view .world-moon-pupil').getAttribute('rx').catch(() => '0')) ?? 0) / Number(await page.locator('.world-view .world-moon-disc').getAttribute('r'));
+    const closed = await pupil();
+    expect(await page.getByTestId('world-day-of-year').innerText()).toBe('Day 10 of 243');
     await page.getByLabel('Week', { exact: true }).selectOption('5');
     await expect.poll(date).toBe('Week 6, Golden Embrace, 3732 OI');
     expect(await moonPhase()).toBe('Open');
-    expect(await page.locator('.world-view .world-moon-pupil').count()).toBe(1);
+    expect(await page.getByTestId('world-day-of-year').innerText()).toBe('Day 46 of 243');
+    // The pupil is a slit when Closed and nearly round when Open, and widens steadily in between:
+    // an hour on, still Open, it is a little wider.
+    await slider.fill('24');
+    await expect.poll(clock).toBe('Asmoday 12:00');
+    const wide = await pupil();
+    expect(closed).toBeLessThan(0.15);
+    expect(wide).toBeGreaterThan(0.75);
+    await slider.fill('26');
+    await expect.poll(clock).toBe('Asmoday 13:00');
+    expect(await moonPhase()).toBe('Open');
+    expect(await pupil()).toBeGreaterThan(wide);
     // The last week of the year, then the year after: the week and day are kept.
     await page.getByLabel('Week', { exact: true }).selectOption('26');
     await expect.poll(date).toBe('Week 27, Silver Repose, 3732 OI');
@@ -821,6 +834,20 @@ describe('World tab', () => {
     expect(await cell('infernal', 2)).toMatch(/^Sunrise/);
 
     // Controls are big enough to tap, and nothing is wider than the screen.
+    // Button labels sit in the middle of their buttons, top to bottom.
+    const offCentre = await page.locator('.world button').evaluateAll((list) =>
+      list
+        .map((el) => {
+          const inner = el.firstElementChild ?? el;
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          const t = el.firstElementChild ? inner.getBoundingClientRect() : range.getBoundingClientRect();
+          const r = el.getBoundingClientRect();
+          return { label: el.getAttribute('aria-label') ?? el.textContent, off: Math.abs((t.top + t.bottom) / 2 - (r.top + r.bottom) / 2) };
+        })
+        .filter((b) => b.off > 0.75),
+    );
+    expect(offCentre).toEqual([]);
     const small = await page.locator('.world button, .world input, .world select').evaluateAll((list) => list.map((el) => el.getBoundingClientRect()).filter((r) => r.height < 24 || r.width < 24).length);
     expect(small).toBe(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);

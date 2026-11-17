@@ -109,7 +109,7 @@ export const DAY_KINDS: Readonly<Record<string, readonly DayKind[]>> = {
 
 export interface MoonPhase {
   name: string;
-  /** How far open the moon is, from 0 (closed, dark) to 1 (fully round, bright). For drawing. */
+  /** How far open the moon is at the middle of the phase, from 0 (closed, dark) to 1 (fully round, bright). For drawing. */
   open: number;
 }
 
@@ -260,6 +260,21 @@ export function moonPhase(model: WorldModel, turns: number): MoonPhase {
   const n = model.moon.phases.length;
   const i = Math.floor(Math.floor(turns + 1e-9) / model.moon.daysPerPhase) % n;
   return model.moon.phases[i < 0 ? i + n : i];
+}
+
+/**
+ * How far open the moon is at `turns`, from 0 to 1. It opens and closes
+ * steadily (PM 2026-11-16): each phase is at its own `open` at the middle of
+ * its days, and the moon moves evenly from one phase's to the next.
+ */
+export function moonOpen(model: WorldModel, turns: number): number {
+  const { phases, daysPerPhase } = model.moon;
+  const n = phases.length;
+  // Position counted in phases, with whole numbers at the middle of each phase.
+  const x = turns / daysPerPhase - 0.5;
+  const i = Math.floor(x);
+  const at = (k: number) => phases[((k % n) + n) % n].open;
+  return at(i) + (at(i + 1) - at(i)) * (x - i);
 }
 
 /** The name of the hour at `turns`, if it has one (to the minute). */
