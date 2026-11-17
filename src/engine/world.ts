@@ -109,7 +109,7 @@ export const DAY_KINDS: Readonly<Record<string, readonly DayKind[]>> = {
 
 export interface MoonPhase {
   name: string;
-  /** How far open the moon is at the middle of the phase, from 0 (closed, dark) to 1 (fully round, bright). For drawing. */
+  /** How far open the moon is at the middle of the phase, from 0 (closed, dark) to 1 (fully round, bright). A phase at exactly 0 or 1 holds for all its days. For drawing. */
   open: number;
 }
 
@@ -194,13 +194,13 @@ export const WORLD_PRISM: WorldModel = {
   moon: {
     daysPerPhase: 3,
     phases: [
-      { name: 'Smiling', open: 0.75 },
+      { name: 'Smiling', open: 5 / 6 },
       { name: 'Sleepy', open: 0.5 },
-      { name: 'Squinting', open: 0.25 },
+      { name: 'Squinting', open: 1 / 6 },
       { name: 'Closed', open: 0 },
-      { name: 'Peeking', open: 0.25 },
+      { name: 'Peeking', open: 1 / 6 },
       { name: 'Waking', open: 0.5 },
-      { name: 'Hunting', open: 0.75 },
+      { name: 'Hunting', open: 5 / 6 },
       { name: 'Open', open: 1 },
     ],
   },
@@ -263,18 +263,27 @@ export function moonPhase(model: WorldModel, turns: number): MoonPhase {
 }
 
 /**
- * How far open the moon is at `turns`, from 0 to 1. It opens and closes
- * steadily (PM 2026-11-16): each phase is at its own `open` at the middle of
- * its days, and the moon moves evenly from one phase's to the next.
+ * How far open the moon is at `turns`, from 0 to 1. A phase that is fully
+ * open (1) or shut (0) holds for all its days (PM 2026-11-16); in between the
+ * moon opens or closes steadily, from the end of one held phase to the start
+ * of the next. The other phases' `open` is where that leaves their middle.
  */
 export function moonOpen(model: WorldModel, turns: number): number {
   const { phases, daysPerPhase } = model.moon;
   const n = phases.length;
-  // Position counted in phases, with whole numbers at the middle of each phase.
-  const x = turns / daysPerPhase - 0.5;
-  const i = Math.floor(x);
+  const cycle = n * daysPerPhase;
+  const day = ((turns % cycle) + cycle) % cycle;
+  const i = Math.floor(day / daysPerPhase);
+  const held = (k: number) => phases[((k % n) + n) % n].open % 1 === 0;
+  if (held(i)) return phases[i].open;
+  let a = i - 1;
+  while (!held(a)) a--;
+  let b = i + 1;
+  while (!held(b)) b++;
+  const from = (a + 1) * daysPerPhase;
+  const to = b * daysPerPhase;
   const at = (k: number) => phases[((k % n) + n) % n].open;
-  return at(i) + (at(i + 1) - at(i)) * (x - i);
+  return at(a) + ((at(b) - at(a)) * (day - from)) / (to - from);
 }
 
 /** The name of the hour at `turns`, if it has one (to the minute). */

@@ -388,15 +388,17 @@ describe('the moon and the year', () => {
     for (let i = 4; i < 8; i++) expect(order[i + 1]).toBeGreaterThan(order[i]);
   });
 
-  it('the moon opens and closes steadily, not in jumps', () => {
+  it('the moon stays shut through Closed and fully open through Open, and moves steadily between', () => {
     // Middle of each phase (3 days each, from Smiling at day 0): its own width.
     M.moon.phases.forEach((p, i) => expect(moonOpen(M, i * 3 + 1.5), p.name).toBeCloseTo(p.open, 12));
-    // Fully open in the middle of Open (days 21 to 24) and shut in the middle of Closed (days 9 to 12), 12 days apart.
-    expect(moonOpen(M, 22.5)).toBeCloseTo(1, 12);
-    expect(moonOpen(M, 10.5)).toBeCloseTo(0, 12);
-    // Between them it moves by a twelfth a day, either way, hour by hour.
-    for (let t = 10.5; t < 22.5; t += 1 / 24) expect(moonOpen(M, t + 1 / 24) - moonOpen(M, t)).toBeCloseTo(1 / 288, 9);
-    for (let t = 22.5; t < 34.5; t += 1 / 24) expect(moonOpen(M, t + 1 / 24) - moonOpen(M, t)).toBeCloseTo(-1 / 288, 9);
+    // Closed is days 9 to 12 and Open days 21 to 24 of the cycle: held for all three days (PM 2026-11-16).
+    for (let t = 9; t <= 12; t += 1 / 24) expect(moonOpen(M, t), `day ${t}`).toBe(0);
+    for (let t = 21; t <= 24; t += 1 / 24) expect(moonOpen(M, t), `day ${t}`).toBeCloseTo(1, 12);
+    // Between them it moves by a ninth a day (9 days from shut to open), either way, hour by hour.
+    for (let t = 12; t < 21 - 1e-9; t += 1 / 24) expect(moonOpen(M, t + 1 / 24) - moonOpen(M, t)).toBeCloseTo(1 / 216, 9);
+    for (let t = 24; t < 33 - 1e-9; t += 1 / 24) expect(moonOpen(M, t + 1 / 24) - moonOpen(M, t)).toBeCloseTo(-1 / 216, 9);
+    // No jumps anywhere, including the edges of the held phases and the year's end.
+    for (let t = -30; t < 300; t += 1 / 24) expect(Math.abs(moonOpen(M, t + 1 / 24) - moonOpen(M, t))).toBeLessThan(1 / 216 + 1e-9);
     // It carries on across the year's end and before the start.
     expect(moonOpen(M, 243)).toBeCloseTo(moonOpen(M, 243 - 240), 12);
     expect(moonOpen(M, -1.5)).toBeCloseTo(1, 12);

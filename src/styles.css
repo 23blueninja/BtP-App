@@ -1,4 +1,11 @@
 :root {
+  /* Button and field labels: set by src/ui/capShift.ts for the font in use. Labels
+     use the font's own line height; --line-fix pads them back to the size they had
+     at 1.45, and --cap-shift moves the capitals into the exact middle. */
+  --cap-shift: 0em;
+  --line-fix: 0em;
+  --label-up: calc(var(--line-fix) - var(--cap-shift));
+  --label-down: calc(var(--line-fix) + var(--cap-shift));
   /* Corner cut for buttons, inputs, chips and toggles: sheared off (an emerald cut)
      where corner-shape is supported (Chromium), slightly rounded elsewhere. */
   --control-radius: 8px;
@@ -64,13 +71,21 @@ textarea {
   font: inherit;
   color: inherit;
 }
+/* A set line height puts letters a pixel off (the gap is rounded down above); the
+   font's own does not. See --label-up and --label-down. */
+button,
+input,
+select {
+  line-height: normal;
+}
 
 button {
   background: var(--panel-2);
   border: 1px solid var(--border);
   border-radius: var(--control-radius);
   corner-shape: bevel;
-  padding: 0.4em 0.85em;
+  /* Uneven top and bottom padding puts the capitals in the middle (see src/ui/capShift.ts). */
+  padding: calc(0.4em + var(--label-up)) 0.85em calc(0.4em + var(--label-down));
   cursor: pointer;
 }
 button:hover:not(:disabled) {
@@ -106,7 +121,7 @@ button.link.active {
 .icon-btn {
   background: none;
   border: none;
-  padding: 0.15em 0.4em;
+  padding: calc(0.15em + var(--label-up)) 0.4em calc(0.15em + var(--label-down));
   color: var(--muted);
 }
 
@@ -119,6 +134,13 @@ textarea {
   corner-shape: bevel;
   padding: 0.4em 0.6em;
   max-width: 100%;
+}
+input {
+  padding: calc(0.4em + var(--label-up)) 0.6em calc(0.4em + var(--label-down));
+}
+/* A dropdown's height doesn't follow the line height, so only the capitals move. */
+select {
+  padding: calc(0.4em - var(--cap-shift)) 0.6em calc(0.4em + var(--cap-shift));
 }
 input:focus,
 select:focus,
@@ -621,7 +643,7 @@ legend {
 .stepper button {
   width: 1.9em;
   height: 1.9em;
-  padding: 0;
+  padding: max(0px, -2 * var(--cap-shift)) 0 max(0px, 2 * var(--cap-shift));
   border-radius: var(--control-radius);
   corner-shape: bevel;
 }
@@ -766,7 +788,7 @@ table.skills td:not(:first-child) {
 }
 .pill-btn {
   display: inline-block;
-  padding: 0.15em 0.7em;
+  padding: calc(0.15em + var(--label-up)) 0.7em calc(0.15em + var(--label-down));
   border-radius: var(--control-radius);
   corner-shape: bevel;
   border: 1px solid var(--accent);
@@ -1793,7 +1815,7 @@ b.calc {
   border-radius: 0;
   background: none;
   font-size: 0.85em;
-  padding: 0.25em 0.8em;
+  padding: calc(0.25em + var(--label-up)) 0.8em calc(0.25em + var(--label-down));
   color: var(--muted);
 }
 .view-toggle button.active {
@@ -2108,7 +2130,7 @@ li.implied {
 }
 .use-btn {
   white-space: nowrap;
-  padding: 0.2rem 0.6rem;
+  padding: calc(0.2rem + var(--label-up)) 0.6rem calc(0.2rem + var(--label-down));
   font-size: 0.9em;
 }
 .use-cost {
@@ -2743,7 +2765,7 @@ tr.needs input {
 .turn-box-buttons button,
 .turn-box-controls > button {
   flex: 1;
-  padding: 0.3rem 0.5rem;
+  padding: calc(0.3rem + var(--label-up)) 0.5rem calc(0.3rem + var(--label-down));
   white-space: nowrap;
 }
 .turn-box.my-turn {
@@ -3275,6 +3297,7 @@ html.tour-open body {
   border-collapse: collapse;
 }
 .world-day-pick select {
+  /* Not a set height: a dropdown squeezed below its own height loses its centring. */
   min-height: 2.25rem;
 }
 .world-between,
@@ -3328,16 +3351,17 @@ html.tour-open body {
 }
 .world-year {
   width: 5.5rem;
-  min-height: 2.25rem;
+  height: 2.25rem;
 }
-/* Button text sits in the exact middle whatever font the device falls back to:
-   the label is one line as tall as its letters, centred by the button itself. */
+/* Every control in the time row is the same height, labels centred by the button
+   itself (the capitals are put in the exact middle by --cap-shift). */
 .world button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  line-height: 1;
   min-height: 2.25rem;
+  padding-top: calc(0.4em - var(--cap-shift));
+  padding-bottom: calc(0.4em + var(--cap-shift));
 }
 .world-zoom {
   padding: 0;

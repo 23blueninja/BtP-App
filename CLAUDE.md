@@ -34,9 +34,21 @@ Arch's. Arch's table of each Facet's and Spine's days is in `DAY_KINDS` and in
 `tests/world.test.ts`, which checks the engine against the keyframes and the
 table. The moon sits opposite the sun and has a phase every three days; the
 phases, the nine three-week months and the start year 3732 OI come from
-Arch's Moon Cycle table, which `tests/world.test.ts` holds in full. A
-calendar tracker is planned on top of this: keep the motion and time
+Arch's Moon Cycle table, which `tests/world.test.ts` holds in full. The
+moon is shut all through Closed, fully open all through Open, and opens or
+closes steadily in between (Arch). A calendar tracker is planned on top of this: keep the motion and time
 in that model, and ask Arch before adding lore numbers.
+
+## Button and field labels
+
+The app bundles no text font, so devices use their own, and some (Windows'
+Segoe UI) sit capitals low in the line. Arch wants labels truly centred:
+controls use the font's own line height, and `src/ui/capShift.ts` measures the
+font in use and sets `--cap-shift` and `--line-fix`, which every control's
+padding uses (`--label-up`/`--label-down`; a select only `--cap-shift`). A new
+control style with its own padding should use them too. The e2e test "button
+and field labels" checks this in a deliberately lopsided font
+(`tests/e2e/fonts/`).
 
 ## PDF character sheet
 

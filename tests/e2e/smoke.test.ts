@@ -681,6 +681,148 @@ describe('guided tour', () => {
   });
 });
 
+/**
+ * Controls on screen whose capitals are not in the middle of their box, top to
+ * bottom, by more than `tolerance` px. Each label is swapped for "HHHH" and the
+ * page drawn white on black, then the ink is found in a screenshot (decoded in
+ * a second page, so no image library is needed).
+ */
+async function offCentreLabels(page: Page, tolerance = 1): Promise<string[]> {
+  // A window as tall as the page, so the boxes measured are the ones in the
+  // screenshot (a full-page screenshot resizes the window, which can move things).
+  const viewport = page.viewportSize()!;
+  for (let i = 0; i < 3; i++) {
+    const height = await page.evaluate(() => document.documentElement.scrollHeight);
+    if (height === page.viewportSize()!.height) break;
+    await page.setViewportSize({ width: viewport.width, height });
+  }
+  const boxes = await page.evaluate(() => {
+    const out: { name: string; x: number; y: number; w: number; h: number }[] = [];
+    const seen = (el: Element) => {
+      const st = getComputedStyle(el);
+      const r = el.getBoundingClientRect();
+      const boxed = parseFloat(st.borderTopWidth) > 0 || st.backgroundColor !== 'rgba(0, 0, 0, 0)';
+      return boxed && st.visibility === 'visible' && r.width >= 24 && r.height >= 16 && r.height < 80;
+    };
+    const list = [...document.querySelectorAll('button, select, input')].filter((el) => {
+      if (el instanceof HTMLInputElement && !['text', 'number', 'search', ''].includes(el.type)) return false;
+      if (el instanceof HTMLButtonElement && (el.children.length > 0 || !el.textContent?.trim())) return false;
+      return seen(el);
+    });
+    const named: [Element, string][] = [];
+    for (const el of list) {
+      const name = `${el.tagName.toLowerCase()} "${(el as HTMLInputElement).value || el.textContent?.trim() || el.getAttribute('aria-label')}"`.slice(0, 60);
+      if (el instanceof HTMLSelectElement) {
+        if (el.selectedIndex < 0) continue;
+        el.options[el.selectedIndex].text = 'HHHH';
+      } else if (el instanceof HTMLInputElement) {
+        el.value = 'HHHH';
+        el.type = 'text';
+      } else el.textContent = 'HHHH';
+      named.push([el, name]);
+    }
+    const style = document.createElement('style');
+    style.textContent = `*, *::before, *::after { color: #fff !important; -webkit-text-fill-color: #fff !important; background: #000 !important;
+      border-color: #000 !important; box-shadow: none !important; text-shadow: none !important; outline: none !important; caret-color: transparent !important; }
+      *::before, *::after { opacity: 0 !important; } svg, img { visibility: hidden !important; } :disabled { opacity: 1 !important; }`;
+    document.head.append(style);
+    (document.activeElement as HTMLElement | null)?.blur();
+    // Measured once every label is swapped, as a swap can move what is below it.
+    for (const [el, name] of named) {
+      const r = el.getBoundingClientRect();
+      out.push({ name, x: r.x, y: r.y, w: r.width, h: r.height });
+    }
+    return out;
+  });
+  const png = (await page.screenshot()).toString('base64');
+  await page.setViewportSize(viewport);
+  const reader = await browser.newPage();
+  const result = await reader.evaluate(
+    async ({ png, boxes, tolerance }) => {
+      const img = new Image();
+      img.src = `data:image/png;base64,${png}`;
+      await img.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0);
+      const bad: string[] = [];
+      for (const b of boxes) {
+        // The left part only, clear of a dropdown's arrow; inside the border.
+        const x0 = Math.round(b.x) + 2;
+        const w = Math.max(1, Math.round(b.x + b.w * 0.6) - x0);
+        const y0 = Math.ceil(b.y) + 2;
+        const h = Math.max(1, Math.floor(b.y + b.h) - 2 - y0);
+        const data = ctx.getImageData(x0, y0, w, h).data;
+        // The ink's middle, weighted by brightness ("H" is symmetric top to bottom).
+        let ink = 0;
+        let sum = 0;
+        for (let y = 0; y < h; y++)
+          for (let x = 0; x < w; x++) {
+            const v = data[(y * w + x) * 4];
+            ink += v;
+            sum += v * (y0 + y + 0.5);
+          }
+        if (ink < 255 * 20) continue;
+        // Letters snap to whole pixels while boxes need not, so up to a pixel is as good as it gets.
+        const off = Math.round((sum / ink - (b.y + b.h / 2)) * 10) / 10;
+        if (Math.abs(off) > tolerance) bad.push(`${b.name}: ${off > 0 ? 'low' : 'high'} by ${Math.abs(off)} px`);
+      }
+      return bad;
+    },
+    { png, boxes, tolerance },
+  );
+  await reader.close();
+  return [...new Set(result)];
+}
+
+describe('button and field labels', () => {
+  // The app uses each device's own font. 'Lopsided Test' sits its capitals 2 px low
+  // (like Windows' Segoe UI, but more so), so labels are checked in it too.
+  it.each(['the default font', 'Lopsided Test'])('are centred top to bottom in %s', async (font) => {
+    const c = character(classes[0].id, subclassesOf(classes[0])[0]?.id ?? '', 3, ancestries[0].id, 'lbl');
+    const { page, errors } = await open([c], { width: 1400, height: 900 });
+    const useFont = async () => {
+      if (font === 'the default font') return;
+      const ttf = readFileSync(new URL('./fonts/lopsided.ttf', import.meta.url)).toString('base64');
+      await page.addStyleTag({ content: `@font-face { font-family: 'Lopsided Test'; src: url(data:font/ttf;base64,${ttf}); } body { font-family: 'Lopsided Test' !important; }` });
+      await page.evaluate(async () => {
+        await document.fonts.load("16px 'Lopsided Test'");
+        await document.fonts.ready;
+      });
+      await page.waitForTimeout(100);
+      expect(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--cap-shift'))).not.toBe('0em');
+    };
+    const found: string[] = [];
+    const check = async (where: string, go: () => Promise<void>) => {
+      await go();
+      await useFont();
+      found.push(...(await offCentreLabels(page)).map((b) => `${where}: ${b}`));
+    };
+    await check('home', async () => {
+      await page.goto(base);
+      await page.reload();
+      await page.getByRole('button', { name: /New character/ }).waitFor();
+    });
+    for (const t of ['Sheet', 'Equipment', 'Notes']) {
+      await check(t, async () => {
+        await page.goto(`${base}#/c/lbl`);
+        await page.reload();
+        await tab(page, t);
+      });
+    }
+    await check('World', async () => {
+      await page.goto(`${base}#/world`);
+      await page.reload();
+      await page.getByRole('heading', { name: 'The World Prism' }).waitFor();
+    });
+    await page.close();
+    expect(found).toEqual([]);
+    expect(errors).toEqual([]);
+  });
+});
+
 describe('World tab', () => {
   it.each([1400, 412, 360, 320])('the World Prism turns and zooms while the sun travels around it at %i px', async (width) => {
     const c = character(classes[0].id, subclassesOf(classes[0])[0]?.id ?? '', 3, ancestries[0].id, 'w');
@@ -810,17 +952,17 @@ describe('World tab', () => {
     await expect.poll(date).toBe('Week 6, Golden Embrace, 3732 OI');
     expect(await moonPhase()).toBe('Open');
     expect(await page.getByTestId('world-day-of-year').innerText()).toBe('Day 46 of 243');
-    // The pupil is a slit when Closed and nearly round when Open, and widens steadily in between:
-    // an hour on, still Open, it is a little wider.
+    // The moon stays shut all through Closed and fully round all through Open (PM 2026-11-16):
+    // at Apex on the first day of Open, and an hour later, it is fully open.
     await slider.fill('24');
     await expect.poll(clock).toBe('Asmoday 12:00');
     const wide = await pupil();
-    expect(closed).toBeLessThan(0.15);
-    expect(wide).toBeGreaterThan(0.75);
+    expect(closed).toBe(0);
+    expect(wide).toBeCloseTo(0.88, 5); // the pupil fills the disc but for a thin rim
     await slider.fill('26');
     await expect.poll(clock).toBe('Asmoday 13:00');
     expect(await moonPhase()).toBe('Open');
-    expect(await pupil()).toBeGreaterThan(wide);
+    expect(await pupil()).toBeCloseTo(0.88, 5);
     // The last week of the year, then the year after: the week and day are kept.
     await page.getByLabel('Week', { exact: true }).selectOption('26');
     await expect.poll(date).toBe('Week 27, Silver Repose, 3732 OI');
@@ -833,21 +975,7 @@ describe('World tab', () => {
     // The table of days is the same in every week.
     expect(await cell('infernal', 2)).toMatch(/^Sunrise/);
 
-    // Controls are big enough to tap, and nothing is wider than the screen.
-    // Button labels sit in the middle of their buttons, top to bottom.
-    const offCentre = await page.locator('.world button').evaluateAll((list) =>
-      list
-        .map((el) => {
-          const inner = el.firstElementChild ?? el;
-          const range = document.createRange();
-          range.selectNodeContents(el);
-          const t = el.firstElementChild ? inner.getBoundingClientRect() : range.getBoundingClientRect();
-          const r = el.getBoundingClientRect();
-          return { label: el.getAttribute('aria-label') ?? el.textContent, off: Math.abs((t.top + t.bottom) / 2 - (r.top + r.bottom) / 2) };
-        })
-        .filter((b) => b.off > 0.75),
-    );
-    expect(offCentre).toEqual([]);
+    // Controls are big enough to tap, and nothing is wider than the screen (label centring has its own test).
     const small = await page.locator('.world button, .world input, .world select').evaluateAll((list) => list.map((el) => el.getBoundingClientRect()).filter((r) => r.height < 24 || r.width < 24).length);
     expect(small).toBe(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
