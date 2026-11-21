@@ -175,7 +175,7 @@ export function App() {
   // its edge shows the colour for its own spot.
   useEffect(() => {
     if (typeof CSSAnimation === 'undefined') return;
-    const names = new Set(['prism-drift', 'prism-grid-drift', 'prism-grid-counter', 'prism-edge-drift', 'prism-edge-drift-gecko']);
+    const names = new Set(['prism-drift', 'prism-grid-drift', 'prism-edge-drift', 'prism-edge-drift-gecko']);
     let queued = false;
     const sync = () => {
       queued = false;
@@ -202,9 +202,8 @@ export function App() {
   return (
     <div className={['app', prefs.pinStatBar && 'pin-stats', prefs.compact && 'compact', !prefs.animateGradients && 'still-gradients', !prefs.animateBackground && 'still-bg', !prefs.animateEdges && 'still-edges', prefs.glassPanels && 'glass', !prefs.cutCorners && 'square-corners', GECKO && 'gecko'].filter(Boolean).join(' ')}>
       <div className="prism-bg" aria-hidden>
-        <div className="prism-grid">
-          <div className="prism-counter" />
-        </div>
+        <div className="prism-rainbow" />
+        <div className="prism-grid" />
       </div>
       <header className="topbar">
         <button type="button" className="brand" onClick={() => go()}>

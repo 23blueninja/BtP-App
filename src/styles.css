@@ -1845,11 +1845,21 @@ b.calc {
 }
 
 /* ---------- prism background ----------
-   The PDF's triangle grid, drawn as an SVG tile and used as a mask over a
-   drifting rainbow. The tile is drawn at twice its 136 × 78.52 size, so the
-   triangles and the lines between them are both doubled. The rainbow repeats every 1400px along its 135°
-   axis; sliding it 1980px sideways moves it exactly one period, so the
-   loop is seamless. */
+   The PDF's triangle grid over a drifting rainbow. The rainbow is a plain
+   layer; above it, a tile of the page's own colour with the grid's lines cut
+   out (inside the SVG), so the rainbow shows only through the lines. The tile
+   is drawn at twice its 136 × 78.52 size, so the triangles and the lines
+   between them are both doubled. No CSS mask: Chromium on some GPUs drew a
+   moving masked layer's tiles unmasked for a frame (rainbow rectangles
+   flashing, Arch 2026-11-21). The rainbow repeats every 1400px along its 135°
+   axis; sliding it 1980px sideways moves it exactly one period, so the loop
+   is seamless. */
+:root {
+  --prism-grid-cover: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='136' height='78.52' viewBox='0 0 136 78.52'%3E%3Cmask id='m'%3E%3Crect x='-1' y='-1' width='138' height='80.52' fill='white'/%3E%3Cpath d='M0 -1V79.52M68 -1V79.52M136 -1V79.52M-136 -157.04L272 78.52M-136 -78.52L272 157.04M-136 0.00L272 235.56M-136 78.52L272 -157.04M-136 157.04L272 -78.52M-136 235.56L272 0.00' stroke='black' stroke-width='1.3' fill='none'/%3E%3C/mask%3E%3Crect x='-1' y='-1' width='138' height='80.52' fill='%23000' mask='url(%23m)'/%3E%3C/svg%3E");
+}
+:root[data-theme='light'] {
+  --prism-grid-cover: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='136' height='78.52' viewBox='0 0 136 78.52'%3E%3Cmask id='m'%3E%3Crect x='-1' y='-1' width='138' height='80.52' fill='white'/%3E%3Cpath d='M0 -1V79.52M68 -1V79.52M136 -1V79.52M-136 -157.04L272 78.52M-136 -78.52L272 157.04M-136 0.00L272 235.56M-136 78.52L272 -157.04M-136 157.04L272 -78.52M-136 235.56L272 0.00' stroke='black' stroke-width='1.3' fill='none'/%3E%3C/mask%3E%3Crect x='-1' y='-1' width='138' height='80.52' fill='%23fff' mask='url(%23m)'/%3E%3C/svg%3E");
+}
 .prism-bg {
   position: fixed;
   inset: 0;
@@ -1858,39 +1868,10 @@ b.calc {
   overflow: hidden;
   opacity: 0.5;
 }
-/* The grid drifts up-left (one tile per loop) while the rainbow drifts on its own:
-   .prism-grid carries the mask and moves; .prism-counter moves back by the same
-   amount so the rainbow inside stays put on screen. All transforms, so the GPU
-   moves them without repainting (kept on one clock by App.tsx). */
-.prism-grid {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: calc(100% + 272px);
-  height: calc(100% + 157.04px);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='136' height='78.52' viewBox='0 0 136 78.52'%3E%3Cpath d='M0 -1V79.52M68 -1V79.52M136 -1V79.52M-136 -157.04L272 78.52M-136 -78.52L272 157.04M-136 0.00L272 235.56M-136 78.52L272 -157.04M-136 157.04L272 -78.52M-136 235.56L272 0.00' stroke='white' stroke-width='1.3' fill='none'/%3E%3C/svg%3E") repeat 0 0 / 272px 157.04px;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='136' height='78.52' viewBox='0 0 136 78.52'%3E%3Cpath d='M0 -1V79.52M68 -1V79.52M136 -1V79.52M-136 -157.04L272 78.52M-136 -78.52L272 157.04M-136 0.00L272 235.56M-136 78.52L272 -157.04M-136 157.04L272 -78.52M-136 235.56L272 0.00' stroke='white' stroke-width='1.3' fill='none'/%3E%3C/svg%3E") repeat 0 0 / 272px 157.04px;
-  animation: prism-grid-drift 48s linear infinite;
-  will-change: transform;
-}
-.prism-counter {
-  position: absolute;
-  inset: 0;
-  animation: prism-grid-counter 48s linear infinite;
-  will-change: transform;
-}
-@keyframes prism-grid-drift {
-  to {
-    transform: translate(-272px, -157.04px);
-  }
-}
-@keyframes prism-grid-counter {
-  to {
-    transform: translate(272px, 157.04px);
-  }
-}
-.prism-counter::before {
-  content: '';
+/* Both layers move on the GPU by transforms alone, so nothing is repainted
+   (kept on one clock by App.tsx): the rainbow drifts sideways, the grid
+   up-left by one tile per loop. */
+.prism-rainbow {
   position: absolute;
   top: 0;
   left: 0;
@@ -1905,6 +1886,21 @@ b.calc {
     transform: translateX(-1980px);
   }
 }
+.prism-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% + 272px);
+  height: calc(100% + 157.04px);
+  background: var(--prism-grid-cover) repeat 0 0 / 272px 157.04px;
+  animation: prism-grid-drift 48s linear infinite;
+  will-change: transform;
+}
+@keyframes prism-grid-drift {
+  to {
+    transform: translate(-272px, -157.04px);
+  }
+}
 /* Rainbow bars slide one tile width per loop (background-size above). */
 @keyframes prism-slide {
   to {
@@ -1913,8 +1909,7 @@ b.calc {
 }
 @media (prefers-reduced-motion: reduce) {
   .prism-grid,
-  .prism-counter,
-  .prism-counter::before,
+  .prism-rainbow,
   .tabs button.active::after,
   .topbar::after {
     animation: none;
@@ -2854,8 +2849,7 @@ tr.needs input {
   }
 }
 .app.still-bg .prism-grid,
-.app.still-bg .prism-counter,
-.app.still-bg .prism-counter::before {
+.app.still-bg .prism-rainbow {
   animation: none;
 }
 /* !important: the edge rules are more specific (and the Firefox one more so). */
