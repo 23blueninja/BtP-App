@@ -37,7 +37,7 @@ phases, the nine three-week months and the start year 3732 OI come from
 Arch's Moon Cycle table, which `tests/world.test.ts` holds in full. The
 moon is shut all through Closed, fully open all through Open, and opens or
 closes steadily in between (Arch). Below the model, a moon calendar lays out the shown year like
-Arch's table (tap a day to go there), and a Speed dial sets how fast Play runs. A calendar tracker is planned on top of this: keep the motion and time
+Arch's table (tap a day to go there), and a Speed dial sets how fast Play runs. Play redraws every frame, so the model and the live text sit on compositor layers of their own (`will-change`), keeping the glass panels from redrawing with them (that made Chromium flash), and the calendar is only rebuilt when the day changes. A calendar tracker is planned on top of this: keep the motion and time
 in that model, and ask Arch before adding lore numbers.
 
 ## Button and field labels

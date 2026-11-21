@@ -164,6 +164,32 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
     [model, yearStart, weeks, days],
   );
 
+  // The calendar's days only change with the day, so they aren't rebuilt on every
+  // frame while Play runs. A day picked keeps the hour.
+  const calendarRows = useMemo(
+    () =>
+      moonYear.map((week, w) => (
+        <tr key={w} className={w % model.weeksPerMonth === 0 ? 'world-cal-month' : undefined}>
+          <th scope="row">{w + 1}</th>
+          <td className="world-cal-month-name">{model.months[Math.floor(w / model.weeksPerMonth)]}</td>
+          {week.map((m, d) => {
+            const isToday = w * days + d === date.dayOfYear;
+            return (
+              <td key={d} aria-current={isToday ? 'date' : undefined} className={isToday ? 'today' : undefined}>
+                <button type="button" className="world-cal-day" aria-label={`Week ${w + 1}, ${model.weekdays[d]}: ${m.phase}`} onClick={() => setTurns((t) => yearStart + w * days + d + (t - Math.floor(t + 1e-9)))}>
+                  <svg className="world-moon-icon" viewBox="-1.1 -1.1 2.2 2.2" aria-hidden>
+                    <MoonEye cx={0} cy={0} r={1} open={m.open} />
+                  </svg>
+                  <span>{m.phase}</span>
+                </button>
+              </td>
+            );
+          })}
+        </tr>
+      )),
+    [moonYear, model, days, yearStart, date.dayOfYear],
+  );
+
   // The sun's path around the prism over the whole cycle, today's stretch drawn
   // boldly; each is split into the part behind the prism's centre and the part in front.
   const path = useMemo(() => {
@@ -357,7 +383,13 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
                     </th>
                     <td>
                       {day ? 'Day' : 'Night'}
-                      {day && light && <span className="muted small"> sun {Math.round(light.sunHeight)}° up</span>}
+                      {/* Kept in place (hidden) at night, so the row doesn't change height at every sunrise and sunset. */}
+                      {light && (
+                        <span className={`muted small world-sun-up${day ? '' : ' hidden'}`} aria-hidden={!day || undefined}>
+                          {' '}
+                          sun {day ? Math.round(light.sunHeight) : 0}° up
+                        </span>
+                      )}
                     </td>
                     <td>{next ? `${next.type === 'sunrise' ? 'Sunrise' : 'Sunset'} in ${span(model, next.in)}` : '–'}</td>
                     <td>
@@ -396,27 +428,7 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
                 ))}
               </tr>
             </thead>
-            <tbody>
-              {moonYear.map((week, w) => (
-                <tr key={w} className={w % model.weeksPerMonth === 0 ? 'world-cal-month' : undefined}>
-                  <th scope="row">{w + 1}</th>
-                  <td className="world-cal-month-name">{model.months[Math.floor(w / model.weeksPerMonth)]}</td>
-                  {week.map((m, d) => {
-                    const isToday = w * days + d === date.dayOfYear;
-                    return (
-                      <td key={d} aria-current={isToday ? 'date' : undefined} className={isToday ? 'today' : undefined}>
-                        <button type="button" className="world-cal-day" aria-label={`Week ${w + 1}, ${model.weekdays[d]}: ${m.phase}`} onClick={() => setTurns(yearStart + w * days + d + hour / model.hoursPerTurn)}>
-                          <svg className="world-moon-icon" viewBox="-1.1 -1.1 2.2 2.2" aria-hidden>
-                            <MoonEye cx={0} cy={0} r={1} open={m.open} />
-                          </svg>
-                          <span>{m.phase}</span>
-                        </button>
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
+            <tbody>{calendarRows}</tbody>
           </table>
         </div>
       </section>
