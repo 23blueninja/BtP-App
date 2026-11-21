@@ -3231,6 +3231,22 @@ html.tour-open body {
   cursor: grab;
   user-select: none;
 }
+/* While Play runs, these change every frame. On compositor layers of their own
+   they redraw alone, instead of the glass panels around them (blur, masked prism
+   edge) redrawing 60 times a second, which made the screen flash in Chromium. */
+.world-view,
+.world-hour,
+.world-date,
+.world-faces {
+  will-change: transform;
+}
+/* Digits all one width, so times and counts don't shift the text around them. */
+.world-time {
+  font-variant-numeric: tabular-nums;
+}
+.world-sun-up.hidden {
+  visibility: hidden;
+}
 .world-view:active {
   cursor: grabbing;
 }
