@@ -921,9 +921,11 @@ describe('World tab', () => {
     await expect.poll(clock).toBe('Nixaday 23:30');
     expect(await cell('lunar', 2)).toMatch(/^Long Night/);
 
-    // Play moves time on (into the next week); Pause stops it.
+    // Play moves time on (into the next week); Pause stops it. The button keeps one width (Arch).
+    const playWidth = await page.getByRole('button', { name: 'Play', exact: true }).evaluate((b) => b.getBoundingClientRect().width);
     await page.getByRole('button', { name: 'Play', exact: true }).click();
     await expect.poll(clock, { timeout: 10_000 }).not.toBe('Nixaday 23:30');
+    expect(await page.getByRole('button', { name: 'Pause', exact: true }).evaluate((b) => b.getBoundingClientRect().width)).toBe(playWidth);
     await page.getByRole('button', { name: 'Pause' }).click();
     const stopped = await clock();
     await page.waitForTimeout(400);

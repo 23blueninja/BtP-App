@@ -3388,6 +3388,19 @@ html.tour-open body {
 .world-zoom {
   padding: 0;
 }
+/* Play/Pause: the word sits over a hidden Pause in the bold of the Play state,
+   so the button is the same width whichever shows. */
+.world-play-label {
+  display: grid;
+  justify-items: center;
+}
+.world-play-label > span {
+  grid-area: 1 / 1;
+}
+.world-play-size {
+  visibility: hidden;
+  font-weight: 600;
+}
 .world-zoom svg {
   width: 1rem;
   height: 1rem;

@@ -321,7 +321,13 @@ export function World({ model = WORLD_PRISM }: { model?: WorldModel }) {
           </p>
           <div className="row wrap">
             <button type="button" className={playing ? '' : 'primary'} onClick={() => setPlaying((p) => !p)}>
-              {playing ? 'Pause' : 'Play'}
+              {/* The words share one spot with a hidden bold Pause (the widest), so the button keeps one width. */}
+              <span className="world-play-label">
+                <span className="world-play-size" aria-hidden>
+                  Pause
+                </span>
+                <span>{playing ? 'Pause' : 'Play'}</span>
+              </span>
             </button>
             <label className="row world-day-pick">
               <span className="muted small">Day</span>
